@@ -114,7 +114,21 @@
             <form id="form-piloto">
                 <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" required></div>
                 <div class="form-group"><label>Plataforma:</label><select id="plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
-                <div class="form-group"><label>Escudería:</label><select id="escuderia_id"><option value="1">Ferrari</option><option value="2">Red Bull</option></select></div>
+                <div class="form-group">
+                    <label>Escudería:</label>
+                    <select id="escuderia_id">
+                        <option value="1">Red Bull Racing</option>
+                        <option value="2">Ferrari</option>
+                        <option value="3">Mercedes-AMG</option>
+                        <option value="4">McLaren</option>
+                        <option value="5">Aston Martin</option>
+                        <option value="6">Alpine</option>
+                        <option value="7">Williams</option>
+                        <option value="8">Visa Cash App RB</option>
+                        <option value="9">Kick Sauber</option>
+                        <option value="10">Haas</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn-accion">Guardar Piloto</button>
                 <div id="msg-piloto" class="mensaje"></div>
             </form>
@@ -142,14 +156,12 @@
     <script>
         // NAVEGACIÓN TOTALMENTE INSTANTÁNEA Y LOCAL
         function irA(evento, idSeccion) {
-            // 1. Ocultar todas las secciones
             document.querySelectorAll('.seccion').forEach(s => {
                 s.style.display = 'none';
                 s.classList.remove('activa');
             });
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             
-            // 2. Mostrar solo la sección que queremos ver
             const seccionDestino = document.getElementById(idSeccion);
             if (seccionDestino) {
                 seccionDestino.style.display = 'block';
@@ -159,7 +171,6 @@
                 evento.currentTarget.classList.add('active');
             }
             
-            // 3. Al cambiar a pestañas públicas, refrescamos vistas automáticamente
             if(idSeccion !== 'panel-admin') {
                 cargarTodosLosDatos();
             }
@@ -266,7 +277,7 @@
             }
         }
 
-        // FORMULARIOS DE ENVÍO CON AUTO-REFRESCO DE CLASIFICACIONES
+        // FORMULARIOS DE ENVÍO CON AUTO-REFRESCO AL INSTANTE
         document.getElementById('form-piloto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const datos = { 
