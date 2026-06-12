@@ -14,6 +14,7 @@ app.use(express.static('public'));
 
 async function inicializarBaseDeDatos() {
     try {
+        // 1. Crear tabla de escuderías
         await pool.query(`
             CREATE TABLE IF NOT EXISTS escuderias (
                 id SERIAL PRIMARY KEY,
@@ -22,6 +23,7 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
+        // 2. Crear tabla de pilotos con carnet de sanciones integrado
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
@@ -34,27 +36,48 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
+        // 3. Inyectar la parrilla oficial F1 2026 si la tabla está vacía
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
-            await pool.query(`INSERT INTO escuderias (id, nombre, color_hex) VALUES (1, 'Ferrari', '#E10600'), (2, 'Red Bull', '#0600EF') ON CONFLICT DO NOTHING;`);
-            await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 3;`);
+            console.log("Inyectando la parrilla oficial de escuderías F1 2026...");
+            
+            await pool.query(`
+                INSERT INTO escuderias (id, nombre, color_hex) VALUES 
+                (1, 'Red Bull Racing', '#0600EF'),
+                (2, 'Ferrari', '#E10600'),
+                (3, 'Mercedes-AMG', '#27F4D2'),
+                (4, 'McLaren', '#FF8000'),
+                (5, 'Aston Martin', '#229971'),
+                (6, 'Alpine', '#0078FF'),
+                (7, 'Williams', '#00A0DE'),
+                (8, 'Visa Cash App RB', '#6600FF'),
+                (9, 'Kick Sauber', '#52E252'),
+                (10, 'Haas', '#B6BABD')
+                ON CONFLICT DO NOTHING;
+            `);
+            
+            // Ajustamos el secuenciador automático por si en el futuro creas más
+            await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
+            
+            // Pilotos de prueba iniciales asignados correctamente
             await pool.query(`
                 INSERT INTO pilotos (gamertag, plataforma, escuderia_id, victorias, puntos_totales, puntos_sancion) VALUES 
-                ('Sainz_Fan_99', 'PS5', 1, 2, 43, 0),
-                ('Schumi_Ghost', 'PC', 1, 1, 37, 2),
-                ('Max_Checo_Combo', 'PC', 2, 0, 18, 5);
+                ('Sainz_Fan_99', 'PS5', 2, 2, 43, 0),
+                ('Schumi_Ghost', 'PC', 2, 1, 37, 2),
+                ('Max_Checo_Combo', 'PC', 1, 0, 18, 5)
+                ON CONFLICT DO NOTHING;
             `);
         }
-        console.log("Base de datos lista y conectada.");
+        console.log("Base de datos de la Liga lista y conectada perfectamente.");
     } catch (err) {
-        console.error("Error inicializando la base de datos:", err);
+        console.error("Error crítico inicializando la base de datos:", err);
     }
 }
 
-// Inicializar DB antes de las rutas
+// Inicializar DB antes de declarar las rutas de la API
 inicializarBaseDeDatos();
 
-// RUTA 1: Obtener la clasificación de pilotos y sanciones
+// RUTA 1: Obtener la clasificación completa de pilotos, escuderías y carnet de puntos
 app.get('/api/clasificacion-pilotos', async (req, res) => {
     try {
         const querySQL = `
@@ -73,7 +96,7 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
     }
 });
 
-// RUTA 2: Registrar un nuevo piloto
+// RUTA 2: Registrar un nuevo piloto en el campeonato
 app.post('/api/nuevo-piloto', async (req, res) => {
     const { gamertag, plataforma, escuderia_id } = req.body;
     try {
@@ -85,7 +108,7 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     }
 });
 
-// RUTA 3: Añadir puntos de una carrera
+// RUTA 3: Añadir puntos y victorias tras una carrera
 app.post('/api/subir-resultado', async (req, res) => {
     const { piloto_id, posicion_carrera } = req.body;
     const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
@@ -101,7 +124,7 @@ app.post('/api/subir-resultado', async (req, res) => {
     }
 });
 
-// RUTA 4: Descontar puntos de la licencia (Sanción)
+// RUTA 4: Aplicar penalización sumando puntos de sanción al carnet
 app.post('/api/restar-licencia', async (req, res) => {
     const { piloto_id, puntos_restar } = req.body;
     try {
@@ -113,7 +136,7 @@ app.post('/api/restar-licencia', async (req, res) => {
     }
 });
 
-// Levantar el servidor Express siempre al final
+// Encendido oficial del servidor
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo con éxito en el puerto ${PORT}`);
+    console.log(`Servidor de la liga corriendo con éxito en el puerto ${PORT}`);
 });
