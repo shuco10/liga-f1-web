@@ -3,6 +3,10 @@ const { Pool } = require('pg');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+if (!process.env.DATABASE_URL) {
+    console.error("❌ ERROR CRÍTICO: La variable DATABASE_URL no está llegando al servidor.");
+}
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -33,13 +37,15 @@ async function inicializarBaseDeDatos() {
                 victorias INT DEFAULT 0,
                 puntos_sancion INT DEFAULT 0,
                 numero_piloto INT DEFAULT 0,
-                podios INT DEFAULT 0
+                podios INT DEFAULT 0,
+                foto_url TEXT DEFAULT ''
             );
         `);
 
-        // Aseguramos que las columnas existan por si acaso
+        // Aseguramos que existan todas las columnas necesarias por si la tabla ya existía
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN numero_piloto INT DEFAULT 0;`); } catch(e){}
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN podios INT DEFAULT 0;`); } catch(e){}
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN foto_url TEXT DEFAULT '';`); } catch(e){}
 
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
@@ -61,19 +67,19 @@ async function inicializarBaseDeDatos() {
             await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
         }
 
-        console.log("🏁 Sistema Cazadores de Curvas Activo 🏁");
+        console.log("🏁 Sistema Cazadores de Curvas Listo Con Soporte Multimedia 🏁");
     } catch (err) {
-        console.error("Error inicializando la base de datos:", err);
+        console.error("Error crítico inicializando la base de datos:", err);
     }
 }
 
 inicializarBaseDeDatos();
 
-// RUTA 1: Obtener clasificación
+// RUTA 1: Obtener clasificación (incluyendo ahora foto_url)
 app.get('/api/clasificacion-pilotos', async (req, res) => {
     try {
         const querySQL = `
-            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id,
+            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url,
                    (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
                    (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
                    puntos_totales, victorias
@@ -88,13 +94,13 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
     }
 });
 
-// RUTA 2: Registrar piloto
+// RUTA 2: Registrar piloto (incluyendo foto_url)
 app.post('/api/nuevo-piloto', async (req, res) => {
-    const { gamertag, plataforma, escuderia_id, numero_piloto } = req.body;
+    const { gamertag, plataforma, escuderia_id, numero_piloto, foto_url } = req.body;
     try {
         await pool.query(
-            'INSERT INTO pilotos (gamertag, plataforma, escuderia_id, numero_piloto) VALUES ($1, $2, $3, $4)', 
-            [gamertag, plataforma, escuderia_id, numero_piloto]
+            'INSERT INTO pilotos (gamertag, plataforma, escuderia_id, numero_piloto, foto_url) VALUES ($1, $2, $3, $4, $5)', 
+            [gamertag, plataforma, escuderia_id, numero_piloto, foto_url || '']
         );
         res.sendStatus(200);
     } catch (err) { 
@@ -103,15 +109,15 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     }
 });
 
-// NUEVA RUTA 2B: Editar/Modificar los datos de un piloto existente
+// RUTA 2B: Editar piloto (incluyendo foto_url)
 app.post('/api/editar-piloto', async (req, res) => {
-    const { id, gamertag, numero_piloto, plataforma, escuderia_id } = req.body;
+    const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url } = req.body;
     try {
         await pool.query(`
             UPDATE pilotos 
-            SET gamertag = $1, numero_piloto = $2, plataforma = $3, escuderia_id = $4 
-            WHERE id = $5
-        `, [gamertag, numero_piloto, plataforma, escuderia_id, id]);
+            SET gamertag = $1, numero_piloto = $2, plataforma = $3, escuderia_id = $4, foto_url = $5 
+            WHERE id = $6
+        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', id]);
         res.sendStatus(200);
     } catch (err) {
         console.error(err);
