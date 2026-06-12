@@ -18,7 +18,6 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
-        // Añadida la columna de puntos_sancion a la estructura básica
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
@@ -47,7 +46,7 @@ async function inicializarBaseDeDatos() {
             console.log(`Servidor de la liga corriendo con éxito en el puerto ${PORT}`);
         });
     } catch (err) {
-        console.error("Error crítico:", err);
+        console.error("Error crítico al inicializar la base de datos:", err);
     }
 }
 inicializarBaseDeDatos();
@@ -55,7 +54,7 @@ inicializarBaseDeDatos();
 app.use(express.json());
 app.use(express.static('public'));
 
-// RUTA 1: Obtener pilotos incluyendo los puntos de sanción de la licencia
+// RUTA 1: Obtener pilotos e incluir los puntos de penalización de la licencia
 app.get('/api/clasificacion-pilotos', async (req, res) => {
     try {
         const querySQL = `
@@ -82,7 +81,7 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     } catch (err) { res.sendStatus(500); }
 });
 
-// RUTA 3: Añadir resultado de carrera
+// RUTA 3: Añadir resultado de carrera (Reglamento Oficial F1 2026)
 app.post('/api/subir-resultado', async (req, res) => {
     const { piloto_id, posicion_carrera } = req.body;
     const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
