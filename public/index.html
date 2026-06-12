@@ -43,10 +43,10 @@
     <h1>🏁 CAZADORES DE CURVAS F1 2026 🏁</h1>
 
     <div class="navbar">
-        <button class="nav-btn active" onclick="cambiarPestana(event, 'mundial-pilotos')">🏆 Pilotos</button>
-        <button class="nav-btn" onclick="cambiarPestana(event, 'mundial-constructores')">🏎️ Constructores</button>
-        <button class="nav-btn" onclick="cambiarPestana(event, 'licencias-sanciones')">⚠️ Sanciones</button>
-        <button class="nav-btn" style="border-color: #e10600;" onclick="cambiarPestana(event, 'panel-admin')">🛠️ Comisarios</button>
+        <button class="nav-btn active" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
+        <button class="nav-btn" onclick="irA(event, 'mundial-constructores')">🏎️ Constructores</button>
+        <button class="nav-btn" onclick="irA(event, 'licencias-sanciones')">⚠️ Sanciones</button>
+        <button class="nav-btn" style="border-color: #e10600;" onclick="irA(event, 'panel-admin')">🛠️ Comisarios</button>
     </div>
 
     <div id="mundial-pilotos" class="seccion activa">
@@ -132,4 +132,78 @@
             <h3>3. Aplicar Penalización de Licencia</h3>
             <form id="form-sancion">
                 <div class="form-group"><label>Seleccionar Piloto Sancionado:</label><select id="select-piloto-sancion" required></select></div>
-                <div class="form-group"><label
+                <div class="form-group"><label>Puntos a retirar del carnet:</label><input type="number" id="puntos_restar" min="1" max="12" placeholder="Ej: 2" required></div>
+                <button type="submit" class="btn-accion" style="background-color: #d4a000; color: black;">Aplicar Sanción</button>
+                <div id="msg-sancion" class="mensaje"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // FUNCIÓN DE NAVEGACIÓN CORREGIDA
+        function irA(evento, idSeccion) {
+            document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(idSeccion).classList.add('activa');
+            evento.currentTarget.classList.add('active');
+            
+            if(idSeccion !== 'panel-admin') {
+                cargarTodosLosDatos();
+            }
+        }
+
+        // CONTRASEÑA DEL PANEL (La puedes cambiar aquí si quieres)
+        function verificarPassword() {
+            const pass = document.getElementById('pass-comisario').value;
+            if(pass === 'admin123') {
+                document.getElementById('bloque-login').style.display = 'none';
+                document.getElementById('contenido-admin').style.display = 'block';
+                cargarDesplegablesAdmin();
+            } else {
+                document.getElementById('error-login').innerText = "Contraseña incorrecta. Acceso denegado.";
+            }
+        }
+
+        // CARGAR DATOS DESDE EL SERVIDOR A LAS TABLAS
+        async function cargarTodosLosDatos() {
+            const res = await fetch('/api/clasificacion-pilotos');
+            const pilotos = await res.json();
+            
+            // 1. Rellenar Tabla Pilotos
+            const tPilotos = document.getElementById('tabla-pilotos');
+            tPilotos.innerHTML = '';
+            pilotos.forEach((p, index) => {
+                tPilotos.innerHTML += `
+                    <tr>
+                        <td><strong>${index + 1}</strong></td>
+                        <td>${p.gamertag}</td>
+                        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+                        <td style="border-left: 4px solid ${p.color_hex}; padding-left:10px;">${p.escuderia || 'Sin equipo'}</td>
+                        <td>${p.victorias}</td>
+                        <td><strong>${p.puntos_totales} pts</strong></td>
+                    </tr>`;
+            });
+
+            // 2. Calcular y Rellenar Tabla Constructores
+            const constructoresMap = {};
+            pilotos.forEach(p => {
+                if(p.escuderia) {
+                    if(!constructoresMap[p.escuderia]) {
+                        constructoresMap[p.escuderia] = { puntos: 0, color: p.color_hex };
+                    }
+                    constructoresMap[p.escuderia].puntos += p.puntos_totales;
+                }
+            });
+            const listaConstructores = Object.keys(constructoresMap).map(name => ({ nombre: name, ...constructoresMap[name] })).sort((a,b) => b.puntos - a.puntos);
+            
+            const tConst = document.getElementById('tabla-constructores');
+            tConst.innerHTML = '';
+            listaConstructores.forEach((c, index) => {
+                tConst.innerHTML += `
+                    <tr>
+                        <td><strong>${index + 1}</strong></td>
+                        <td style="border-left: 4px solid ${c.color}; padding-left:10px;">${c.nombre}</td>
+                        <td><strong>${c.puntos} pts</strong></td>
+                    </tr>`;
+            });
