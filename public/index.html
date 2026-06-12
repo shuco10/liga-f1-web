@@ -9,34 +9,33 @@
         h1 { text-align: center; color: #e10600; text-transform: uppercase; margin-bottom: 5px; }
         h2 { color: #e10600; text-transform: uppercase; text-align: center; font-size: 18px; }
         
-        /* MENÚ DE NAVEGACIÓN POR BOTONES */
         .navbar { display: flex; justify-content: center; gap: 10px; margin: 20px auto; max-width: 900px; }
         .nav-btn { padding: 12px 20px; background-color: #333; color: white; border: 2px solid #444; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .nav-btn:hover, .nav-btn.active { background-color: #e10600; border-color: #e10600; }
         
-        /* SECCIONES */
         .seccion { display: none; max-width: 900px; margin: 20px auto; background-color: #262626; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .seccion.activa { display: block; }
         
-        /* TABLAS ESTILO F1 */
         table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
-        th, td { padding: 12px; border-bottom: 1px solid #404040; }
+        th, td { padding: 12px; border-bottom: 1px solid #404040; vertical-align: middle; }
         th { background-color: #333; color: #e10600; text-transform: uppercase; font-size: 13px; }
         tr:hover { background-color: #333; }
         
-        /* FORMULARIOS Y BOTONES */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
         input, select { width: 100%; padding: 10px; border: 1px solid #444; background-color: #333; color: white; border-radius: 4px; box-sizing: border-box; }
         .btn-accion { width: 100%; padding: 12px; background-color: #e10600; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .btn-accion:hover { background-color: #b80500; }
         
-        /* BADGES Y MENSAJES */
         .plataforma { font-size: 11px; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
         .PC { background-color: #0078d4; }
         .PS5 { background-color: #ffffff; color: #00309a; }
         .mensaje { text-align: center; margin-top: 10px; font-weight: bold; color: #00ff00; }
         .numero-dorsal { background-color: #444; color: #fff; padding: 2px 6px; border-radius: 3px; font-weight: bold; margin-right: 8px; font-size: 13px; border: 1px solid #666; }
+
+        /* ESTILO AVATAR PILOTO */
+        .piloto-contenedor { display: flex; align-items: center; gap: 10px; }
+        .piloto-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #e10600; background-color: #444; }
     </style>
 </head>
 <body>
@@ -116,6 +115,7 @@
             <form id="form-piloto">
                 <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" required></div>
                 <div class="form-group"><label>Dorsal / Número del Piloto:</label><input type="number" id="numero_piloto" min="1" max="99" placeholder="Ej: 9" required></div>
+                <div class="form-group"><label>Enlace de Foto (Discord URL):</label><input type="text" id="foto_url" placeholder="Pegar enlace cdn.discordapp.com de la foto"></div>
                 <div class="form-group"><label>Plataforma:</label><select id="plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
                 <div class="form-group">
                     <label>Escudería:</label>
@@ -145,6 +145,7 @@
                 </div>
                 <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
                 <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
+                <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo de Discord"></div>
                 <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
                 <div class="form-group">
                     <label>Nueva Escudería:</label>
@@ -195,6 +196,7 @@
 
     <script>
         let listaPilotosGlobal = [];
+        const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
 
         function irA(evento, idSeccion) {
             document.querySelectorAll('.seccion').forEach(s => {
@@ -238,10 +240,17 @@
                 if(tPilotos) {
                     tPilotos.innerHTML = '';
                     listaPilotosGlobal.forEach((p, index) => {
+                        const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
                         tPilotos.innerHTML += `
                             <tr>
                                 <td><strong>${index + 1}</strong></td>
-                                <td><span class="numero-dorsal">${p.numero_piloto || '0'}</span>${p.gamertag}</td>
+                                <td>
+                                    <div class="piloto-contenedor">
+                                        <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
+                                        <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                                        <strong>${p.gamertag}</strong>
+                                    </div>
+                                </td>
                                 <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
                                 <td style="border-left: 4px solid ${p.color_hex || '#444'}; padding-left:10px;">${p.escuderia || 'Sin equipo'}</td>
                                 <td>${p.victorias}</td>
@@ -281,9 +290,16 @@
                     listaPilotosGlobal.forEach(p => {
                         const licenciaActual = 12 - (p.puntos_sancion || 0);
                         const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
+                        const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
                         tSanciones.innerHTML += `
                             <tr>
-                                <td><span class="numero-dorsal">${p.numero_piloto || '0'}</span>${p.gamertag}</td>
+                                <td>
+                                    <div class="piloto-contenedor">
+                                        <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" style="width:28px; height:28px;">
+                                        <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                                        ${p.gamertag}
+                                    </div>
+                                </td>
                                 <td>${p.escuderia || 'Sin equipo'}</td>
                                 <td><strong style="color:${licenciaActual < 5 ? 'orange':'white'}">${licenciaActual} / 12</strong></td>
                                 <td>${estado}</td>
@@ -323,6 +339,7 @@
             if(piloto) {
                 document.getElementById('edit-gamertag').value = piloto.gamertag;
                 document.getElementById('edit-numero').value = piloto.numero_piloto || '';
+                document.getElementById('edit-foto').value = piloto.foto_url || '';
                 document.getElementById('edit-plataforma').value = piloto.plataforma;
                 document.getElementById('edit-escuderia').value = piloto.escuderia_id || '1';
             }
@@ -333,6 +350,7 @@
             const datos = { 
                 gamertag: document.getElementById('gamertag').value, 
                 numero_piloto: parseInt(document.getElementById('numero_piloto').value),
+                foto_url: document.getElementById('foto_url').value,
                 plataforma: document.getElementById('plataforma').value, 
                 escuderia_id: parseInt(document.getElementById('escuderia_id').value) 
             };
@@ -349,13 +367,13 @@
             }
         });
 
-        // FORMULARIO DE EDICIÓN
         document.getElementById('form-editar').addEventListener('submit', async (e) => {
             e.preventDefault();
             const datos = {
                 id: parseInt(document.getElementById('select-piloto-editar').value),
                 gamertag: document.getElementById('edit-gamertag').value,
                 numero_piloto: parseInt(document.getElementById('edit-numero').value),
+                foto_url: document.getElementById('edit-foto').value,
                 plataforma: document.getElementById('edit-plataforma').value,
                 escuderia_id: parseInt(document.getElementById('edit-escuderia').value)
             };
