@@ -14,7 +14,13 @@ app.use(express.static('public'));
 
 async function inicializarBaseDeDatos() {
     try {
-        // 1. Crear tabla de escuderías
+        console.log("Iniciando secuencia de limpieza y actualización de tablas...");
+
+        // PLAN B: Forzamos el borrado de tablas antiguas de forma segura por código
+        await pool.query(`DROP TABLE IF EXISTS pilotos, escuderias CASCADE;`);
+        console.log("Tablas antiguas eliminadas con éxito.");
+
+        // 1. Crear tabla de escuderías desde cero
         await pool.query(`
             CREATE TABLE IF NOT EXISTS escuderias (
                 id SERIAL PRIMARY KEY,
@@ -36,39 +42,36 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
-        // 3. Inyectar la parrilla oficial F1 2026 si la tabla está vacía
-        const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
-        if (parseInt(resEscuderias.rows[0].count) === 0) {
-            console.log("Inyectando la parrilla oficial de escuderías F1 2026...");
-            
-            await pool.query(`
-                INSERT INTO escuderias (id, nombre, color_hex) VALUES 
-                (1, 'Red Bull Racing', '#0600EF'),
-                (2, 'Ferrari', '#E10600'),
-                (3, 'Mercedes-AMG', '#27F4D2'),
-                (4, 'McLaren', '#FF8000'),
-                (5, 'Aston Martin', '#229971'),
-                (6, 'Alpine', '#0078FF'),
-                (7, 'Williams', '#00A0DE'),
-                (8, 'Visa Cash App RB', '#6600FF'),
-                (9, 'Kick Sauber', '#52E252'),
-                (10, 'Haas', '#B6BABD')
-                ON CONFLICT DO NOTHING;
-            `);
-            
-            // Ajustamos el secuenciador automático por si en el futuro creas más
-            await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
-            
-            // Pilotos de prueba iniciales asignados correctamente
-            await pool.query(`
-                INSERT INTO pilotos (gamertag, plataforma, escuderia_id, victorias, puntos_totales, puntos_sancion) VALUES 
-                ('Sainz_Fan_99', 'PS5', 2, 2, 43, 0),
-                ('Schumi_Ghost', 'PC', 2, 1, 37, 2),
-                ('Max_Checo_Combo', 'PC', 1, 0, 18, 5)
-                ON CONFLICT DO NOTHING;
-            `);
-        }
-        console.log("Base de datos de la Liga lista y conectada perfectamente.");
+        // 3. Inyectar la parrilla oficial F1 2026 obligatoriamente
+        console.log("Inyectando la parrilla oficial de escuderías F1 2026...");
+        await pool.query(`
+            INSERT INTO escuderias (id, nombre, color_hex) VALUES 
+            (1, 'Red Bull Racing', '#0600EF'),
+            (2, 'Ferrari', '#E10600'),
+            (3, 'Mercedes-AMG', '#27F4D2'),
+            (4, 'McLaren', '#FF8000'),
+            (5, 'Aston Martin', '#229971'),
+            (6, 'Alpine', '#0078FF'),
+            (7, 'Williams', '#00A0DE'),
+            (8, 'Visa Cash App RB', '#6600FF'),
+            (9, 'Kick Sauber', '#52E252'),
+            (10, 'Haas', '#B6BABD')
+            ON CONFLICT DO NOTHING;
+        `);
+        
+        // Ajustamos el secuenciador automático de IDs
+        await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
+        
+        // Pilotos de prueba iniciales asignados a la nueva parrilla
+        await pool.query(`
+            INSERT INTO pilotos (gamertag, plataforma, escuderia_id, victorias, puntos_totales, puntos_sancion) VALUES 
+            ('Sainz_Fan_99', 'PS5', 2, 2, 43, 0),
+            ('Schumi_Ghost', 'PC', 2, 1, 37, 2),
+            ('Max_Checo_Combo', 'PC', 1, 0, 18, 5)
+            ON CONFLICT DO NOTHING;
+        `);
+
+        console.log("Base de datos de la Liga formateada, actualizada y conectada perfectamente.");
     } catch (err) {
         console.error("Error crítico inicializando la base de datos:", err);
     }
