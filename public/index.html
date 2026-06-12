@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liga Oficial F1 2026</title>
+    <title>Cazadores de Curvas | Campeonato F1 2026</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
         h1 { text-align: center; color: #e10600; text-transform: uppercase; margin-bottom: 5px; }
@@ -41,7 +41,7 @@
 </head>
 <body>
 
-    <h1>🏁 CAZADORES DE CURVAS F1 2026 🏁</h1>
+    <h1>🏁 CAZADORES DE CURVAS 🏁</h1>
 
     <div class="navbar">
         <button class="nav-btn active" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
@@ -137,6 +137,35 @@
             </form>
 
             <hr style="border-color: #444; margin: 30px 0;">
+            <h3>✏️ 1B. Editar Piloto Existente</h3>
+            <form id="form-editar">
+                <div class="form-group">
+                    <label>Selecciona el Piloto a Modificar:</label>
+                    <select id="select-piloto-editar" onchange="autocompletarFormEdicion()" required></select>
+                </div>
+                <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
+                <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
+                <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
+                <div class="form-group">
+                    <label>Nueva Escudería:</label>
+                    <select id="edit-escuderia">
+                        <option value="1">Red Bull Racing</option>
+                        <option value="2">Ferrari</option>
+                        <option value="3">Mercedes-AMG</option>
+                        <option value="4">McLaren</option>
+                        <option value="5">Aston Martin</option>
+                        <option value="6">Alpine</option>
+                        <option value="7">Williams</option>
+                        <option value="8">Visa Cash App RB</option>
+                        <option value="9">Kick Sauber</option>
+                        <option value="10">Haas</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
+                <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
+            </form>
+
+            <hr style="border-color: #444; margin: 30px 0;">
             <h3>2. Añadir Resultado de Carrera</h3>
             <form id="form-carrera">
                 <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto" required></select></div>
@@ -165,6 +194,8 @@
     </div>
 
     <script>
+        let listaPilotosGlobal = [];
+
         function irA(evento, idSeccion) {
             document.querySelectorAll('.seccion').forEach(s => {
                 s.style.display = 'none';
@@ -201,13 +232,12 @@
             try {
                 const res = await fetch('/api/clasificacion-pilotos');
                 if (!res.ok) return;
-                const pilotos = await res.json();
+                listaPilotosGlobal = await res.json();
                 
-                // 1. Rellenar Tabla Pilotos con Dorsal y Podios
                 const tPilotos = document.getElementById('tabla-pilotos');
                 if(tPilotos) {
                     tPilotos.innerHTML = '';
-                    pilotos.forEach((p, index) => {
+                    listaPilotosGlobal.forEach((p, index) => {
                         tPilotos.innerHTML += `
                             <tr>
                                 <td><strong>${index + 1}</strong></td>
@@ -221,9 +251,8 @@
                     });
                 }
 
-                // 2. Calcular Tabla Constructores
                 const constructoresMap = {};
-                pilotos.forEach(p => {
+                listaPilotosGlobal.forEach(p => {
                     if(p.escuderia) {
                         if(!constructoresMap[p.escuderia]) {
                             constructoresMap[p.escuderia] = { puntos: 0, color: p.color_hex };
@@ -246,11 +275,10 @@
                     });
                 }
 
-                // 3. Rellenar Tabla de Sanciones
                 const tSanciones = document.getElementById('tabla-sanciones');
                 if(tSanciones) {
                     tSanciones.innerHTML = '';
-                    pilotos.forEach(p => {
+                    listaPilotosGlobal.forEach(p => {
                         const licenciaActual = 12 - (p.puntos_sancion || 0);
                         const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
                         tSanciones.innerHTML += `
@@ -270,19 +298,33 @@
         async function cargarDesplegablesAdmin() {
             try {
                 const res = await fetch('/api/clasificacion-pilotos');
-                const pilotos = await res.json();
+                listaPilotosGlobal = await res.json();
+                
                 const sel1 = document.getElementById('select-piloto');
                 const sel2 = document.getElementById('select-piloto-sancion');
                 const sel3 = document.getElementById('select-piloto-eliminar');
-                if(sel1 && sel2 && sel3) {
-                    sel1.innerHTML = ''; sel2.innerHTML = ''; sel3.innerHTML = '';
-                    pilotos.forEach(p => {
+                const selEdit = document.getElementById('select-piloto-editar');
+                
+                if(sel1 && sel2 && sel3 && selEdit) {
+                    sel1.innerHTML = ''; sel2.innerHTML = ''; sel3.innerHTML = ''; selEdit.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
+                    listaPilotosGlobal.forEach(p => {
                         const opt = `<option value="${p.id}">#${p.numero_piloto || '0'} - ${p.gamertag}</option>`;
-                        sel1.innerHTML += opt; sel2.innerHTML += opt; sel3.innerHTML += opt;
+                        sel1.innerHTML += opt; sel2.innerHTML += opt; sel3.innerHTML += opt; selEdit.innerHTML += opt;
                     });
                 }
             } catch (err) {
                 console.error("Error cargando desplegables de admin:", err);
+            }
+        }
+
+        function autocompletarFormEdicion() {
+            const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
+            const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
+            if(piloto) {
+                document.getElementById('edit-gamertag').value = piloto.gamertag;
+                document.getElementById('edit-numero').value = piloto.numero_piloto || '';
+                document.getElementById('edit-plataforma').value = piloto.plataforma;
+                document.getElementById('edit-escuderia').value = piloto.escuderia_id || '1';
             }
         }
 
@@ -304,8 +346,32 @@
                 document.getElementById('form-piloto').reset(); 
                 await cargarTodosLosDatos(); 
                 await cargarDesplegablesAdmin(); 
-            } else {
-                document.getElementById('msg-piloto').innerText = "Error al guardar el piloto.";
+            }
+        });
+
+        // FORMULARIO DE EDICIÓN
+        document.getElementById('form-editar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const datos = {
+                id: parseInt(document.getElementById('select-piloto-editar').value),
+                gamertag: document.getElementById('edit-gamertag').value,
+                numero_piloto: parseInt(document.getElementById('edit-numero').value),
+                plataforma: document.getElementById('edit-plataforma').value,
+                escuderia_id: parseInt(document.getElementById('edit-escuderia').value)
+            };
+            if(!datos.id) return;
+            
+            const res = await fetch('/api/editar-piloto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            if(res.ok) {
+                document.getElementById('msg-editar').innerText = "¡Piloto actualizado con éxito!";
+                document.getElementById('form-editar').reset();
+                await cargarTodosLosDatos();
+                await cargarDesplegablesAdmin();
+                setTimeout(() => { document.getElementById('msg-editar').innerText = ""; }, 3000);
             }
         });
 
@@ -321,7 +387,7 @@
                 body: JSON.stringify(datos) 
             });
             if(res.ok) { 
-                document.getElementById('msg-carrera').innerText = "¡Resultado subido y estadísticas actualizadas!"; 
+                document.getElementById('msg-carrera').innerText = "¡Resultado subido!"; 
                 document.getElementById('form-carrera').reset(); 
                 await cargarTodosLosDatos(); 
             }
@@ -339,7 +405,7 @@
                 body: JSON.stringify(datos) 
             });
             if(res.ok) { 
-                document.getElementById('msg-sancion').innerText = "¡Sanción aplicada al carnet!"; 
+                document.getElementById('msg-sancion').innerText = "¡Sanción aplicada!"; 
                 document.getElementById('form-sancion').reset(); 
                 await cargarTodosLosDatos(); 
             }
@@ -348,8 +414,7 @@
         document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
             e.preventDefault();
             const pilotoNombre = document.getElementById('select-piloto-eliminar').options[document.getElementById('select-piloto-eliminar').selectedIndex].text;
-            
-            if(!confirm(`¿Estás seguro de eliminar a ${pilotoNombre}?`)) return;
+            if(!confirm(`¿Seguro de eliminar a ${pilotoNombre}?`)) return;
 
             const datos = { piloto_id: parseInt(document.getElementById('select-piloto-eliminar').value) };
             const res = await fetch('/api/eliminar-piloto', { 
@@ -361,7 +426,6 @@
                 document.getElementById('msg-eliminar').innerText = "Piloto eliminado."; 
                 await cargarTodosLosDatos(); 
                 await cargarDesplegablesAdmin(); 
-                setTimeout(() => { document.getElementById('msg-eliminar').innerText = ""; }, 3000);
             }
         });
 
