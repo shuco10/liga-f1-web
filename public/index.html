@@ -146,15 +146,22 @@
             <h3>3. Aplicar Penalización de Licencia</h3>
             <form id="form-sancion">
                 <div class="form-group"><label>Seleccionar Piloto Sancionado:</label><select id="select-piloto-sancion" required></select></div>
-               <div class="form-group"><label>Puntos a retirar (positivo) o devolver (negativo):</label><input type="number" id="puntos_restar" placeholder="Ej: 2 o -2" required></div>
+                <div class="form-group"><label>Puntos a retirar (positivo) o devolver (negativo):</label><input type="number" id="puntos_restar" placeholder="Ej: 2 o -2" required></div>
                 <button type="submit" class="btn-accion" style="background-color: #d4a000; color: black;">Aplicar Sanción</button>
                 <div id="msg-sancion" class="mensaje"></div>
+            </form>
+
+            <hr style="border-color: #444; margin: 30px 0;">
+            <h3>❌ 4. Eliminar Piloto de la Liga</h3>
+            <form id="form-eliminar">
+                <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" required></select></div>
+                <button type="submit" class="btn-accion" style="background-color: #7a0000; border: 1px solid #ff4444;">Eliminar Permanentemente</button>
+                <div id="msg-eliminar" class="mensaje" style="color: #ff4444;"></div>
             </form>
         </div>
     </div>
 
     <script>
-        // NAVEGACIÓN TOTALMENTE INSTANTÁNEA Y LOCAL
         function irA(evento, idSeccion) {
             document.querySelectorAll('.seccion').forEach(s => {
                 s.style.display = 'none';
@@ -176,7 +183,6 @@
             }
         }
 
-        // CONTRASEÑA DEL PANEL DE COMISARIOS
         function verificarPassword() {
             const pass = document.getElementById('pass-comisario').value;
             if(pass === 'admin123') {
@@ -188,14 +194,12 @@
             }
         }
 
-        // CARGAR DATOS DESDE EL SERVIDOR A LAS TABLAS
         async function cargarTodosLosDatos() {
             try {
                 const res = await fetch('/api/clasificacion-pilotos');
                 if (!res.ok) return;
                 const pilotos = await res.json();
                 
-                // 1. Rellenar Tabla Pilotos
                 const tPilotos = document.getElementById('tabla-pilotos');
                 if(tPilotos) {
                     tPilotos.innerHTML = '';
@@ -212,7 +216,6 @@
                     });
                 }
 
-                // 2. Calcular y Rellenar Tabla Constructores
                 const constructoresMap = {};
                 pilotos.forEach(p => {
                     if(p.escuderia) {
@@ -237,7 +240,6 @@
                     });
                 }
 
-                // 3. Rellenar Tabla de Carnet y Sanciones
                 const tSanciones = document.getElementById('tabla-sanciones');
                 if(tSanciones) {
                     tSanciones.innerHTML = '';
@@ -258,18 +260,18 @@
             }
         }
 
-        // CARGAR DESPLEGABLES DEL AREA DE ADMIN
         async function cargarDesplegablesAdmin() {
             try {
                 const res = await fetch('/api/clasificacion-pilotos');
                 const pilotos = await res.json();
                 const sel1 = document.getElementById('select-piloto');
                 const sel2 = document.getElementById('select-piloto-sancion');
-                if(sel1 && sel2) {
-                    sel1.innerHTML = ''; sel2.innerHTML = '';
+                const sel3 = document.getElementById('select-piloto-eliminar');
+                if(sel1 && sel2 && sel3) {
+                    sel1.innerHTML = ''; sel2.innerHTML = ''; sel3.innerHTML = '';
                     pilotos.forEach(p => {
                         const opt = `<option value="${p.id}">${p.gamertag} (${p.escuderia || 'Sin Equipo'})</option>`;
-                        sel1.innerHTML += opt; sel2.innerHTML += opt;
+                        sel1.innerHTML += opt; sel2.innerHTML += opt; sel3.innerHTML += opt;
                     });
                 }
             } catch (err) {
@@ -277,7 +279,6 @@
             }
         }
 
-        // FORMULARIOS DE ENVÍO CON AUTO-REFRESCO AL INSTANTE
         document.getElementById('form-piloto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const datos = { 
@@ -336,7 +337,33 @@
             }
         });
 
-        // Aseguramos carga limpia inicial al abrir la web
+        // EVENTO PARA ELIMINAR PILOTOS
+        document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pilotoNombre = document.getElementById('select-piloto-eliminar').options[document.getElementById('select-piloto-eliminar').selectedIndex].text;
+            
+            if(!confirm(`¿Estás completamente seguro de que quieres eliminar a ${pilotoNombre}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            const datos = { 
+                piloto_id: parseInt(document.getElementById('select-piloto-eliminar').value) 
+            };
+            const res = await fetch('/api/eliminar-piloto', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(datos) 
+            });
+            if(res.ok) { 
+                document.getElementById('msg-eliminar').innerText = "Piloto eliminado de la base de datos."; 
+                await cargarTodosLosDatos(); 
+                await cargarDesplegablesAdmin(); 
+                setTimeout(() => { document.getElementById('msg-eliminar').innerText = ""; }, 3000);
+            } else {
+                document.getElementById('msg-eliminar').innerText = "Error al intentar eliminar al piloto.";
+            }
+        });
+
         window.addEventListener('DOMContentLoaded', () => {
             cargarTodosLosDatos();
             irA(null, 'mundial-pilotos');
