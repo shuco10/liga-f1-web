@@ -8,15 +8,14 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Configuración de Express para leer JSON y servir la carpeta pública
 app.use(express.json());
 app.use(express.static('public'));
 
 async function inicializarBaseDeDatos() {
     try {
-        console.log("--- CONFIGURACIÓN DE PARRILLA F1 2026 ---");
+        console.log("--- ACTUALIZANDO TABLAS CON DORSAL Y PODIOS ---");
 
-        // Creamos las tablas si no existen (Ya no las borramos en cada reinicio para conservar tus pilotos guardados)
+        // 1. Crear tabla de escuderías si no existe
         await pool.query(`
             CREATE TABLE IF NOT EXISTS escuderias (
                 id SERIAL PRIMARY KEY,
@@ -25,6 +24,7 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
+        // 2. Crear o actualizar tabla de pilotos (incluyendo numero_piloto y podios)
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
@@ -33,11 +33,17 @@ async function inicializarBaseDeDatos() {
                 escuderia_id INT REFERENCES escuderias(id) ON DELETE SET NULL,
                 puntos_totales INT DEFAULT 0,
                 victorias INT DEFAULT 0,
-                puntos_sancion INT DEFAULT 0
+                puntos_sancion INT DEFAULT 0,
+                numero_piloto INT DEFAULT 0,
+                podios INT DEFAULT 0
             );
         `);
 
-        // Inyectar los 10 equipos solo si la tabla se quedó vacía
+        // Migración rápida: Por si la tabla existía pero no tenía estas columnas nuevas
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN numero_piloto INT DEFAULT 0;`); } catch(e){}
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN podios INT DEFAULT 0;`); } catch(e){}
+
+        // 3. Rellenar escuderías 2026 si estuviera vacía
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
             console.log("Inyectando la parrilla oficial F1 2026...");
@@ -58,25 +64,24 @@ async function inicializarBaseDeDatos() {
             await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
         }
 
-        console.log("🏁 Base de datos lista para el campeonato 🏁");
+        console.log("🏁 Base de datos actualizada y lista 🏁");
     } catch (err) {
-        console.error("Error crítico en la inicialización de la liga:", err);
+        console.error("Error inicializando la base de datos:", err);
     }
 }
 
-// Arrancar inicialización al ejecutar el servidor
 inicializarBaseDeDatos();
 
-// RUTA 1: Obtener clasificaciones y estado del carnet por puntos
+// RUTA 1: Obtener clasificación (incluyendo el dorsal y los podios)
 app.get('/api/clasificacion-pilotos', async (req, res) => {
     try {
         const querySQL = `
-            SELECT id, gamertag, plataforma, puntos_sancion,
+            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios,
                    (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
                    (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
                    puntos_totales, victorias
             FROM pilotos
-            ORDER BY puntos_totales DESC, victorias DESC;
+            ORDER BY puntos_totales DESC, victorias DESC, podios DESC;
         `;
         const { rows } = await pool.query(querySQL);
         res.json(rows);
@@ -86,11 +91,14 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
     }
 });
 
-// RUTA 2: Registrar un nuevo piloto
+// RUTA 2: Registrar piloto solicitando también su número de dorsal
 app.post('/api/nuevo-piloto', async (req, res) => {
-    const { gamertag, plataforma, escuderia_id } = req.body;
+    const { gamertag, plataforma, escuderia_id, numero_piloto } = req.body;
     try {
-        await pool.query('INSERT INTO pilotos (gamertag, plataforma, escuderia_id) VALUES ($1, $2, $3)', [gamertag, plataforma, escuderia_id]);
+        await pool.query(
+            'INSERT INTO pilotos (gamertag, plataforma, escuderia_id, numero_piloto) VALUES ($1, $2, $3, $4)', 
+            [gamertag, plataforma, escuderia_id, numero_piloto]
+        );
         res.sendStatus(200);
     } catch (err) { 
         console.error(err);
@@ -98,15 +106,23 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     }
 });
 
-// RUTA 3: Subir resultados de carrera y aplicar puntos de la FIA
+// RUTA 3: Subir resultados (Suma puntos, victorias y calcula automáticamente si es podio: pos 1, 2 o 3)
 app.post('/api/subir-resultado', async (req, res) => {
     const { piloto_id, posicion_carrera } = req.body;
     const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    
     const puntosA_Sumar = tablaPuntos[posicion_carrera] || 0;
     const esVictoria = posicion_carrera === 1 ? 1 : 0;
+    const esPodio = (posicion_carrera >= 1 && posicion_carrera <= 3) ? 1 : 0; // Posición 1, 2 o 3 suma podio
 
     try {
-        await pool.query(`UPDATE pilotos SET puntos_totales = puntos_totales + $1, victorias = victorias + $2 WHERE id = $3`, [puntosA_Sumar, esVictoria, piloto_id]);
+        await pool.query(`
+            UPDATE pilotos 
+            SET puntos_totales = puntos_totales + $1, 
+                victorias = victorias + $2,
+                podios = podios + $3
+            WHERE id = $4
+        `, [puntosA_Sumar, esVictoria, esPodio, piloto_id]);
         res.sendStatus(200);
     } catch (err) { 
         console.error(err);
@@ -114,7 +130,7 @@ app.post('/api/subir-resultado', async (req, res) => {
     }
 });
 
-// RUTA 4: Aplicar sanciones O quitar puntos (¡Admite números negativos!)
+// RUTA 4: Aplicar o quitar sanciones
 app.post('/api/restar-licencia', async (req, res) => {
     const { piloto_id, puntos_restar } = req.body;
     try {
@@ -126,7 +142,7 @@ app.post('/api/restar-licencia', async (req, res) => {
     }
 });
 
-// NUEVA RUTA 5: Eliminar permanentemente un piloto de la base de datos
+// RUTA 5: Eliminar piloto
 app.post('/api/eliminar-piloto', async (req, res) => {
     const { piloto_id } = req.body;
     try {
@@ -138,7 +154,6 @@ app.post('/api/eliminar-piloto', async (req, res) => {
     }
 });
 
-// Encendido del servidor
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
