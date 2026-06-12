@@ -1,58 +1,46 @@
-// FORMULARIOS DE ENVÍO - ACTUALIZADOS PARA REFRESCAR AL INSTANTE
-        document.getElementById('form-piloto').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const datos = { 
-                gamertag: document.getElementById('gamertag').value, 
-                plataforma: document.getElementById('plataforma').value, 
-                escuderia_id: parseInt(document.getElementById('escuderia_id').value) 
-            };
-            const res = await fetch('/api/nuevo-piloto', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(datos) 
-            });
-            if(res.ok) { 
-                document.getElementById('msg-piloto').innerText = "¡Piloto inscrito con éxito!"; 
-                document.getElementById('form-piloto').reset(); 
-                await cargarTodosLosDatos(); // Fuerza a las tablas a actualizarse
-                await cargarDesplegablesAdmin(); // Actualiza los select de carreras y sanciones
-            } else {
-                document.getElementById('msg-piloto').innerText = "Error al guardar en el servidor.";
-            }
-        });
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liga Oficial F1 2026</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: #e10600; text-transform: uppercase; margin-bottom: 5px; }
+        h2 { color: #e10600; text-transform: uppercase; text-align: center; font-size: 18px; }
+        
+        /* MENÚ DE NAVEGACIÓN POR BOTONES */
+        .navbar { display: flex; justify-content: center; gap: 10px; margin: 20px auto; max-width: 900px; }
+        .nav-btn { padding: 12px 20px; background-color: #333; color: white; border: 2px solid #444; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .nav-btn:hover, .nav-btn.active { background-color: #e10600; border-color: #e10600; }
+        
+        /* SECCIONES (OCULTAS POR DEFECTO) */
+        .seccion { display: none; max-width: 900px; margin: 20px auto; background-color: #262626; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .seccion.activa { display: block; }
+        
+        /* TABLAS ESTILO F1 */
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #404040; }
+        th { background-color: #333; color: #e10600; text-transform: uppercase; font-size: 13px; }
+        tr:hover { background-color: #333; }
+        
+        /* FORMULARIOS Y BOTONES */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #444; background-color: #333; color: white; border-radius: 4px; box-sizing: border-box; }
+        .btn-accion { width: 100%; padding: 12px; background-color: #e10600; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-accion:hover { background-color: #b80500; }
+        
+        /* BADGES */
+        .plataforma { font-size: 11px; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
+        .PC { background-color: #0078d4; }
+        .PS5 { background-color: #ffffff; color: #00309a; }
+        .mensaje { text-align: center; margin-top: 10px; font-weight: bold; color: #00ff00; }
+    </style>
+</head>
+<body>
 
-        document.getElementById('form-carrera').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const datos = { 
-                piloto_id: parseInt(document.getElementById('select-piloto').value), 
-                posicion_carrera: parseInt(document.getElementById('posicion_carrera').value) 
-            };
-            const res = await fetch('/api/subir-resultado', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(datos) 
-            });
-            if(res.ok) { 
-                document.getElementById('msg-carrera').innerText = "¡Puntos sumados correctamente!"; 
-                document.getElementById('form-carrera').reset(); 
-                await cargarTodosLosDatos(); // Actualiza la clasificación al instante
-            }
-        });
+    <h1>🏁 CAZADORES DE CURVAS F1 2026 🏁</h1>
 
-        document.getElementById('form-sancion').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const datos = { 
-                piloto_id: parseInt(document.getElementById('select-piloto-sancion').value), 
-                puntos_restar: parseInt(document.getElementById('puntos_restar').value) 
-            };
-            const res = await fetch('/api/restar-licencia', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(datos) 
-            });
-            if(res.ok) { 
-                document.getElementById('msg-sancion').innerText = "¡Sanción aplicada al carnet!"; 
-                document.getElementById('form-sancion').reset(); 
-                await cargarTodosLosDatos(); // Actualiza la tabla de sanciones al instante
-            }
-        });
+    <div class="navbar">
+        <button class="nav-btn active" onclick="irA(event
