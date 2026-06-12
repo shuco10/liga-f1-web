@@ -14,7 +14,7 @@
         .nav-btn { padding: 12px 20px; background-color: #333; color: white; border: 2px solid #444; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .nav-btn:hover, .nav-btn.active { background-color: #e10600; border-color: #e10600; }
         
-        /* SECCIONES (OCULTAS POR DEFECTO) */
+        /* SECCIONES */
         .seccion { display: none; max-width: 900px; margin: 20px auto; background-color: #262626; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .seccion.activa { display: block; }
         
@@ -36,6 +36,7 @@
         .PC { background-color: #0078d4; }
         .PS5 { background-color: #ffffff; color: #00309a; }
         .mensaje { text-align: center; margin-top: 10px; font-weight: bold; color: #00ff00; }
+        .numero-dorsal { background-color: #444; color: #fff; padding: 2px 6px; border-radius: 3px; font-weight: bold; margin-right: 8px; font-size: 13px; border: 1px solid #666; }
     </style>
 </head>
 <body>
@@ -59,6 +60,7 @@
                     <th>Plataforma</th>
                     <th>Escudería</th>
                     <th>Victorias</th>
+                    <th>Podios</th>
                     <th>Puntos</th>
                 </tr>
             </thead>
@@ -113,6 +115,7 @@
             <h3>1. Inscribir Nuevo Piloto</h3>
             <form id="form-piloto">
                 <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" required></div>
+                <div class="form-group"><label>Dorsal / Número del Piloto:</label><input type="number" id="numero_piloto" min="1" max="99" placeholder="Ej: 9" required></div>
                 <div class="form-group"><label>Plataforma:</label><select id="plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
                 <div class="form-group">
                     <label>Escudería:</label>
@@ -200,6 +203,7 @@
                 if (!res.ok) return;
                 const pilotos = await res.json();
                 
+                // 1. Rellenar Tabla Pilotos con Dorsal y Podios
                 const tPilotos = document.getElementById('tabla-pilotos');
                 if(tPilotos) {
                     tPilotos.innerHTML = '';
@@ -207,15 +211,17 @@
                         tPilotos.innerHTML += `
                             <tr>
                                 <td><strong>${index + 1}</strong></td>
-                                <td>${p.gamertag}</td>
+                                <td><span class="numero-dorsal">${p.numero_piloto || '0'}</span>${p.gamertag}</td>
                                 <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
                                 <td style="border-left: 4px solid ${p.color_hex || '#444'}; padding-left:10px;">${p.escuderia || 'Sin equipo'}</td>
                                 <td>${p.victorias}</td>
+                                <td>${p.podios || '0'}</td>
                                 <td><strong>${p.puntos_totales} pts</strong></td>
                             </tr>`;
                     });
                 }
 
+                // 2. Calcular Tabla Constructores
                 const constructoresMap = {};
                 pilotos.forEach(p => {
                     if(p.escuderia) {
@@ -240,6 +246,7 @@
                     });
                 }
 
+                // 3. Rellenar Tabla de Sanciones
                 const tSanciones = document.getElementById('tabla-sanciones');
                 if(tSanciones) {
                     tSanciones.innerHTML = '';
@@ -248,7 +255,7 @@
                         const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
                         tSanciones.innerHTML += `
                             <tr>
-                                <td>${p.gamertag}</td>
+                                <td><span class="numero-dorsal">${p.numero_piloto || '0'}</span>${p.gamertag}</td>
                                 <td>${p.escuderia || 'Sin equipo'}</td>
                                 <td><strong style="color:${licenciaActual < 5 ? 'orange':'white'}">${licenciaActual} / 12</strong></td>
                                 <td>${estado}</td>
@@ -270,7 +277,7 @@
                 if(sel1 && sel2 && sel3) {
                     sel1.innerHTML = ''; sel2.innerHTML = ''; sel3.innerHTML = '';
                     pilotos.forEach(p => {
-                        const opt = `<option value="${p.id}">${p.gamertag} (${p.escuderia || 'Sin Equipo'})</option>`;
+                        const opt = `<option value="${p.id}">#${p.numero_piloto || '0'} - ${p.gamertag}</option>`;
                         sel1.innerHTML += opt; sel2.innerHTML += opt; sel3.innerHTML += opt;
                     });
                 }
@@ -283,6 +290,7 @@
             e.preventDefault();
             const datos = { 
                 gamertag: document.getElementById('gamertag').value, 
+                numero_piloto: parseInt(document.getElementById('numero_piloto').value),
                 plataforma: document.getElementById('plataforma').value, 
                 escuderia_id: parseInt(document.getElementById('escuderia_id').value) 
             };
@@ -313,7 +321,7 @@
                 body: JSON.stringify(datos) 
             });
             if(res.ok) { 
-                document.getElementById('msg-carrera').innerText = "¡Puntos sumados correctamente!"; 
+                document.getElementById('msg-carrera').innerText = "¡Resultado subido y estadísticas actualizadas!"; 
                 document.getElementById('form-carrera').reset(); 
                 await cargarTodosLosDatos(); 
             }
@@ -337,30 +345,23 @@
             }
         });
 
-        // EVENTO PARA ELIMINAR PILOTOS
         document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
             e.preventDefault();
             const pilotoNombre = document.getElementById('select-piloto-eliminar').options[document.getElementById('select-piloto-eliminar').selectedIndex].text;
             
-            if(!confirm(`¿Estás completamente seguro de que quieres eliminar a ${pilotoNombre}? Esta acción no se puede deshacer.`)) {
-                return;
-            }
+            if(!confirm(`¿Estás seguro de eliminar a ${pilotoNombre}?`)) return;
 
-            const datos = { 
-                piloto_id: parseInt(document.getElementById('select-piloto-eliminar').value) 
-            };
+            const datos = { piloto_id: parseInt(document.getElementById('select-piloto-eliminar').value) };
             const res = await fetch('/api/eliminar-piloto', { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify(datos) 
             });
             if(res.ok) { 
-                document.getElementById('msg-eliminar').innerText = "Piloto eliminado de la base de datos."; 
+                document.getElementById('msg-eliminar').innerText = "Piloto eliminado."; 
                 await cargarTodosLosDatos(); 
                 await cargarDesplegablesAdmin(); 
                 setTimeout(() => { document.getElementById('msg-eliminar').innerText = ""; }, 3000);
-            } else {
-                document.getElementById('msg-eliminar').innerText = "Error al intentar eliminar al piloto.";
             }
         });
 
