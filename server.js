@@ -13,9 +13,8 @@ app.use(express.static('public'));
 
 async function inicializarBaseDeDatos() {
     try {
-        console.log("--- ACTUALIZANDO TABLAS CON DORSAL Y PODIOS ---");
+        console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
 
-        // 1. Crear tabla de escuderías si no existe
         await pool.query(`
             CREATE TABLE IF NOT EXISTS escuderias (
                 id SERIAL PRIMARY KEY,
@@ -24,7 +23,6 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
-        // 2. Crear o actualizar tabla de pilotos (incluyendo numero_piloto y podios)
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
@@ -39,11 +37,10 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
-        // Migración rápida: Por si la tabla existía pero no tenía estas columnas nuevas
+        // Aseguramos que las columnas existan por si acaso
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN numero_piloto INT DEFAULT 0;`); } catch(e){}
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN podios INT DEFAULT 0;`); } catch(e){}
 
-        // 3. Rellenar escuderías 2026 si estuviera vacía
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
             console.log("Inyectando la parrilla oficial F1 2026...");
@@ -64,7 +61,7 @@ async function inicializarBaseDeDatos() {
             await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
         }
 
-        console.log("🏁 Base de datos actualizada y lista 🏁");
+        console.log("🏁 Sistema Cazadores de Curvas Activo 🏁");
     } catch (err) {
         console.error("Error inicializando la base de datos:", err);
     }
@@ -72,11 +69,11 @@ async function inicializarBaseDeDatos() {
 
 inicializarBaseDeDatos();
 
-// RUTA 1: Obtener clasificación (incluyendo el dorsal y los podios)
+// RUTA 1: Obtener clasificación
 app.get('/api/clasificacion-pilotos', async (req, res) => {
     try {
         const querySQL = `
-            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios,
+            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id,
                    (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
                    (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
                    puntos_totales, victorias
@@ -91,7 +88,7 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
     }
 });
 
-// RUTA 2: Registrar piloto solicitando también su número de dorsal
+// RUTA 2: Registrar piloto
 app.post('/api/nuevo-piloto', async (req, res) => {
     const { gamertag, plataforma, escuderia_id, numero_piloto } = req.body;
     try {
@@ -106,14 +103,30 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     }
 });
 
-// RUTA 3: Subir resultados (Suma puntos, victorias y calcula automáticamente si es podio: pos 1, 2 o 3)
+// NUEVA RUTA 2B: Editar/Modificar los datos de un piloto existente
+app.post('/api/editar-piloto', async (req, res) => {
+    const { id, gamertag, numero_piloto, plataforma, escuderia_id } = req.body;
+    try {
+        await pool.query(`
+            UPDATE pilotos 
+            SET gamertag = $1, numero_piloto = $2, plataforma = $3, escuderia_id = $4 
+            WHERE id = $5
+        `, [gamertag, numero_piloto, plataforma, escuderia_id, id]);
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al editar el piloto");
+    }
+});
+
+// RUTA 3: Subir resultados
 app.post('/api/subir-resultado', async (req, res) => {
     const { piloto_id, posicion_carrera } = req.body;
     const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     
     const puntosA_Sumar = tablaPuntos[posicion_carrera] || 0;
     const esVictoria = posicion_carrera === 1 ? 1 : 0;
-    const esPodio = (posicion_carrera >= 1 && posicion_carrera <= 3) ? 1 : 0; // Posición 1, 2 o 3 suma podio
+    const esPodio = (posicion_carrera >= 1 && posicion_carrera <= 3) ? 1 : 0;
 
     try {
         await pool.query(`
@@ -155,5 +168,5 @@ app.post('/api/eliminar-piloto', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${PORT}`);
+    console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
