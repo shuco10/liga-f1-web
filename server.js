@@ -8,18 +8,13 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// REGLAMENTO OFICIAL F1 2026 (Puntos al Top 10, sin punto por vuelta rápida)
-function calcularPuntosF1(posicion) {
-    const tablaPuntos = {
-        1: 25, 2: 18, 3: 15, 4: 12, 5: 10,
-        6: 8,  7: 6,  8: 4,  9: 2,  10: 1
-    };
-    return tablaPuntos[posicion] || 0;
-}
+app.use(express.json());
+app.use(express.static('public'));
 
-// INICIALIZACIÓN DE LA BASE DE DATOS
+// 1. FUNCIÓN AUTOMÁTICA PARA CREAR TABLAS (ASEGURANDO EL ORDEN)
 async function inicializarBaseDeDatos() {
     try {
+        // Crear tabla de escuderías si no existe
         await pool.query(`
             CREATE TABLE IF NOT EXISTS escuderias (
                 id SERIAL PRIMARY KEY,
@@ -28,6 +23,7 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
+        // Crear tabla de pilotos si no existe
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
@@ -39,9 +35,18 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
+        // Comprobar si ya hay escuderías metidas
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
-            await pool.query(`INSERT INTO escuderias (nombre, color_hex) VALUES ('Ferrari', '#E10600'), ('Red Bull', '#0600EF');`);
+            console.log("Base de datos vacía. Insertando datos de prueba oficiales...");
+            
+            // Insertamos las escuderías fijas de prueba
+            await pool.query(`INSERT INTO escuderias (id, nombre, color_hex) VALUES (1, 'Ferrari', '#E10600'), (2, 'Red Bull', '#0600EF') ON CONFLICT DO NOTHING;`);
+            
+            // Forzamos a que el contador de IDs de escuderías empiece en el 3 para que no choque en el futuro
+            await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 3;`);
+
+            // Insertamos pilotos de prueba
             await pool.query(`
                 INSERT INTO pilotos (gamertag, plataforma, escuderia_id, victorias, puntos_totales) VALUES 
                 ('Sainz_Fan_99', 'PS5', 1, 2, 43),
@@ -49,16 +54,22 @@ async function inicializarBaseDeDatos() {
                 ('Max_Checo_Combo', 'PC', 2, 0, 18);
             `);
         }
+        console.log("¡Estructura de la base de datos creada y verificada con éxito!");
+        
+        // SÓLO CUANDO LAS TABLAS ESTÁN LISTAS, LEVANTAMOS EL SERVIDOR
+        app.listen(PORT, () => {
+            console.log(`Servidor de la liga corriendo con éxito en el puerto ${PORT}`);
+        });
+
     } catch (err) {
-        console.error("Error al inicializar las tablas:", err);
+        console.error("Error crítico al inicializar las tablas de la base de datos:", err);
     }
 }
+
+// Arrancamos el proceso seguro
 inicializarBaseDeDatos();
 
-app.use(express.json());
-app.use(express.static('public'));
-
-// RUTA 1: Obtener la clasificación para los pilotos (index.html)
+// RUTA 1: Obtener la clasificación para los pilotos (index.html y admin.html)
 app.get('/api/clasificacion-pilotos', async (req, res) => {
     try {
         const querySQL = `
@@ -72,7 +83,8 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
         const { rows } = await pool.query(querySQL);
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: 'Error en la consulta' });
+        console.error("Error en la ruta /api/clasificacion-pilotos:", err);
+        res.status(500).json({ error: 'Error en la consulta de pilotos' });
     }
 });
 
@@ -95,15 +107,22 @@ app.post('/api/nuevo-piloto', async (req, res) => {
 app.post('/api/subir-resultado', async (req, res) => {
     const { piloto_id, posicion_carrera } = req.body;
     
-    // Calculamos los puntos automáticamente aplicando las reglas
-    const puntosA_Sumar = calcularPuntosF1(posicion_carrera);
+    // Función de puntos integrada
+    const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    const puntosA_Sumar = tablaPuntos[posicion_carrera] || 0;
     const esVictoria = posicion_carrera === 1 ? 1 : 0;
 
     try {
-        // Actualizamos los puntos totales y las victorias acumuladas del piloto
         await pool.query(`
             UPDATE pilotos 
             SET puntos_totales = puntos_totales + $1,
                 victorias = victorias + $2
             WHERE id = $3
-        `,
+        `, [puntosA_Sumar, esVictoria, piloto_id]);
+
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al procesar la carrera.");
+    }
+});
