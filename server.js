@@ -173,6 +173,17 @@ app.post('/api/eliminar-piloto', async (req, res) => {
     }
 });
 
+// RUTA 6: Resetear Campeonato
+app.post('/api/reset-campeonato', async (req, res) => {
+    try {
+        await pool.query("UPDATE pilotos SET puntos_totales = 0, victorias = 0, podios = 0, puntos_sancion = 0");
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
