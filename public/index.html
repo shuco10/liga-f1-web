@@ -47,6 +47,7 @@
     <div class="navbar">
         <button class="nav-btn active" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
         <button class="nav-btn" onclick="irA(event, 'mundial-constructores')">🏎️ Constructores</button>
+        <button class="nav-btn" onclick="irA(event, 'seccion-circuitos')">📍 Circuitos</button>
         <button class="nav-btn" onclick="irA(event, 'licencias-sanciones')">⚠️ Sanciones</button>
         <button class="nav-btn" style="border-color: #e10600;" onclick="irA(event, 'panel-admin')">🛠️ Comisarios</button>
     </div>
@@ -81,6 +82,11 @@
             </thead>
             <tbody id="tabla-constructores"></tbody>
         </table>
+    </div>
+
+    <div id="seccion-circuitos" class="seccion">
+    <h2>Resultados por Circuito</h2>
+    <div id="lista-circuitos"></div>
     </div>
 
     <div id="licencias-sanciones" class="seccion">
@@ -219,29 +225,36 @@
             11: 'https://cdn.discordapp.com/attachments/1516346006944481290/1516705892714676274/Cadillac.png?ex=6a339def&is=6a324c6f&hm=d47c890af039ce56028bd0cb6fc3723f7842ace084ef3388b3ca53d00d645f26&'
         };
 
-        let listaPilotosGlobal = [];
-        const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
-
-        function irA(evento, idSeccion) {
-            document.querySelectorAll('.seccion').forEach(s => {
-                s.style.display = 'none';
-                s.classList.remove('activa');
-            });
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            const seccionDestino = document.getElementById(idSeccion);
-            if (seccionDestino) {
-                seccionDestino.style.display = 'block';
-                seccionDestino.classList.add('activa');
-            }
-            if (evento && evento.currentTarget) {
-                evento.currentTarget.classList.add('active');
-            }
-            
-            if(idSeccion !== 'panel-admin') {
-                cargarTodosLosDatos();
-            }
-        }
+function irA(evento, idSeccion) {
+    // 1. Ocultar todas las secciones
+    document.querySelectorAll('.seccion').forEach(s => {
+        s.style.display = 'none';
+        s.classList.remove('activa');
+    });
+    
+    // 2. Desactivar todos los botones
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    // 3. Mostrar la sección destino
+    const seccionDestino = document.getElementById(idSeccion);
+    if (seccionDestino) {
+        seccionDestino.style.display = 'block';
+        seccionDestino.classList.add('activa');
+    }
+    
+    // 4. Activar el botón clicado
+    if (evento && evento.currentTarget) {
+        evento.currentTarget.classList.add('active');
+    }
+    
+    // 5. NUEVO: Llamar a la carga de datos según la sección
+    if (idSeccion === 'seccion-circuitos') {
+        cargarCircuitos();
+    } else if (idSeccion !== 'panel-admin') {
+        // Solo cargar datos generales si no es panel admin
+        cargarTodosLosDatos();
+    }
+}
 
         function verificarPassword() {
             const pass = document.getElementById('pass-comisario').value;
@@ -489,6 +502,26 @@
             cargarTodosLosDatos();
             irA(null, 'mundial-pilotos');
         });
+
+        async function cargarCircuitos() {
+    try {
+        const res = await fetch('/api/circuitos');
+        const circuitos = await res.json();
+        const contenedor = document.getElementById('lista-circuitos');
+        
+        // Esto limpia el contenedor y añade los datos recibidos
+        contenedor.innerHTML = circuitos.map(c => `
+            <div style="margin-bottom: 15px; background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600;">
+                <h3 style="margin: 0;">${c.nombre}</h3>
+                <p style="font-size: 13px; color: #888;">Resultados de carrera pendientes de cargar.</p>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error("Error al cargar circuitos:", err);
+    }
+}
+        
     </script>
+    
 </body>
 </html>
