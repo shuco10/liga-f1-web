@@ -185,6 +185,17 @@ app.post('/api/reset-campeonato', async (req, res) => {
     }
 });
 
+// Añadir esto en server.js junto a las otras rutas
+app.get('/api/circuitos', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM circuitos ORDER BY id ASC');
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al obtener circuitos");
+    }
+});
+
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
 
