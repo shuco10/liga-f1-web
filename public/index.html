@@ -386,37 +386,37 @@ function irA(evento, idSeccion) {
         }
 
 async function cargarDesplegablesAdmin() {
-    console.log("Iniciando carga de desplegables...");
+    console.log("--- Iniciando carga de desplegables ---");
     try {
+        // Asegúrate de usar la ruta que confirmamos que funciona
         const res = await fetch('/api/lista-de-pilotos');
-        if (!res.ok) throw new Error("Error en la respuesta del servidor");
+        if (!res.ok) throw new Error("Error en el servidor: " + res.status);
         
         const pilotos = await res.json();
-        console.log("Pilotos obtenidos para desplegables:", pilotos);
+        console.log("Datos recibidos:", pilotos);
 
-        // IDs exactos de tus <select> en el HTML
+        // Lista de IDs que tu HTML debe tener exactamente
         const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar'];
 
         ids.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                // Opción por defecto
+                // Limpiamos y añadimos opción por defecto
                 el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
                 
-                // Rellenar opciones
                 pilotos.forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.id;
-                    option.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
-                    el.appendChild(option);
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
+                    el.appendChild(opt);
                 });
+                console.log("ÉXITO: Desplegable '" + id + "' poblado.");
             } else {
-                console.warn("No se encontró el elemento con ID:", id);
+                console.error("ERROR: No existe el elemento con id='" + id + "' en tu HTML");
             }
         });
-        console.log("Desplegables poblados correctamente.");
     } catch (err) {
-        console.error("Error crítico en cargarDesplegablesAdmin:", err);
+        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
     }
 }
         function autocompletarFormEdicion() {
