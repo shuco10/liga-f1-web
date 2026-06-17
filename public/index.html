@@ -292,7 +292,7 @@ function irA(evento, idSeccion) {
 
         async function cargarTodosLosDatos() {
             try {
-                const res = await fetch('/api/clasificacion-pilotos');
+               const res = await fetch('/api/lista-de-pilotos'); // Debe coincidir exactamente con el del server.js
                 if (!res.ok) return;
                 listaPilotosGlobal = await res.json();
                 
