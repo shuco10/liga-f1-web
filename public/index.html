@@ -385,28 +385,43 @@ function irA(evento, idSeccion) {
             }
         }
 
-        async function cargarDesplegablesAdmin() {
-            try {
-                const res = await fetch('/api/clasificacion-pilotos');
-                listaPilotosGlobal = await res.json();
-                
-                const sel1 = document.getElementById('select-piloto');
-                const sel2 = document.getElementById('select-piloto-sancion');
-                const sel3 = document.getElementById('select-piloto-eliminar');
-                const selEdit = document.getElementById('select-piloto-editar');
-                
-                if(sel1 && sel2 && sel3 && selEdit) {
-                    sel1.innerHTML = ''; sel2.innerHTML = ''; sel3.innerHTML = ''; selEdit.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-                    listaPilotosGlobal.forEach(p => {
-                        const opt = `<option value="${p.id}">#${p.numero_piloto || '0'} - ${p.gamertag}</option>`;
-                        sel1.innerHTML += opt; sel2.innerHTML += opt; sel3.innerHTML += opt; selEdit.innerHTML += opt;
-                    });
-                }
-            } catch (err) {
-                console.error("Error cargando desplegables de admin:", err);
-            }
+async function cargarDesplegablesAdmin() {
+    try {
+        // IMPORTANTE: Usamos la ruta que confirmamos que funciona
+        const res = await fetch('/api/lista-de-pilotos');
+        
+        if (!res.ok) throw new Error("Error al obtener los datos del servidor");
+        
+        const listaPilotos = await res.json();
+        
+        const sel1 = document.getElementById('select-piloto');
+        const sel2 = document.getElementById('select-piloto-sancion');
+        const sel3 = document.getElementById('select-piloto-eliminar');
+        const selEdit = document.getElementById('select-piloto-editar');
+        
+        if(sel1 && sel2 && sel3 && selEdit) {
+            // Limpiamos
+            sel1.innerHTML = ''; 
+            sel2.innerHTML = ''; 
+            sel3.innerHTML = ''; 
+            selEdit.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
+            
+            // Llenamos
+            listaPilotos.forEach(p => {
+                const opt = `<option value="${p.id}">#${p.numero_piloto || '0'} - ${p.gamertag}</option>`;
+                sel1.innerHTML += opt; 
+                sel2.innerHTML += opt; 
+                sel3.innerHTML += opt; 
+                selEdit.innerHTML += opt;
+            });
+            console.log("Desplegables cargados con éxito con", listaPilotos.length, "pilotos.");
+        } else {
+            console.error("Error: No se encontraron todos los elementos select en el HTML.");
         }
-
+    } catch (err) {
+        console.error("Error cargando desplegables de admin:", err);
+    }
+}
         function autocompletarFormEdicion() {
             const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
             const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
