@@ -228,13 +228,13 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 
 app.get('/api/corregir-circuito', async (req, res) => {
     try {
-        // Ejecutamos el cambio directamente sobre la base de datos
-        const result = await pool.query('UPDATE circuitos SET nombre = $1 WHERE nombre = $2', ['Lusail', 'Losail']);
+        // Queremos cambiar 'Lusail' por 'Losail'
+        const result = await pool.query('UPDATE circuitos SET nombre = $1 WHERE nombre = $2', ['Losail', 'Lusail']);
         
         if (result.rowCount > 0) {
-            res.send("Circuito corregido exitosamente de Losail a Lusail.");
+            res.send("¡Circuito corregido! Ahora el nombre en la base de datos es 'Losail'.");
         } else {
-            res.send("No se encontró el circuito 'Losail' para corregir.");
+            res.send("No se encontró el circuito 'Lusail'. ¿Quizás ya se cambió?");
         }
     } catch (err) {
         res.status(500).send("Error en la base de datos: " + err.message);
