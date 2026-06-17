@@ -512,23 +512,30 @@ function irA(evento, idSeccion) {
             irA(null, 'mundial-pilotos');
         });
 
-        async function cargarCircuitos() {
-    try {
-        const res = await fetch('/api/circuitos');
-        const circuitos = await res.json();
-        const contenedor = document.getElementById('lista-circuitos');
+
+async function cargarCircuitos() {
+    const res = await fetch('/api/circuitos');
+    const circuitos = await res.json();
+    
+    // Pedimos los resultados al servidor
+    const resResultados = await fetch('/api/todos-los-resultados');
+    const resultados = await resResultados.json();
+
+    const contenedor = document.getElementById('lista-circuitos');
+    contenedor.innerHTML = circuitos.map(c => {
+        // Filtramos resultados para este circuito
+        const resultadosCircuito = resultados.filter(r => r.circuito_id === c.id);
+        const lista = resultadosCircuito.map(r => `<li>${r.piloto_nombre}: Puesto ${r.posicion}</li>`).join('');
         
-        // Esto limpia el contenedor y añade los datos recibidos
-        contenedor.innerHTML = circuitos.map(c => `
-            <div style="margin-bottom: 15px; background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600;">
-                <h3 style="margin: 0;">${c.nombre}</h3>
-                <p style="font-size: 13px; color: #888;">Resultados de carrera pendientes de cargar.</p>
+        return `
+            <div style="background: #262626; padding: 15px; margin-bottom: 10px;">
+                <h3>${c.nombre}</h3>
+                <ul>${lista || '<li>Sin resultados aún</li>'}</ul>
             </div>
-        `).join('');
-    } catch (err) {
-        console.error("Error al cargar circuitos:", err);
-    }
+        `;
+    }).join('');
 }
+        
 
 // Llenar los selectores al abrir el panel admin
 async function cargarDesplegablesAdmin() {
