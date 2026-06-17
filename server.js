@@ -214,10 +214,11 @@ app.post('/api/guardar-resultado', async (req, res) => {
 
 app.get('/api/todos-los-resultados', async (req, res) => {
     const query = `
-        SELECT r.*, p.gamertag as piloto_nombre 
-        FROM resultados_carrera r
-        JOIN pilotos p ON r.piloto_id = p.id
-    `;
+            SELECT r.*, p.gamertag as piloto_nombre 
+            FROM resultados_carrera r
+            JOIN pilotos p ON r.piloto_id = p.id
+            ORDER BY r.circuito_id ASC, r.posicion ASC; -- ESTO ES LO QUE ORDENA
+        `;
     const { rows } = await pool.query(query);
     res.json(rows);
 });
