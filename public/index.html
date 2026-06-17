@@ -304,7 +304,7 @@ function verificarPassword() {
         }
     }
 
-    async function cargarTodosLosDatos() {
+   async function cargarTodosLosDatos() {
         try {
             const res = await fetch('/api/lista-de-pilotos');
             if (!res.ok) return;
@@ -318,6 +318,14 @@ function verificarPassword() {
                     const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
                     const badgeReserva = p.es_reserva ? '<span style="background: #e10600; color: white; padding: 1px 4px; border-radius: 3px; font-size: 10px; margin-left: 5px;">R</span>' : '';
                     
+                    // Lógica: Si es reserva, ocultamos escudería
+                    const celdaEscuderia = p.es_reserva 
+                        ? '<td style="color: #666; font-style: italic; font-size: 12px;">Piloto Reserva</td>' 
+                        : `<td style="border-left: 4px solid ${p.color_hex || '#444'}; padding-left:10px;">
+                            ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
+                            ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}
+                           </td>`;
+                    
                     tPilotos.innerHTML += `
                         <tr>
                             <td><strong>${index + 1}</strong></td>
@@ -329,10 +337,7 @@ function verificarPassword() {
                                 </div>
                             </td>
                             <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
-                            <td style="border-left: 4px solid ${p.color_hex || '#444'}; padding-left:10px;">
-                                ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
-                                ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}
-                            </td>
+                            ${celdaEscuderia}
                             <td>${p.victorias}</td>
                             <td>${p.podios || '0'}</td>
                             <td><strong>${p.puntos_totales} pts</strong></td>
@@ -340,9 +345,10 @@ function verificarPassword() {
                 });
             }
 
+            // ... el resto de la función (constructores y sanciones) sigue igual
             const constructoresMap = {};
             listaPilotosGlobal.forEach(p => {
-                if(p.escuderia_id) {
+                if(p.escuderia_id && !p.es_reserva) { // Solo sumar puntos a constructores si no es reserva
                     if(!constructoresMap[p.escuderia_id]) {
                         constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex };
                     }
@@ -387,8 +393,8 @@ function verificarPassword() {
                                 </div>
                             </td>
                             <td>
-                                ${logoUrl ? `<img src="${logoUrl}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : ''}
-                                ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}
+                                ${p.es_reserva ? '-' : (logoUrl ? `<img src="${logoUrl}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : '')}
+                                ${p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}
                             </td>
                             <td><strong style="color:${licenciaActual < 5 ? 'orange':'white'}">${licenciaActual} / 12</strong></td>
                             <td>${estado}</td>
