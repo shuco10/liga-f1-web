@@ -233,7 +233,7 @@ app.get('/api/parche-circuitos-2026', async (req, res) => {
             'Miami', 'Imola', 'Mónaco', 'Barcelona', 'Madrid', 
             'Montreal', 'Spielberg', 'Silverstone', 'Spa', 'Zandvoort', 
             'Monza', 'Bakú', 'Singapur', 'Austin', 'Ciudad de México', 
-            'São Paulo', 'Las Vegas', 'Lusail', 'Abu Dabi'
+            'São Paulo', 'Las Vegas', 'Losail', 'Abu Dabi'
         ];
 
         for (const nombre of circuitos2026) {
