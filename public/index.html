@@ -107,6 +107,14 @@
 
     <div id="panel-admin" class="seccion">
         <h2>Área Privada de Comisarios</h2>
+
+        <div id="admin-carreras">
+            <h3>Cargar Resultados de Carrera</h3>
+                <select id="select-circuito-admin"></select>
+                <select id="select-piloto-admin"></select>
+                <input type="number" id="input-posicion" placeholder="Posición final">
+            <button onclick="guardarResultado()">Guardar Resultado</button>
+        </div>
         
         <div id="bloque-login">
             <div class="form-group">
@@ -519,6 +527,37 @@ function irA(evento, idSeccion) {
         `).join('');
     } catch (err) {
         console.error("Error al cargar circuitos:", err);
+    }
+}
+
+// Llenar los selectores al abrir el panel admin
+async function cargarDesplegablesAdmin() {
+    // Cargar circuitos
+    const resC = await fetch('/api/circuitos');
+    const circuitos = await resC.json();
+    document.getElementById('select-circuito-admin').innerHTML = circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+    
+    // Cargar pilotos (usando tu lista global)
+    document.getElementById('select-piloto-admin').innerHTML = listaPilotosGlobal.map(p => `<option value="${p.id}">${p.gamertag}</option>`).join('');
+}
+
+// Enviar resultado al servidor
+async function guardarResultado() {
+    const data = {
+        circuito_id: document.getElementById('select-circuito-admin').value,
+        piloto_id: document.getElementById('select-piloto-admin').value,
+        posicion: parseInt(document.getElementById('input-posicion').value)
+    };
+    
+    const res = await fetch('/api/guardar-resultado', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    
+    if(res.ok) {
+        alert("Resultado guardado y puntos actualizados");
+        cargarTodosLosDatos(); // Refresca las tablas
     }
 }
         
