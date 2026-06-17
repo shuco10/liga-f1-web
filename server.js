@@ -226,6 +226,19 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
+app.get('/api/corregir-circuito', async (req, res) => {
+    // Ejemplo: Cambiar 'Yeda' por 'Jeddah'
+    // Cambia los nombres en las comillas por los que necesites
+    const nombreIncorrecto = 'Yeda'; 
+    const nombreCorrecto = 'Jeddah';
+
+    try {
+        await pool.query('UPDATE circuitos SET nombre = $1 WHERE nombre = $2', [Losail, Lusail]);
+        res.send(`Circuito cambiado de ${Lusail} a ${Losail}.`);
+    } catch (err) {
+        res.status(500).send("Error al corregir: " + err.message);
+    }
+});
 
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
