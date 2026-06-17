@@ -528,26 +528,46 @@ function irA(evento, idSeccion) {
 
 
 async function cargarCircuitos() {
-    const res = await fetch('/api/circuitos');
-    const circuitos = await res.json();
-    
-    // Pedimos los resultados al servidor
-    const resResultados = await fetch('/api/todos-los-resultados');
-    const resultados = await resResultados.json();
-
-    const contenedor = document.getElementById('lista-circuitos');
-    contenedor.innerHTML = circuitos.map(c => {
-        // Filtramos resultados para este circuito
-        const resultadosCircuito = resultados.filter(r => r.circuito_id === c.id);
-        const lista = resultadosCircuito.map(r => `<li>${r.piloto_nombre}: Puesto ${r.posicion}</li>`).join('');
+    try {
+        const res = await fetch('/api/circuitos');
+        const circuitos = await res.json();
         
-        return `
-            <div style="background: #262626; padding: 15px; margin-bottom: 10px;">
-                <h3>${c.nombre}</h3>
-                <ul>${lista || '<li>Sin resultados aún</li>'}</ul>
-            </div>
-        `;
-    }).join('');
+        const resResultados = await fetch('/api/todos-los-resultados');
+        const resultados = await resResultados.json();
+
+        const contenedor = document.getElementById('lista-circuitos');
+        
+        contenedor.innerHTML = circuitos.map(c => {
+            const resultadosCircuito = resultados.filter(r => r.circuito_id === c.id)
+                                                 .sort((a, b) => a.posicion - b.posicion);
+            
+            const podio = resultadosCircuito.filter(r => r.posicion <= 3);
+            const resto = resultadosCircuito.filter(r => r.posicion > 3);
+
+            const htmlPodio = podio.map(p => `
+                <div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}">
+                    <strong style="font-size: 16px;">${p.posicion}º</strong><br>
+                    <span style="font-size: 11px;">${p.piloto_nombre}</span>
+                </div>
+            `).join('');
+
+            const htmlResto = resto.map(p => `
+                <li style="font-size: 12px; margin-top: 5px; color: #ccc;">
+                    ${p.posicion}º ${p.piloto_nombre}
+                </li>
+            `).join('');
+
+            return `
+                <div style="background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600;">
+                    <h3 style="margin: 0 0 10px 0; color: #fff;">${c.nombre}</h3>
+                    ${podio.length > 0 ? `<div style="display: flex; gap: 5px; margin-bottom: 10px;">${htmlPodio}</div>` : '<p style="color:#666; font-size: 12px;">Sin resultados aún</p>'}
+                    <ul style="list-style: none; padding: 0; margin: 0;">${htmlResto}</ul>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error("Error al cargar circuitos:", err);
+    }
 }
         
 
