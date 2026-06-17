@@ -226,19 +226,9 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
-app.get('/api/limpiar-circuitos-duplicados', async (req, res) => {
-    try {
-        // Esto borra los circuitos repetidos manteniendo solo el que tiene el ID más bajo
-        await pool.query(`
-            DELETE FROM circuitos a
-            USING circuitos b
-            WHERE a.id > b.id AND a.nombre = b.nombre;
-        `);
-        res.send("¡Limpieza realizada! Refresca tu página ahora.");
-    } catch (err) {
-        res.status(500).send("Error: " + err.message);
-    }
-});
+
+
+// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
