@@ -185,24 +185,8 @@ app.post('/api/reset-campeonato', async (req, res) => {
     }
 });
 
-// PARCHE: Crear tablas de circuitos
-app.get('/api/instalar-circuitos', async (req, res) => {
-    try {
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS circuitos (id SERIAL PRIMARY KEY, nombre VARCHAR(100) NOT NULL);
-            CREATE TABLE IF NOT EXISTS resultados_carrera (
-                id SERIAL PRIMARY KEY, 
-                circuito_id INT REFERENCES circuitos(id),
-                piloto_id INT REFERENCES pilotos(id),
-                posicion INT NOT NULL
-            );
-            INSERT INTO circuitos (nombre) VALUES ('Bahrein'), ('Yeda'), ('Melbourne') ON CONFLICT DO NOTHING;
-        `);
-        res.send("Tablas de circuitos creadas correctamente.");
-    } catch (err) {
-        res.status(500).send("Error: " + err.message);
-    }
-});
+// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
+
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
