@@ -38,34 +38,31 @@ async function inicializarBaseDeDatos() {
                 puntos_sancion INT DEFAULT 0,
                 numero_piloto INT DEFAULT 0,
                 podios INT DEFAULT 0,
-                foto_url TEXT DEFAULT ''
+                foto_url TEXT DEFAULT '',
+                es_reserva INT DEFAULT 0
             );
         `);
 
-        // Aseguramos que existan todas las columnas necesarias por si la tabla ya existía
-        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN numero_piloto INT DEFAULT 0;`); } catch(e){}
-        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN podios INT DEFAULT 0;`); } catch(e){}
-        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN foto_url TEXT DEFAULT '';`); } catch(e){}
+        // Parches de columnas por si la tabla ya existía
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS numero_piloto INT DEFAULT 0;`); } catch(e){}
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS podios INT DEFAULT 0;`); } catch(e){}
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS foto_url TEXT DEFAULT '';`); } catch(e){}
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS es_reserva INT DEFAULT 0;`); } catch(e){}
 
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
             console.log("Inyectando la parrilla oficial F1 2026...");
             await pool.query(`
                 INSERT INTO escuderias (id, nombre, color_hex) VALUES 
-                (1, 'Red Bull Racing', '#0600EF'),
-                (2, 'Ferrari', '#E10600'),
-                (3, 'Mercedes-AMG', '#27F4D2'),
-                (4, 'McLaren', '#FF8000'),
-                (5, 'Aston Martin', '#229971'),
-                (6, 'Alpine', '#0078FF'),
-                (7, 'Williams', '#00A0DE'),
-                (8, 'Visa Cash App RB', '#6600FF'),
-                (9, 'Kick Sauber', '#52E252'),
-                (10, 'Haas', '#B6BABD'),
+                (1, 'Red Bull Racing', '#0600EF'), (2, 'Ferrari', '#E10600'),
+                (3, 'Mercedes-AMG', '#27F4D2'), (4, 'McLaren', '#FF8000'),
+                (5, 'Aston Martin', '#229971'), (6, 'Alpine', '#0078FF'),
+                (7, 'Williams', '#00A0DE'), (8, 'Visa Cash App RB', '#6600FF'),
+                (9, 'Kick Sauber', '#52E252'), (10, 'Haas', '#B6BABD'),
                 (11, 'Cadillac', '#FFFFFF')
                 ON CONFLICT DO NOTHING;
             `);
-            await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
+            await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 12;`);
         }
 
         console.log("🏁 Sistema Cazadores de Curvas Listo Con Soporte Multimedia 🏁");
@@ -76,16 +73,16 @@ async function inicializarBaseDeDatos() {
 
 inicializarBaseDeDatos();
 
-// RUTA 1: Obtener clasificación (incluyendo ahora foto_url)
-app.get('/api/lista-de-pilotos', async (req, res) => { // He cambiado el nombre aquí
+// RUTA 1: Obtener clasificación
+app.get('/api/lista-de-pilotos', async (req, res) => {
     try {
         const querySQL = `
-            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url,
+            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url, es_reserva,
                    (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
                    (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
                    puntos_totales, victorias
             FROM pilotos
-            ORDER BY puntos_totales DESC, victorias DESC, podios DESC;
+            ORDER BY es_reserva ASC, puntos_totales DESC, victorias DESC, podios DESC;
         `;
         const { rows } = await pool.query(querySQL);
         res.json(rows);
@@ -95,13 +92,13 @@ app.get('/api/lista-de-pilotos', async (req, res) => { // He cambiado el nombre 
     }
 });
 
-// RUTA 2: Registrar piloto (incluyendo foto_url)
+// RUTA 2: Registrar piloto
 app.post('/api/nuevo-piloto', async (req, res) => {
-    const { gamertag, plataforma, escuderia_id, numero_piloto, foto_url } = req.body;
+    const { gamertag, plataforma, escuderia_id, numero_piloto, foto_url, es_reserva } = req.body;
     try {
         await pool.query(
-            'INSERT INTO pilotos (gamertag, plataforma, escuderia_id, numero_piloto, foto_url) VALUES ($1, $2, $3, $4, $5)', 
-            [gamertag, plataforma, escuderia_id, numero_piloto, foto_url || '']
+            'INSERT INTO pilotos (gamertag, plataforma, escuderia_id, numero_piloto, foto_url, es_reserva) VALUES ($1, $2, $3, $4, $5, $6)', 
+            [gamertag, plataforma, escuderia_id, numero_piloto, foto_url || '', es_reserva || 0]
         );
         res.sendStatus(200);
     } catch (err) { 
@@ -110,15 +107,15 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     }
 });
 
-// RUTA 2B: Editar piloto (incluyendo foto_url)
+// RUTA 2B: Editar piloto
 app.post('/api/editar-piloto', async (req, res) => {
-    const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url } = req.body;
+    const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url, es_reserva } = req.body;
     try {
         await pool.query(`
             UPDATE pilotos 
-            SET gamertag = $1, numero_piloto = $2, plataforma = $3, escuderia_id = $4, foto_url = $5 
-            WHERE id = $6
-        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', id]);
+            SET gamertag = $1, numero_piloto = $2, plataforma = $3, escuderia_id = $4, foto_url = $5, es_reserva = $6 
+            WHERE id = $7
+        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', es_reserva || 0, id]);
         res.sendStatus(200);
     } catch (err) {
         console.error(err);
@@ -150,56 +147,39 @@ app.post('/api/subir-resultado', async (req, res) => {
     }
 });
 
-// RUTA 4: Aplicar o quitar sanciones
+// Resto de tus rutas (licencias, eliminar, circuitos, resultados) siguen igual
 app.post('/api/restar-licencia', async (req, res) => {
     const { piloto_id, puntos_restar } = req.body;
     try {
         await pool.query(`UPDATE pilotos SET puntos_sancion = puntos_sancion + $1 WHERE id = $2`, [puntos_restar, piloto_id]);
         res.sendStatus(200);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
+    } catch (err) { console.error(err); res.sendStatus(500); }
 });
 
-// RUTA 5: Eliminar piloto
 app.post('/api/eliminar-piloto', async (req, res) => {
     const { piloto_id } = req.body;
     try {
         await pool.query('DELETE FROM pilotos WHERE id = $1', [piloto_id]);
         res.sendStatus(200);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
+    } catch (err) { console.error(err); res.sendStatus(500); }
 });
 
-// RUTA 6: Resetear Campeonato
 app.post('/api/reset-campeonato', async (req, res) => {
     try {
         await pool.query("UPDATE pilotos SET puntos_totales = 0, victorias = 0, podios = 0, puntos_sancion = 0");
         res.sendStatus(200);
-    } catch (err) {
-        console.error(err);
-        res.sendStatus(500);
-    }
+    } catch (err) { console.error(err); res.sendStatus(500); }
 });
 
-// Añadir esto en server.js junto a las otras rutas
 app.get('/api/circuitos', async (req, res) => {
     try {
         const { rows } = await pool.query('SELECT * FROM circuitos ORDER BY id ASC');
         res.json(rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error al obtener circuitos");
-    }
+    } catch (err) { console.error(err); res.status(500).send("Error al obtener circuitos"); }
 });
 
-// RUTA: Guardar nuevo resultado de carrera
 app.post('/api/guardar-resultado', async (req, res) => {
     const { circuito_id, piloto_id, posicion } = req.body;
-    // Tabla de puntos (puedes ajustarla a tu gusto)
     const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     const puntosObtenidos = puntos[posicion] || 0;
 
@@ -207,27 +187,21 @@ app.post('/api/guardar-resultado', async (req, res) => {
         await pool.query('INSERT INTO resultados_carrera (circuito_id, piloto_id, posicion) VALUES ($1, $2, $3)', [circuito_id, piloto_id, posicion]);
         await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, piloto_id]);
         res.sendStatus(200);
-    } catch (err) {
-        res.status(500).send("Error al guardar resultado");
-    }
+    } catch (err) { res.status(500).send("Error al guardar resultado"); }
 });
 
 app.get('/api/todos-los-resultados', async (req, res) => {
-    const query = `
+    const { rows } = await pool.query(`
             SELECT r.*, p.gamertag as piloto_nombre 
             FROM resultados_carrera r
             JOIN pilotos p ON r.piloto_id = p.id
-            ORDER BY r.circuito_id ASC, r.posicion ASC; -- ESTO ES LO QUE ORDENA
-        `;
-    const { rows } = await pool.query(query);
+            ORDER BY r.circuito_id ASC, r.posicion ASC;
+    `);
     res.json(rows);
 });
 
 
-// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
-
-
-// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
+// METER PARCHES JUSTO DEBAJO DE ESTA FRASE
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
