@@ -196,6 +196,22 @@ app.get('/api/circuitos', async (req, res) => {
     }
 });
 
+// RUTA: Guardar nuevo resultado de carrera
+app.post('/api/guardar-resultado', async (req, res) => {
+    const { circuito_id, piloto_id, posicion } = req.body;
+    // Tabla de puntos (puedes ajustarla a tu gusto)
+    const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    const puntosObtenidos = puntos[posicion] || 0;
+
+    try {
+        await pool.query('INSERT INTO resultados_carrera (circuito_id, piloto_id, posicion) VALUES ($1, $2, $3)', [circuito_id, piloto_id, posicion]);
+        await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, piloto_id]);
+        res.sendStatus(200);
+    } catch (err) {
+        res.status(500).send("Error al guardar resultado");
+    }
+});
+
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
 
