@@ -386,40 +386,37 @@ function irA(evento, idSeccion) {
         }
 
 async function cargarDesplegablesAdmin() {
+    console.log("Iniciando carga de desplegables...");
     try {
-        // IMPORTANTE: Usamos la ruta que confirmamos que funciona
         const res = await fetch('/api/lista-de-pilotos');
+        if (!res.ok) throw new Error("Error en la respuesta del servidor");
         
-        if (!res.ok) throw new Error("Error al obtener los datos del servidor");
-        
-        const listaPilotos = await res.json();
-        
-        const sel1 = document.getElementById('select-piloto');
-        const sel2 = document.getElementById('select-piloto-sancion');
-        const sel3 = document.getElementById('select-piloto-eliminar');
-        const selEdit = document.getElementById('select-piloto-editar');
-        
-        if(sel1 && sel2 && sel3 && selEdit) {
-            // Limpiamos
-            sel1.innerHTML = ''; 
-            sel2.innerHTML = ''; 
-            sel3.innerHTML = ''; 
-            selEdit.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-            
-            // Llenamos
-            listaPilotos.forEach(p => {
-                const opt = `<option value="${p.id}">#${p.numero_piloto || '0'} - ${p.gamertag}</option>`;
-                sel1.innerHTML += opt; 
-                sel2.innerHTML += opt; 
-                sel3.innerHTML += opt; 
-                selEdit.innerHTML += opt;
-            });
-            console.log("Desplegables cargados con éxito con", listaPilotos.length, "pilotos.");
-        } else {
-            console.error("Error: No se encontraron todos los elementos select en el HTML.");
-        }
+        const pilotos = await res.json();
+        console.log("Pilotos obtenidos para desplegables:", pilotos);
+
+        // IDs exactos de tus <select> en el HTML
+        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar'];
+
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                // Opción por defecto
+                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
+                
+                // Rellenar opciones
+                pilotos.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
+                    el.appendChild(option);
+                });
+            } else {
+                console.warn("No se encontró el elemento con ID:", id);
+            }
+        });
+        console.log("Desplegables poblados correctamente.");
     } catch (err) {
-        console.error("Error cargando desplegables de admin:", err);
+        console.error("Error crítico en cargarDesplegablesAdmin:", err);
     }
 }
         function autocompletarFormEdicion() {
