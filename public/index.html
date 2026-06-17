@@ -572,7 +572,11 @@ async function guardarResultado() {
     
     if(res.ok) {
         alert("Resultado guardado y puntos actualizados");
-        cargarTodosLosDatos(); // Refresca las tablas
+        // ESTAS SON LAS DOS FUNCIONES QUE ACTUALIZAN LA WEB:
+        cargarTodosLosDatos(); 
+        cargarCircuitos(); 
+    } else {
+        alert("Error al guardar el resultado");
     }
 }
         
