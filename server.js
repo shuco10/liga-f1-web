@@ -212,8 +212,40 @@ app.post('/api/guardar-resultado', async (req, res) => {
     }
 });
 
+app.get('/api/todos-los-resultados', async (req, res) => {
+    const query = `
+        SELECT r.*, p.gamertag as piloto_nombre 
+        FROM resultados_carrera r
+        JOIN pilotos p ON r.piloto_id = p.id
+    `;
+    const { rows } = await pool.query(query);
+    res.json(rows);
+});
+
+
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
+// PARCHE: Actualizar lista de circuitos (Calendario 2026)
+app.get('/api/parche-circuitos-2026', async (req, res) => {
+    try {
+        const circuitos2026 = [
+            'Sakhir', 'Yeda', 'Melbourne', 'Suzuka', 'Shanghái', 
+            'Miami', 'Imola', 'Mónaco', 'Barcelona', 'Madrid', 
+            'Montreal', 'Spielberg', 'Silverstone', 'Spa', 'Zandvoort', 
+            'Monza', 'Bakú', 'Singapur', 'Austin', 'Ciudad de México', 
+            'São Paulo', 'Las Vegas', 'Lusail', 'Abu Dabi'
+        ];
+
+        for (const nombre of circuitos2026) {
+            await pool.query('INSERT INTO circuitos (nombre) VALUES ($1) ON CONFLICT DO NOTHING', [nombre]);
+        }
+
+        res.send("Calendario 2026 (incluido Madrid) instalado correctamente.");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al instalar circuitos: " + err.message);
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
