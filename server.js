@@ -233,7 +233,7 @@ app.get('/api/corregir-circuito', async (req, res) => {
     const nombreCorrecto = 'Jeddah';
 
     try {
-        await pool.query('UPDATE circuitos SET nombre = $1 WHERE nombre = $2', [Losail, Lusail]);
+        await pool.query('UPDATE circuitos SET nombre = $1 WHERE nombre = $2', [Lusail, Losail]);
         res.send(`Circuito cambiado de ${Lusail} a ${Losail}.`);
     } catch (err) {
         res.status(500).send("Error al corregir: " + err.message);
