@@ -386,35 +386,35 @@ function irA(evento, idSeccion) {
         }
 
 async function cargarDesplegablesAdmin() {
-    console.log("--- Iniciando carga de desplegables ---");
+    console.log("--- Iniciando carga completa de desplegables ---");
     try {
-        // Asegúrate de usar la ruta que confirmamos que funciona
+        // 1. Cargar Circuitos
+        const resC = await fetch('/api/circuitos');
+        const circuitos = await resC.json();
+        const selCircuito = document.getElementById('select-circuito-admin');
+        if(selCircuito) selCircuito.innerHTML = circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+
+        // 2. Cargar Pilotos para todos los selects
         const res = await fetch('/api/lista-de-pilotos');
         if (!res.ok) throw new Error("Error en el servidor: " + res.status);
-        
         const pilotos = await res.json();
-        console.log("Datos recibidos:", pilotos);
-
-        // Lista de IDs que tu HTML debe tener exactamente
-        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar'];
+        
+        // Lista de todos los select de pilotos
+        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
 
         ids.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                // Limpiamos y añadimos opción por defecto
                 el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-                
                 pilotos.forEach(p => {
                     const opt = document.createElement('option');
                     opt.value = p.id;
                     opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
                     el.appendChild(opt);
                 });
-                console.log("ÉXITO: Desplegable '" + id + "' poblado.");
-            } else {
-                console.error("ERROR: No existe el elemento con id='" + id + "' en tu HTML");
             }
         });
+        console.log("Desplegables poblados con éxito.");
     } catch (err) {
         console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
     }
@@ -582,17 +582,6 @@ async function cargarCircuitos() {
     }
 }
         
-
-// Llenar los selectores al abrir el panel admin
-async function cargarDesplegablesAdmin() {
-    // Cargar circuitos
-    const resC = await fetch('/api/circuitos');
-    const circuitos = await resC.json();
-    document.getElementById('select-circuito-admin').innerHTML = circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-    
-    // Cargar pilotos (usando tu lista global)
-    document.getElementById('select-piloto-admin').innerHTML = listaPilotosGlobal.map(p => `<option value="${p.id}">${p.gamertag}</option>`).join('');
-}
 
 // Enviar resultado al servidor
 async function guardarResultado() {
