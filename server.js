@@ -77,7 +77,7 @@ async function inicializarBaseDeDatos() {
 inicializarBaseDeDatos();
 
 // RUTA 1: Obtener clasificación (incluyendo ahora foto_url)
-app.get('/api/clasificacion-pilotos', async (req, res) => {
+app.get('/api/lista-de-pilotos', async (req, res) => { // He cambiado el nombre aquí
     try {
         const querySQL = `
             SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url,
