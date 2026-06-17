@@ -61,7 +61,8 @@ async function inicializarBaseDeDatos() {
                 (7, 'Williams', '#00A0DE'),
                 (8, 'Visa Cash App RB', '#6600FF'),
                 (9, 'Kick Sauber', '#52E252'),
-                (10, 'Haas', '#B6BABD')
+                (10, 'Haas', '#B6BABD'),
+                (11, 'Cadillac', '#FFFFFF')
                 ON CONFLICT DO NOTHING;
             `);
             await pool.query(`ALTER SEQUENCE escuderias_id_seq RESTART WITH 11;`);
