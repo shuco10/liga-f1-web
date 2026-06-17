@@ -185,15 +185,7 @@ app.post('/api/reset-campeonato', async (req, res) => {
     }
 });
 
-// Parche temporal para añadir Cadillac a la base de datos
-app.get('/api/parche-cadillac', async (req, res) => {
-    try {
-        await pool.query("INSERT INTO escuderias (id, nombre, color_hex) VALUES (11, 'Cadillac', '#FFFFFF') ON CONFLICT (id) DO NOTHING;");
-        res.send("Cadillac añadido a la base de datos correctamente.");
-    } catch (err) {
-        res.status(500).send("Error: " + err.message);
-    }
-});
+
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
