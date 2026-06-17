@@ -226,25 +226,17 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
-// PARCHE: Actualizar lista de circuitos (Calendario 2026)
-app.get('/api/parche-circuitos-2026', async (req, res) => {
+app.get('/api/limpiar-circuitos-duplicados', async (req, res) => {
     try {
-        const circuitos2026 = [
-            'Sakhir', 'Yeda', 'Melbourne', 'Suzuka', 'Shanghái', 
-            'Miami', 'Imola', 'Mónaco', 'Barcelona', 'Madrid', 
-            'Montreal', 'Spielberg', 'Silverstone', 'Spa', 'Zandvoort', 
-            'Monza', 'Bakú', 'Singapur', 'Austin', 'Ciudad de México', 
-            'São Paulo', 'Las Vegas', 'Losail', 'Abu Dabi'
-        ];
-
-        for (const nombre of circuitos2026) {
-            await pool.query('INSERT INTO circuitos (nombre) VALUES ($1) ON CONFLICT DO NOTHING', [nombre]);
-        }
-
-        res.send("Calendario 2026 (incluido Madrid) instalado correctamente.");
+        // Esto borra los circuitos repetidos manteniendo solo el que tiene el ID más bajo
+        await pool.query(`
+            DELETE FROM circuitos a
+            USING circuitos b
+            WHERE a.id > b.id AND a.nombre = b.nombre;
+        `);
+        res.send("¡Limpieza realizada! Refresca tu página ahora.");
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error al instalar circuitos: " + err.message);
+        res.status(500).send("Error: " + err.message);
     }
 });
 
