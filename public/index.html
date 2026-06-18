@@ -798,16 +798,23 @@ async function editarResultado(id) {
             location.reload();
         }
 
-        async function verificarPassword() {
+async function verificarPassword() {
             const password = document.getElementById('pass-comisario').value;
             const errorDiv = document.getElementById('error-login');
             
-            // NO OLVIDES PONER TU CONTRASEÑA REAL AQUÍ
             if (password === "admin123") { 
                 localStorage.setItem('rol', 'admin');
-                alert("Acceso concedido");
+                
+                // 1. Primero, hacemos visible el panel
                 aplicarPermisos();
-                cargarDesplegablesAdmin();
+                
+                // 2. Esperamos una fracción de segundo para que el navegador "pinte" el panel
+                // Esto asegura que los <select> ya existan cuando JS quiera escribirlos
+                setTimeout(() => {
+                    cargarDesplegablesAdmin();
+                    alert("Acceso concedido");
+                }, 100); 
+                
             } else {
                 errorDiv.textContent = "Contraseña incorrecta";
             }
