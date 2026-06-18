@@ -93,6 +93,8 @@
         .trazado-lasvegas { background-position: 50% 100%; }
         .trazado-lusail   { background-position: 75% 100%; }
         .trazado-abudhabi { background-position: 100% 100%; }
+
+        .admin-only { display: none; }
     </style>
 </head>
 <body>
@@ -486,33 +488,39 @@ async function cargarTodosLosDatos() {
         console.error("Error al cargar:", e);
     }
 }
-    async function cargarDesplegablesAdmin() {
-        try {
-            const resC = await fetch('/api/circuitos');
-            const circuitos = await resC.json();
-            const selCircuito = document.getElementById('select-circuito-admin');
-            if(selCircuito) selCircuito.innerHTML = circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-
-            const res = await fetch('/api/lista-de-pilotos');
-            const pilotos = await res.json();
-            const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
-
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-                    pilotos.forEach(p => {
-                        const opt = document.createElement('option');
-                        opt.value = p.id;
-                        opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
-                        el.appendChild(opt);
-                    });
-                }
-            });
-        } catch (err) {
-            console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
-        }
+async function cargarDesplegablesAdmin() {
+    // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
+    if (localStorage.getItem('rol') !== 'admin') {
+        console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
+        return; 
     }
+
+    try {
+        const resC = await fetch('/api/circuitos');
+        const circuitos = await resC.json();
+        const selCircuito = document.getElementById('select-circuito-admin');
+        if(selCircuito) selCircuito.innerHTML = circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+
+        const res = await fetch('/api/lista-de-pilotos');
+        const pilotos = await res.json();
+        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
+
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
+                pilotos.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
+                    el.appendChild(opt);
+                });
+            }
+        });
+    } catch (err) {
+        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
+    }
+}
 
     function autocompletarFormEdicion() {
         const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
@@ -664,13 +672,14 @@ async function cargarCircuitos() {
         ];
 
         // --- CORRECCIÓN: Función renderAcciones simplificada y segura ---
-        const renderAcciones = (id) => {
-            return esAdmin ? `
-                <div style="margin-top:2px;">
+            const renderAcciones = (id) => {
+        // La clase 'admin-only' es la que permite al CSS ocultar los botones por defecto
+            return `
+                <div style="margin-top:2px;" class="admin-only">
                     <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
                     <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
-                </div>` : '';
-        };
+                </div>`;
+            };
 
         contenedor.innerHTML = listaMaestra.map(item => {
             const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
@@ -761,6 +770,25 @@ async function editarResultado(id) {
         }
     }
 </script>
-    
+    <script>
+    // Esta función lee el estado real de tu navegador
+    function aplicarPermisos() {
+        const esAdmin = (localStorage.getItem('rol') === 'admin');
+        const botones = document.querySelectorAll('.admin-only');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        // Muestra u oculta basándose en si el valor es 'admin'
+        botones.forEach(btn => {
+            btn.style.display = esAdmin ? 'block' : 'none';
+        });
+        
+        if (btnLogout) {
+            btnLogout.style.display = esAdmin ? 'block' : 'none';
+        }
+    }
+
+    // Se ejecuta al cargar la página
+    aplicarPermisos();
+</script>
 </body>
 </html>
