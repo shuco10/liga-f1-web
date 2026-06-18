@@ -64,9 +64,17 @@
         </form>
     </div>
 
-    <script>
-        // Función para cargar los pilotos en el desplegable del segundo formulario
-        async function cargarDesplegablePilotos() {
+<script>
+    // --- SEGURIDAD: Solo entra si eres admin ---
+    // Si no está el rol de 'admin' en el navegador, te expulsa al index
+    if (localStorage.getItem('rol') !== 'admin') {
+        alert("Acceso denegado: Solo para Comisarios.");
+        window.location.href = 'index.html'; 
+    }
+
+    // Función para cargar los pilotos en el desplegable
+    async function cargarDesplegablePilotos() {
+        try {
             const res = await fetch('/api/clasificacion-pilotos');
             const pilotos = await res.json();
             const select = document.getElementById('select-piloto');
@@ -74,50 +82,53 @@
             pilotos.forEach(p => {
                 select.innerHTML += `<option value="${p.id}">${p.gamertag} (${p.escuderia || 'Sin equipo'})</option>`;
             });
+        } catch (err) {
+            console.error("Error cargando pilotos:", err);
         }
+    }
 
-        // Cargar pilotos al entrar a la página
-        cargarDesplegablePilotos();
+    // Cargar pilotos al entrar
+    cargarDesplegablePilotos();
 
-        // Enviar Nuevo Piloto
-        document.getElementById('form-piloto').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const datos = {
-                gamertag: document.getElementById('gamertag').value,
-                plataforma: document.getElementById('plataforma').value,
-                escuderia_id: parseInt(document.getElementById('escuderia_id').value)
-            };
-            const res = await fetch('/api/nuevo-piloto', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            });
-            if (res.ok) {
-                document.getElementById('msg-piloto').innerText = "¡Piloto inscrito con éxito!";
-                document.getElementById('form-piloto').reset();
-                cargarDesplegablePilotos(); // Recargamos la lista
-                setTimeout(() => document.getElementById('msg-piloto').innerText = "", 3000);
-            }
+    // Enviar Nuevo Piloto
+    document.getElementById('form-piloto').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = {
+            gamertag: document.getElementById('gamertag').value,
+            plataforma: document.getElementById('plataforma').value,
+            escuderia_id: parseInt(document.getElementById('escuderia_id').value)
+        };
+        const res = await fetch('/api/nuevo-piloto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
         });
+        if (res.ok) {
+            document.getElementById('msg-piloto').innerText = "¡Piloto inscrito con éxito!";
+            document.getElementById('form-piloto').reset();
+            cargarDesplegablePilotos(); 
+            setTimeout(() => document.getElementById('msg-piloto').innerText = "", 3000);
+        }
+    });
 
-        // Enviar Resultado de Carrera
-        document.getElementById('form-carrera').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const datos = {
-                piloto_id: parseInt(document.getElementById('select-piloto').value),
-                posicion_carrera: parseInt(document.getElementById('posicion_carrera').value)
-            };
-            const res = await fetch('/api/subir-resultado', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            });
-            if (res.ok) {
-                document.getElementById('msg-carrera').innerText = "¡Resultado aplicado! Puntos sumados al mundial.";
-                document.getElementById('form-carrera').reset();
-                setTimeout(() => document.getElementById('msg-carrera').innerText = "", 3000);
-            }
+    // Enviar Resultado de Carrera
+    document.getElementById('form-carrera').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = {
+            piloto_id: parseInt(document.getElementById('select-piloto').value),
+            posicion_carrera: parseInt(document.getElementById('posicion_carrera').value)
+        };
+        const res = await fetch('/api/subir-resultado', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
         });
-    </script>
+        if (res.ok) {
+            document.getElementById('msg-carrera').innerText = "¡Resultado aplicado! Puntos sumados al mundial.";
+            document.getElementById('form-carrera').reset();
+            setTimeout(() => document.getElementById('msg-carrera').innerText = "", 3000);
+        }
+    });
+</script>
 </body>
 </html>
