@@ -629,7 +629,6 @@ const MAPA_TRAZADOS = {
     "Abu Dhabi": "trazado-abudhabi"
 };
 
-// 2. Función actualizada
 async function cargarCircuitos() {
     try {
         const res = await fetch('/api/circuitos');
@@ -643,50 +642,39 @@ async function cargarCircuitos() {
             const podio = resultadosCircuito.filter(r => r.posicion <= 3);
             const resto = resultadosCircuito.filter(r => r.posicion > 3);
             
-// 1. Diccionario corregido
-    const equivalencias = {
-        "Bahrein": "barein",
-        "Melbourne": "melburne",
-        "Sakhir": "sakir",
-        "Shanghai": "sangai",
-        "Mónaco": "montecarlo",
-        "Monte Carlo": "montecarlo",
-        "Montreal": "monreal",
-        "Spielberg": "spilberg",
-        "Mexico City": "mejico",
-        "México": "mejico",
-        "São Paulo": "saopaulo",
-        "Sao Paulo": "saopaulo",
-        "Singapore": "singapur",
-        "Singapur": "singapur",
-        "Baku": "baku",
-        "Bakú": "baku",
-        "Abu Dhabi": "abudabi"
-    };
+            // 1. Diccionario
+            const equivalencias = {
+                "Bahrein": "barein", "Melbourne": "melburne", "Sakhir": "sakir",
+                "Shanghai": "sangai", "Mónaco": "montecarlo", "Monte Carlo": "montecarlo",
+                "Montreal": "monreal", "Spielberg": "spilberg", "Mexico City": "mejico",
+                "México": "mejico", "São Paulo": "saopaulo", "Sao Paulo": "saopaulo",
+                "Singapore": "singapur", "Singapur": "singapur", "Baku": "baku",
+                "Bakú": "baku", "Abu Dhabi": "abudabi"
+            };
 
-    // 2. Lógica de búsqueda mejorada
-    let nombreArchivo = equivalencias[c.nombre];
-    if (!nombreArchivo) {
-        nombreArchivo = c.nombre.toLowerCase()
-            .replace("city", "")
-            .replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
-            .replace(/\s+/g, '');
-    }
-    const imagenSrc = `/circuitos/${nombreArchivo}.png`;
-
-    // 3. Generación del HTML
-    const htmlPodio = podio.map(p => `<div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}"><strong style="font-size: 16px;">${p.posicion}º</strong><br><span style="font-size: 11px;">${p.piloto_nombre}</span></div>`).join('');
-    const htmlResto = resto.map(p => `<li style="font-size: 12px; margin-top: 5px; color: #ccc;">${p.posicion}º ${p.piloto_nombre}</li>`).join('');
+            // 2. Lógica de búsqueda
+            let nombreArchivo = equivalencias[c.nombre] || c.nombre.toLowerCase()
+                .replace("city", "")
+                .replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
+                .replace(/\s+/g, '');
             
-    return `<div style="background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600; margin-bottom: 15px;">
-                <h3 style="margin: 0 0 10px 0; color: #fff;">${c.nombre}</h3>
-                <img src="${imagenSrc}" alt="${c.nombre}" style="width: 100%; height: 120px; object-fit: contain; background: #1a1a1a; border-radius: 5px; margin-bottom: 10px;" onerror="this.style.display='none'">
-                ${podio.length > 0 ? `<div style="display: flex; gap: 5px; margin-bottom: 10px;">${htmlPodio}</div>` : '<p style="color:#666; font-size: 12px;">Sin resultados aún</p>'}
-                <ul style="list-style: none; padding: 0; margin: 0;">${htmlResto}</ul>
-            </div>`;
-}).join('');
+            const imagenSrc = `/circuitos/${nombreArchivo}.png`;
+
+            // 3. Generación HTML
+            const htmlPodio = podio.map(p => `<div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}"><strong style="font-size: 16px;">${p.posicion}º</strong><br><span style="font-size: 11px;">${p.piloto_nombre}</span></div>`).join('');
+            const htmlResto = resto.map(p => `<li style="font-size: 12px; margin-top: 5px; color: #ccc;">${p.posicion}º ${p.piloto_nombre}</li>`).join('');
+            
+            return `<div style="background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600; margin-bottom: 15px;">
+                        <h3 style="margin: 0 0 10px 0; color: #fff;">${c.nombre}</h3>
+                        <img src="${imagenSrc}" alt="${c.nombre}" style="width: 100%; height: 120px; object-fit: contain; background: #1a1a1a; border-radius: 5px; margin-bottom: 10px;" onerror="this.style.display='none'">
+                        ${podio.length > 0 ? `<div style="display: flex; gap: 5px; margin-bottom: 10px;">${htmlPodio}</div>` : '<p style="color:#666; font-size: 12px;">Sin resultados aún</p>'}
+                        <ul style="list-style: none; padding: 0; margin: 0;">${htmlResto}</ul>
+                    </div>`;
+        }).join('');
+    } catch (err) {
+        console.error("Error al cargar circuitos:", err);
+    }
 }
-const imagenSrc = `/circuitos/${nombreArchivo}.png`;
 
     async function guardarResultado() {
         const data = {
