@@ -495,6 +495,7 @@ async function cargarTodosLosDatos() {
 }
 async function cargarDesplegablesAdmin() {
     // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
+    console.log("Ejecutando cargarDesplegablesAdmin..."); // CHIVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATO
     if (localStorage.getItem('rol') !== 'admin') {
         console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
         return; 
