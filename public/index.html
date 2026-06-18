@@ -304,6 +304,8 @@ function verificarPassword() {
         }
     }
 
+
+
 async function cargarTodosLosDatos() {
     try {
         const res = await fetch('/api/lista-de-pilotos');
@@ -318,22 +320,17 @@ async function cargarTodosLosDatos() {
                 const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
                 const badgeReserva = p.es_reserva ? '<span style="background: #e10600; color: white; padding: 1px 4px; border-radius: 3px; font-size: 10px; margin-left: 5px;">R</span>' : '';
                 
-                // Lógica de podio para Pilotos
                 const pos = index + 1;
                 let estiloPos = `<td><strong>${pos}</strong></td>`; 
                 if (pos === 1) estiloPos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
                 else if (pos === 2) estiloPos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
                 else if (pos === 3) estiloPos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
 
-                // Lógica: Si es reserva, ocultamos escudería
+                const colorBorde = p.escuderia_id === 6 ? '#FF69B4' : (p.escuderia_id === 8 ? '#0078FF' : (p.color_hex || '#444'));
+
                 const celdaEscuderia = p.es_reserva 
-                    ? `<td style="color: #CCFF00; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
-                        [ RESERVA ]
-                       </td>` 
-                    : `<td style="border-left: 6px solid ${
-                        p.escuderia_id === 6 ? '#FF69B4' : 
-                        (p.escuderia_id === 8 ? '#0078FF' : (p.color_hex || '#444'))
-                      } !important; padding-left:10px;">
+                    ? `<td style="color: #CCFF00; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">[ RESERVA ]</td>` 
+                    : `<td style="border-left: 6px solid ${colorBorde} !important; padding-left:10px;">
                         ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
                         ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}
                        </td>`;
@@ -356,6 +353,13 @@ async function cargarTodosLosDatos() {
                     </tr>`;
             });
         }
+    } catch (e) {
+        console.error("Error en cargarTodosLosDatos:", e);
+    }
+}
+
+
+        
     } catch (error) {
         console.error("Error cargando datos:", error);
     }
