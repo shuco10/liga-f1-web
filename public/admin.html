@@ -66,9 +66,8 @@
     </div>
 
 <script>
-    // --- SEGURIDAD: Solo entra si eres admin ---
-    // Si no está el rol de 'admin' en el navegador, te expulsa al index
-    if (localStorage.getItem('rol') !== 'admin') {
+    // --- SEGURIDAD: Usando la función centralizada en auth.js ---
+    if (!esAdmin()) {
         alert("Acceso denegado: Solo para Comisarios.");
         window.location.href = 'index.html'; 
     }
@@ -79,10 +78,12 @@
             const res = await fetch('/api/clasificacion-pilotos');
             const pilotos = await res.json();
             const select = document.getElementById('select-piloto');
-            select.innerHTML = '';
-            pilotos.forEach(p => {
-                select.innerHTML += `<option value="${p.id}">${p.gamertag} (${p.escuderia || 'Sin equipo'})</option>`;
-            });
+            if (select) {
+                select.innerHTML = '';
+                pilotos.forEach(p => {
+                    select.innerHTML += `<option value="${p.id}">${p.gamertag} (${p.escuderia || 'Sin equipo'})</option>`;
+                });
+            }
         } catch (err) {
             console.error("Error cargando pilotos:", err);
         }
