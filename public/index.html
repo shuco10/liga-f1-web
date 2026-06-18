@@ -351,9 +351,9 @@ function verificarPassword() {
             }
 
             // ... el resto de la función (constructores y sanciones) sigue igual
-            const constructoresMap = {};
+const constructoresMap = {};
             listaPilotosGlobal.forEach(p => {
-                if(p.escuderia_id && !p.es_reserva) { // Solo sumar puntos a constructores si no es reserva
+                if(p.escuderia_id && !p.es_reserva) { 
                     if(!constructoresMap[p.escuderia_id]) {
                         constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex };
                     }
@@ -367,9 +367,17 @@ function verificarPassword() {
                 tConst.innerHTML = '';
                 listaConstructores.forEach((c, index) => {
                     const logoUrl = LOGOS_ESCUDERIAS[c.id] || '';
+                    const pos = index + 1;
+                    
+                    // Lógica del podio
+                    let estiloPos = `<td><strong>${pos}</strong></td>`; 
+                    if (pos === 1) estiloPos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
+                    else if (pos === 2) estiloPos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
+                    else if (pos === 3) estiloPos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
+
                     tConst.innerHTML += `
                         <tr>
-                            <td><strong>${index + 1}</strong></td>
+                            ${estiloPos}
                             <td style="border-left: 4px solid ${c.color || '#444'}; padding-left:10px;">
                                 ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
                                 ${c.nombre}
