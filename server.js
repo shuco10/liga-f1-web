@@ -56,8 +56,8 @@ async function inicializarBaseDeDatos() {
                 INSERT INTO escuderias (id, nombre, color_hex) VALUES 
                 (1, 'Red Bull Racing', '#0600EF'), (2, 'Ferrari', '#E10600'),
                 (3, 'Mercedes-AMG', '#27F4D2'), (4, 'McLaren', '#FF8000'),
-                (5, 'Aston Martin', '#229971'), (6, 'Alpine', '#0078FF'),
-                (7, 'Williams', '#00A0DE'), (8, 'Visa Cash App RB', '#6600FF'),
+                (5, 'Aston Martin', '#229971'), (6, 'Alpine', '#FF69B4'),
+                (7, 'Williams', '#00A0DE'), (8, 'Visa Cash App RB', '#0078FF'),
                 (9, 'Kick Sauber', '#52E252'), (10, 'Haas', '#B6BABD'),
                 (11, 'Cadillac', '#FFFFFF')
                 ON CONFLICT DO NOTHING;
