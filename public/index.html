@@ -644,8 +644,9 @@ async function cargarCircuitos() {
         const resultados = await resResultados.json();
         const contenedor = document.getElementById('lista-circuitos');
         
-        // --- MODIFICADO: Usamos la función global esAdmin() ---
-        const usuarioEsAdmin = (typeof esAdmin === 'function') ? esAdmin() : false;
+        // --- CORRECCIÓN: Leemos directamente del localStorage para el renderizado ---
+        // Esto evita errores de inicialización y asegura que el estado sea el real.
+        const esAdmin = (localStorage.getItem('rol') === 'admin');
 
         const listaMaestra = [
             { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
@@ -662,6 +663,15 @@ async function cargarCircuitos() {
             { nombre: "Losail", archivo: "losail" }, { nombre: "Abu Dabi", archivo: "abudabi" }
         ];
 
+        // --- CORRECCIÓN: Función renderAcciones simplificada y segura ---
+        const renderAcciones = (id) => {
+            return esAdmin ? `
+                <div style="margin-top:2px;">
+                    <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
+                    <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
+                </div>` : '';
+        };
+
         contenedor.innerHTML = listaMaestra.map(item => {
             const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
             
@@ -673,13 +683,6 @@ async function cargarCircuitos() {
             const podio = resultadosCircuito.filter(r => r.posicion <= 3);
             const resto = resultadosCircuito.filter(r => r.posicion > 3);
             
-            // Botones de acción dinámicos
-            const renderAcciones = (id) => esAdmin ? `
-                <div style="margin-top:2px;">
-                    <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
-                    <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
-                </div>` : '';
-
             const htmlPodio = podio.map(p => `
                 <div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}">
                     <strong style="font-size: 16px;">${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
