@@ -791,5 +791,24 @@ async function editarResultado(id) {
         }
     });
 </script>
+<script>
+    async function verificarPassword() {
+    const password = document.getElementById('pass-comisario').value;
+    const errorDiv = document.getElementById('error-login');
+    
+    // Cambia "TU_CONTRASEÑA" por la clave que quieras usar
+    if (password === "TU_CONTRASEÑA") { 
+        localStorage.setItem('rol', 'admin');
+        errorDiv.textContent = "";
+        alert("Acceso como Comisario concedido");
+        
+        // Ejecutamos las dos cosas necesarias
+        aplicarPermisos();
+        cargarDesplegablesAdmin();
+    } else {
+        errorDiv.textContent = "Contraseña incorrecta";
+    }
+}
+    </script>
 </body>
 </html>
