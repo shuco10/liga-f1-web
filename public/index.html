@@ -646,7 +646,22 @@ async function cargarCircuitos() {
             // Lógica para asignar la imagen:
             // 1. Convertimos el nombre a minúsculas
             // 2. Quitamos espacios
-            // 3. Hacemos coincidir con el nombre de tu archivo (ej: "Abu Dhabi" -> "abudabi.png")
+            // 3. Hacemos coincidir con el nombre del archivo (ej: "Abu Dhabi" -> "abudabi.png")
+            // Diccionario para corregir los nombres que no coinciden
+        const equivalencias = {
+            "Bahrein": "barein",
+            "Melbourne": "melburne",
+            "Sakhir": "sakir",
+            "Shanghai": "sangai",
+            "Mónaco": "montecarlo", 
+            "Montreal": "monreal",
+            "Spielberg": "spilberg",
+            "Ciudad de México": "mejico",
+            "São Paulo": "saopaulo",
+            "Singapore": "singapur",
+            "Bakú": "baku",
+            "Abu Dhabi": "abudabi"
+        };
             // NOTA: Revisa los nombres, veo que tienes "abudabi.png" y "sangai.png" en tu carpeta
             const nombreNormalizado = c.nombre.toLowerCase().replace(/\s+/g, '');
             const imagenSrc = `/circuitos/${nombreNormalizado}.png`;
