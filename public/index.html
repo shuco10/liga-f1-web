@@ -773,42 +773,47 @@ async function editarResultado(id) {
     }
 </script>
 <script>
-    function aplicarPermisos() {
-        const esAdmin = (localStorage.getItem('rol') === 'admin');
-        const botones = document.querySelectorAll('.admin-only');
-        const btnLogout = document.getElementById('btn-logout');
-        
-        botones.forEach(btn => btn.style.display = esAdmin ? 'block' : 'none');
-        if (btnLogout) btnLogout.style.display = esAdmin ? 'block' : 'none';
-    }
+        function aplicarPermisos() {
+            const esAdmin = (localStorage.getItem('rol') === 'admin');
+            const botones = document.querySelectorAll('.admin-only');
+            const btnLogout = document.getElementById('btn-logout');
+            
+            botones.forEach(btn => btn.style.display = esAdmin ? 'block' : 'none');
+            if (btnLogout) btnLogout.style.display = esAdmin ? 'block' : 'none';
 
-    // --- ESTO ES LO NUEVO ---
-    // Al cargar la página, verificamos si ya eras admin para cargar todo
-    document.addEventListener('DOMContentLoaded', () => {
-        aplicarPermisos();
-        if (localStorage.getItem('rol') === 'admin') {
-            cargarDesplegablesAdmin(); // Carga los selects del panel si ya estabas logueado
+            const panelAdmin = document.getElementById('contenido-admin');
+            if (panelAdmin) panelAdmin.style.display = esAdmin ? 'block' : 'none';
+            
+            const bloqueLogin = document.getElementById('bloque-login');
+            if (bloqueLogin) bloqueLogin.style.display = esAdmin ? 'none' : 'block';
         }
-    });
-</script>
-<script>
-    async function verificarPassword() {
-    const password = document.getElementById('pass-comisario').value;
-    const errorDiv = document.getElementById('error-login');
-    
-    // Cambia "TU_CONTRASEÑA" por la clave que quieras usar
-    if (password === "admin123") { 
-        localStorage.setItem('rol', 'admin');
-        errorDiv.textContent = "";
-        alert("Acceso como Comisario concedido");
-        
-        // Ejecutamos las dos cosas necesarias
-        aplicarPermisos();
-        cargarDesplegablesAdmin();
-    } else {
-        errorDiv.textContent = "Contraseña incorrecta";
-    }
-}
+
+        function cerrarSesion() {
+            localStorage.removeItem('rol');
+            location.reload();
+        }
+
+        async function verificarPassword() {
+            const password = document.getElementById('pass-comisario').value;
+            const errorDiv = document.getElementById('error-login');
+            
+            // NO OLVIDES PONER TU CONTRASEÑA REAL AQUÍ
+            if (password === "TU_CONTRASEÑA_REAL") { 
+                localStorage.setItem('rol', 'admin');
+                alert("Acceso concedido");
+                aplicarPermisos();
+                cargarDesplegablesAdmin();
+            } else {
+                errorDiv.textContent = "Contraseña incorrecta";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            aplicarPermisos();
+            if (localStorage.getItem('rol') === 'admin') {
+                cargarDesplegablesAdmin();
+            }
+        });
     </script>
 </body>
 </html>
