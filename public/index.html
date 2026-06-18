@@ -652,10 +652,6 @@ async function cargarCircuitos() {
         const resultados = await resResultados.json();
         const contenedor = document.getElementById('lista-circuitos');
         
-        // --- CORRECCIÓN: Leemos directamente del localStorage para el renderizado ---
-        // Esto evita errores de inicialización y asegura que el estado sea el real.
-        const esAdmin = (localStorage.getItem('rol') === 'admin');
-
         const listaMaestra = [
             { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
             { nombre: "Suzuka", archivo: "suzuka" }, { nombre: "Sakhir", archivo: "sakir" },
@@ -671,15 +667,14 @@ async function cargarCircuitos() {
             { nombre: "Losail", archivo: "losail" }, { nombre: "Abu Dabi", archivo: "abudabi" }
         ];
 
-        // --- CORRECCIÓN: Función renderAcciones simplificada y segura ---
-            const renderAcciones = (id) => {
-        // La clase 'admin-only' es la que permite al CSS ocultar los botones por defecto
+        // Función renderAcciones con la clase 'admin-only'
+        const renderAcciones = (id) => {
             return `
                 <div style="margin-top:2px;" class="admin-only">
                     <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
                     <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
                 </div>`;
-            };
+        };
 
         contenedor.innerHTML = listaMaestra.map(item => {
             const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
@@ -711,6 +706,13 @@ async function cargarCircuitos() {
                         <ul style="list-style: none; padding: 0; margin: 0;">${htmlResto}</ul>
                     </div>`;
         }).join('');
+
+        // --- ESTA ES LA LÍNEA CLAVE ---
+        // Se ejecuta justo después de que el HTML de los botones ya existe
+        if (typeof aplicarPermisos === 'function') {
+            aplicarPermisos();
+        }
+
     } catch (err) {
         console.error("Error al cargar circuitos:", err);
     }
@@ -770,25 +772,24 @@ async function editarResultado(id) {
         }
     }
 </script>
-    <script>
-    // Esta función lee el estado real de tu navegador
+<script>
     function aplicarPermisos() {
         const esAdmin = (localStorage.getItem('rol') === 'admin');
         const botones = document.querySelectorAll('.admin-only');
         const btnLogout = document.getElementById('btn-logout');
         
-        // Muestra u oculta basándose en si el valor es 'admin'
-        botones.forEach(btn => {
-            btn.style.display = esAdmin ? 'block' : 'none';
-        });
-        
-        if (btnLogout) {
-            btnLogout.style.display = esAdmin ? 'block' : 'none';
-        }
+        botones.forEach(btn => btn.style.display = esAdmin ? 'block' : 'none');
+        if (btnLogout) btnLogout.style.display = esAdmin ? 'block' : 'none';
     }
 
-    // Se ejecuta al cargar la página
-    aplicarPermisos();
+    // --- ESTO ES LO NUEVO ---
+    // Al cargar la página, verificamos si ya eras admin para cargar todo
+    document.addEventListener('DOMContentLoaded', () => {
+        aplicarPermisos();
+        if (localStorage.getItem('rol') === 'admin') {
+            cargarDesplegablesAdmin(); // Carga los selects del panel si ya estabas logueado
+        }
+    });
 </script>
 </body>
 </html>
