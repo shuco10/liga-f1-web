@@ -643,16 +643,20 @@ async function cargarCircuitos() {
             const podio = resultadosCircuito.filter(r => r.posicion <= 3);
             const resto = resultadosCircuito.filter(r => r.posicion > 3);
             
-            // Esta línea busca la imagen según el nombre del circuito
-            const claseTrazado = MAPA_TRAZADOS[c.nombre] || '';
-            
+            // Lógica para asignar la imagen:
+            // 1. Convertimos el nombre a minúsculas
+            // 2. Quitamos espacios
+            // 3. Hacemos coincidir con el nombre de tu archivo (ej: "Abu Dhabi" -> "abudabi.png")
+            // NOTA: Revisa los nombres, veo que tienes "abudabi.png" y "sangai.png" en tu carpeta
+            const nombreNormalizado = c.nombre.toLowerCase().replace(/\s+/g, '');
+            const imagenSrc = `/circuitos/${nombreNormalizado}.png`;
+
             const htmlPodio = podio.map(p => `<div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}"><strong style="font-size: 16px;">${p.posicion}º</strong><br><span style="font-size: 11px;">${p.piloto_nombre}</span></div>`).join('');
             const htmlResto = resto.map(p => `<li style="font-size: 12px; margin-top: 5px; color: #ccc;">${p.posicion}º ${p.piloto_nombre}</li>`).join('');
             
-            // He añadido la línea del trazado aquí
             return `<div style="background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600; margin-bottom: 15px;">
                         <h3 style="margin: 0 0 10px 0; color: #fff;">${c.nombre}</h3>
-                        <div class="trazado-mask ${claseTrazado}"></div>
+                        <img src="${imagenSrc}" alt="${c.nombre}" style="width: 100%; height: auto; border-radius: 5px; margin-bottom: 10px; background: #1a1a1a;">
                         ${podio.length > 0 ? `<div style="display: flex; gap: 5px; margin-bottom: 10px;">${htmlPodio}</div>` : '<p style="color:#666; font-size: 12px;">Sin resultados aún</p>'}
                         <ul style="list-style: none; padding: 0; margin: 0;">${htmlResto}</ul>
                     </div>`;
