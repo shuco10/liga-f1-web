@@ -645,7 +645,7 @@ async function cargarCircuitos() {
         const contenedor = document.getElementById('lista-circuitos');
         
         // --- MODIFICADO: Usamos la función global esAdmin() ---
-        const esAdmin = typeof esAdmin === 'function' ? esAdmin() : false;
+        const usuarioEsAdmin = (typeof esAdmin === 'function') ? esAdmin() : false;
 
         const listaMaestra = [
             { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
