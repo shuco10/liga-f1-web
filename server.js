@@ -211,6 +211,60 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
 
+
+// --- NUEVAS RUTAS PARA EDICIÓN Y ELIMINACIÓN DE RESULTADOS ---
+
+// 1. ELIMINAR RESULTADO (DELETE)
+app.delete('/api/resultados/:id', async (req, res) => {
+    // Aquí es donde validarías si es admin. 
+    // Ejemplo: si tienes un sistema de sesión o cabeceras:
+    // if (req.headers['x-admin-token'] !== 'TU_TOKEN_SECRETO') return res.status(403).send("No autorizado");
+
+    try {
+        // Primero obtenemos el resultado para saber cuántos puntos restar al piloto
+        const resultado = await pool.query('SELECT piloto_id, posicion FROM resultados_carrera WHERE id = $1', [req.params.id]);
+        if (resultado.rows.length === 0) return res.status(404).send("Resultado no encontrado");
+
+        const { piloto_id, posicion } = resultado.rows[0];
+        const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+        const puntosARestar = puntos[posicion] || 0;
+
+        // Borramos el resultado
+        await pool.query('DELETE FROM resultados_carrera WHERE id = $1', [req.params.id]);
+        
+        // Restamos los puntos al piloto
+        await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales - $1 WHERE id = $2', [puntosARestar, piloto_id]);
+        
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al eliminar el resultado");
+    }
+});
+
+// 2. EDITAR POSICIÓN (PUT)
+app.put('/api/resultados/:id', async (req, res) => {
+    const { posicion } = req.body;
+    try {
+        // Obtenemos el resultado original
+        const resOriginal = await pool.query('SELECT piloto_id, posicion FROM resultados_carrera WHERE id = $1', [req.params.id]);
+        const { piloto_id, posicion: posAntigua } = resOriginal.rows[0];
+
+        const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+        const diferenciaPuntos = (puntos[posicion] || 0) - (puntos[posAntigua] || 0);
+
+        // Actualizamos resultado y puntos
+        await pool.query('UPDATE resultados_carrera SET posicion = $1 WHERE id = $2', [posicion, req.params.id]);
+        await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [diferenciaPuntos, piloto_id]);
+        
+        res.sendStatus(200);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al editar");
+    }
+});
+
+
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
