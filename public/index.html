@@ -319,15 +319,17 @@ function verificarPassword() {
                     const badgeReserva = p.es_reserva ? '<span style="background: #e10600; color: white; padding: 1px 4px; border-radius: 3px; font-size: 10px; margin-left: 5px;">R</span>' : '';
                     
                     // Lógica: Si es reserva, ocultamos escudería
-                    // Cambiamos el estilo por uno mucho más vistoso
                         const celdaEscuderia = p.es_reserva 
                             ? `<td style="color: #CCFF00; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
-                            [ RESERVA ]
-                           </td>` 
-                            : `<td style="border-left: 4px solid ${p.color_hex || '#444'}; padding-left:10px;">
-                            ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
-                            ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}
-                           </td>`;
+                                [ RESERVA ]
+                               </td>` 
+                                : `<td style="border-left: 6px solid ${
+                                    p.escuderia_id === 6 ? '#FF69B4' : 
+                                    (p.escuderia_id === 8 ? '#0078FF' : (p.color_hex || '#444'))
+                                      } !important; padding-left:10px;">
+                                       ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
+                                    ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}
+                               </td>`;
                     
                     tPilotos.innerHTML += `
                         <tr>
