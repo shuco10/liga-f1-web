@@ -49,7 +49,50 @@
             padding-bottom: 5px;
             margin-bottom: 10px;
         }
-            
+
+
+        /* Configuración base para todos los trazados */
+.trazado-mask {
+    width: 100%;
+    height: 120px;
+    background-image: url('/webimagenes/circuitos.png');
+    background-repeat: no-repeat;
+    background-size: 500% 500%; /* Ajustado para 5 columnas y 5 filas */
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Coordenadas para cada circuito */
+.trazado-melbourne { background-position: 0% 0%; }
+.trazado-shanghai  { background-position: 25% 0%; }
+.trazado-suzuka    { background-position: 50% 0%; }
+.trazado-sakhir    { background-position: 75% 0%; }
+.trazado-jeddah    { background-position: 100% 0%; }
+
+.trazado-miami     { background-position: 0% 25%; }
+.trazado-montreal  { background-position: 25% 25%; }
+.trazado-monaco    { background-position: 50% 25%; }
+.trazado-barcelona { background-position: 75% 25%; }
+.trazado-spielberg { background-position: 100% 25%; }
+
+.trazado-silverstone { background-position: 0% 50%; }
+.trazado-spa         { background-position: 25% 50%; }
+.trazado-budapest    { background-position: 75% 50%; }
+.trazado-zandvoort   { background-position: 100% 50%; }
+
+.trazado-monza     { background-position: 0% 75%; }
+.trazado-madrid    { background-position: 25% 75%; }
+.trazado-baku      { background-position: 50% 75%; }
+.trazado-singapore { background-position: 75% 75%; }
+.trazado-austin    { background-position: 100% 75%; }
+
+.trazado-mexico   { background-position: 0% 100%; }
+.trazado-saopaulo { background-position: 25% 100%; }
+.trazado-lasvegas { background-position: 50% 100%; }
+.trazado-lusail   { background-position: 75% 100%; }
+.trazado-abudhabi { background-position: 100% 100%; }
+
+        
     </style>
 
 
@@ -558,26 +601,66 @@ async function cargarTodosLosDatos() {
         irA(null, 'mundial-pilotos');
     });
 
-    async function cargarCircuitos() {
-        try {
-            const res = await fetch('/api/circuitos');
-            const circuitos = await res.json();
-            const resResultados = await fetch('/api/todos-los-resultados');
-            const resultados = await resResultados.json();
-            const contenedor = document.getElementById('lista-circuitos');
+// 1. Llamada a los circuitos de la imagen
+const MAPA_TRAZADOS = {
+    "Melbourne": "trazado-melbourne",
+    "Shanghai": "trazado-shanghai",
+    "Suzuka": "trazado-suzuka",
+    "Sakhir": "trazado-sakhir",
+    "Jeddah": "trazado-jeddah",
+    "Miami": "trazado-miami",
+    "Montreal": "trazado-montreal",
+    "Monte Carlo": "trazado-monaco",
+    "Barcelona": "trazado-barcelona",
+    "Spielberg": "trazado-spielberg",
+    "Silverstone": "trazado-silverstone",
+    "Spa": "trazado-spa",
+    "Budapest": "trazado-budapest",
+    "Zandvoort": "trazado-zandvoort",
+    "Monza": "trazado-monza",
+    "Madrid": "trazado-madrid",
+    "Baku": "trazado-baku",
+    "Singapore": "trazado-singapore",
+    "Austin": "trazado-austin",
+    "Mexico City": "trazado-mexico",
+    "São Paulo": "trazado-saopaulo",
+    "Las Vegas": "trazado-lasvegas",
+    "Lusail": "trazado-lusail",
+    "Abu Dhabi": "trazado-abudhabi"
+};
+
+// 2. Función actualizada
+async function cargarCircuitos() {
+    try {
+        const res = await fetch('/api/circuitos');
+        const circuitos = await res.json();
+        const resResultados = await fetch('/api/todos-los-resultados');
+        const resultados = await resResultados.json();
+        const contenedor = document.getElementById('lista-circuitos');
+        
+        contenedor.innerHTML = circuitos.map(c => {
+            const resultadosCircuito = resultados.filter(r => r.circuito_id === c.id).sort((a, b) => a.posicion - b.posicion);
+            const podio = resultadosCircuito.filter(r => r.posicion <= 3);
+            const resto = resultadosCircuito.filter(r => r.posicion > 3);
             
-            contenedor.innerHTML = circuitos.map(c => {
-                const resultadosCircuito = resultados.filter(r => r.circuito_id === c.id).sort((a, b) => a.posicion - b.posicion);
-                const podio = resultadosCircuito.filter(r => r.posicion <= 3);
-                const resto = resultadosCircuito.filter(r => r.posicion > 3);
-                const htmlPodio = podio.map(p => `<div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}"><strong style="font-size: 16px;">${p.posicion}º</strong><br><span style="font-size: 11px;">${p.piloto_nombre}</span></div>`).join('');
-                const htmlResto = resto.map(p => `<li style="font-size: 12px; margin-top: 5px; color: #ccc;">${p.posicion}º ${p.piloto_nombre}</li>`).join('');
-                return `<div style="background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600;"><h3 style="margin: 0 0 10px 0; color: #fff;">${c.nombre}</h3>${podio.length > 0 ? `<div style="display: flex; gap: 5px; margin-bottom: 10px;">${htmlPodio}</div>` : '<p style="color:#666; font-size: 12px;">Sin resultados aún</p>'}<ul style="list-style: none; padding: 0; margin: 0;">${htmlResto}</ul></div>`;
-            }).join('');
-        } catch (err) {
-            console.error("Error al cargar circuitos:", err);
-        }
+            // Esta línea busca la imagen según el nombre del circuito
+            const claseTrazado = MAPA_TRAZADOS[c.nombre] || '';
+            
+            const htmlPodio = podio.map(p => `<div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}"><strong style="font-size: 16px;">${p.posicion}º</strong><br><span style="font-size: 11px;">${p.piloto_nombre}</span></div>`).join('');
+            const htmlResto = resto.map(p => `<li style="font-size: 12px; margin-top: 5px; color: #ccc;">${p.posicion}º ${p.piloto_nombre}</li>`).join('');
+            
+            // He añadido la línea del trazado aquí
+            return `<div style="background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600; margin-bottom: 15px;">
+                        <h3 style="margin: 0 0 10px 0; color: #fff;">${c.nombre}</h3>
+                        <div class="trazado-mask ${claseTrazado}"></div>
+                        ${podio.length > 0 ? `<div style="display: flex; gap: 5px; margin-bottom: 10px;">${htmlPodio}</div>` : '<p style="color:#666; font-size: 12px;">Sin resultados aún</p>'}
+                        <ul style="list-style: none; padding: 0; margin: 0;">${htmlResto}</ul>
+                    </div>`;
+        }).join('');
+    } catch (err) {
+        console.error("Error al cargar circuitos:", err);
     }
+}
 
     async function guardarResultado() {
         const data = {
