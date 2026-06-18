@@ -636,8 +636,10 @@ async function cargarCircuitos() {
         const resResultados = await fetch('/api/todos-los-resultados');
         const resultados = await resResultados.json();
         const contenedor = document.getElementById('lista-circuitos');
+        
+        // Verificamos si es admin (asegúrate de setear esto en tu login)
+        const esAdmin = localStorage.getItem('rol') === 'admin';
 
-        // LISTA MAESTRA (Ajustada a los nombres exactos de tu desplegable)
         const listaMaestra = [
             { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
             { nombre: "Suzuka", archivo: "suzuka" }, { nombre: "Sakhir", archivo: "sakir" },
@@ -654,10 +656,8 @@ async function cargarCircuitos() {
         ];
 
         contenedor.innerHTML = listaMaestra.map(item => {
-            // Buscamos el circuito en la BD (manejando el caso Bahrein/Sakhir)
             const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
             
-            // FILTRADO POR NOMBRE (Aquí está el truco para que salgan los datos de Shanghái)
             const resultadosCircuito = c ? resultados.filter(r => {
                 const circuitoDB = circuitosRaw.find(x => x.id === r.circuito_id);
                 return circuitoDB && circuitoDB.nombre === item.nombre;
@@ -666,8 +666,24 @@ async function cargarCircuitos() {
             const podio = resultadosCircuito.filter(r => r.posicion <= 3);
             const resto = resultadosCircuito.filter(r => r.posicion > 3);
             
-            const htmlPodio = podio.map(p => `<div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}"><strong style="font-size: 16px;">${p.posicion}º</strong><br><span style="font-size: 11px;">${p.piloto_nombre}</span></div>`).join('');
-            const htmlResto = resto.map(p => `<li style="font-size: 12px; margin-top: 5px; color: #ccc;">${p.posicion}º ${p.piloto_nombre}</li>`).join('');
+            // Botones de acción dinámicos
+            const renderAcciones = (id) => esAdmin ? `
+                <div style="margin-top:2px;">
+                    <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
+                    <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
+                </div>` : '';
+
+            const htmlPodio = podio.map(p => `
+                <div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}">
+                    <strong style="font-size: 16px;">${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
+                    <span style="font-size: 11px;">${p.piloto_nombre}</span>
+                </div>`).join('');
+                
+            const htmlResto = resto.map(p => `
+                <li style="font-size: 12px; margin-top: 5px; color: #ccc; display:flex; justify-content:space-between;">
+                    <span>${p.posicion}º ${p.piloto_nombre}</span>
+                    ${renderAcciones(p.id)}
+                </li>`).join('');
             
             return `<div style="background: #262626; padding: 15px; border-radius: 5px; border-left: 4px solid #e10600; margin-bottom: 15px;">
                         <h3 style="margin: 0 0 10px 0; color: #fff;">${item.nombre}</h3>
@@ -680,6 +696,40 @@ async function cargarCircuitos() {
         console.error("Error al cargar circuitos:", err);
     }
 }
+
+            
+// Estas funciones gestionan la comunicación con tu backend
+async function eliminarResultado(id) {
+    if (!confirm('¿Estás seguro de que quieres borrar este resultado?')) return;
+    
+    const res = await fetch(`/api/resultados/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+        alert('Resultado eliminado correctamente');
+        cargarCircuitos(); // Recargamos para ver los cambios
+    } else {
+        alert('Error: No se pudo eliminar. Verifica tus permisos.');
+    }
+}
+
+async function editarResultado(id) {
+    const nuevaPos = prompt("Introduce la nueva posición para el piloto:");
+    if (!nuevaPos) return;
+    
+    const res = await fetch(`/api/resultados/${id}`, { 
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ posicion: parseInt(nuevaPos) })
+    });
+    
+    if (res.ok) {
+        alert('Resultado actualizado');
+        cargarCircuitos();
+    } else {
+        alert('Error al actualizar');
+    }
+}
+
+        
 
     async function guardarResultado() {
         const data = {
