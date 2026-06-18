@@ -393,16 +393,34 @@ async function cargarTodosLosDatos() {
             });
         }
 
-        // 3. TABLA SANCIONES (Mantenemos tu lógica)
-        const tSanciones = document.getElementById('tabla-sanciones');
-        if(tSanciones) {
-            tSanciones.innerHTML = '';
-            listaPilotosGlobal.forEach(p => {
-                const licenciaActual = 12 - (p.puntos_sancion || 0);
-                const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
-                tSanciones.innerHTML += `<tr><td>${p.gamertag}</td><td>${licenciaActual} / 12</td><td>${estado}</td></tr>`;
-            });
-        }
+        // 3. TABLA SANCIONES
+                const tSanciones = document.getElementById('tabla-sanciones');
+                if(tSanciones) {
+                    tSanciones.innerHTML = '';
+                    listaPilotosGlobal.forEach(p => {
+                        const licenciaActual = 12 - (p.puntos_sancion || 0);
+                        const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
+                        const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
+                        const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
+                
+                        tSanciones.innerHTML += `
+                             <tr>
+                                <td>
+                                    <div class="piloto-contenedor">
+                                        <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" style="width:28px; height:28px;">
+                                        <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                                        ${p.gamertag}
+                                    </div>
+                                </td>
+                                <td>
+                                    ${p.es_reserva ? '-' : (logoUrl ? `<img src="${logoUrl}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : '')}
+                                    ${p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}
+                                </td>
+                                <td><strong style="color:${licenciaActual < 5 ? 'orange' : 'white'}">${licenciaActual} / 12</strong></td>
+                                <td>${estado}</td>
+                            </tr>`;
+                    });
+                }
 
     } catch (e) {
         console.error("Error al cargar:", e);
