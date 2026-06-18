@@ -632,35 +632,51 @@ const MAPA_TRAZADOS = {
 async function cargarCircuitos() {
     try {
         const res = await fetch('/api/circuitos');
-        const circuitos = await res.json();
+        const circuitosRaw = await res.json();
         const resResultados = await fetch('/api/todos-los-resultados');
         const resultados = await resResultados.json();
         const contenedor = document.getElementById('lista-circuitos');
-        
+
+        // Definimos la lista "Fuente de la Verdad" (Nombre BD -> Archivo .png)
+        // Puedes añadir o quitar circuitos aquí para controlar qué sale y el orden
+        const mapaCircuitos = [
+            { nombre: "Bahrein", archivo: "sakir" },
+            { nombre: "Sakhir", archivo: "sakir" },
+            { nombre: "Melbourne", archivo: "melburne" },
+            { nombre: "Yeda", archivo: "yeda" },
+            { nombre: "Shanghai", archivo: "sangai" },
+            { nombre: "Miami", archivo: "miami" },
+            { nombre: "Monte Carlo", archivo: "montecarlo" },
+            { nombre: "Montreal", archivo: "monreal" },
+            { nombre: "Spielberg", archivo: "spilberg" },
+            { nombre: "Silverstone", archivo: "silverstone" },
+            { nombre: "Budapest", archivo: "budapest" },
+            { nombre: "Spa", archivo: "spa" },
+            { nombre: "Zandvoort", archivo: "zandvoort" },
+            { nombre: "Monza", archivo: "monza" },
+            { nombre: "Baku", archivo: "baku" },
+            { nombre: "Singapore", archivo: "singapur" },
+            { nombre: "Austin", archivo: "austin" },
+            { nombre: "Ciudad de México", archivo: "mejico" },
+            { nombre: "São Paulo", archivo: "saopaulo" },
+            { nombre: "Las Vegas", archivo: "lasvegas" },
+            { nombre: "Losail", archivo: "losail" },
+            { nombre: "Abu Dhabi", archivo: "abudabi" }
+        ];
+
+        // Filtramos y ordenamos basándonos en nuestra lista oficial
+        const circuitos = mapaCircuitos.map(item => {
+            const circuitoEnDB = circuitosRaw.find(c => c.nombre === item.nombre);
+            return circuitoEnDB ? { ...circuitoEnDB, archivo: item.archivo } : null;
+        }).filter(c => c !== null);
+
         contenedor.innerHTML = circuitos.map(c => {
             const resultadosCircuito = resultados.filter(r => r.circuito_id === c.id).sort((a, b) => a.posicion - b.posicion);
             const podio = resultadosCircuito.filter(r => r.posicion <= 3);
             const resto = resultadosCircuito.filter(r => r.posicion > 3);
             
-            // 1. Diccionario
-            const equivalencias = {
-                "Bahrein": "barein", "Melbourne": "melburne", "Sakhir": "sakir",
-                "Shanghai": "sangai", "Mónaco": "montecarlo", "Monte Carlo": "montecarlo",
-                "Montreal": "monreal", "Spielberg": "spilberg", "Mexico City": "mejico",
-                "México": "mejico", "São Paulo": "saopaulo", "Sao Paulo": "saopaulo",
-                "Singapore": "singapur", "Singapur": "singapur", "Baku": "baku",
-                "Bakú": "baku", "Abu Dhabi": "abudabi"
-            };
+            const imagenSrc = `/circuitos/${c.archivo}.png`;
 
-            // 2. Lógica de búsqueda
-            let nombreArchivo = equivalencias[c.nombre] || c.nombre.toLowerCase()
-                .replace("city", "")
-                .replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
-                .replace(/\s+/g, '');
-            
-            const imagenSrc = `/circuitos/${nombreArchivo}.png`;
-
-            // 3. Generación HTML
             const htmlPodio = podio.map(p => `<div style="background: #333; padding: 5px; border-radius: 4px; text-align: center; width: 30%; border-bottom: 3px solid ${p.posicion === 1 ? '#ffd700' : p.posicion === 2 ? '#c0c0c0' : '#cd7f32'}"><strong style="font-size: 16px;">${p.posicion}º</strong><br><span style="font-size: 11px;">${p.piloto_nombre}</span></div>`).join('');
             const htmlResto = resto.map(p => `<li style="font-size: 12px; margin-top: 5px; color: #ccc;">${p.posicion}º ${p.piloto_nombre}</li>`).join('');
             
