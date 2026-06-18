@@ -202,16 +202,12 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
-async function aplicarParches() {
-    try {
-        await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS es_reserva INT DEFAULT 0;`);
-        console.log("✅ Parche 'es_reserva' aplicado correctamente.");
-    } catch (e) {
-        console.log("Info: El parche de base de datos ya estaba aplicado o no fue necesario.");
-    }
-}
 
-aplicarParches();
+
+
+
+
+
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
 
