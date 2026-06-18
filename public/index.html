@@ -637,41 +637,30 @@ async function cargarCircuitos() {
         const resultados = await resResultados.json();
         const contenedor = document.getElementById('lista-circuitos');
 
-        // Definimos la lista "Fuente de la Verdad" (Nombre BD -> Archivo .png)
-        // Puedes añadir o quitar circuitos aquí para controlar qué sale y el orden
-        const mapaCircuitos = [
-            { nombre: "Bahrein", archivo: "sakir" },
-            { nombre: "Sakhir", archivo: "sakir" },
-            { nombre: "Melbourne", archivo: "melburne" },
-            { nombre: "Yeda", archivo: "yeda" },
-            { nombre: "Shanghai", archivo: "sangai" },
-            { nombre: "Miami", archivo: "miami" },
-            { nombre: "Monte Carlo", archivo: "montecarlo" },
-            { nombre: "Montreal", archivo: "monreal" },
-            { nombre: "Spielberg", archivo: "spilberg" },
-            { nombre: "Silverstone", archivo: "silverstone" },
-            { nombre: "Budapest", archivo: "budapest" },
-            { nombre: "Spa", archivo: "spa" },
-            { nombre: "Zandvoort", archivo: "zandvoort" },
-            { nombre: "Monza", archivo: "monza" },
-            { nombre: "Baku", archivo: "baku" },
-            { nombre: "Singapore", archivo: "singapur" },
-            { nombre: "Austin", archivo: "austin" },
-            { nombre: "Ciudad de México", archivo: "mejico" },
-            { nombre: "São Paulo", archivo: "saopaulo" },
-            { nombre: "Las Vegas", archivo: "lasvegas" },
-            { nombre: "Losail", archivo: "losail" },
-            { nombre: "Abu Dhabi", archivo: "abudabi" }
+        // LISTA MAESTRA (Ordenada igual que tu imagen)
+        const listaMaestra = [
+            { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghai", archivo: "sangai" },
+            { nombre: "Suzuka", archivo: "suzuka" }, { nombre: "Sakhir", archivo: "sakir" },
+            { nombre: "Jeddah", archivo: "yeda" }, { nombre: "Miami", archivo: "miami" },
+            { nombre: "Montreal", archivo: "monreal" }, { nombre: "Monte Carlo", archivo: "montecarlo" },
+            { nombre: "Barcelona", archivo: "barcelona" }, { nombre: "Spielberg", archivo: "spilberg" },
+            { nombre: "Silverstone", archivo: "silverstone" }, { nombre: "Spa", archivo: "spa" },
+            { nombre: "Budapest", archivo: "budapest" }, { nombre: "Zandvoort", archivo: "zandvoort" },
+            { nombre: "Monza", archivo: "monza" }, { nombre: "Madrid", archivo: "madrid" },
+            { nombre: "Baku", archivo: "baku" }, { nombre: "Singapore", archivo: "singapur" },
+            { nombre: "Austin", archivo: "austin" }, { nombre: "Mexico City", archivo: "mejico" },
+            { nombre: "São Paulo", archivo: "saopaulo" }, { nombre: "Las Vegas", archivo: "lasvegas" },
+            { nombre: "Losail", archivo: "losail" }, { nombre: "Abu Dhabi", archivo: "abudabi" }
         ];
 
-        // Filtramos y ordenamos basándonos en nuestra lista oficial
-        const circuitos = mapaCircuitos.map(item => {
-            const circuitoEnDB = circuitosRaw.find(c => c.nombre === item.nombre);
-            return circuitoEnDB ? { ...circuitoEnDB, archivo: item.archivo } : null;
-        }).filter(c => c !== null);
+        // Procesamos: Si Bahrein aparece, lo tratamos como Sakhir
+        const circuitosProcesados = listaMaestra.map(item => {
+            const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
+            return c ? { ...c, archivo: item.archivo, nombre: item.nombre } : { nombre: item.nombre, archivo: item.archivo, id: null };
+        });
 
-        contenedor.innerHTML = circuitos.map(c => {
-            const resultadosCircuito = resultados.filter(r => r.circuito_id === c.id).sort((a, b) => a.posicion - b.posicion);
+        contenedor.innerHTML = circuitosProcesados.map(c => {
+            const resultadosCircuito = c.id ? resultados.filter(r => r.circuito_id === c.id).sort((a, b) => a.posicion - b.posicion) : [];
             const podio = resultadosCircuito.filter(r => r.posicion <= 3);
             const resto = resultadosCircuito.filter(r => r.posicion > 3);
             
