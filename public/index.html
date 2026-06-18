@@ -181,25 +181,30 @@
         </table>
     </div>
 
-    <div id="panel-admin" class="seccion">
-        <h2>Área Privada de Comisarios</h2>
+   <div id="panel-admin" class="seccion">
+    <h2>Área Privada de Comisarios</h2>
 
+    <div id="bloque-login">
+        <div class="form-group">
+            <label>Introduce la Contraseña de Administrador:</label>
+            <input type="password" id="pass-comisario" placeholder="••••••••">
+        </div>
+        <button class="btn-accion" onclick="verificarPassword()">Acceder al Panel</button>
+        <div id="error-login" style="color: red; text-align: center; margin-top: 10px;"></div>
+    </div>
+
+    <div id="contenido-admin" style="display: none;">
+        
         <div id="admin-carreras">
             <h3>Cargar Resultados de Carrera</h3>
-                <select id="select-circuito-admin"></select>
-                <select id="select-piloto-admin"></select>
-                <input type="number" id="input-posicion" placeholder="Posición final">
+            <select id="select-circuito-admin"></select>
+            <select id="select-piloto-admin"></select>
+            <input type="number" id="input-posicion" placeholder="Posición final">
             <button onclick="guardarResultado()">Guardar Resultado</button>
         </div>
-        
-        <div id="bloque-login">
-            <div class="form-group">
-                <label>Introduce la Contraseña de Administrador:</label>
-                <input type="password" id="pass-comisario" placeholder="••••••••">
-            </div>
-            <button class="btn-accion" onclick="verificarPassword()">Acceder al Panel</button>
-            <div id="error-login" style="color: red; text-align: center; margin-top: 10px;"></div>
+
         </div>
+</div>
 
         <div id="contenido-admin" style="display: none;">
             <hr style="border-color: #444; margin: 20px 0;">
