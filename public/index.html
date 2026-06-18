@@ -306,20 +306,24 @@ function verificarPassword() {
 
 
 
-async function cargarTodosLosDatos() {
-    try {
-        const res = await fetch('/api/lista-de-pilotos');
-        if (!res.ok) return;
-        listaPilotosGlobal = await res.json();
-
-        // 1. CARGA DE TABLA PILOTOS
+// 1. CARGA DE TABLA PILOTOS
         const tPilotos = document.getElementById('tabla-pilotos');
         if (tPilotos) {
             tPilotos.innerHTML = '';
+            // Aseguramos el orden por puntos antes de pintar
+            listaPilotosGlobal.sort((a, b) => b.puntos_totales - a.puntos_totales);
+            
             listaPilotosGlobal.forEach((p, index) => {
                 const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
                 const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
                 const badgeReserva = p.es_reserva ? '<span style="background: #e10600; color: white; padding: 1px 4px; border-radius: 3px; font-size: 10px; margin-left: 5px;">R</span>' : '';
+
+                // Lógica del podio para pilotos
+                const pos = index + 1;
+                let estiloPos = `<td><strong>${pos}</strong></td>`;
+                if (pos === 1) estiloPos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
+                else if (pos === 2) estiloPos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
+                else if (pos === 3) estiloPos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
 
                 const celdaEscuderia = p.es_reserva
                     ? `<td style="color: #CCFF00; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">[ RESERVA ]</td>`
@@ -330,7 +334,7 @@ async function cargarTodosLosDatos() {
 
                 tPilotos.innerHTML += `
                     <tr>
-                        <td><strong>${index + 1}</strong></td>
+                        ${estiloPos}
                         <td>
                             <div class="piloto-contenedor">
                                 <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
@@ -346,7 +350,6 @@ async function cargarTodosLosDatos() {
                     </tr>`;
             });
         }
-
         // 2. CARGA DE TABLA CONSTRUCTORES
         const constructoresMap = {};
         listaPilotosGlobal.forEach(p => {
