@@ -638,8 +638,8 @@ async function cargarCircuitos() {
         const resultados = await resResultados.json();
         const contenedor = document.getElementById('lista-circuitos');
         
-        // Verificamos si es admin (asegúrate de setear esto en tu login)
-        const esAdmin = localStorage.getItem('rol') === 'admin';
+        // --- MODIFICADO: Usamos la función global esAdmin() ---
+        const esAdmin = typeof esAdmin === 'function' ? esAdmin() : false;
 
         const listaMaestra = [
             { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
