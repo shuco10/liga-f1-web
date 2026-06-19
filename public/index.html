@@ -775,25 +775,30 @@ async function editarResultado(id) {
 
         
 
-    async function guardarResultado() {
-        const data = {
-            circuito_id: document.getElementById('select-circuito-admin').value,
-            piloto_id: document.getElementById('select-piloto-admin').value,
-            posicion: parseInt(document.getElementById('input-posicion').value)
-        };
-        const res = await fetch('/api/guardar-resultado', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
-        if(res.ok) {
-            alert("Resultado guardado y puntos actualizados");
-            cargarTodosLosDatos(); 
-            cargarCircuitos(); 
-        } else {
-            alert("Error al guardar el resultado");
-        }
+async function guardarResultado() {
+    // 1. Capturamos también el valor del select de escudería
+    const data = {
+        circuito_id: document.getElementById('select-circuito-admin').value,
+        piloto_id: document.getElementById('select-piloto-admin').value,
+        posicion: parseInt(document.getElementById('input-posicion').value),
+        escuderia_id: parseInt(document.getElementById('select-escuderia-carrera').value) // <--- ESTO ES LO QUE FALTA
+    };
+
+    // 2. Enviamos al endpoint /api/subir-resultado (que es el que tiene la lógica de puntos)
+    const res = await fetch('/api/subir-resultado', { // <--- Asegúrate de usar /api/subir-resultado
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    if(res.ok) {
+        alert("Resultado guardado y puntos actualizados");
+        cargarTodosLosDatos(); 
+        cargarCircuitos(); 
+    } else {
+        alert("Error al guardar el resultado");
     }
+}
 </script>
 <script>
         function aplicarPermisos() {
