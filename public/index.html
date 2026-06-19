@@ -564,14 +564,20 @@ async function cargarDesplegablesAdmin() {
                                    circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-        // 2. Cargar Escuderías (¡Esto es lo que te faltaba!)
-        const resE = await fetch('/api/escuderias');
-        const escuderias = await resE.json();
-        const selEscuderia = document.getElementById('select-escuderia');
-        if (selEscuderia) {
-            selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                                     escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-        }
+// 2. Cargar Escuderías (CORREGIDO PARA TODOS LOS FORMULARIOS)
+const resE = await fetch('/api/escuderias');
+const escuderias = await resE.json();
+
+// Lista de todos los IDs donde debe aparecer el desplegable de escuderías
+const idsEscuderia = ['select-escuderia', 'select-escuderia-carrera', 'edit-escuderia', 'edit-escuderia-reserva'];
+
+idsEscuderia.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
+                       escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+    }
+});
 
         // 3. Cargar Pilotos (Lo que ya tenías)
         const res = await fetch('/api/lista-de-pilotos');
