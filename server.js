@@ -110,12 +110,15 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     }
 });
 
-// RUTA 2B: Editar piloto
 app.post('/api/editar-piloto', async (req, res) => {
     const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url, es_reserva, estado, sustituto_id } = req.body;
     
-    // Validación de seguridad: Si no llega escuderia_id, no deberíamos dejarlo nulo si es un piloto activo
-    const escuderiaFinal = escuderia_id || null; 
+    // VALIDACIÓN ESTRICTA: Si es null o undefined, el servidor rechazará la petición
+    // Esto te evitará el problema de que se ponga Cadillac por error
+    if (!escuderia_id || escuderia_id === 0) {
+        console.error("Error: Se intentó guardar un piloto sin escudería válida");
+        return res.status(400).send("Error: Escudería no válida");
+    }
 
     try {
         await pool.query(`
@@ -129,7 +132,7 @@ app.post('/api/editar-piloto', async (req, res) => {
                 estado = $7,
                 sustituto_id = $8
             WHERE id = $9
-        `, [gamertag, numero_piloto, plataforma, escuderiaFinal, foto_url || '', es_reserva || 0, estado, sustituto_id, id]);
+        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', es_reserva || 0, estado, sustituto_id, id]);
         
         res.sendStatus(200);
     } catch (err) {
