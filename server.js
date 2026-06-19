@@ -26,7 +26,18 @@ async function inicializarBaseDeDatos() {
                 color_hex VARCHAR(7)
             );
         `);
+async function inicializarBaseDeDatos() {
+    try {
+        console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
 
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS escuderias (
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(100) NOT NULL,
+                color_hex VARCHAR(7),
+                puntos INT DEFAULT 0  // <--- AÑADE ESTA LÍNEA AQUÍ
+            );
+        `);
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
