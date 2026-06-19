@@ -275,25 +275,27 @@ app.post('/api/reset', async (req, res) => {
 
 
 // --- MANTENIMIENTO DE CIRCUITOS (Ejecuta esto una vez y borra) ---
+
+
 app.get('/api/corregir-circuitos', async (req, res) => {
     try {
-        // 1. Eliminamos los circuitos que ya no queremos
+        // 1. Eliminamos los erróneos
         await pool.query("DELETE FROM circuitos WHERE nombre IN ('Bahrein', 'Imola')");
         
-        // 2. Insertamos Budapest (si no existe ya)
+        // 2. Insertamos Budapest (si no está, no hace nada)
+        // Usamos una sentencia que no depende de IDs fijos para evitar errores
         await pool.query(`
             INSERT INTO circuitos (nombre) 
-            VALUES ('Sakhir'), ('Budapest') 
-            ON CONFLICT (nombre) DO NOTHING
+            SELECT 'Budapest' 
+            WHERE NOT EXISTS (SELECT 1 FROM circuitos WHERE nombre = 'Budapest')
         `);
         
-        res.send("Circuitos actualizados: Bahrein e Imola borrados, Sakhir y Budapest añadidos.");
+        res.send("¡Éxito! Bahrein e Imola eliminados y Budapest añadido correctamente.");
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error al actualizar los circuitos.");
+        res.status(500).send("Error: " + err.message);
     }
 });
-
 
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
