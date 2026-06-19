@@ -559,20 +559,34 @@ async function cargarDesplegablesAdmin() {
         console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
     }
 }
-
+// --- FUNCIÓN CORREGIDA ---
     function autocompletarFormEdicion() {
         const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
         const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
+        
         if(piloto) {
             document.getElementById('edit-gamertag').value = piloto.gamertag;
             document.getElementById('edit-numero').value = piloto.numero_piloto || '';
             document.getElementById('edit-foto').value = piloto.foto_url || '';
             document.getElementById('edit-plataforma').value = piloto.plataforma;
-            document.getElementById('edit-escuderia').value = piloto.escuderia_id || '1';
-            document.getElementById('edit-es_reserva').value = piloto.es_reserva || '0';
+            
+            // Forzamos el ID de escudería a texto para que coincida con el <option> del select
+            document.getElementById('edit-escuderia').value = piloto.escuderia_id ? piloto.escuderia_id.toString() : "1";
+            
+            document.getElementById('edit-es_reserva').value = piloto.es_reserva ? "1" : "0";
+            document.getElementById('edit-estado').value = piloto.estado || 'presente';
+            
+            // Importante: Esto muestra/oculta el campo de sustituto según el estado cargado
+            mostrarSustituto(); 
+            
+            if (piloto.sustituto_id) {
+                document.getElementById('edit-sustituto-id').value = piloto.sustituto_id;
+            }
         }
     }
 
+    // --- MANEJADORES DE FORMULARIOS ---
+    
     document.getElementById('form-piloto').addEventListener('submit', async (e) => {
         e.preventDefault();
         const datos = { 
