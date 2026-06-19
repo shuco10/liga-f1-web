@@ -10,6 +10,44 @@
         h1 { text-align: center; color: #e10600; text-transform: uppercase; margin-bottom: 5px; }
         h2 { color: #e10600; text-transform: uppercase; text-align: center; font-size: 18px; }
 
+#zona-noticias {
+    max-width: 800px;
+    margin: 30px auto; /* Centrado */
+    padding: 25px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border-left: 6px solid #00d2be; /* El color de Mercedes */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+#zona-noticias h2 {
+    color: #ffffff;
+    margin-top: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+}
+
+.noticia-item {
+    background: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: transform 0.2s;
+}
+
+.noticia-item:hover {
+    transform: translateX(5px); /* Efecto sutil al pasar el ratón */
+    background: #2a2a2a;
+}
+
+.noticia-item h4 {
+    color: #00d2be;
+    margin: 0 0 10px 0;
+}
+
+        
         /* Contenedor principal estilo Mercedes */
 
 #btn-plata-resultado {
@@ -967,22 +1005,28 @@ async function cargarNoticias() {
         const respuesta = await fetch('/api/noticias');
         const noticias = await respuesta.json();
         
-        contenedor.innerHTML = ''; // Limpiamos el "Cargando..."
+        contenedor.innerHTML = ''; // Limpiamos el texto de carga
         
+        if (noticias.length === 0) {
+            contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+            return;
+        }
+
         noticias.forEach(noticia => {
             const div = document.createElement('div');
-            div.style.marginBottom = "15px";
-            div.style.padding = "10px";
-            div.style.borderBottom = "1px solid #444";
+            // Usamos la clase CSS que definimos antes
+            div.className = 'noticia-item'; 
+            
             div.innerHTML = `
-                <h4 style="margin: 0; color: #00d2be;">${noticia.titulo}</h4>
-                <p style="margin: 5px 0;">${noticia.contenido}</p>
-                <small style="color: #888;">${new Date(noticia.fecha).toLocaleDateString()}</small>
+                <h4 style="margin: 0 0 10px 0; color: #00d2be;">${noticia.titulo}</h4>
+                <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                <small style="color: #666;">${new Date(noticia.fecha).toLocaleDateString()}</small>
             `;
             contenedor.appendChild(div);
         });
     } catch (error) {
         console.error("Error cargando noticias:", error);
+        contenedor.innerHTML = '<p style="color: #ff4444;">Error al cargar las noticias.</p>';
     }
 }
 
