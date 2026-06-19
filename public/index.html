@@ -514,19 +514,23 @@ async function cargarDesplegablesAdmin() {
                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-// 2. Cargar Escuderías (Seguro)
-const resE = await fetch('/api/escuderias');
-if (resE.ok) {
-    const escuderias = await resE.json();
-    const selEscuderia = document.getElementById('select-escuderia-carrera');
-    
-    // AÑADE ESTA COMPROBACIÓN:
-    if (selEscuderia) {
-        selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                                 escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-    } else {
-        console.warn("No se encontró el elemento select-escuderia-carrera en esta página.");
+// --- 2. Cargar Escuderías (VERSION SEGURA) ---
+const selEscuderia = document.getElementById('select-escuderia-carrera');
+
+if (selEscuderia) { // <--- ESTO ES LO MÁS IMPORTANTE
+    try {
+        const resE = await fetch('/api/escuderias');
+        if (resE.ok) {
+            const escuderias = await resE.json();
+            selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
+                                     escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+        }
+    } catch (err) {
+        console.error("No se pudieron cargar las escuderías:", err);
     }
+} else {
+    // Es normal que esto salte en index.html, no es un error, es que no hay formulario ahí
+    console.log("Página pública: saltando carga de formulario de admin.");
 }
 
         // 3. Cargar Pilotos
