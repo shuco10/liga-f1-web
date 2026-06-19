@@ -925,8 +925,7 @@ async function verificarPassword() {
                 cargarDesplegablesAdmin();
             }
         });
-    </script>
-    <script>
+   
         // --- RESET DE PUNTOS Y BASE DE DATOS ---
         function confirmarReset() {
             if (confirm("⚠️ ¿ESTÁS SEGURO?\nEsto borrará todos los puntos y resultados.")) {
@@ -944,6 +943,22 @@ async function verificarPassword() {
                 alert("Error: " + data.message);
             }
         }
+   
+    async function publicarNoticia() {
+    const titulo = document.getElementById('noticia-titulo').value;
+    const contenido = document.getElementById('noticia-contenido').value;
+
+    const res = await fetch('/api/noticias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo, contenido })
+    });
+
+    if (res.ok) {
+        alert("Noticia publicada correctamente");
+        location.reload(); // Recarga para ver el cambio
+    }
+}
     </script>
 
         <div id="zona-reset" class="admin-only" style="text-align: center; display: none; padding: 20px; background: #1a1a1a; border-radius: 8px; margin: 20px;">
