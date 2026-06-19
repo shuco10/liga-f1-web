@@ -48,6 +48,8 @@ async function inicializarBaseDeDatos() {
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS podios INT DEFAULT 0;`); } catch(e){}
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS foto_url TEXT DEFAULT '';`); } catch(e){}
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS es_reserva INT DEFAULT 0;`); } catch(e){}
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS estado VARCHAR(20) DEFAULT 'presente';`); } catch(e){}
+        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS sustituto_id INT DEFAULT NULL;`); } catch(e){}
 
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
@@ -76,14 +78,15 @@ inicializarBaseDeDatos();
 // RUTA 1: Obtener clasificación
 app.get('/api/lista-de-pilotos', async (req, res) => {
     try {
-        const querySQL = `
-            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url, es_reserva,
-                   (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
-                   (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
-                   puntos_totales, victorias
-            FROM pilotos
-            ORDER BY es_reserva ASC, puntos_totales DESC, victorias DESC, podios DESC;
-        `;
+const querySQL = `
+    SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url, es_reserva, 
+           estado, sustituto_id, 
+           (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
+           (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
+           puntos_totales, victorias
+    FROM pilotos
+    ORDER BY es_reserva ASC, puntos_totales DESC, victorias DESC, podios DESC;
+`;
         const { rows } = await pool.query(querySQL);
         res.json(rows);
     } catch (err) {
@@ -109,13 +112,24 @@ app.post('/api/nuevo-piloto', async (req, res) => {
 
 // RUTA 2B: Editar piloto
 app.post('/api/editar-piloto', async (req, res) => {
-    const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url, es_reserva } = req.body;
+    // 1. Añadimos estado y sustituto_id a la desestructuración
+    const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url, es_reserva, estado, sustituto_id } = req.body;
+    
     try {
+        // 2. Añadimos las columnas a la sentencia UPDATE
         await pool.query(`
             UPDATE pilotos 
-            SET gamertag = $1, numero_piloto = $2, plataforma = $3, escuderia_id = $4, foto_url = $5, es_reserva = $6 
-            WHERE id = $7
-        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', es_reserva || 0, id]);
+            SET gamertag = $1, 
+                numero_piloto = $2, 
+                plataforma = $3, 
+                escuderia_id = $4, 
+                foto_url = $5, 
+                es_reserva = $6,
+                estado = $7,
+                sustituto_id = $8
+            WHERE id = $9
+        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', es_reserva || 0, estado, sustituto_id, id]);
+        
         res.sendStatus(200);
     } catch (err) {
         console.error(err);
