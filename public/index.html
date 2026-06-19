@@ -570,30 +570,27 @@ async function cargarDesplegablesAdmin() {
     }
 }
 // --- FUNCIÓN CORREGIDA ---
-    function autocompletarFormEdicion() {
-        const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
-        const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
+function autocompletarFormEdicion() {
+    const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
+    // Asignamos a la variable global
+    pilotoEnEdicion = listaPilotosGlobal.find(p => p.id === idBuscar);
+    
+    if(pilotoEnEdicion) {
+        document.getElementById('edit-gamertag').value = pilotoEnEdicion.gamertag;
+        document.getElementById('edit-numero').value = pilotoEnEdicion.numero_piloto || '';
+        document.getElementById('edit-foto').value = pilotoEnEdicion.foto_url || '';
+        document.getElementById('edit-plataforma').value = pilotoEnEdicion.plataforma;
+        document.getElementById('edit-escuderia').value = pilotoEnEdicion.escuderia_id ? pilotoEnEdicion.escuderia_id.toString() : "1";
+        document.getElementById('edit-es_reserva').value = pilotoEnEdicion.es_reserva ? "1" : "0";
+        document.getElementById('edit-estado').value = pilotoEnEdicion.estado || 'presente';
         
-        if(piloto) {
-            document.getElementById('edit-gamertag').value = piloto.gamertag;
-            document.getElementById('edit-numero').value = piloto.numero_piloto || '';
-            document.getElementById('edit-foto').value = piloto.foto_url || '';
-            document.getElementById('edit-plataforma').value = piloto.plataforma;
-            
-            // Forzamos el ID de escudería a texto para que coincida con el <option> del select
-            document.getElementById('edit-escuderia').value = piloto.escuderia_id ? piloto.escuderia_id.toString() : "1";
-            
-            document.getElementById('edit-es_reserva').value = piloto.es_reserva ? "1" : "0";
-            document.getElementById('edit-estado').value = piloto.estado || 'presente';
-            
-            // Importante: Esto muestra/oculta el campo de sustituto según el estado cargado
-            mostrarSustituto(); 
-            
-            if (piloto.sustituto_id) {
-                document.getElementById('edit-sustituto-id').value = piloto.sustituto_id;
-            }
+        mostrarSustituto(); 
+        
+        if (pilotoEnEdicion.sustituto_id) {
+            document.getElementById('edit-sustituto-id').value = pilotoEnEdicion.sustituto_id;
         }
     }
+}
 
     // --- MANEJADORES DE FORMULARIOS ---
     
@@ -617,21 +614,30 @@ async function cargarDesplegablesAdmin() {
     });
 
     document.getElementById('form-editar').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const datos = {
-            id: parseInt(document.getElementById('select-piloto-editar').value),
-            gamertag: document.getElementById('edit-gamertag').value,
-            numero_piloto: parseInt(document.getElementById('edit-numero').value),
-            foto_url: document.getElementById('edit-foto').value,
-            plataforma: document.getElementById('edit-plataforma').value,
-            escuderia_id: parseInt(document.getElementById('edit-escuderia').value),
-            es_reserva: parseInt(document.getElementById('edit-es_reserva').value),
-            estado: document.getElementById('edit-estado').value,
-            sustituto_id: document.getElementById('edit-sustituto-id').value || null
-        };
-        if(!datos.id) return;
-        const res = await fetch('/api/editar-piloto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-        if(res.ok) {
+    e.preventDefault();
+    
+    // Si el usuario deja el input de foto vacío, rescatamos la URL anterior
+    const fotoInput = document.getElementById('edit-foto').value;
+    const fotoFinal = (fotoInput && fotoInput.trim() !== '') ? fotoInput : (pilotoEnEdicion ? pilotoEnEdicion.foto_url : '');
+
+    const datos = {
+        id: parseInt(document.getElementById('select-piloto-editar').value),
+        gamertag: document.getElementById('edit-gamertag').value,
+        numero_piloto: parseInt(document.getElementById('edit-numero').value),
+        foto_url: fotoFinal, // <- AQUÍ YA NO SE BORRA LA FOTO
+        plataforma: document.getElementById('edit-plataforma').value,
+        escuderia_id: parseInt(document.getElementById('edit-escuderia').value), // <- Asegúrate de que el select tenga el ID correcto
+        es_reserva: parseInt(document.getElementById('edit-es_reserva').value),
+        estado: document.getElementById('edit-estado').value,
+        sustituto_id: document.getElementById('edit-sustituto-id').value || null
+    };
+
+    if(!datos.id) return;
+
+    const res = await fetch('/api/editar-piloto', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify(datos)        if(res.ok) {
             document.getElementById('msg-editar').innerText = "¡Piloto actualizado con éxito!";
             document.getElementById('form-editar').reset();
             await cargarTodosLosDatos();
