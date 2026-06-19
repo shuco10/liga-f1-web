@@ -11,6 +11,19 @@
         h2 { color: #e10600; text-transform: uppercase; text-align: center; font-size: 18px; }
 
         /* Contenedor principal estilo Mercedes */
+
+#btn-plata-resultado {
+    background-color: #A5A9B4; /* Tono plata */
+    color: #000000;           /* Texto negro */
+    border: 1px solid #707070;
+}
+
+#btn-plata-resultado:hover {
+    background-color: #898E99; /* Plata más oscuro al pasar el ratón */
+    color: #ffffff;
+}
+
+    
 #admin-carreras {
     background-color: #1e1e1e; /* Gris oscuro profundo */
     border: 1px solid #4a4a4a;
@@ -275,7 +288,7 @@
         <label>Posición</label>
         <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
     </div>
-    <button onclick="guardarResultado()" class="btn-accion">GUARDAR RESULTADO</button>
+    <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
 </div>
 
         <hr style="border-color: #444; margin: 20px 0;">
