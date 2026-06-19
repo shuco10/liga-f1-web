@@ -193,7 +193,12 @@
 
         
         .admin-only { display: none; }     
-
+.seccion {
+    display: none;
+}
+.seccion.activa {
+    display: block;
+}
 
 
         
@@ -412,36 +417,58 @@
             11: '/logos/cadillac.png'
         };
 
+// Tu función irA corregida
 function irA(evento, idSeccion) {
-    // 1. Ocultar todas las secciones
+    // Ocultar todas las secciones
     document.querySelectorAll('.seccion').forEach(s => {
         s.style.display = 'none';
         s.classList.remove('activa');
     });
     
-    // 2. Desactivar todos los botones
+    // Desactivar botones
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
-    // 3. Mostrar la sección destino
+    // Mostrar la elegida
     const seccionDestino = document.getElementById(idSeccion);
     if (seccionDestino) {
         seccionDestino.style.display = 'block';
         seccionDestino.classList.add('activa');
     }
     
-    // 4. Activar el botón clicado
+    // Activar botón pulsado
     if (evento && evento.currentTarget) {
         evento.currentTarget.classList.add('active');
     }
     
-    // 5. NUEVO: Llamar a la carga de datos según la sección
-    if (idSeccion === 'seccion-circuitos') {
+    // Carga de datos
+    if (idSeccion === 'seccion-noticias') {
+        cargarNoticias();
+    } else if (idSeccion === 'seccion-circuitos') {
         cargarCircuitos();
     } else if (idSeccion !== 'panel-admin') {
-        // Solo cargar datos generales si no es panel admin
         cargarTodosLosDatos();
     }
 }
+
+// ESTE ES EL ARRANQUE LIMPIO
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Asegurar que todo esté oculto al arrancar
+    document.querySelectorAll('.seccion').forEach(s => s.style.display = 'none');
+    
+    // 2. Activar Noticias
+    const noticias = document.getElementById('seccion-noticias');
+    if (noticias) {
+        noticias.style.display = 'block';
+        noticias.classList.add('activa');
+    }
+    
+    // 3. Activar el botón de noticias visualmente
+    const btnNoticias = document.querySelector('[onclick*="seccion-noticias"]');
+    if (btnNoticias) btnNoticias.classList.add('active');
+    
+    // 4. Cargar datos iniciales
+    cargarNoticias();
+});
 
 function verificarPassword() {
         const pass = document.getElementById('pass-comisario').value;
