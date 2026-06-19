@@ -506,6 +506,7 @@ async function cargarDesplegablesAdmin() {
     try {
         // 1. Cargar Circuitos
         const resC = await fetch('/api/circuitos');
+        if (!resC.ok) throw new Error("Error cargando circuitos");
         const circuitos = await resC.json();
         const selCircuito = document.getElementById('select-circuito-admin');
         if (selCircuito) {
@@ -513,18 +514,21 @@ async function cargarDesplegablesAdmin() {
                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-        // 2. Cargar Escuderías (¡AQUÍ ESTABA EL FALLO, FALTABA ESTO!)
-const resE = await fetch('/api/escuderias');
-const escuderias = await resE.json();
-const selEscuderia = document.getElementById('select-escuderia-carrera');
-if (selEscuderia) {
-    selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                             escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-}
+        // 2. Cargar Escuderías (CORREGIDO)
+        const resE = await fetch('/api/escuderias');
+        if (!resE.ok) throw new Error("Error cargando escuderías");
+        const escuderias = await resE.json();
+        const selEscuderia = document.getElementById('select-escuderia-carrera');
+        if (selEscuderia) {
+            selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
+                                     escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+        }
 
         // 3. Cargar Pilotos
         const resP = await fetch('/api/lista-de-pilotos');
+        if (!resP.ok) throw new Error("Error cargando pilotos");
         const pilotos = await resP.json();
+        
         pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
         const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
@@ -541,8 +545,12 @@ if (selEscuderia) {
                 });
             }
         });
+
+        console.log("Datos cargados correctamente");
+
     } catch (err) {
         console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
+        alert("Error al cargar los datos. Revisa la consola (F12) para más detalles.");
     }
 }
 
