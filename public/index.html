@@ -497,47 +497,40 @@ async function cargarTodosLosDatos() {
     }
 }
 async function cargarDesplegablesAdmin() {
-    // 1. Solo ejecutar si estamos en la página de admin
-    // Buscamos un elemento clave que solo existe en admin
-    const esPaginaAdmin = document.getElementById('select-escuderia-carrera') !== null;
-    
-    // Si no es admin Y no es la página de carga, salir para no dar error
+    // 1. Protección: Si no somos admin, no hacemos nada (esto evita errores en la web pública)
     if (localStorage.getItem('rol') !== 'admin') return;
 
     try {
+        // Obtenemos los datos (si falla, devolvemos un array vacío para no romper nada)
         const [resC, resE, resP] = await Promise.all([
             fetch('/api/circuitos').then(r => r.ok ? r.json() : []),
             fetch('/api/escuderias').then(r => r.ok ? r.json() : []),
             fetch('/api/lista-de-pilotos').then(r => r.ok ? r.json() : [])
         ]);
 
-        // 2. Solo rellenar si el elemento existe (esto evita el error de 'null')
-        if (document.getElementById('select-circuito-admin')) {
-            document.getElementById('select-circuito-admin').innerHTML = 
-                '<option value="">-- Selecciona circuito --</option>' + 
-                resC.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        // 2. BLINDAJE: Solo intentamos rellenar los selects SI el ID existe en ESTA página
+        
+        // Rellenar Circuitos
+        const selCircuito = document.getElementById('select-circuito-admin');
+        if (selCircuito) {
+            selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
+                                    resC.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-        if (document.getElementById('select-escuderia-carrera')) {
-            document.getElementById('select-escuderia-carrera').innerHTML = 
-                '<option value="">-- Selecciona escudería --</option>' + 
-                resE.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-        }
-
-        // 3. Rellenar Escuderías (Solo si existe en el DOM)
+        // Rellenar Escuderías
         const selEscuderia = document.getElementById('select-escuderia-carrera');
         if (selEscuderia) {
             selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
                                      resE.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
         }
 
-        // 4. Rellenar Pilotos en todos los selectores necesarios
-        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
+        // Rellenar Pilotos (recorriendo todos los posibles IDs)
+        const idsPilotos = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
         resP.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
-        ids.forEach(id => {
+        idsPilotos.forEach(id => {
             const el = document.getElementById(id);
-            if (el) { // <--- EL BLINDAJE: Solo actúa si el elemento existe
+            if (el) { // <--- ESTO EVITA EL ERROR NULL
                 el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
                 resP.forEach(p => {
                     const opt = document.createElement('option');
@@ -548,11 +541,10 @@ async function cargarDesplegablesAdmin() {
             }
         });
 
-} catch (err) {
+    } catch (err) {
         console.error("Error al cargar:", err);
     }
-}
-    function autocompletarFormEdicion() {
+}    function autocompletarFormEdicion() {
         const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
         const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
         if(piloto) {
