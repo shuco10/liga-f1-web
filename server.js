@@ -26,18 +26,7 @@ async function inicializarBaseDeDatos() {
                 color_hex VARCHAR(7)
             );
         `);
-async function inicializarBaseDeDatos() {
-    try {
-        console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
 
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS escuderias (
-                id SERIAL PRIMARY KEY,
-                nombre VARCHAR(100) NOT NULL,
-                color_hex VARCHAR(7),
-                puntos INT DEFAULT 0  // <--- AÑADE ESTA LÍNEA AQUÍ
-            );
-        `);
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
@@ -59,8 +48,6 @@ async function inicializarBaseDeDatos() {
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS podios INT DEFAULT 0;`); } catch(e){}
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS foto_url TEXT DEFAULT '';`); } catch(e){}
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS es_reserva INT DEFAULT 0;`); } catch(e){}
-        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS estado VARCHAR(20) DEFAULT 'presente';`); } catch(e){}
-        try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS sustituto_id INT DEFAULT NULL;`); } catch(e){}
 
         const resEscuderias = await pool.query('SELECT COUNT(*) FROM escuderias');
         if (parseInt(resEscuderias.rows[0].count) === 0) {
@@ -89,15 +76,14 @@ inicializarBaseDeDatos();
 // RUTA 1: Obtener clasificación
 app.get('/api/lista-de-pilotos', async (req, res) => {
     try {
-const querySQL = `
-    SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url, es_reserva, 
-           estado, sustituto_id, 
-           (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
-           (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
-           puntos_totales, victorias
-    FROM pilotos
-    ORDER BY es_reserva ASC, puntos_totales DESC, victorias DESC, podios DESC;
-`;
+        const querySQL = `
+            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url, es_reserva,
+                   (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
+                   (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
+                   puntos_totales, victorias
+            FROM pilotos
+            ORDER BY es_reserva ASC, puntos_totales DESC, victorias DESC, podios DESC;
+        `;
         const { rows } = await pool.query(querySQL);
         res.json(rows);
     } catch (err) {
@@ -121,56 +107,42 @@ app.post('/api/nuevo-piloto', async (req, res) => {
     }
 });
 
+// RUTA 2B: Editar piloto
 app.post('/api/editar-piloto', async (req, res) => {
-    const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url, es_reserva, estado, sustituto_id } = req.body;
-    
-    // VALIDACIÓN ESTRICTA: Si es null o undefined, el servidor rechazará la petición
-    // Esto te evitará el problema de que se ponga Cadillac por error
-    if (!escuderia_id || escuderia_id === 0) {
-        console.error("Error: Se intentó guardar un piloto sin escudería válida");
-        return res.status(400).send("Error: Escudería no válida");
-    }
-
+    const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url, es_reserva } = req.body;
     try {
         await pool.query(`
             UPDATE pilotos 
-            SET gamertag = $1, 
-                numero_piloto = $2, 
-                plataforma = $3, 
-                escuderia_id = $4, 
-                foto_url = $5, 
-                es_reserva = $6,
-                estado = $7,
-                sustituto_id = $8
-            WHERE id = $9
-        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', es_reserva || 0, estado, sustituto_id, id]);
-        
+            SET gamertag = $1, numero_piloto = $2, plataforma = $3, escuderia_id = $4, foto_url = $5, es_reserva = $6 
+            WHERE id = $7
+        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', es_reserva || 0, id]);
         res.sendStatus(200);
     } catch (err) {
-        console.error("Error al actualizar piloto:", err);
+        console.error(err);
         res.status(500).send("Error al editar el piloto");
     }
 });
 
 // RUTA 3: Subir resultados
-// CORRECCIÓN en RUTA: Subir resultados (la tabla es 'escuderias')
 app.post('/api/subir-resultado', async (req, res) => {
-    const { piloto_id, posicion_carrera, escuderia_id } = req.body;
+    const { piloto_id, posicion_carrera } = req.body;
     const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntosA_Sumar = tablaPuntos[posicion_carrera] || 0;
     
+    const puntosA_Sumar = tablaPuntos[posicion_carrera] || 0;
+    const esVictoria = posicion_carrera === 1 ? 1 : 0;
+    const esPodio = (posicion_carrera >= 1 && posicion_carrera <= 3) ? 1 : 0;
+
     try {
-        const equipoParaSumar = escuderia_id || (await pool.query('SELECT escuderia_id FROM pilotos WHERE id = $1', [piloto_id])).rows[0].escuderia_id;
-
-        // Sumar puntos a piloto
-        await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosA_Sumar, piloto_id]);
-
-        // SUMAR PUNTOS A LA TABLA ESCUDERIAS (Corregido nombre de tabla)
-        await pool.query('UPDATE escuderias SET puntos = puntos + $1 WHERE id = $2', [puntosA_Sumar, equipoParaSumar]);
-
+        await pool.query(`
+            UPDATE pilotos 
+            SET puntos_totales = puntos_totales + $1, 
+                victorias = victorias + $2,
+                podios = podios + $3
+            WHERE id = $4
+        `, [puntosA_Sumar, esVictoria, esPodio, piloto_id]);
         res.sendStatus(200);
     } catch (err) { 
-        console.error("Error al subir resultado:", err);
+        console.error(err);
         res.sendStatus(500); 
     }
 });
@@ -329,25 +301,7 @@ app.get('/api/corregir-circuitos', async (req, res) => {
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
 
-// RUTA: Obtener lista de escuderías
-app.get('/api/escuderias', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM escuderias ORDER BY id ASC');
-        res.json(result.rows);
-    } catch (err) {
-        console.error("Error en /api/escuderias:", err);
-        res.status(500).json({ error: "Error al obtener escuderías" });
-    }
-});
 
-app.get('/api/circuitos', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM circuitos');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: "Error al obtener circuitos" });
-    }
-});
 
 
 app.listen(PORT, () => {
