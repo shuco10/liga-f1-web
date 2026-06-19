@@ -421,16 +421,16 @@
         };
 
 function irA(evento, idSeccion) {
-    // 1. Ocultar todas las secciones y quitar clase 'activa'
+    // 1. Ocultar todas las secciones
     document.querySelectorAll('.seccion').forEach(s => {
         s.style.display = 'none';
         s.classList.remove('activa');
     });
     
-    // 2. Desactivar todos los botones de navegación
+    // 2. Desactivar todos los botones
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
-    // 3. Mostrar la sección destino y añadir clase 'activa'
+    // 3. Mostrar la sección destino
     const seccionDestino = document.getElementById(idSeccion);
     if (seccionDestino) {
         seccionDestino.style.display = 'block';
@@ -442,15 +442,11 @@ function irA(evento, idSeccion) {
         evento.currentTarget.classList.add('active');
     }
     
-    // 5. Lógica de carga (CORREGIDA)
-    if (idSeccion === 'seccion-noticias') {
-        cargarNoticias();
-    } else if (idSeccion === 'seccion-circuitos') {
+    // 5. NUEVO: Llamar a la carga de datos según la sección
+    if (idSeccion === 'seccion-circuitos') {
         cargarCircuitos();
-    } else if (idSeccion === 'panel-admin') {
-        // No hacer nada especial, solo mostrar
-    } else {
-        // Esto captura todas las demás: Pilotos, Constructores, Sanciones
+    } else if (idSeccion !== 'panel-admin') {
+        // Solo cargar datos generales si no es panel admin
         cargarTodosLosDatos();
     }
 }
