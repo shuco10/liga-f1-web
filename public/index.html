@@ -558,28 +558,28 @@ async function cargarDesplegablesAdmin() {
         // 1. Cargar Circuitos
         const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
-        const selCircuito = document.getElementById('select-circuito'); // Asegúrate que este ID existe en tu HTML
+        const selCircuito = document.getElementById('select-circuito');
         if (selCircuito) {
             selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
                                    circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-// 2. Cargar Escuderías (CORREGIDO PARA TODOS LOS FORMULARIOS)
-const resE = await fetch('/api/escuderias');
-const escuderias = await resE.json();
+        // 2. Cargar Escuderías
+        const resE = await fetch('/api/escuderias');
+        const escuderias = await resE.json();
+        
+        // IDs que tienes en tu HTML para las escuderías
+        const idsEscuderia = ['select-escuderia', 'select-escuderia-carrera', 'edit-escuderia', 'edit-escuderia-reserva'];
+        
+        idsEscuderia.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
+                               escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+            }
+        });
 
-// Lista de todos los IDs donde debe aparecer el desplegable de escuderías
-const idsEscuderia = ['select-escuderia', 'select-escuderia-carrera', 'edit-escuderia', 'edit-escuderia-reserva'];
-
-idsEscuderia.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-        el.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                       escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-    }
-});
-
-        // 3. Cargar Pilotos (Lo que ya tenías)
+        // 3. Cargar Pilotos
         const res = await fetch('/api/lista-de-pilotos');
         const pilotos = await res.json();
         pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
@@ -592,8 +592,9 @@ idsEscuderia.forEach(id => {
                                pilotos.map(p => `<option value="${p.id}">#${p.numero_piloto} - ${p.gamertag}</option>`).join('');
             }
         });
+
     } catch (err) {
-        console.error("Error al cargar:", err);
+        console.error("Error al cargar desplegables:", err);
     }
 }
 // --- FUNCIÓN CORREGIDA ---
