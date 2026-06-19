@@ -19,13 +19,18 @@ async function inicializarBaseDeDatos() {
     try {
         console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
 
+        // Crear tabla escuderias con la columna puntos
         await pool.query(`
             CREATE TABLE IF NOT EXISTS escuderias (
                 id SERIAL PRIMARY KEY,
                 nombre VARCHAR(100) NOT NULL,
-                color_hex VARCHAR(7)
+                color_hex VARCHAR(7),
+                puntos INT DEFAULT 0
             );
         `);
+
+        // Parche de seguridad: Asegura que la columna puntos exista incluso si la tabla ya estaba creada
+        await pool.query(`ALTER TABLE escuderias ADD COLUMN IF NOT EXISTS puntos INT DEFAULT 0;`);
 
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
@@ -42,7 +47,6 @@ async function inicializarBaseDeDatos() {
                 es_reserva INT DEFAULT 0
             );
         `);
-
         // Parches de columnas por si la tabla ya existía
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS numero_piloto INT DEFAULT 0;`); } catch(e){}
         try { await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS podios INT DEFAULT 0;`); } catch(e){}
