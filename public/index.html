@@ -440,17 +440,19 @@ async function cargarTodosLosDatos() {
             });
         }
 
-// 2. TABLA CONSTRUCTORES (Lógica Corregida)
+// 2. TABLA CONSTRUCTORES (Versión a prueba de errores)
 const constructoresMap = {};
 
 listaPilotosGlobal.forEach(p => {
-    // Si el piloto tiene escudería, lo sumamos. 
-    // Quitamos la condición !p.es_reserva para que los reservas que sustituyen SUMEN.
-    if(p.escuderia_id) { 
-        if(!constructoresMap[p.escuderia_id]) {
-            constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex };
+    // Convertimos a número para asegurar que coincidan 1 con "1"
+    const id = parseInt(p.escuderia_id); 
+    
+    if(!isNaN(id)) { 
+        if(!constructoresMap[id]) {
+            constructoresMap[id] = { puntos: 0, color: p.color_hex || '#444' };
         }
-        constructoresMap[p.escuderia_id].puntos += p.puntos_totales;
+        // Aseguramos que puntos_totales sea un número antes de sumar
+        constructoresMap[id].puntos += Number(p.puntos_totales) || 0;
     }
 });
 
