@@ -564,20 +564,29 @@ async function cargarDesplegablesAdmin() {
                                    circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-        // 2. Cargar Escuderías
-        const resE = await fetch('/api/escuderias');
-        const escuderias = await resE.json();
-        
-        // IDs que tienes en tu HTML para las escuderías
-        const idsEscuderia = ['select-escuderia', 'select-escuderia-carrera', 'edit-escuderia', 'edit-escuderia-reserva'];
-        
-        idsEscuderia.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                               escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-            }
-        });
+// 2. Cargar Escuderías
+try {
+    const resE = await fetch('/api/escuderias');
+    const escuderiasRaw = await resE.json();
+    
+    // DEBUG: Mira en la consola qué es 'escuderiasRaw'
+    console.log("Datos recibidos de escuderías:", escuderiasRaw);
+
+    // Aseguramos que trabajamos con un array
+    const escuderias = Array.isArray(escuderiasRaw) ? escuderiasRaw : (escuderiasRaw.data || []);
+
+    const idsEscuderia = ['select-escuderia', 'select-escuderia-carrera', 'edit-escuderia', 'edit-escuderia-reserva'];
+    
+    idsEscuderia.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
+                           escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+        }
+    });
+} catch (e) {
+    console.error("Error al procesar escuderías:", e);
+}
 
         // 3. Cargar Pilotos
         const res = await fetch('/api/lista-de-pilotos');
