@@ -216,13 +216,7 @@
 
     <div id="contenido-admin" style="display: none;">
         
-        <div id="admin-carreras">
-            <h3>Cargar Resultados de Carrera</h3>
-            <select id="select-circuito-admin"></select>
-            <select id="select-piloto-admin"></select>
-            <input type="number" id="input-posicion" placeholder="Posición final">
-            <button onclick="guardarResultado()">Guardar Resultado</button>
-        </div>
+
 
         <hr style="border-color: #444; margin: 20px 0;">
         <h3>1. Inscribir Nuevo Piloto</h3>
@@ -301,26 +295,31 @@
 <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
 </form>
         <hr style="border-color: #444; margin: 30px 0;">
-<h3>2. Añadir Resultado de Carrera</h3>
-<form id="form-carrera">
-    <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto" required></select></div>
-    
-    <div class="form-group">
-        <label>Escudería que suma los puntos:</label>
-        <select id="select-escuderia-carrera" required>
-            <option value="1">Red Bull Racing</option><option value="2">Ferrari</option>
-            <option value="3">Mercedes-AMG</option><option value="4">McLaren</option>
-            <option value="5">Aston Martin</option><option value="6">Alpine</option>
-            <option value="7">Williams</option><option value="8">Visa Cash App RB</option>
-            <option value="9">Audi</option><option value="10">Haas</option>
-            <option value="11">Cadillac</option>
-        </select>
-    </div>
 
-    <div class="form-group"><label>Posición Final:</label><input type="number" id="posicion_carrera" min="1" max="20" required></div>
-    <button type="submit" class="btn-accion" style="background-color: #0078d4;">Aplicar Puntos</button>
+        
+    <h3>Cargar Resultado de Carrera</h3>
+        <form id="form-carrera-maestro">
+        <div class="form-group">
+        <label>Circuito:</label>
+        <select id="select-circuito" required></select>
+    </div>
+    <div class="form-group">
+        <label>Piloto:</label>
+        <select id="select-piloto" required></select>
+    </div>
+    <div class="form-group">
+        <label>Escudería que suma puntos:</label>
+        <select id="select-escuderia" required>
+            </select>
+    </div>
+    <div class="form-group">
+        <label>Posición Final:</label>
+        <input type="number" id="posicion_carrera" min="1" max="20" required>
+    </div>
+    <button type="submit" class="btn-accion" style="background-color: #0078d4;">Guardar Resultado Completo</button>
     <div id="msg-carrera" class="mensaje"></div>
 </form>
+        
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>3. Aplicar Penalización de Licencia</h3>
