@@ -253,12 +253,7 @@
             <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
             <div class="form-group">
                 <label>Nueva Escudería:</label>
-                <select id="edit-escuderia">
-                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
-                </select>
+                <select id="select-escuderia-carrera" required></select>
             </div>
             <div class="form-group">
                 <label>Nuevo Rol:</label>
@@ -519,13 +514,13 @@ async function cargarDesplegablesAdmin() {
         }
 
         // 2. Cargar Escuderías (¡AQUÍ ESTABA EL FALLO, FALTABA ESTO!)
-        const resE = await fetch('/api/escuderias');
-        const escuderias = await resE.json();
-        const selEscuderia = document.getElementById('select-escuderia-carrera');
-        if (selEscuderia) {
-            selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                                     escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-        }
+const resE = await fetch('/api/escuderias');
+const escuderias = await resE.json();
+const selEscuderia = document.getElementById('select-escuderia-carrera');
+if (selEscuderia) {
+    selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
+                             escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+}
 
         // 3. Cargar Pilotos
         const resP = await fetch('/api/lista-de-pilotos');
