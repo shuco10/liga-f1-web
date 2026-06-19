@@ -497,56 +497,40 @@ async function cargarTodosLosDatos() {
     }
 }
 async function cargarDesplegablesAdmin() {
-    // PROTECCIÓN
-    if (localStorage.getItem('rol') !== 'admin') {
-        console.warn("Acceso denegado.");
-        return; 
-    }
+    // 1. Protección de acceso
+    if (localStorage.getItem('rol') !== 'admin') return;
 
     try {
-        // 1. Cargar Circuitos
-        const resC = await fetch('/api/circuitos');
-        if (!resC.ok) throw new Error("Error cargando circuitos");
-        const circuitos = await resC.json();
+        // --- PROCESO SEGURO DE CARGA DE DATOS ---
+        const [resC, resE, resP] = await Promise.all([
+            fetch('/api/circuitos').then(r => r.json()).catch(() => []),
+            fetch('/api/escuderias').then(r => r.json()).catch(() => []),
+            fetch('/api/lista-de-pilotos').then(r => r.json()).catch(() => [])
+        ]);
+
+        // 2. Rellenar Circuitos (Si existe el elemento)
         const selCircuito = document.getElementById('select-circuito-admin');
         if (selCircuito) {
             selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
-                                    circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+                                    resC.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-// --- 2. Cargar Escuderías (VERSION SEGURA) ---
-const selEscuderia = document.getElementById('select-escuderia-carrera');
-
-if (selEscuderia) { // <--- ESTO ES LO MÁS IMPORTANTE
-    try {
-        const resE = await fetch('/api/escuderias');
-        if (resE.ok) {
-            const escuderias = await resE.json();
+        // 3. Rellenar Escuderías (Si existe el elemento)
+        const selEscuderia = document.getElementById('select-escuderia-carrera');
+        if (selEscuderia) {
             selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                                     escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+                                     resE.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
         }
-    } catch (err) {
-        console.error("No se pudieron cargar las escuderías:", err);
-    }
-} else {
-    // Es normal que esto salte en index.html, no es un error, es que no hay formulario ahí
-    console.log("Página pública: saltando carga de formulario de admin.");
-}
 
-        // 3. Cargar Pilotos
-        const resP = await fetch('/api/lista-de-pilotos');
-        if (!resP.ok) throw new Error("Error cargando pilotos");
-        const pilotos = await resP.json();
-        
-        pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
-
+        // 4. Rellenar Pilotos (Si existe el elemento)
         const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
+        resP.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
         ids.forEach(id => {
             const el = document.getElementById(id);
-            if (el) {
+            if (el) { // <--- EL BLINDAJE: Solo si el elemento existe en el HTML actual
                 el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-                pilotos.forEach(p => {
+                resP.forEach(p => {
                     const opt = document.createElement('option');
                     opt.value = p.id;
                     opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
@@ -555,14 +539,10 @@ if (selEscuderia) { // <--- ESTO ES LO MÁS IMPORTANTE
             }
         });
 
-        console.log("Datos cargados correctamente");
-
     } catch (err) {
-        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
-        alert("Error al cargar los datos. Revisa la consola (F12) para más detalles.");
+        console.error("Error en carga de datos:", err);
     }
 }
-
     function autocompletarFormEdicion() {
         const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
         const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
