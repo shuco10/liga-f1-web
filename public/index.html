@@ -270,23 +270,21 @@
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>2. Añadir Resultado de Carrera</h3>
-        <form id="form-carrera">
-            <div id="admin-carreras">
-            <select id="select-circuito-admin"></select>
-            <select id="select-piloto-admin"></select>
-                <div class="form-group">
-                <label>Escudería:</label>
-                <select id="select-escuderia-carrera">
-                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
-                </select>
-                </div>
-            <input type="number" id="input-posicion" placeholder="Posición final">
-            <button onclick="guardarResultado()">Guardar Resultado</button>
-            </div>                
-        </form>
+<form id="form-carrera">
+    <div id="admin-carreras">
+        <select id="select-circuito-admin" required></select>
+        <select id="select-piloto-admin" required></select>
+        
+        <div class="form-group">
+            <label>Escudería:</label>
+            <select id="select-escuderia-carrera" required></select>
+        </div>
+
+        <input type="number" id="input-posicion" placeholder="Posición final" required min="1" max="20">
+        
+        <button type="submit">Guardar Resultado</button>
+    </div>
+</form>
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>3. Aplicar Penalización de Licencia</h3>
