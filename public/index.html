@@ -376,9 +376,18 @@ async function cargarTodosLosDatos() {
         if (!res.ok) return;
         listaPilotosGlobal = await res.json();
         
+        // --- CÁLCULO DE PODIOS ---
+        const resResultados = await fetch('/api/todos-los-resultados');
+        const resultados = await resResultados.json();
+
+        // Mapeamos los podios a cada piloto antes de ordenar y pintar
+        listaPilotosGlobal.forEach(p => {
+            p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
+        });
+
         // ORDENAR: Importante para que el podio sea correcto
         listaPilotosGlobal.sort((a, b) => b.puntos_totales - a.puntos_totales);
-
+        
         // 1. TABLA PILOTOS
         const tPilotos = document.getElementById('tabla-pilotos');
         if(tPilotos) {
@@ -430,10 +439,11 @@ async function cargarTodosLosDatos() {
                 constructoresMap[p.escuderia_id].puntos += p.puntos_totales;
             }
         });
+
         const listaConstructores = Object.keys(constructoresMap)
             .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
             .sort((a,b) => b.puntos - a.puntos);
-            
+        
         const tConst = document.getElementById('tabla-constructores');
         if(tConst) {
             tConst.innerHTML = '';
@@ -458,33 +468,33 @@ async function cargarTodosLosDatos() {
         }
 
         // 3. TABLA SANCIONES
-                const tSanciones = document.getElementById('tabla-sanciones');
-                if(tSanciones) {
-                    tSanciones.innerHTML = '';
-                    listaPilotosGlobal.forEach(p => {
-                        const licenciaActual = 12 - (p.puntos_sancion || 0);
-                        const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
-                        const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
-                        const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
-                
-                        tSanciones.innerHTML += `
-                             <tr>
-                                <td>
-                                    <div class="piloto-contenedor">
-                                        <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" style="width:28px; height:28px;">
-                                        <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
-                                        ${p.gamertag}
-                                    </div>
-                                </td>
-                                <td>
-                                    ${p.es_reserva ? '-' : (logoUrl ? `<img src="${logoUrl}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : '')}
-                                    ${p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}
-                                </td>
-                                <td><strong style="color:${licenciaActual < 5 ? 'orange' : 'white'}">${licenciaActual} / 12</strong></td>
-                                <td>${estado}</td>
-                            </tr>`;
-                    });
-                }
+        const tSanciones = document.getElementById('tabla-sanciones');
+        if(tSanciones) {
+            tSanciones.innerHTML = '';
+            listaPilotosGlobal.forEach(p => {
+                const licenciaActual = 12 - (p.puntos_sancion || 0);
+                const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
+                const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
+                const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
+        
+                tSanciones.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="piloto-contenedor">
+                                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" style="width:28px; height:28px;">
+                                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                                ${p.gamertag}
+                            </div>
+                        </td>
+                        <td>
+                            ${p.es_reserva ? '-' : (logoUrl ? `<img src="${logoUrl}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : '')}
+                            ${p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}
+                        </td>
+                        <td><strong style="color:${licenciaActual < 5 ? 'orange' : 'white'}">${licenciaActual} / 12</strong></td>
+                        <td>${estado}</td>
+                    </tr>`;
+            });
+        }
 
     } catch (e) {
         console.error("Error al cargar:", e);
