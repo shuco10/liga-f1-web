@@ -959,6 +959,36 @@ async function verificarPassword() {
         location.reload(); // Recarga para ver el cambio
     }
 }
+// --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
+async function cargarNoticias() {
+    const contenedor = document.getElementById('lista-noticias');
+    
+    try {
+        const respuesta = await fetch('/api/noticias');
+        const noticias = await respuesta.json();
+        
+        contenedor.innerHTML = ''; // Limpiamos el "Cargando..."
+        
+        noticias.forEach(noticia => {
+            const div = document.createElement('div');
+            div.style.marginBottom = "15px";
+            div.style.padding = "10px";
+            div.style.borderBottom = "1px solid #444";
+            div.innerHTML = `
+                <h4 style="margin: 0; color: #00d2be;">${noticia.titulo}</h4>
+                <p style="margin: 5px 0;">${noticia.contenido}</p>
+                <small style="color: #888;">${new Date(noticia.fecha).toLocaleDateString()}</small>
+            `;
+            contenedor.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Error cargando noticias:", error);
+    }
+}
+
+// IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
+document.addEventListener('DOMContentLoaded', cargarNoticias);
+    
     </script>
 
         <div id="zona-reset" class="admin-only" style="text-align: center; display: none; padding: 20px; background: #1a1a1a; border-radius: 8px; margin: 20px;">
