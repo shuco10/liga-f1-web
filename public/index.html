@@ -216,7 +216,13 @@
 
     <div id="contenido-admin" style="display: none;">
         
-
+        <div id="admin-carreras">
+            <h3>Cargar Resultados de Carrera</h3>
+            <select id="select-circuito-admin"></select>
+            <select id="select-piloto-admin"></select>
+            <input type="number" id="input-posicion" placeholder="Posición final">
+            <button onclick="guardarResultado()">Guardar Resultado</button>
+        </div>
 
         <hr style="border-color: #444; margin: 20px 0;">
         <h3>1. Inscribir Nuevo Piloto</h3>
@@ -244,82 +250,40 @@
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>✏️ 1B. Editar Piloto Existente</h3>
-<form id="form-editar">
-    <div class="form-group">
-        <label>Selecciona el Piloto a Modificar:</label>
-        <select id="select-piloto-editar" onchange="autocompletarFormEdicion()" required></select>
-    </div>
-    <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
-    <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
-    <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo"></div>
-    <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
-    
-    <div class="form-group">
-        <label>Escudería del Piloto:</label>
-        <select id="edit-escuderia" required>
-            <option value="1">Red Bull Racing</option><option value="2">Ferrari</option>
-            <option value="3">Mercedes-AMG</option><option value="4">McLaren</option>
-            <option value="5">Aston Martin</option><option value="6">Alpine</option>
-            <option value="7">Williams</option><option value="8">Visa Cash App RB</option>
-            <option value="9">Audi</option><option value="10">Haas</option>
-            <option value="11">Cadillac</option>
-        </select>
-    </div>
+        <form id="form-editar">
+            <div class="form-group">
+                <label>Selecciona el Piloto a Modificar:</label>
+                <select id="select-piloto-editar" onchange="autocompletarFormEdicion()" required></select>
+            </div>
+            <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
+            <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
+            <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo de Discord"></div>
+            <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
+            <div class="form-group">
+                <label>Nueva Escudería:</label>
+                <select id="edit-escuderia">
+                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
+                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
+                    <option value="10">Haas</option><option value="11">Cadillac</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nuevo Rol:</label>
+                <select id="edit-es_reserva"><option value="0">Titular</option><option value="1">Reserva</option></select>
+            </div>
+            <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
+            <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
+        </form>
 
-    <div class="form-group">
-        <label>Estado del Piloto:</label>
-        <select id="edit-estado" onchange="mostrarSustituto()">
-            <option value="presente">Presente</option>
-            <option value="ausente">Ausente</option>
-        </select>
-    </div>
-
-<div class="form-group" id="contenedor-sustituto" style="display: none;">
-    <label>Seleccionar Reserva para sustituir:</label>
-    <select id="edit-sustituto-id"></select>
-
-    <label style="margin-top: 10px; display: block;">Escudería para los puntos del reserva:</label>
-    <select id="edit-escuderia-reserva">
-        <option value="1">Red Bull Racing</option><option value="2">Ferrari</option>
-        <option value="3">Mercedes-AMG</option><option value="4">McLaren</option>
-        <option value="5">Aston Martin</option><option value="6">Alpine</option>
-        <option value="7">Williams</option><option value="8">Visa Cash App RB</option>
-        <option value="9">Audi</option><option value="10">Haas</option>
-        <option value="11">Cadillac</option>
-    </select>
-</div>
-
-<input type="hidden" id="edit-es_reserva">
-
-<button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
-<div id="msg-editar" class="mensaje" style="color: #229971;"></div>
-</form>
         <hr style="border-color: #444; margin: 30px 0;">
-
-        
-    <h3>Cargar Resultado de Carrera</h3>
-        <form id="form-carrera-maestro">
-        <div class="form-group">
-        <label>Circuito:</label>
-        <select id="select-circuito" required></select>
-    </div>
-    <div class="form-group">
-        <label>Piloto:</label>
-        <select id="select-piloto" required></select>
-    </div>
-    <div class="form-group">
-        <label>Escudería que suma puntos:</label>
-        <select id="select-escuderia" required>
-            </select>
-    </div>
-    <div class="form-group">
-        <label>Posición Final:</label>
-        <input type="number" id="posicion_carrera" min="1" max="20" required>
-    </div>
-    <button type="submit" class="btn-accion" style="background-color: #0078d4;">Guardar Resultado Completo</button>
-    <div id="msg-carrera" class="mensaje"></div>
-</form>
-        
+        <h3>2. Añadir Resultado de Carrera</h3>
+        <form id="form-carrera">
+            <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto" required></select></div>
+            <div class="form-group"><label>Posición Final:</label><input type="number" id="posicion_carrera" min="1" max="20" required></div>
+            <button type="submit" class="btn-accion" style="background-color: #0078d4;">Aplicar Puntos</button>
+            <div id="msg-carrera" class="mensaje"></div>
+        </form>
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>3. Aplicar Penalización de Licencia</h3>
@@ -341,13 +305,6 @@
 </div>
 
     <script>
-
-
-// Variables a definir
-        let pilotoEnEdicion = null; // Necesaria para mantener los datos originales durante la edición
-
-
-        
         const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
         const NOMBRES_ESCUDERIAS = {
             1: 'Red Bull Racing', 2: 'Ferrari', 3: 'Mercedes-AMG', 4: 'McLaren',
@@ -472,21 +429,16 @@ async function cargarTodosLosDatos() {
             });
         }
 
-// 2. TABLA CONSTRUCTORES (Versión a prueba de errores)
-const constructoresMap = {};
-
-listaPilotosGlobal.forEach(p => {
-    // Convertimos a número para asegurar que coincidan 1 con "1"
-    const id = parseInt(p.escuderia_id); 
-    
-    if(!isNaN(id)) { 
-        if(!constructoresMap[id]) {
-            constructoresMap[id] = { puntos: 0, color: p.color_hex || '#444' };
-        }
-        // Aseguramos que puntos_totales sea un número antes de sumar
-        constructoresMap[id].puntos += Number(p.puntos_totales) || 0;
-    }
-});
+        // 2. TABLA CONSTRUCTORES
+        const constructoresMap = {};
+        listaPilotosGlobal.forEach(p => {
+            if(p.escuderia_id && !p.es_reserva) { 
+                if(!constructoresMap[p.escuderia_id]) {
+                    constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex };
+                }
+                constructoresMap[p.escuderia_id].puntos += p.puntos_totales;
+            }
+        });
 
         const listaConstructores = Object.keys(constructoresMap)
             .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
@@ -544,162 +496,118 @@ listaPilotosGlobal.forEach(p => {
             });
         }
 
-
-
-        
     } catch (e) {
         console.error("Error al cargar:", e);
     }
 }
 async function cargarDesplegablesAdmin() {
-    if (localStorage.getItem('rol') !== 'admin') return;
+    // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
+    if (localStorage.getItem('rol') !== 'admin') {
+        console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
+        return; 
+    }
 
     try {
         // 1. Cargar Circuitos
         const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
-        const selCircuito = document.getElementById('select-circuito');
+        const selCircuito = document.getElementById('select-circuito-admin');
         if (selCircuito) {
+            // Añadimos una opción por defecto vacía para forzar que el admin elija
             selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
-                                   circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-// 2. Cargar Escuderías
-try {
-    const resE = await fetch('/api/escuderias');
-    const escuderiasRaw = await resE.json();
-    
-    // DEBUG: Mira en la consola qué es 'escuderiasRaw'
-    console.log("Datos recibidos de escuderías:", escuderiasRaw);
-
-    // Aseguramos que trabajamos con un array
-    const escuderias = Array.isArray(escuderiasRaw) ? escuderiasRaw : (escuderiasRaw.data || []);
-
-    const idsEscuderia = ['select-escuderia', 'select-escuderia-carrera', 'edit-escuderia', 'edit-escuderia-reserva'];
-    
-    idsEscuderia.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                           escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-        }
-    });
-} catch (e) {
-    console.error("Error al procesar escuderías:", e);
-}
-
-        // 3. Cargar Pilotos
+        // 2. Cargar Pilotos
         const res = await fetch('/api/lista-de-pilotos');
         const pilotos = await res.json();
+        
+        // Ordenamos los pilotos por número antes de pintar los desplegables
         pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
         const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
+
         ids.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>' +
-                               pilotos.map(p => `<option value="${p.id}">#${p.numero_piloto} - ${p.gamertag}</option>`).join('');
+                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
+                pilotos.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
+                    el.appendChild(opt);
+                });
             }
         });
-
     } catch (err) {
-        console.error("Error al cargar desplegables:", err);
+        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
     }
 }
-// --- FUNCIÓN CORREGIDA ---
-function autocompletarFormEdicion() {
-    const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
-    // Asignamos a la variable global
-    pilotoEnEdicion = listaPilotosGlobal.find(p => p.id === idBuscar);
-    
-    if(pilotoEnEdicion) {
-        document.getElementById('edit-gamertag').value = pilotoEnEdicion.gamertag;
-        document.getElementById('edit-numero').value = pilotoEnEdicion.numero_piloto || '';
-        document.getElementById('edit-foto').value = pilotoEnEdicion.foto_url || '';
-        document.getElementById('edit-plataforma').value = pilotoEnEdicion.plataforma;
-        
-        // Asignamos ambos selects de escudería por si acaso
-        document.getElementById('edit-escuderia').value = pilotoEnEdicion.escuderia_id ? pilotoEnEdicion.escuderia_id.toString() : "1";
-        document.getElementById('edit-escuderia-reserva').value = pilotoEnEdicion.escuderia_id ? pilotoEnEdicion.escuderia_id.toString() : "1";
-        
-        document.getElementById('edit-es_reserva').value = pilotoEnEdicion.es_reserva ? "1" : "0";
-        document.getElementById('edit-estado').value = pilotoEnEdicion.estado || 'presente';
-        
-        mostrarSustituto(); 
-        
-        if (pilotoEnEdicion.sustituto_id) {
-            document.getElementById('edit-sustituto-id').value = pilotoEnEdicion.sustituto_id;
+
+    function autocompletarFormEdicion() {
+        const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
+        const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
+        if(piloto) {
+            document.getElementById('edit-gamertag').value = piloto.gamertag;
+            document.getElementById('edit-numero').value = piloto.numero_piloto || '';
+            document.getElementById('edit-foto').value = piloto.foto_url || '';
+            document.getElementById('edit-plataforma').value = piloto.plataforma;
+            document.getElementById('edit-escuderia').value = piloto.escuderia_id || '1';
+            document.getElementById('edit-es_reserva').value = piloto.es_reserva || '0';
         }
     }
-}
 
-// --- MANEJADORES DE FORMULARIOS ---
-
-// [Aquí va tu form-piloto igual que lo tenías]
-
-document.getElementById('form-editar').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const fotoInput = document.getElementById('edit-foto').value;
-    const fotoFinal = (fotoInput && fotoInput.trim() !== '') ? fotoInput : (pilotoEnEdicion ? pilotoEnEdicion.foto_url : '');
-    const estado = document.getElementById('edit-estado').value;
-
-    // LÓGICA CLAVE: Si está ausente, usamos el selector del reserva, si no, el normal
-    const escuderiaFinal = (estado === 'ausente') 
-        ? parseInt(document.getElementById('edit-escuderia-reserva').value) 
-        : parseInt(document.getElementById('edit-escuderia').value);
-
-    const datos = {
-        id: parseInt(document.getElementById('select-piloto-editar').value),
-        gamertag: document.getElementById('edit-gamertag').value,
-        numero_piloto: parseInt(document.getElementById('edit-numero').value),
-        foto_url: fotoFinal,
-        plataforma: document.getElementById('edit-plataforma').value,
-        escuderia_id: escuderiaFinal, 
-        es_reserva: parseInt(document.getElementById('edit-es_reserva').value),
-        estado: estado,
-        sustituto_id: document.getElementById('edit-sustituto-id').value || null
-    };
-
-    if(!datos.id) return;
-
-    const res = await fetch('/api/editar-piloto', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify(datos) 
+    document.getElementById('form-piloto').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = { 
+            gamertag: document.getElementById('gamertag').value, 
+            numero_piloto: parseInt(document.getElementById('numero_piloto').value),
+            foto_url: document.getElementById('foto_url').value,
+            plataforma: document.getElementById('plataforma').value, 
+            escuderia_id: parseInt(document.getElementById('escuderia_id').value),
+            es_reserva: parseInt(document.getElementById('es_reserva').value)
+        };
+        const res = await fetch('/api/nuevo-piloto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+        if(res.ok) { 
+            document.getElementById('msg-piloto').innerText = "¡Piloto inscrito con éxito!"; 
+            document.getElementById('form-piloto').reset(); 
+            await cargarTodosLosDatos(); 
+            await cargarDesplegablesAdmin(); 
+        }
     });
 
-    if(res.ok) {
-        document.getElementById('msg-editar').innerText = "¡Piloto actualizado con éxito!";
-        document.getElementById('form-editar').reset();
-        await cargarTodosLosDatos();
-        await cargarDesplegablesAdmin();
-        setTimeout(() => { document.getElementById('msg-editar').innerText = ""; }, 3000);
-    }
-});
-
-document.getElementById('form-carrera').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // Aquí añadimos 'escuderia_id' capturando el valor del nuevo desplegable
-    const datos = { 
-        piloto_id: parseInt(document.getElementById('select-piloto').value), 
-        posicion_carrera: parseInt(document.getElementById('posicion_carrera').value),
-        escuderia_id: parseInt(document.getElementById('select-escuderia-carrera').value) 
-    };
-
-    const res = await fetch('/api/subir-resultado', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify(datos) 
+    document.getElementById('form-editar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = {
+            id: parseInt(document.getElementById('select-piloto-editar').value),
+            gamertag: document.getElementById('edit-gamertag').value,
+            numero_piloto: parseInt(document.getElementById('edit-numero').value),
+            foto_url: document.getElementById('edit-foto').value,
+            plataforma: document.getElementById('edit-plataforma').value,
+            escuderia_id: parseInt(document.getElementById('edit-escuderia').value),
+            es_reserva: parseInt(document.getElementById('edit-es_reserva').value)
+        };
+        if(!datos.id) return;
+        const res = await fetch('/api/editar-piloto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+        if(res.ok) {
+            document.getElementById('msg-editar').innerText = "¡Piloto actualizado con éxito!";
+            document.getElementById('form-editar').reset();
+            await cargarTodosLosDatos();
+            await cargarDesplegablesAdmin();
+            setTimeout(() => { document.getElementById('msg-editar').innerText = ""; }, 3000);
+        }
     });
 
-    if(res.ok) { 
-        document.getElementById('msg-carrera').innerText = "¡Resultado subido!"; 
-        document.getElementById('form-carrera').reset(); 
-        await cargarTodosLosDatos(); 
-    }
-});
+    document.getElementById('form-carrera').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = { piloto_id: parseInt(document.getElementById('select-piloto').value), posicion_carrera: parseInt(document.getElementById('posicion_carrera').value) };
+        const res = await fetch('/api/subir-resultado', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+        if(res.ok) { 
+            document.getElementById('msg-carrera').innerText = "¡Resultado subido!"; 
+            document.getElementById('form-carrera').reset(); 
+            await cargarTodosLosDatos(); 
+        }
+    });
 
     document.getElementById('form-sancion').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -954,47 +862,6 @@ async function verificarPassword() {
                 alert("Error: " + data.message);
             }
         }
-
-        // 1. Función para mostrar/ocultar el desplegable de reservas
-function mostrarSustituto() {
-    const estado = document.getElementById('edit-estado').value;
-    const contenedor = document.getElementById('contenedor-sustituto');
-    const selectSustituto = document.getElementById('edit-sustituto-id');
-    
-    if (estado === 'ausente') {
-        contenedor.style.display = 'block';
-        // Limpiamos y rellenamos solo con los que son reserva (es_reserva == 1)
-        selectSustituto.innerHTML = '<option value="">-- Elige un Reserva --</option>';
-        listaPilotosGlobal.filter(p => p.es_reserva == 1).forEach(p => {
-            selectSustituto.innerHTML += `<option value="${p.id}">${p.gamertag}</option>`;
-        });
-    } else {
-        contenedor.style.display = 'none';
-        selectSustituto.innerHTML = '';
-    }
-}
-
-// 2. Modificación de la función que rellena el formulario al editar
-// Asegúrate de que al llamar a autocompletarFormEdicion(), también selecciones el estado
-function autocompletarFormEdicion() {
-    const idPiloto = document.getElementById('select-piloto-editar').value;
-    const piloto = listaPilotosGlobal.find(p => p.id == idPiloto);
-    
-    if (piloto) {
-        document.getElementById('edit-gamertag').value = piloto.gamertag;
-        document.getElementById('edit-numero').value = piloto.numero_piloto;
-        // ... (resto de tus campos)
-        
-        // Seleccionamos el estado guardado en la base de datos
-        document.getElementById('edit-estado').value = piloto.estado || 'presente';
-        mostrarSustituto(); // Ejecutamos para ver si hay que mostrar el sustituto
-        
-        if (piloto.estado === 'ausente' && piloto.sustituto_id) {
-            document.getElementById('edit-sustituto-id').value = piloto.sustituto_id;
-        }
-    }
-}
-        
     </script>
 
         <div id="zona-reset" class="admin-only" style="text-align: center; display: none; padding: 20px; background: #1a1a1a; border-radius: 8px; margin: 20px;">
