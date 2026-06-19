@@ -442,13 +442,15 @@ function irA(evento, idSeccion) {
         evento.currentTarget.classList.add('active');
     }
     
-    // 5. Lógica de carga de datos según la sección
+    // 5. Lógica de carga (CORREGIDA)
     if (idSeccion === 'seccion-noticias') {
         cargarNoticias();
     } else if (idSeccion === 'seccion-circuitos') {
         cargarCircuitos();
-    } else if (idSeccion !== 'panel-admin') {
-        // Solo cargar datos generales si no es panel admin
+    } else if (idSeccion === 'panel-admin') {
+        // No hacer nada especial, solo mostrar
+    } else {
+        // Esto captura todas las demás: Pilotos, Constructores, Sanciones
         cargarTodosLosDatos();
     }
 }
