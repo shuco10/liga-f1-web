@@ -997,6 +997,9 @@ async function verificarPassword() {
         location.reload(); // Recarga para ver el cambio
     }
 }
+Aquí tienes el código completo con la función editarNoticia integrada y los botones de Editar y Borrar funcionando correctamente. Solo tienes que reemplazar tus funciones actuales por estas:
+
+JavaScript
 // --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
 async function cargarNoticias() {
     const contenedor = document.getElementById('lista-noticias');
@@ -1016,10 +1019,13 @@ async function cargarNoticias() {
             const div = document.createElement('div');
             div.className = 'noticia-item'; 
             
-            // Solo mostramos el botón si la función 'esAdmin()' existe y devuelve true
+            // Botones solo para Admin
             const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
-                <div style="margin-top: 10px;">
-                    <button onclick="eliminarNoticia(${noticia.id})" style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                            style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                    <button onclick="eliminarNoticia(${noticia.id})" 
+                            style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
                 </div>
             ` : '';
 
@@ -1037,12 +1043,30 @@ async function cargarNoticias() {
     }
 }
 
-
+// --- FUNCIÓN PARA ELIMINAR ---
 async function eliminarNoticia(id) {
     if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
         const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+        if (res.ok) location.reload();
+    }
+}
+
+// --- FUNCIÓN PARA EDITAR ---
+async function editarNoticia(id, tituloActual, contenidoActual) {
+    const nuevoTitulo = prompt("Edita el título:", tituloActual);
+    const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+
+    if (nuevoTitulo !== null && nuevoContenido !== null) {
+        const res = await fetch(`/api/noticias/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
+        });
+
         if (res.ok) {
-            location.reload(); // Recarga para que desaparezca
+            location.reload();
+        } else {
+            alert("Error al actualizar la noticia.");
         }
     }
 }
