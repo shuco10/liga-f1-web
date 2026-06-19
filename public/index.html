@@ -634,16 +634,19 @@ function autocompletarFormEdicion() {
 
     if(!datos.id) return;
 
-    const res = await fetch('/api/editar-piloto', { 
+const res = await fetch('/api/editar-piloto', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify(datos)        if(res.ok) {
-            document.getElementById('msg-editar').innerText = "¡Piloto actualizado con éxito!";
-            document.getElementById('form-editar').reset();
-            await cargarTodosLosDatos();
-            await cargarDesplegablesAdmin();
-            setTimeout(() => { document.getElementById('msg-editar').innerText = ""; }, 3000);
-        }
+        body: JSON.stringify(datos) 
+    }); // <-- AQUÍ TE FALTABA CERRAR EL FETCH CON );
+
+    if(res.ok) { // Ahora esto ya está fuera del fetch y funcionará bien
+        document.getElementById('msg-editar').innerText = "¡Piloto actualizado con éxito!";
+        document.getElementById('form-editar').reset();
+        await cargarTodosLosDatos();
+        await cargarDesplegablesAdmin();
+        setTimeout(() => { document.getElementById('msg-editar').innerText = ""; }, 3000);
+    }
     });
 
     document.getElementById('form-carrera').addEventListener('submit', async (e) => {
