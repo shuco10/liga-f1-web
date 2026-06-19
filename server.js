@@ -264,6 +264,22 @@ app.put('/api/resultados/:id', async (req, res) => {
     }
 });
 
+// Ruta para resetear la base de datos
+app.post('/api/reset', async (req, res) => {
+    try {
+        // Limpiamos los datos acumulados de los pilotos
+        await pool.query("UPDATE pilotos SET puntos_totales = 0, victorias = 0, podios = 0, puntos_sancion = 0");
+        // Borramos el histórico de resultados de carreras
+        await pool.query("DELETE FROM resultados_carrera");
+        
+        console.log("Base de datos reseteada por el admin");
+        res.json({ success: true });
+    } catch (err) { 
+        console.error("Error al resetear:", err); 
+        res.status(500).json({ success: false, message: "Error al borrar los datos" });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
