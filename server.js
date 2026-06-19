@@ -321,7 +321,23 @@ app.get('/api/corregir-circuitos', async (req, res) => {
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
 
+app.get('/api/escuderias', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM constructores');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: "Error al obtener escuderías" });
+    }
+});
 
+app.get('/api/circuitos', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM circuitos');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: "Error al obtener circuitos" });
+    }
+});
 
 
 app.listen(PORT, () => {
