@@ -189,8 +189,22 @@
         .trazado-lusail   { background-position: 75% 100%; }
         .trazado-abudhabi { background-position: 100% 100%; }
 
+
+
+        
         .admin-only { display: none; }     
-        .seccion { display: none; }
+        /* Esto mata cualquier estilo previo que fuerce a mostrar la tabla */
+.seccion {
+    display: none !important;
+}
+
+/* Y esto asegura que al ser 'activa' se muestre */
+.seccion.activa {
+    display: block !important;
+}
+
+
+        
     </style>
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png">
 </head>
