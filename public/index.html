@@ -250,43 +250,46 @@
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>✏️ 1B. Editar Piloto Existente</h3>
-        <form id="form-editar">
-            <div class="form-group">
-                <label>Selecciona el Piloto a Modificar:</label>
-                <select id="select-piloto-editar" onchange="autocompletarFormEdicion()" required></select>
-            </div>
-            <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
-            <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
-            <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo"></div>
-            <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
-            <div class="form-group">
-                <label>Nueva Escudería:</label>
-                <select id="edit-escuderia">
-                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
-                </select>
-                <div class="form-group">
-                    <label>Estado del Piloto:</label>
-                        <select id="edit-estado" onchange="mostrarSustituto()">
-                            <option value="presente">Presente</option>
-                            <option value="ausente">Ausente</option>
-                        </select>
-                </div>
-<div class="form-group" id="contenedor-sustituto" style="display: none;">
-    <label>Seleccionar Reserva para sustituir:</label>
-    <select id="edit-sustituto-id"></select>
-</div>
-            </div>
-            <div class="form-group">
-                <label>Nuevo Rol:</label>
-                <select id="edit-es_reserva"><option value="0">Titular</option><option value="1">Reserva</option></select>
-            </div>
-            <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
-            <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
-        </form>
+<form id="form-editar">
+    <div class="form-group">
+        <label>Selecciona el Piloto a Modificar:</label>
+        <select id="select-piloto-editar" onchange="autocompletarFormEdicion()" required></select>
+    </div>
+    <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
+    <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
+    <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo"></div>
+    <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
+    
+    <div class="form-group">
+        <label>Escudería del Piloto:</label>
+        <select id="edit-escuderia" required>
+            <option value="1">Red Bull Racing</option><option value="2">Ferrari</option>
+            <option value="3">Mercedes-AMG</option><option value="4">McLaren</option>
+            <option value="5">Aston Martin</option><option value="6">Alpine</option>
+            <option value="7">Williams</option><option value="8">Visa Cash App RB</option>
+            <option value="9">Audi</option><option value="10">Haas</option>
+            <option value="11">Cadillac</option>
+        </select>
+    </div>
 
+    <div class="form-group">
+        <label>Estado del Piloto:</label>
+        <select id="edit-estado" onchange="mostrarSustituto()">
+            <option value="presente">Presente</option>
+            <option value="ausente">Ausente</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="contenedor-sustituto" style="display: none;">
+        <label>Seleccionar Reserva para sustituir:</label>
+        <select id="edit-sustituto-id"></select>
+    </div>
+
+    <input type="hidden" id="edit-es_reserva">
+
+    <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
+    <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
+</form>
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>2. Añadir Resultado de Carrera</h3>
         <form id="form-carrera">
@@ -316,6 +319,13 @@
 </div>
 
     <script>
+
+
+// Variables a definir
+        let pilotoEnEdicion = null; // Necesaria para mantener los datos originales durante la edición
+
+
+        
         const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
         const NOMBRES_ESCUDERIAS = {
             1: 'Red Bull Racing', 2: 'Ferrari', 3: 'Mercedes-AMG', 4: 'McLaren',
