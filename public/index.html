@@ -1014,13 +1014,20 @@ async function cargarNoticias() {
 
         noticias.forEach(noticia => {
             const div = document.createElement('div');
-            // Usamos la clase CSS que definimos antes
             div.className = 'noticia-item'; 
             
+            // Solo mostramos el botón si la función 'esAdmin()' existe y devuelve true
+            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                <div style="margin-top: 10px;">
+                    <button onclick="eliminarNoticia(${noticia.id})" style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                </div>
+            ` : '';
+
             div.innerHTML = `
                 <h4 style="margin: 0 0 10px 0; color: #00d2be;">${noticia.titulo}</h4>
                 <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
                 <small style="color: #666;">${new Date(noticia.fecha).toLocaleDateString()}</small>
+                ${botonesAdmin}
             `;
             contenedor.appendChild(div);
         });
@@ -1030,8 +1037,20 @@ async function cargarNoticias() {
     }
 }
 
+
+async function eliminarNoticia(id) {
+    if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+        const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            location.reload(); // Recarga para que desaparezca
+        }
+    }
+}
+    
 // IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
 document.addEventListener('DOMContentLoaded', cargarNoticias);
+
+    
     
     </script>
 
