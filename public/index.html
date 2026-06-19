@@ -190,6 +190,7 @@
         .trazado-abudhabi { background-position: 100% 100%; }
 
         .admin-only { display: none; }     
+        .seccion { display: none; }
     </style>
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png">
 </head>
@@ -1055,6 +1056,18 @@ async function editarNoticia(id, tituloActual, contenidoActual) {
         }
     }
 }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Al cargar, mostramos la sección de noticias
+        const primeraSeccion = document.getElementById('seccion-noticias');
+        if (primeraSeccion) {
+            primeraSeccion.style.display = 'block';
+            primeraSeccion.classList.add('activa');
+        }
+        
+        // Y cargamos los datos
+        cargarNoticias();
+    });
     
 // IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
 document.addEventListener('DOMContentLoaded', cargarNoticias);
