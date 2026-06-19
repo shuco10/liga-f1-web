@@ -280,15 +280,25 @@
         </select>
     </div>
 
-    <div class="form-group" id="contenedor-sustituto" style="display: none;">
-        <label>Seleccionar Reserva para sustituir:</label>
-        <select id="edit-sustituto-id"></select>
-    </div>
+<div class="form-group" id="contenedor-sustituto" style="display: none;">
+    <label>Seleccionar Reserva para sustituir:</label>
+    <select id="edit-sustituto-id"></select>
 
-    <input type="hidden" id="edit-es_reserva">
+    <label style="margin-top: 10px; display: block;">Escudería para los puntos del reserva:</label>
+    <select id="edit-escuderia-reserva">
+        <option value="1">Red Bull Racing</option><option value="2">Ferrari</option>
+        <option value="3">Mercedes-AMG</option><option value="4">McLaren</option>
+        <option value="5">Aston Martin</option><option value="6">Alpine</option>
+        <option value="7">Williams</option><option value="8">Visa Cash App RB</option>
+        <option value="9">Audi</option><option value="10">Haas</option>
+        <option value="11">Cadillac</option>
+    </select>
+</div>
 
-    <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
-    <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
+<input type="hidden" id="edit-es_reserva">
+
+<button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
+<div id="msg-editar" class="mensaje" style="color: #229971;"></div>
 </form>
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>2. Añadir Resultado de Carrera</h3>
@@ -580,7 +590,11 @@ function autocompletarFormEdicion() {
         document.getElementById('edit-numero').value = pilotoEnEdicion.numero_piloto || '';
         document.getElementById('edit-foto').value = pilotoEnEdicion.foto_url || '';
         document.getElementById('edit-plataforma').value = pilotoEnEdicion.plataforma;
+        
+        // Asignamos ambos selects de escudería por si acaso
         document.getElementById('edit-escuderia').value = pilotoEnEdicion.escuderia_id ? pilotoEnEdicion.escuderia_id.toString() : "1";
+        document.getElementById('edit-escuderia-reserva').value = pilotoEnEdicion.escuderia_id ? pilotoEnEdicion.escuderia_id.toString() : "1";
+        
         document.getElementById('edit-es_reserva').value = pilotoEnEdicion.es_reserva ? "1" : "0";
         document.getElementById('edit-estado').value = pilotoEnEdicion.estado || 'presente';
         
@@ -592,62 +606,50 @@ function autocompletarFormEdicion() {
     }
 }
 
-    // --- MANEJADORES DE FORMULARIOS ---
-    
-    document.getElementById('form-piloto').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const datos = { 
-            gamertag: document.getElementById('gamertag').value, 
-            numero_piloto: parseInt(document.getElementById('numero_piloto').value),
-            foto_url: document.getElementById('foto_url').value,
-            plataforma: document.getElementById('plataforma').value, 
-            escuderia_id: parseInt(document.getElementById('escuderia_id').value),
-            es_reserva: parseInt(document.getElementById('es_reserva').value)
-        };
-        const res = await fetch('/api/nuevo-piloto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-        if(res.ok) { 
-            document.getElementById('msg-piloto').innerText = "¡Piloto inscrito con éxito!"; 
-            document.getElementById('form-piloto').reset(); 
-            await cargarTodosLosDatos(); 
-            await cargarDesplegablesAdmin(); 
-        }
-    });
+// --- MANEJADORES DE FORMULARIOS ---
 
-    document.getElementById('form-editar').addEventListener('submit', async (e) => {
+// [Aquí va tu form-piloto igual que lo tenías]
+
+document.getElementById('form-editar').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Si el usuario deja el input de foto vacío, rescatamos la URL anterior
     const fotoInput = document.getElementById('edit-foto').value;
     const fotoFinal = (fotoInput && fotoInput.trim() !== '') ? fotoInput : (pilotoEnEdicion ? pilotoEnEdicion.foto_url : '');
+    const estado = document.getElementById('edit-estado').value;
+
+    // LÓGICA CLAVE: Si está ausente, usamos el selector del reserva, si no, el normal
+    const escuderiaFinal = (estado === 'ausente') 
+        ? parseInt(document.getElementById('edit-escuderia-reserva').value) 
+        : parseInt(document.getElementById('edit-escuderia').value);
 
     const datos = {
         id: parseInt(document.getElementById('select-piloto-editar').value),
         gamertag: document.getElementById('edit-gamertag').value,
         numero_piloto: parseInt(document.getElementById('edit-numero').value),
-        foto_url: fotoFinal, // <- AQUÍ YA NO SE BORRA LA FOTO
+        foto_url: fotoFinal,
         plataforma: document.getElementById('edit-plataforma').value,
-        escuderia_id: parseInt(document.getElementById('edit-escuderia').value), // <- Asegúrate de que el select tenga el ID correcto
+        escuderia_id: escuderiaFinal, 
         es_reserva: parseInt(document.getElementById('edit-es_reserva').value),
-        estado: document.getElementById('edit-estado').value,
+        estado: estado,
         sustituto_id: document.getElementById('edit-sustituto-id').value || null
     };
 
     if(!datos.id) return;
 
-const res = await fetch('/api/editar-piloto', { 
+    const res = await fetch('/api/editar-piloto', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify(datos) 
-    }); // <-- AQUÍ TE FALTABA CERRAR EL FETCH CON );
+    });
 
-    if(res.ok) { // Ahora esto ya está fuera del fetch y funcionará bien
+    if(res.ok) {
         document.getElementById('msg-editar').innerText = "¡Piloto actualizado con éxito!";
         document.getElementById('form-editar').reset();
         await cargarTodosLosDatos();
         await cargarDesplegablesAdmin();
         setTimeout(() => { document.getElementById('msg-editar').innerText = ""; }, 3000);
     }
-    });
+});
 
     document.getElementById('form-carrera').addEventListener('submit', async (e) => {
         e.preventDefault();
