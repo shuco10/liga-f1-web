@@ -440,16 +440,19 @@ async function cargarTodosLosDatos() {
             });
         }
 
-        // 2. TABLA CONSTRUCTORES
-        const constructoresMap = {};
-        listaPilotosGlobal.forEach(p => {
-            if(p.escuderia_id && !p.es_reserva) { 
-                if(!constructoresMap[p.escuderia_id]) {
-                    constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex };
-                }
-                constructoresMap[p.escuderia_id].puntos += p.puntos_totales;
-            }
-        });
+// 2. TABLA CONSTRUCTORES (Lógica Corregida)
+const constructoresMap = {};
+
+listaPilotosGlobal.forEach(p => {
+    // Si el piloto tiene escudería, lo sumamos. 
+    // Quitamos la condición !p.es_reserva para que los reservas que sustituyen SUMEN.
+    if(p.escuderia_id) { 
+        if(!constructoresMap[p.escuderia_id]) {
+            constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex };
+        }
+        constructoresMap[p.escuderia_id].puntos += p.puntos_totales;
+    }
+});
 
         const listaConstructores = Object.keys(constructoresMap)
             .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
