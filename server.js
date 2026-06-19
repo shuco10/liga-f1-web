@@ -112,11 +112,12 @@ app.post('/api/nuevo-piloto', async (req, res) => {
 
 // RUTA 2B: Editar piloto
 app.post('/api/editar-piloto', async (req, res) => {
-    // 1. Añadimos estado y sustituto_id a la desestructuración
     const { id, gamertag, numero_piloto, plataforma, escuderia_id, foto_url, es_reserva, estado, sustituto_id } = req.body;
     
+    // Validación de seguridad: Si no llega escuderia_id, no deberíamos dejarlo nulo si es un piloto activo
+    const escuderiaFinal = escuderia_id || null; 
+
     try {
-        // 2. Añadimos las columnas a la sentencia UPDATE
         await pool.query(`
             UPDATE pilotos 
             SET gamertag = $1, 
@@ -128,11 +129,11 @@ app.post('/api/editar-piloto', async (req, res) => {
                 estado = $7,
                 sustituto_id = $8
             WHERE id = $9
-        `, [gamertag, numero_piloto, plataforma, escuderia_id, foto_url || '', es_reserva || 0, estado, sustituto_id, id]);
+        `, [gamertag, numero_piloto, plataforma, escuderiaFinal, foto_url || '', es_reserva || 0, estado, sustituto_id, id]);
         
         res.sendStatus(200);
     } catch (err) {
-        console.error(err);
+        console.error("Error al actualizar piloto:", err);
         res.status(500).send("Error al editar el piloto");
     }
 });
