@@ -257,7 +257,7 @@
             </div>
             <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
             <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
-            <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo de Discord"></div>
+            <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo"></div>
             <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
             <div class="form-group">
                 <label>Nueva Escudería:</label>
@@ -267,6 +267,17 @@
                     <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
                     <option value="10">Haas</option><option value="11">Cadillac</option>
                 </select>
+                <div class="form-group">
+                    <label>Estado del Piloto:</label>
+                        <select id="edit-estado" onchange="mostrarSustituto()">
+                            <option value="presente">Presente</option>
+                            <option value="ausente">Ausente</option>
+                        </select>
+                </div>
+<div class="form-group" id="contenedor-sustituto" style="display: none;">
+    <label>Seleccionar Reserva para sustituir:</label>
+    <select id="edit-sustituto-id"></select>
+</div>
             </div>
             <div class="form-group">
                 <label>Nuevo Rol:</label>
@@ -585,7 +596,9 @@ async function cargarDesplegablesAdmin() {
             foto_url: document.getElementById('edit-foto').value,
             plataforma: document.getElementById('edit-plataforma').value,
             escuderia_id: parseInt(document.getElementById('edit-escuderia').value),
-            es_reserva: parseInt(document.getElementById('edit-es_reserva').value)
+            es_reserva: parseInt(document.getElementById('edit-es_reserva').value),
+            estado: document.getElementById('edit-estado').value,
+            sustituto_id: document.getElementById('edit-sustituto-id').value || null
         };
         if(!datos.id) return;
         const res = await fetch('/api/editar-piloto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
@@ -862,6 +875,47 @@ async function verificarPassword() {
                 alert("Error: " + data.message);
             }
         }
+
+        // 1. Función para mostrar/ocultar el desplegable de reservas
+function mostrarSustituto() {
+    const estado = document.getElementById('edit-estado').value;
+    const contenedor = document.getElementById('contenedor-sustituto');
+    const selectSustituto = document.getElementById('edit-sustituto-id');
+    
+    if (estado === 'ausente') {
+        contenedor.style.display = 'block';
+        // Limpiamos y rellenamos solo con los que son reserva (es_reserva == 1)
+        selectSustituto.innerHTML = '<option value="">-- Elige un Reserva --</option>';
+        listaPilotosGlobal.filter(p => p.es_reserva == 1).forEach(p => {
+            selectSustituto.innerHTML += `<option value="${p.id}">${p.gamertag}</option>`;
+        });
+    } else {
+        contenedor.style.display = 'none';
+        selectSustituto.innerHTML = '';
+    }
+}
+
+// 2. Modificación de la función que rellena el formulario al editar
+// Asegúrate de que al llamar a autocompletarFormEdicion(), también selecciones el estado
+function autocompletarFormEdicion() {
+    const idPiloto = document.getElementById('select-piloto-editar').value;
+    const piloto = listaPilotosGlobal.find(p => p.id == idPiloto);
+    
+    if (piloto) {
+        document.getElementById('edit-gamertag').value = piloto.gamertag;
+        document.getElementById('edit-numero').value = piloto.numero_piloto;
+        // ... (resto de tus campos)
+        
+        // Seleccionamos el estado guardado en la base de datos
+        document.getElementById('edit-estado').value = piloto.estado || 'presente';
+        mostrarSustituto(); // Ejecutamos para ver si hay que mostrar el sustituto
+        
+        if (piloto.estado === 'ausente' && piloto.sustituto_id) {
+            document.getElementById('edit-sustituto-id').value = piloto.sustituto_id;
+        }
+    }
+}
+        
     </script>
 
         <div id="zona-reset" class="admin-only" style="text-align: center; display: none; padding: 20px; background: #1a1a1a; border-radius: 8px; margin: 20px;">
