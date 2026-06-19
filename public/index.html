@@ -216,6 +216,14 @@
 
     <div id="contenido-admin" style="display: none;">
         
+        <div id="admin-carreras">
+            <h3>Cargar Resultados de Carrera</h3>
+            <select id="select-circuito-admin"></select>
+            <select id="select-piloto-admin"></select>
+            <input type="number" id="input-posicion" placeholder="Posición final">
+            <button onclick="guardarResultado()">Guardar Resultado</button>
+        </div>
+
         <hr style="border-color: #444; margin: 20px 0;">
         <h3>1. Inscribir Nuevo Piloto</h3>
         <form id="form-piloto">
@@ -226,7 +234,7 @@
             <div class="form-group">
                 <label>Escudería:</label>
                 <select id="escuderia_id">
-                    <option value="">Sin asignar</option>value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
                     <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
                     <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
                     <option value="10">Haas</option><option value="11">Cadillac</option>
@@ -253,8 +261,8 @@
             <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
             <div class="form-group">
                 <label>Nueva Escudería:</label>
-                <select id="escuderia_id">
-                    <option value="">Sin asignar</option>value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+                <select id="edit-escuderia">
+                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
                     <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
                     <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
                     <option value="10">Haas</option><option value="11">Cadillac</option>
@@ -270,26 +278,12 @@
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>2. Añadir Resultado de Carrera</h3>
-<form id="form-carrera">
-    <div id="admin-carreras">
-        <select id="select-circuito-admin" required></select>
-        <select id="select-piloto-admin" required></select>
-        
-        <div class="form-group">
-            <label>Escudería:</label>
-                <select id="escuderia_id">
-                    <option value="">Sin asignar</option>value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
-                </select>
-        </div>
-
-        <input type="number" id="input-posicion" placeholder="Posición final" required min="1" max="20">
-        
-        <button type="submit">Guardar Resultado</button>
-    </div>
-</form>
+        <form id="form-carrera">
+            <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto" required></select></div>
+            <div class="form-group"><label>Posición Final:</label><input type="number" id="posicion_carrera" min="1" max="20" required></div>
+            <button type="submit" class="btn-accion" style="background-color: #0078d4;">Aplicar Puntos</button>
+            <div id="msg-carrera" class="mensaje"></div>
+        </form>
 
         <hr style="border-color: #444; margin: 30px 0;">
         <h3>3. Aplicar Penalización de Licencia</h3>
@@ -507,42 +501,37 @@ async function cargarTodosLosDatos() {
     }
 }
 async function cargarDesplegablesAdmin() {
-    // 1. Protección: Si no somos admin, no hacemos nada (esto evita errores en la web pública)
-    if (localStorage.getItem('rol') !== 'admin') return;
+    // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
+    if (localStorage.getItem('rol') !== 'admin') {
+        console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
+        return; 
+    }
 
     try {
-        // Obtenemos los datos (si falla, devolvemos un array vacío para no romper nada)
-        const [resC, resE, resP] = await Promise.all([
-            fetch('/api/circuitos').then(r => r.ok ? r.json() : []),
-            fetch('/api/escuderias').then(r => r.ok ? r.json() : []),
-            fetch('/api/lista-de-pilotos').then(r => r.ok ? r.json() : [])
-        ]);
-
-        // 2. BLINDAJE: Solo intentamos rellenar los selects SI el ID existe en ESTA página
-        
-        // Rellenar Circuitos
+        // 1. Cargar Circuitos
+        const resC = await fetch('/api/circuitos');
+        const circuitos = await resC.json();
         const selCircuito = document.getElementById('select-circuito-admin');
         if (selCircuito) {
+            // Añadimos una opción por defecto vacía para forzar que el admin elija
             selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
-                                    resC.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-        // Rellenar Escuderías
-        const selEscuderia = document.getElementById('select-escuderia-carrera');
-        if (selEscuderia) {
-            selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                                     resE.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-        }
+        // 2. Cargar Pilotos
+        const res = await fetch('/api/lista-de-pilotos');
+        const pilotos = await res.json();
+        
+        // Ordenamos los pilotos por número antes de pintar los desplegables
+        pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
-        // Rellenar Pilotos (recorriendo todos los posibles IDs)
-        const idsPilotos = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
-        resP.sort((a, b) => a.numero_piloto - b.numero_piloto);
+        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
 
-        idsPilotos.forEach(id => {
+        ids.forEach(id => {
             const el = document.getElementById(id);
-            if (el) { // <--- ESTO EVITA EL ERROR NULL
+            if (el) {
                 el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-                resP.forEach(p => {
+                pilotos.forEach(p => {
                     const opt = document.createElement('option');
                     opt.value = p.id;
                     opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
@@ -550,11 +539,12 @@ async function cargarDesplegablesAdmin() {
                 });
             }
         });
-
     } catch (err) {
-        console.error("Error al cargar:", err);
+        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
     }
-}    function autocompletarFormEdicion() {
+}
+
+    function autocompletarFormEdicion() {
         const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
         const piloto = listaPilotosGlobal.find(p => p.id === idBuscar);
         if(piloto) {
@@ -784,30 +774,25 @@ async function editarResultado(id) {
 
         
 
-async function guardarResultado() {
-    // 1. Capturamos también el valor del select de escudería
-    const data = {
-        circuito_id: document.getElementById('select-circuito-admin').value,
-        piloto_id: document.getElementById('select-piloto-admin').value,
-        posicion: parseInt(document.getElementById('input-posicion').value),
-        escuderia_id: parseInt(document.getElementById('select-escuderia-carrera').value) // <--- ESTO ES LO QUE FALTA
-    };
-
-    // 2. Enviamos al endpoint /api/subir-resultado (que es el que tiene la lógica de puntos)
-    const res = await fetch('/api/subir-resultado', { // <--- Asegúrate de usar /api/subir-resultado
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
-
-    if(res.ok) {
-        alert("Resultado guardado y puntos actualizados");
-        cargarTodosLosDatos(); 
-        cargarCircuitos(); 
-    } else {
-        alert("Error al guardar el resultado");
+    async function guardarResultado() {
+        const data = {
+            circuito_id: document.getElementById('select-circuito-admin').value,
+            piloto_id: document.getElementById('select-piloto-admin').value,
+            posicion: parseInt(document.getElementById('input-posicion').value)
+        };
+        const res = await fetch('/api/guardar-resultado', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if(res.ok) {
+            alert("Resultado guardado y puntos actualizados");
+            cargarTodosLosDatos(); 
+            cargarCircuitos(); 
+        } else {
+            alert("Error al guardar el resultado");
+        }
     }
-}
 </script>
 <script>
         function aplicarPermisos() {
