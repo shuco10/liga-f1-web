@@ -143,21 +143,23 @@ app.post('/api/editar-piloto', async (req, res) => {
 
 // RUTA 3: Subir resultados
 app.post('/api/subir-resultado', async (req, res) => {
-    const { piloto_id, posicion_carrera } = req.body;
-    const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    // Recibimos 'escuderia_id' desde el formulario de carrera
+    const { piloto_id, posicion_carrera, escuderia_id } = req.body;
     
+    const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     const puntosA_Sumar = tablaPuntos[posicion_carrera] || 0;
-    const esVictoria = posicion_carrera === 1 ? 1 : 0;
-    const esPodio = (posicion_carrera >= 1 && posicion_carrera <= 3) ? 1 : 0;
-
+    
     try {
-        await pool.query(`
-            UPDATE pilotos 
-            SET puntos_totales = puntos_totales + $1, 
-                victorias = victorias + $2,
-                podios = podios + $3
-            WHERE id = $4
-        `, [puntosA_Sumar, esVictoria, esPodio, piloto_id]);
+        // Si el formulario de carrera nos manda una escudería, usamos esa.
+        // Si no, recurrimos a la que el piloto tenga en la base de datos.
+        const equipoParaSumar = escuderia_id || (await pool.query('SELECT escuderia_id FROM pilotos WHERE id = $1', [piloto_id])).rows[0].escuderia_id;
+
+        // Sumar puntos a piloto
+        await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosA_Sumar, piloto_id]);
+
+        // Sumar puntos al equipo (usando el ID que hemos decidido arriba)
+        await pool.query('UPDATE constructores SET puntos = puntos + $1 WHERE id = $2', [puntosA_Sumar, equipoParaSumar]);
+
         res.sendStatus(200);
     } catch (err) { 
         console.error(err);
