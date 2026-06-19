@@ -201,17 +201,6 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 });
 
 
-// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
-
-
-
-
-
-
-// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
-
-
-
 // --- NUEVAS RUTAS PARA EDICIÓN Y ELIMINACIÓN DE RESULTADOS ---
 
 // 1. ELIMINAR RESULTADO (DELETE)
@@ -279,6 +268,38 @@ app.post('/api/reset', async (req, res) => {
         res.status(500).json({ success: false, message: "Error al borrar los datos" });
     }
 });
+
+
+
+// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
+
+
+// --- MANTENIMIENTO DE CIRCUITOS (Ejecuta esto una vez y borra) ---
+app.get('/api/corregir-circuitos', async (req, res) => {
+    try {
+        // 1. Eliminamos los circuitos que ya no queremos
+        await pool.query("DELETE FROM circuitos WHERE nombre IN ('Bahrein', 'Imola')");
+        
+        // 2. Insertamos Budapest (si no existe ya)
+        await pool.query(`
+            INSERT INTO circuitos (nombre) 
+            VALUES ('Sakhir'), ('Budapest') 
+            ON CONFLICT (nombre) DO NOTHING
+        `);
+        
+        res.send("Circuitos actualizados: Bahrein e Imola borrados, Sakhir y Budapest añadidos.");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al actualizar los circuitos.");
+    }
+});
+
+
+
+// PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
+
+
+
 
 
 app.listen(PORT, () => {
