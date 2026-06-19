@@ -514,15 +514,20 @@ async function cargarDesplegablesAdmin() {
                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
-        // 2. Cargar Escuderías (CORREGIDO)
-        const resE = await fetch('/api/escuderias');
-        if (!resE.ok) throw new Error("Error cargando escuderías");
-        const escuderias = await resE.json();
-        const selEscuderia = document.getElementById('select-escuderia-carrera');
-        if (selEscuderia) {
-            selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
-                                     escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
-        }
+// 2. Cargar Escuderías (Seguro)
+const resE = await fetch('/api/escuderias');
+if (resE.ok) {
+    const escuderias = await resE.json();
+    const selEscuderia = document.getElementById('select-escuderia-carrera');
+    
+    // AÑADE ESTA COMPROBACIÓN:
+    if (selEscuderia) {
+        selEscuderia.innerHTML = '<option value="">-- Selecciona escudería --</option>' + 
+                                 escuderias.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+    } else {
+        console.warn("No se encontró el elemento select-escuderia-carrera en esta página.");
+    }
+}
 
         // 3. Cargar Pilotos
         const resP = await fetch('/api/lista-de-pilotos');
