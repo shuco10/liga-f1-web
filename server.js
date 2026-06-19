@@ -51,6 +51,19 @@ app.get('/api/noticias', async (req, res) => {
     const result = await pool.query("SELECT * FROM noticias ORDER BY fecha DESC LIMIT 5");
     res.json(result.rows);
 });
+
+// ELIMINAR noticia
+app.delete('/api/noticias/:id', async (req, res) => {
+    await pool.query("DELETE FROM noticias WHERE id = $1", [req.params.id]);
+    res.json({ success: true });
+});
+
+// EDITAR noticia (opcional, si quieres simplificar puedes solo borrar y volver a crear)
+app.put('/api/noticias/:id', async (req, res) => {
+    const { titulo, contenido } = req.body;
+    await pool.query("UPDATE noticias SET titulo=$1, contenido=$2 WHERE id=$3", [titulo, contenido, req.params.id]);
+    res.json({ success: true });
+});
         
         
         await pool.query(`
