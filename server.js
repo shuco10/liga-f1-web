@@ -27,6 +27,32 @@ async function inicializarBaseDeDatos() {
             );
         `);
 
+
+        // Crear la tabla noticias si no existe
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS noticias (
+        id SERIAL PRIMARY KEY,
+        titulo VARCHAR(200),
+        contenido TEXT,
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+`);
+
+// API para que los ADMINS guarden una noticia
+app.post('/api/noticias', async (req, res) => {
+    // Aquí deberías validar si es admin, pero por ahora vamos a la lógica
+    const { titulo, contenido } = req.body;
+    await pool.query("INSERT INTO noticias (titulo, contenido) VALUES ($1, $2)", [titulo, contenido]);
+    res.json({ success: true });
+});
+
+// API para que la página principal LEA las noticias
+app.get('/api/noticias', async (req, res) => {
+    const result = await pool.query("SELECT * FROM noticias ORDER BY fecha DESC LIMIT 5");
+    res.json(result.rows);
+});
+        
+        
         await pool.query(`
             CREATE TABLE IF NOT EXISTS pilotos (
                 id SERIAL PRIMARY KEY,
