@@ -216,13 +216,21 @@
 
     <div id="contenido-admin" style="display: none;">
         
-        <div id="admin-carreras">
-            <h3>Cargar Resultados de Carrera</h3>
-            <select id="select-circuito-admin"></select>
-            <select id="select-piloto-admin"></select>
-            <input type="number" id="input-posicion" placeholder="Posición final">
-            <button onclick="guardarResultado()">Guardar Resultado</button>
-        </div>
+<div id="admin-carreras">
+    <h3>Cargar Resultados de Carrera</h3>
+    <!-- Contenedores para que tengan el mismo margen y estilo -->
+    <div class="form-group">
+        <select id="select-circuito-admin" class="form-control"></select>
+    </div>
+        <div class="form-group">
+        <select id="select-piloto-admin" class="form-control"></select>
+    </div>
+        <div class="form-group">
+        <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
+    </div>
+    <!-- Asignamos la misma clase que hace que el botón de la segunda foto sea grande y verde -->
+    <button onclick="guardarResultado()" class="btn-accion">GUARDAR RESULTADO</button>
+</div>
 
         <hr style="border-color: #444; margin: 20px 0;">
         <h3>1. Inscribir Nuevo Piloto</h3>
