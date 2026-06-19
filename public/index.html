@@ -230,7 +230,8 @@
 <h1 style="text-align: center;">🏁 CAZADORES DE CURVAS 🏁</h1>
 
 <div class="navbar">
-    <button class="nav-btn active" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
+    <button class="nav-btn" onclick="irA(event, 'seccion-noticias')">📢 Noticias</button>
+    <button class="nav-btn" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
     <button class="nav-btn" onclick="irA(event, 'mundial-constructores')">🏎️ Constructores</button>
     <button class="nav-btn" onclick="irA(event, 'seccion-circuitos')">📍 Circuitos</button>
     <button class="nav-btn" onclick="irA(event, 'licencias-sanciones')">⚠️ Sanciones</button>
@@ -252,70 +253,54 @@
     </div>
 
     
-    <div id="mundial-pilotos" class="seccion activa">
-        <h2>Campeonato Mundial de Pilotos</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>Piloto</th>
-                    <th>Plataforma</th>
-                    <th>Escudería</th>
-                    <th>Victorias</th>
-                    <th>Podios</th>
-                    <th>Puntos</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-pilotos"></tbody>
-        </table>
-    </div>
+    <div id="seccion-noticias" class="seccion" style="display: block;">
+    <h2>📢 Noticias y Avisos</h2>
+    <div id="lista-noticias"></div>
+</div>
 
-    <div id="mundial-constructores" class="seccion">
-        <h2>Campeonato de Constructores</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>Escudería</th>
-                    <th>Puntos Totales</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-constructores"></tbody>
-        </table>
-    </div>
+<div id="mundial-pilotos" class="seccion" style="display: none;">
+    <h2>Campeonato Mundial de Pilotos</h2>
+    <table>
+        <thead>
+            <tr><th>Pos</th><th>Piloto</th><th>Plataforma</th><th>Escudería</th><th>Victorias</th><th>Podios</th><th>Puntos</th></tr>
+        </thead>
+        <tbody id="tabla-pilotos"></tbody>
+    </table>
+</div>
 
-    <div id="seccion-circuitos" class="seccion">
+<div id="mundial-constructores" class="seccion" style="display: none;">
+    <h2>Campeonato de Constructores</h2>
+    <table>
+        <thead>
+            <tr><th>Pos</th><th>Escudería</th><th>Puntos Totales</th></tr>
+        </thead>
+        <tbody id="tabla-constructores"></tbody>
+    </table>
+</div>
+
+<div id="seccion-circuitos" class="seccion" style="display: none;">
     <h2>Resultados por Circuito</h2>
     <div id="lista-circuitos"></div>
-    </div>
+</div>
 
-    <div id="licencias-sanciones" class="seccion">
-        <h2>Carnet por Puntos (Sanciones)</h2>
-        <p style="text-align: center; font-size: 13px; color: #aaa;">Todos los pilotos empiezan con 12 puntos de licencia estándar.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Piloto</th>
-                    <th>Escudería</th>
-                    <th>Puntos de Licencia Restantes</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-sanciones"></tbody>
-        </table>
-    </div>
+<div id="licencias-sanciones" class="seccion" style="display: none;">
+    <h2>Carnet por Puntos (Sanciones)</h2>
+    <table>
+        <thead>
+            <tr><th>Piloto</th><th>Escudería</th><th>Puntos de Licencia</th><th>Estado</th></tr>
+        </thead>
+        <tbody id="tabla-sanciones"></tbody>
+    </table>
+</div>
 
-<div id="panel-admin" class="seccion">
+<div id="panel-admin" class="seccion" style="display: none;">
     <h2>Área Privada de Comisarios</h2>
-
     <div id="bloque-login">
-        <div class="form-group">
-            <label>Introduce la Contraseña de Administrador:</label>
-            <input type="password" id="pass-comisario" placeholder="••••••••">
-        </div>
-        <button class="btn-accion" onclick="verificarPassword()">Acceder al Panel</button>
-        <div id="error-login" style="color: red; text-align: center; margin-top: 10px;"></div>
+        <input type="password" id="pass-comisario" placeholder="••••••••">
+        <button class="btn-accion" onclick="verificarPassword()">Acceder</button>
     </div>
+    <div id="contenido-admin" style="display: none;"></div>
+</div>
 
     <div id="contenido-admin" style="display: none;">
         
@@ -447,16 +432,16 @@
         };
 
 function irA(evento, idSeccion) {
-    // 1. Ocultar todas las secciones
+    // 1. Ocultar todas las secciones y quitar clase 'activa'
     document.querySelectorAll('.seccion').forEach(s => {
         s.style.display = 'none';
         s.classList.remove('activa');
     });
     
-    // 2. Desactivar todos los botones
+    // 2. Desactivar todos los botones de navegación
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
-    // 3. Mostrar la sección destino
+    // 3. Mostrar la sección destino y añadir clase 'activa'
     const seccionDestino = document.getElementById(idSeccion);
     if (seccionDestino) {
         seccionDestino.style.display = 'block';
@@ -468,8 +453,10 @@ function irA(evento, idSeccion) {
         evento.currentTarget.classList.add('active');
     }
     
-    // 5. NUEVO: Llamar a la carga de datos según la sección
-    if (idSeccion === 'seccion-circuitos') {
+    // 5. Lógica de carga de datos según la sección
+    if (idSeccion === 'seccion-noticias') {
+        cargarNoticias();
+    } else if (idSeccion === 'seccion-circuitos') {
         cargarCircuitos();
     } else if (idSeccion !== 'panel-admin') {
         // Solo cargar datos generales si no es panel admin
