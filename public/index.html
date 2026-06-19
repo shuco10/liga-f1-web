@@ -95,6 +95,39 @@
         .trazado-abudhabi { background-position: 100% 100%; }
 
         .admin-only { display: none; }
+
+        /* Esto crea la fila donde el banner y el contenido se alinean */
+.main-wrapper {
+    display: flex; 
+    justify-content: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Define el ancho del lateral y evita que se deforme */
+.sidebar-izquierda {
+    width: 200px;
+    flex-shrink: 0;
+}
+
+/* Hace que tu contenido principal ocupe el resto del espacio */
+.content {
+    flex-grow: 1;
+    max-width: 900px;
+}
+
+/* Esto oculta el banner en móviles para que no se vea fatal */
+@media (max-width: 900px) {
+    .main-wrapper {
+        flex-direction: column;
+    }
+    .sidebar-izquierda {
+        display: none;
+    }
+}
+        
     </style>
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png">
 </head>
@@ -283,6 +316,17 @@
         </form>
     </div>
 </div>
+
+    <div class="main-wrapper">
+        
+        <aside class="sidebar-izquierda">
+            <script src="https://www.instant-gaming.com/api/banner/partner/loader.js"></script>
+        </aside>
+
+        <main class="content">
+            </main>
+        
+    </div>
 
     <script>
         const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
