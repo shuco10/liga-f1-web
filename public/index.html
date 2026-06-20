@@ -1233,7 +1233,7 @@ async function notificarDiscord(titulo, descripcion, autor) {
 
     // Cambiamos el nombre de "mensaje" a "payload" para evitar el error de inicialización
     const payload = {
-        content: "📢 **¡Nueva noticia en Cazadores de Curvas!**",
+        content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
         embeds: [{
             title: titulo,
             description: `${descripcion}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
