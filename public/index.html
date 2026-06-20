@@ -79,58 +79,31 @@
     letter-spacing: 2px;
 }
 
-/* Banner */
-
-/* Seleccionamos el contenedor de forma muy específica */
-.my-banner {
-    /* Aseguramos que el banner interno llene la jaula */
-    width: 100%;
-    height: 100%;
-    /* Opcional: Esto ayuda a que el contenido se ajuste mejor */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
+/* 1. La caja que contiene el banner */
 .contenedor-jaula {
-    /* MÁS LARGO: Aumenta el width */
-    width: 800px;       
-    /* AJUSTE DE ALTURA: Ajusta a tu gusto */
-    height: 300px;      
-    
-    /* CENTRADO: Estas tres líneas centran el contenido dentro de la jaula */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    /* MANTENER RECORTE */
-    overflow: hidden;   
-    
-    /* CENTRADO DE LA JAULA EN LA PANTALLA */
-    margin: 0 auto;
-    
-    position: relative;
-    border: none;
-}
-
-/* 1. Bloqueo total de la jaula */
-.contenedor-jaula {
-    width: 800px !important;       
-    height: 300px !important;      
-    overflow: hidden !important;   
-    margin: 0 auto !important;
+    width: 100% !important;       /* Ocupa todo el ancho disponible */
+    max-width: 800px !important;  /* Máximo 800px para que no se deforme */
+    height: 300px !important;     /* Altura fija para evitar saltos */
+    margin: 0 auto !important;    /* Centrado */
+    overflow: hidden !important;  /* Recorta lo que sobresalga */
     position: relative !important;
-    flex-shrink: 0 !important; /* Evita que el contenedor se encoja */
 }
 
-/* 2. Forzado agresivo al iframe hijo */
+/* 2. El contenedor del script de Instant Gaming */
+.my-banner {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 3. El contenido real que carga el script (iframe o imagen) */
 .my-banner iframe, 
 .my-banner img {
-    width: 800px !important;    /* Forzamos el ancho exacto */
-    height: 300px !important;   /* Forzamos el alto exacto */
-    min-width: 800px !important;
-    min-height: 300px !important;
-    object-fit: cover !important;
+    width: 100% !important;       /* Se ajusta al 100% de la jaula */
+    height: 100% !important;      /* Se ajusta al 100% de la altura */
+    object-fit: cover !important; /* Llena el espacio sin deformarse */
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
