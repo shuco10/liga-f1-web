@@ -400,32 +400,50 @@
 <div class="seccion-patrocinadores">
     <h2 class="titulo-partners">Nuestros Partners</h2>
     
-    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
-        <img src="/webimagenes/musica.png" style="max-width: 80px; height: auto;">
-        <img src="/webimagenes/taxibus.png" style="max-width: 250px; height: auto;">
-        <img src="/webimagenes/krv.png" style="max-width: 80px; height: auto;">
+    <div class="contenedor-logos">
+        <img src="/webimagenes/musica.png" class="logo-patrocinador" style="max-width: 100px;">
+        <img src="/webimagenes/taxibus.png" class="logo-patrocinador" style="max-width: 400px;">
+        <img src="/webimagenes/krv.png" class="logo-patrocinador" style="max-width: 150px;">
     </div>
 </div>
 
 <style>
-.seccion-patrocinadores {
+    .seccion-patrocinadores {
         max-width: 800px;
         margin: 30px auto;
         padding: 25px;
         background: #1a1a1a;
         border-radius: 12px;
-        /* El borde rojo que solicitaste */
         border-left: 6px solid #ff4444; 
         box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         text-align: center;
     }
 
     .titulo-partners {
-        color: #e10600; /* Color rojo F1 */
+        color: #e10600;
         margin-bottom: 20px;
         font-size: 1.5rem;
         text-transform: uppercase;
         letter-spacing: 2px;
+    }
+
+    .contenedor-logos {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    /* Estilo base para todos los logos */
+    .logo-patrocinador {
+        height: auto;
+        transition: transform 0.3s ease;
+    }
+
+    /* Efecto opcional al pasar el ratón */
+    .logo-patrocinador:hover {
+        transform: scale(1.05);
     }
 </style>
 
