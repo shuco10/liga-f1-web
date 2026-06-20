@@ -1345,21 +1345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Listener seguro
-    const botonPublicar = document.getElementById("btn-publicar");
-    
-    if (botonPublicar) {
-        botonPublicar.addEventListener("click", () => {
-            const titulo = document.getElementById("titulo").value;
-            const mensaje = document.getElementById("mensaje").value;
-            
-            notificarDiscord(titulo, mensaje);
-            console.log("Notificación enviada a Discord");
-        });
-    } else {
-        console.error("No se encontró el botón btn-publicar en el DOM");
-    }
-});
+
     
     
     
