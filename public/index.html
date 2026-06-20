@@ -112,17 +112,18 @@
 }
 
     
-#admin-carreras {
+#admin-carreras, #admin-noticias {
     background-color: #1e1e1e; /* Gris oscuro profundo */
     border: 1px solid #4a4a4a;
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px; /* Separación entre ambos bloques */
 }
 
-#admin-carreras h3 {
-    color: #e5e5e5; /* Plata elegante */
-    border-bottom: 2px solid #00d2be; /* El característico Teal de Petronas */
+#admin-carreras h3, #admin-noticias h3 {
+    color: #e5e5e5;
+    border-bottom: 2px solid #00d2be;
     padding-bottom: 10px;
     margin-bottom: 20px;
     text-transform: uppercase;
@@ -419,7 +420,7 @@
     <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
 </div>
 
-<div id="admin-noticias" class="admin-only">
+<div id="admin-noticias">
     <h3>📢 - Publicar Nueva Noticia - 📢</h3>
     
     <div class="form-group">
