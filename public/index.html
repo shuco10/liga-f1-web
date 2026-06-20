@@ -113,19 +113,27 @@
     border: none;
 }
 
-/* Forzamos el contenido interno, incluso si el script intenta cambiarlo */
-.sidebar-izquierda .my-banner > * {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important; /* Recorta si es necesario para mantener el tamaño */
+/* 1. Bloqueo total de la jaula */
+.contenedor-jaula {
+    width: 800px !important;       
+    height: 300px !important;      
+    overflow: hidden !important;   
+    margin: 0 auto !important;
+    position: relative !important;
+    flex-shrink: 0 !important; /* Evita que el contenedor se encoja */
 }
 
-/* Esto obliga al banner a estirarse para llenar tu 'jaula' de 800px */
+/* 2. Forzado agresivo al iframe hijo */
 .my-banner iframe, 
 .my-banner img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important; /* Asegura que se vea bien aunque sea un formato distinto */
+    width: 800px !important;    /* Forzamos el ancho exacto */
+    height: 300px !important;   /* Forzamos el alto exacto */
+    min-width: 800px !important;
+    min-height: 300px !important;
+    object-fit: cover !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
 }
         
 /* Botón estilo "Petronas Silver" */
