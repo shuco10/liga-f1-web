@@ -47,6 +47,16 @@
     margin: 0 0 10px 0;
 }
 
+
+        /* Esta clase nueva la aplicas solo a las noticias */
+.noticia-destacada-amarilla {
+    border-left: 5px solid #ccff00 !important;
+}
+
+.noticia-destacada-amarilla h2, 
+.noticia-destacada-amarilla .titulo {
+    color: #ccff00 !important;
+}
         
         /* Contenedor principal estilo Mercedes */
 
@@ -1047,7 +1057,8 @@ async function cargarNoticias() {
 
         noticias.forEach(noticia => {
             const div = document.createElement('div');
-            div.className = 'noticia-item'; 
+            // AÑADIDO: Clase extra para aplicar el estilo del borde amarillo en CSS
+            div.className = 'noticia-item noticia-destacada-amarilla'; 
             
             // Botones solo para Admin
             const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
@@ -1060,7 +1071,7 @@ async function cargarNoticias() {
             ` : '';
 
             div.innerHTML = `
-                <h4 style="margin: 0 0 10px 0; color: #00d2be;">${noticia.titulo}</h4>
+                <h4 style="margin: 0 0 10px 0; color: #ccff00;">${noticia.titulo}</h4>
                 <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
                 <small style="color: #666;">${new Date(noticia.fecha).toLocaleDateString()}</small>
                 ${botonesAdmin}
