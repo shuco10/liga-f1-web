@@ -388,34 +388,54 @@
 </div>
 
 <div class="seccion-patrocinadores">
-    <h2 class="titulo-partners">Nuestros Sponsors</h2>
+    <h2 class="titulo-partners">Nuestros Partners</h2>
     
-    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
-        <img src="/webimagenes/musica.png" style="max-width: 100px; height: auto;">
-        <img src="/webimagenes/taxibus.png" style="max-width: 400px; height: auto;">
-        <img src="/webimagenes/krv.png" style="max-width: 170px; height: auto;">
+    <div class="contenedor-logos">
+        <img src="/webimagenes/musica.png" alt="Musica">
+        <img src="/webimagenes/taxibus.png" alt="Taxibus">
+        <img src="/webimagenes/krv.png" alt="KRV">
     </div>
 </div>
 
 <style>
     .seccion-patrocinadores {
-        text-align: center;
-        margin: 40px auto;
-        padding: 25px;
-        border: 2px solid #444; 
-        border-radius: 12px;
-        background-color: #1a1a1a;
         max-width: 800px;
+        margin: 30px auto;
+        padding: 25px;
+        background: #1a1a1a;
+        border-radius: 12px;
+        /* El borde rojo que solicitaste */
+        border-left: 6px solid #ff4444; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        text-align: center;
     }
 
     .titulo-partners {
-        color: #e10600; /* Color rojo F1 */
-        margin-bottom: 20px;
-        font-size: 1.5rem;
+        color: #ffffff;
+        margin-top: 0;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        font-size: 20px;
+        margin-bottom: 20px;
     }
-    /*POR DETRAS DE ESTE STYLE TERMINA EL CUADRO DE PATROCINADORES*/
+
+    .contenedor-logos {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .contenedor-logos img {
+        max-width: 150px; /* Ajusta según el tamaño de tus logos */
+        height: auto;
+        filter: grayscale(20%); /* Un toque elegante */
+        transition: 0.3s;
+    }
+
+    .contenedor-logos img:hover {
+        filter: grayscale(0%);
+    }
 </style>
 
     
