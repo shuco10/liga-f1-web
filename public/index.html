@@ -269,6 +269,40 @@
             margin-bottom: 10px;
         }
 
+        /* NUEVOS ESTILOS PARA TABLA DE CONSTRUCTORES */
+
+/* Alineación general para las nuevas columnas */
+#tabla-constructores td, #tabla-constructores th {
+    text-align: center;
+    padding: 12px;
+}
+
+/* Contenedor de las fotos de los pilotos */
+.pilotos-escuderia {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    min-width: 80px;
+}
+
+/* Estilo para los avatares pequeños */
+.mini-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #e10600;
+    object-fit: cover;
+    background-color: #333;
+}
+
+/* Asegura que el logo de la escudería no deforme la celda */
+.logo-escuderia {
+    width: 25px; 
+    height: 25px; 
+    vertical-align: middle; 
+    margin-right: 8px;
+}
+
         /* Configuración base para todos los trazados */
         .trazado-mask { width: 100%; height: 120px; background-image: url('/webimagenes/circuitos.png'); background-repeat: no-repeat; background-size: 500% 500%; border-radius: 8px; margin-bottom: 10px; }
         .trazado-melbourne { background-position: 0% 0%; }
