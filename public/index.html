@@ -650,50 +650,7 @@
 
     <script>
 
-// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
 
-
-
-async function enviarContacto() {
-    const webhookUrl = 'https://discord.com/api/webhooks/1517934346617749634/aIzBB1eS8CQSBFRkdUKJ03atcmq0nydHeh8PIHfjlxpIiy_hL3RvQv3GoKc1AwneN2no'; 
-    const nombre = document.getElementById('nombre-contacto').value;
-    const asunto = document.getElementById('asunto-contacto').value;
-    const mensaje = document.getElementById('mensaje-contacto').value;
-
-    const payload = {
-        embeds: [{
-            title: "📩 Nuevo mensaje de contacto",
-            color: 3447003, // Color azul
-            fields: [
-                { name: "Nombre", value: nombre, inline: true },
-                { name: "Asunto", value: asunto, inline: true },
-                { name: "Mensaje", value: mensaje }
-            ],
-            timestamp: new Date().toISOString()
-        }]
-    };
-
-    const res = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-        alert("¡Mensaje enviado correctamente!");
-        document.getElementById('modal-contacto').style.display = 'none';
-        // Limpiamos los campos
-        document.getElementById('nombre-contacto').value = '';
-        document.getElementById('asunto-contacto').value = '';
-        document.getElementById('mensaje-contacto').value = '';
-    } else {
-        alert("Error al enviar el mensaje.");
-    }
-}
-
-
-        
-// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
         
         const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
         const NOMBRES_ESCUDERIAS = {
@@ -1449,9 +1406,59 @@ window.onload = () => {
         botonNoticias.classList.add('active');
     }
 };
-    
+
+
+
+   
 // IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
 document.addEventListener('DOMContentLoaded', cargarNoticias);
+
+
+
+// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
+
+
+
+async function enviarContacto() {
+    const webhookUrl = 'https://discord.com/api/webhooks/1517934346617749634/aIzBB1eS8CQSBFRkdUKJ03atcmq0nydHeh8PIHfjlxpIiy_hL3RvQv3GoKc1AwneN2no'; 
+    const nombre = document.getElementById('nombre-contacto').value;
+    const asunto = document.getElementById('asunto-contacto').value;
+    const mensaje = document.getElementById('mensaje-contacto').value;
+
+    const payload = {
+        embeds: [{
+            title: "📩 Nuevo mensaje de contacto",
+            color: 3447003, // Color azul
+            fields: [
+                { name: "Nombre", value: nombre, inline: true },
+                { name: "Asunto", value: asunto, inline: true },
+                { name: "Mensaje", value: mensaje }
+            ],
+            timestamp: new Date().toISOString()
+        }]
+    };
+
+    const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert("¡Mensaje enviado correctamente!");
+        document.getElementById('modal-contacto').style.display = 'none';
+        // Limpiamos los campos
+        document.getElementById('nombre-contacto').value = '';
+        document.getElementById('asunto-contacto').value = '';
+        document.getElementById('mensaje-contacto').value = '';
+    } else {
+        alert("Error al enviar el mensaje.");
+    }
+}
+
+
+        
+// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
 
     
     
