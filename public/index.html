@@ -230,8 +230,7 @@
 <h1 style="text-align: center;">🏁 CAZADORES DE CURVAS 🏁</h1>
 
 <div class="navbar">
-    <button class="nav-btn active" onclick="irA(event, 'seccion-noticias')">📢 Noticias</button>
-    <button class="nav-btn" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
+    <button class="nav-btn active" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
     <button class="nav-btn" onclick="irA(event, 'mundial-constructores')">🏎️ Constructores</button>
     <button class="nav-btn" onclick="irA(event, 'seccion-circuitos')">📍 Circuitos</button>
     <button class="nav-btn" onclick="irA(event, 'licencias-sanciones')">⚠️ Sanciones</button>
@@ -245,7 +244,7 @@
     }
 </script>
 
-<div id="zona-noticias" class="seccion">
+<div id="zona-noticias">
         <h2>📢 Noticias y Avisos</h2>
         <div id="lista-noticias">
             <!-- Aquí cargará tu JavaScript los avisos -->
@@ -253,7 +252,7 @@
     </div>
 
     
-    <div id="mundial-pilotos" class="seccion active">
+    <div id="mundial-pilotos" class="seccion activa">
         <h2>Campeonato Mundial de Pilotos</h2>
         <table>
             <thead>
@@ -469,14 +468,13 @@ function irA(evento, idSeccion) {
         evento.currentTarget.classList.add('active');
     }
     
- // 5. LLAMADA A LA CARGA DE DATOS
-if (idSeccion === 'seccion-circuitos') {
-    cargarCircuitos();
-} else if (idSeccion === 'zona-noticias') {
-    cargarNoticias(); // <--- Esta es la corrección clave
-} else if (idSeccion !== 'panel-admin') {
-    cargarTodosLosDatos();
-}
+    // 5. NUEVO: Llamar a la carga de datos según la sección
+    if (idSeccion === 'seccion-circuitos') {
+        cargarCircuitos();
+    } else if (idSeccion !== 'panel-admin') {
+        // Solo cargar datos generales si no es panel admin
+        cargarTodosLosDatos();
+    }
 }
 
 function verificarPassword() {
@@ -1002,71 +1000,43 @@ async function verificarPassword() {
 
 // --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
 async function cargarNoticias() {
-    console.log("Cargando noticias...");
     const contenedor = document.getElementById('lista-noticias');
     
-    if (!contenedor) {
-        console.error("ERROR: No se encuentra el elemento #lista-noticias");
-        return;
-    }
-
     try {
         const respuesta = await fetch('/api/noticias');
-        if (!respuesta.ok) throw new Error("Error en la respuesta del servidor");
-        
         const noticias = await respuesta.json();
-        console.log("Datos recibidos:", noticias);
         
-        contenedor.innerHTML = ''; // Limpiamos el contenedor antes de dibujar
-
-        if (!noticias || noticias.length === 0) {
-            contenedor.innerHTML = '<p style="text-align: center; color: #666;">No hay avisos pendientes.</p>';
+        contenedor.innerHTML = ''; // Limpiamos el texto de carga
+        
+        if (noticias.length === 0) {
+            contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
             return;
         }
 
         noticias.forEach(noticia => {
             const div = document.createElement('div');
-            div.className = 'noticia-item';
-            div.style.marginBottom = "20px";
-            div.style.padding = "10px";
-            div.style.borderBottom = "1px solid #444";
-
-            // 1. Limpieza segura de datos
-            const titulo = noticia.titulo || 'Sin título';
-            const contenido = noticia.contenido || 'Sin contenido';
+            div.className = 'noticia-item'; 
             
-            // 2. Formato de fecha seguro (si falla el formato, mostramos el texto tal cual)
-            let fechaTexto = 'Sin fecha';
-            if (noticia.fecha) {
-                const dateObj = new Date(noticia.fecha);
-                fechaTexto = !isNaN(dateObj) ? dateObj.toLocaleDateString() : noticia.fecha;
-            }
+            // Botones solo para Admin
+            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                            style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                    <button onclick="eliminarNoticia(${noticia.id})" 
+                            style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                </div>
+            ` : '';
 
-            // 3. Lógica de botones (Admin)
-            let botonesAdmin = '';
-            if (typeof esAdmin === 'function' && esAdmin()) {
-                botonesAdmin = `
-                    <div style="margin-top: 10px; display: flex; gap: 10px;">
-                        <button onclick="editarNoticia(${noticia.id}, '${titulo.replace(/'/g, "\\'")}', '${contenido.replace(/'/g, "\\'")}')" 
-                                style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer;">Editar</button>
-                        <button onclick="eliminarNoticia(${noticia.id})" 
-                                style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer;">Borrar</button>
-                    </div>
-                `;
-            }
-
-            // 4. Inyectar HTML
             div.innerHTML = `
-                <h4 style="margin: 0 0 5px 0; color: #00d2be;">${titulo}</h4>
-                <p style="margin: 5px 0; color: #ccc;">${contenido}</p>
-                <small style="color: #666;">${fechaTexto}</small>
+                <h4 style="margin: 0 0 10px 0; color: #00d2be;">${noticia.titulo}</h4>
+                <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                <small style="color: #666;">${new Date(noticia.fecha).toLocaleDateString()}</small>
                 ${botonesAdmin}
             `;
             contenedor.appendChild(div);
         });
-
     } catch (error) {
-        console.error("Error crítico en cargarNoticias:", error);
+        console.error("Error cargando noticias:", error);
         contenedor.innerHTML = '<p style="color: #ff4444;">Error al cargar las noticias.</p>';
     }
 }
