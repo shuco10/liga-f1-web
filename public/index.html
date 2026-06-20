@@ -489,7 +489,16 @@
 
 <div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
     <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">🚨 3. Aplicar Penalización de Licencia</h3>
+    <div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">🚨 3. Aplicar Penalización de Licencia</h3>
     <form id="form-sancion">
+        <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-sancion" class="form-control" required></select></div>
+        <div class="form-group"><label>Puntos a retirar:</label><input type="number" id="puntos_restar" class="form-control" placeholder="Ej: 2 o -2" required></div>
+        <button type="submit" class="btn-accion" style="background-color: #d4a000; color: black;">Aplicar Sanción</button>
+        
+        <div id="msg-sancion" style="color: #d4a000; margin-top: 10px; font-weight: bold;"></div>
+    </form>
+</div>>
         <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-sancion" class="form-control" required></select></div>
         <div class="form-group"><label>Puntos a retirar:</label><input type="number" id="puntos_restar" class="form-control" placeholder="Ej: 2 o -2" required></div>
         <button type="submit" class="btn-accion" style="background-color: #d4a000; color: black;">Aplicar Sanción</button>
