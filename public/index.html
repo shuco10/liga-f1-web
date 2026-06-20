@@ -1228,14 +1228,14 @@ async function publicarNoticia() {
 // --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
 
 async function notificarDiscord(titulo, descripcion, autor) {
-    const webhookUrl = 'https://discord.com/api/webhooks/1517900569891704893/RU_kzhQQ3L9f0i0R5ovCFAg4-t2755smAGS_Tfy9XUyql1FFnE-beqiB4XWMYiGNR0iD'; 
+    const webhookUrl = 'TU_URL_AQUI'; 
     const webUrl = "https://cazadores-de-curvas.onrender.com/"; 
 
-    const mensaje = {
+    // Cambiamos el nombre de "mensaje" a "payload" para evitar el error de inicialización
+    const payload = {
         content: "📢 **¡Nueva noticia en Cazadores de Curvas!**",
         embeds: [{
             title: titulo,
-            // CORRECCIÓN: Aquí debes usar "descripcion" en lugar de "mensaje"
             description: `${descripcion}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
             color: 16711680,
             author: {
@@ -1249,7 +1249,7 @@ async function notificarDiscord(titulo, descripcion, autor) {
         const response = await fetch(webhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(mensaje)
+            body: JSON.stringify(payload) // Usamos "payload" aquí
         });
 
         if (!response.ok) {
