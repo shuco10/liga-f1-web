@@ -469,13 +469,14 @@ function irA(evento, idSeccion) {
         evento.currentTarget.classList.add('active');
     }
     
-    // 5. NUEVO: Llamar a la carga de datos según la sección
-    if (idSeccion === 'seccion-circuitos') {
-        cargarCircuitos();
-    } else if (idSeccion !== 'panel-admin') {
-        // Solo cargar datos generales si no es panel admin
-        cargarTodosLosDatos();
-    }
+ // 5. LLAMADA A LA CARGA DE DATOS
+if (idSeccion === 'seccion-circuitos') {
+    cargarCircuitos();
+} else if (idSeccion === 'zona-noticias') {
+    cargarNoticias(); // <--- Esta es la corrección clave
+} else if (idSeccion !== 'panel-admin') {
+    cargarTodosLosDatos();
+}
 }
 
 function verificarPassword() {
