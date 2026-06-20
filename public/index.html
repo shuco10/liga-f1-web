@@ -417,45 +417,43 @@
             11: '/logos/cadillac.png'
         };
 
-function irA(evento, idSeccion) {
-    // 1. Ocultar todas las secciones y quitar clases
+async function irA(evento, idSeccion) {
+    // 1. Ocultar todas las secciones
     document.querySelectorAll('.seccion').forEach(s => {
         s.style.display = 'none';
         s.classList.remove('activa');
     });
+    
+    // 2. Limpiar botones
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
-    // 2. Mostrar la sección destino
+    // 3. Mostrar la sección destino
     const seccionDestino = document.getElementById(idSeccion);
     if (seccionDestino) {
         seccionDestino.style.display = 'block';
         seccionDestino.classList.add('activa');
+        
+        // 4. Carga de datos con AWAIT
+        try {
+            if (idSeccion === 'seccion-noticias') {
+                await cargarNoticias();
+            } else if (idSeccion === 'seccion-circuitos') {
+                await cargarCircuitos();
+            } else if (idSeccion === 'mundial-pilotos' || 
+                       idSeccion === 'mundial-constructores' || 
+                       idSeccion === 'licencias-sanciones') {
+                
+                console.log("Cargando datos globales...");
+                await cargarTodosLosDatos(); 
+            }
+        } catch (err) {
+            console.error("Error al cargar datos:", err);
+        }
     }
     
-    // 3. Activar botón
+    // 5. Activar el botón
     if (evento && evento.currentTarget) {
         evento.currentTarget.classList.add('active');
-    }
-    
-    // 4. Lógica de carga con protección total
-    // Si la función falla, el catch evita que la web se bloquee
-    try {
-        if (idSeccion === 'seccion-noticias') {
-            cargarNoticias();
-        } else if (idSeccion === 'seccion-circuitos') {
-            cargarCircuitos();
-        } else if (idSeccion === 'panel-admin') {
-            // El panel admin no carga datos generales
-        } else {
-            console.log("Intentando ejecutar cargarTodosLosDatos para:", idSeccion);
-            if (typeof cargarTodosLosDatos === 'function') {
-                cargarTodosLosDatos();
-            } else {
-                console.error("ERROR: La función cargarTodosLosDatos NO EXISTE.");
-            }
-        }
-    } catch (err) {
-        console.error("Error crítico en la carga de datos:", err);
     }
 }
 
