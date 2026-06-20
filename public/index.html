@@ -1097,8 +1097,8 @@ async function cargarNoticias() {
 
         noticias.forEach(noticia => {
             const div = document.createElement('div');
-            // AÑADIDO: Clase extra para aplicar el estilo del borde amarillo en CSS
-            div.className = 'noticia-item noticia-destacada-amarilla'; 
+            // Aplicamos la clase base (el borde se controla mediante CSS ahora en rojo)
+            div.className = 'noticia-item'; 
             
             // Botones solo para Admin
             const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
@@ -1110,10 +1110,15 @@ async function cargarNoticias() {
                 </div>
             ` : '';
 
+            // Formateo de fecha y hora local
+            const fechaObj = new Date(noticia.fecha);
+            const fechaFormateada = fechaObj.toLocaleDateString();
+            const horaFormateada = fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
             div.innerHTML = `
-                <h4 style="margin: 0 0 10px 0; color: #ccff00;">${noticia.titulo}</h4>
+                <h4 style="margin: 0 0 10px 0; color: #ff4444;">${noticia.titulo}</h4>
                 <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
-                <small style="color: #666;">${new Date(noticia.fecha).toLocaleDateString()}</small>
+                <small style="color: #666;">${fechaFormateada} - ${horaFormateada}</small>
                 ${botonesAdmin}
             `;
             contenedor.appendChild(div);
@@ -1123,7 +1128,6 @@ async function cargarNoticias() {
         contenedor.innerHTML = '<p style="color: #ff4444;">Error al cargar las noticias.</p>';
     }
 }
-
 // --- FUNCIÓN PARA ELIMINAR ---
 async function eliminarNoticia(id) {
     if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
