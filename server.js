@@ -48,7 +48,7 @@ app.post('/api/noticias', async (req, res) => {
 
 // API para que la página principal LEA las noticias
 app.get('/api/noticias', async (req, res) => {
-    const result = await pool.query("SELECT * FROM noticias ORDER BY fecha DESC LIMIT 5");
+    const result = await pool.query("SELECT * FROM noticias ORDER BY fecha DESC");
     res.json(result.rows);
 });
 
