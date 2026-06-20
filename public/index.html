@@ -438,75 +438,54 @@
     <button onclick="publicarNoticia()" id="btn-plata-resultado" class="btn-accion">PUBLICAR AVISO</button>
 </div>
 
-        <hr style="border-color: #444; margin: 20px 0;">
-        <h3>1. Inscribir Nuevo Piloto</h3>
-        <form id="form-piloto">
-            <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" required></div>
-            <div class="form-group"><label>Dorsal / Número del Piloto:</label><input type="number" id="numero_piloto" min="1" max="99" placeholder="Ej: 9" required></div>
-            <div class="form-group"><label>Enlace de Foto (Discord URL):</label><input type="text" id="foto_url" placeholder="Pegar enlace cdn.discordapp.com de la foto"></div>
-            <div class="form-group"><label>Plataforma:</label><select id="plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
-            <div class="form-group">
-                <label>Escudería:</label>
-                <select id="escuderia_id">
-                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Rol del Piloto:</label>
-                <select id="es_reserva"><option value="0">Titular</option><option value="1">Reserva</option></select>
-            </div>
-            <button type="submit" class="btn-accion">Guardar Piloto</button>
-            <div id="msg-piloto" class="mensaje"></div>
-        </form>
+        <!-- Sección 1: Inscribir Piloto -->
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">👤 1. Inscribir Nuevo Piloto</h3>
+    <form id="form-piloto">
+        <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" class="form-control" required></div>
+        <div class="form-group"><label>Dorsal / Número del Piloto:</label><input type="number" id="numero_piloto" class="form-control" min="1" max="99" required></div>
+        <div class="form-group"><label>Enlace de Foto (Discord URL):</label><input type="text" id="foto_url" class="form-control"></div>
+        <div class="form-group"><label>Plataforma:</label><select id="plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
+        <div class="form-group"><label>Escudería:</label><select id="escuderia_id" class="form-control">...</select></div>
+        <div class="form-group"><label>Rol del Piloto:</label><select id="es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
+        <button type="submit" class="btn-accion">Guardar Piloto</button>
+        <div id="msg-piloto" class="mensaje"></div>
+    </form>
+</div>
 
-        <hr style="border-color: #444; margin: 30px 0;">
-        <h3>✏️ 1B. Editar Piloto Existente</h3>
-        <form id="form-editar">
-            <div class="form-group">
-                <label>Selecciona el Piloto a Modificar:</label>
-                <select id="select-piloto-editar" onchange="autocompletarFormEdicion()" required></select>
-            </div>
-            <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" required></div>
-            <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" min="1" max="99" required></div>
-            <div class="form-group"><label>Nuevo Enlace de Foto (Discord URL):</label><input type="text" id="edit-foto" placeholder="Pegar enlace nuevo de Discord"></div>
-            <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
-            <div class="form-group">
-                <label>Nueva Escudería:</label>
-                <select id="edit-escuderia">
-                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Nuevo Rol:</label>
-                <select id="edit-es_reserva"><option value="0">Titular</option><option value="1">Reserva</option></select>
-            </div>
-            <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos del Piloto</button>
-            <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
-        </form>
+<!-- Sección 1B: Editar Piloto -->
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">✏️ 2. Editar Piloto Existente</h3>
+    <form id="form-editar">
+        <div class="form-group"><label>Selecciona el Piloto a Modificar:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()" required></select></div>
+        <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" class="form-control" required></div>
+        <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" class="form-control" min="1" max="99" required></div>
+        <div class="form-group"><label>Nuevo Enlace de Foto:</label><input type="text" id="edit-foto" class="form-control"></div>
+        <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
+        <div class="form-group"><label>Nueva Escudería:</label><select id="edit-escuderia" class="form-control">...</select></div>
+        <div class="form-group"><label>Nuevo Rol:</label><select id="edit-es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
+        <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos</button>
+        <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
+    </form>
+</div>
 
-        <hr style="border-color: #444; margin: 30px 0;">
-        <h3>3. Aplicar Penalización de Licencia</h3>
-        <form id="form-sancion">
-            <div class="form-group"><label>Seleccionar Piloto Sancionado:</label><select id="select-piloto-sancion" required></select></div>
-            <div class="form-group"><label>Puntos a retirar (positivo) o devolver (negativo):</label><input type="number" id="puntos_restar" placeholder="Ej: 2 o -2" required></div>
-            <button type="submit" class="btn-accion" style="background-color: #d4a000; color: black;">Aplicar Sanción</button>
-            <div id="msg-sancion" class="mensaje"></div>
-        </form>
+<!-- Sección 3: Penalización -->
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">🚨 3. Aplicar Penalización de Licencia</h3>
+    <form id="form-sancion">
+        <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-sancion" class="form-control" required></select></div>
+        <div class="form-group"><label>Puntos a retirar:</label><input type="number" id="puntos_restar" class="form-control" placeholder="Ej: 2 o -2" required></div>
+        <button type="submit" class="btn-accion" style="background-color: #d4a000; color: black;">Aplicar Sanción</button>
+    </form>
+</div>
 
-        <hr style="border-color: #444; margin: 30px 0;">
-        <h3>❌ 4. Eliminar Piloto de la Liga</h3>
-        <form id="form-eliminar">
-            <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" required></select></div>
-            <button type="submit" class="btn-accion" style="background-color: #7a0000; border: 1px solid #ff4444;">Eliminar Permanentemente</button>
-            <div id="msg-eliminar" class="mensaje" style="color: #ff4444;"></div>
-        </form>
-    </div>
+<!-- Sección 4: Eliminar -->
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">❌ 4. Eliminar Piloto de la Liga</h3>
+    <form id="form-eliminar">
+        <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" class="form-control" required></select></div>
+        <button type="submit" class="btn-accion" style="background-color: #7a0000;">Eliminar Permanentemente</button>
+    </form>
 </div>
 
     <script>
