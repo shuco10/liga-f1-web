@@ -1239,7 +1239,7 @@ async function notificarDiscord(titulo, descripcion, autor) {
            description: `${mensaje}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
             color: 16711680, // Color en formato decimal (16711680 es rojo)
             author: {
-                name: autor || "Administración"
+                name: autor || "**- Administración -**"
             },
             timestamp: new Date().toISOString() // Añade la hora actual
         }]
