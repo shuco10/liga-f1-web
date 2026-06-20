@@ -1069,6 +1069,18 @@ async function editarNoticia(id, tituloActual, contenidoActual) {
         }
     }
 }
+
+    // --- PÓNLO AQUÍ ABAJO, AL FINAL DEL TODO ---
+window.onload = () => {
+    // 1. Mostrar la sección de noticias por defecto al entrar
+    irA(null, 'zona-noticias');
+    
+    // 2. Forzar que el botón de Noticias tenga la clase 'active'
+    const botonNoticias = document.querySelector('button[onclick*="zona-noticias"]');
+    if (botonNoticias) {
+        botonNoticias.classList.add('active');
+    }
+};
     
 // IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
 document.addEventListener('DOMContentLoaded', cargarNoticias);
