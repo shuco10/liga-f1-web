@@ -417,36 +417,45 @@
             11: '/logos/cadillac.png'
         };
 
-// Tu función irA corregida
 function irA(evento, idSeccion) {
-    // Ocultar todas las secciones
+    // 1. Ocultar todas las secciones y quitar clases
     document.querySelectorAll('.seccion').forEach(s => {
         s.style.display = 'none';
         s.classList.remove('activa');
     });
-    
-    // Desactivar botones
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
-    // Mostrar la elegida
+    // 2. Mostrar la sección destino
     const seccionDestino = document.getElementById(idSeccion);
     if (seccionDestino) {
         seccionDestino.style.display = 'block';
         seccionDestino.classList.add('activa');
     }
     
-    // Activar botón pulsado
+    // 3. Activar botón
     if (evento && evento.currentTarget) {
         evento.currentTarget.classList.add('active');
     }
     
-    // Carga de datos
-    if (idSeccion === 'seccion-noticias') {
-        cargarNoticias();
-    } else if (idSeccion === 'seccion-circuitos') {
-        cargarCircuitos();
-    } else if (idSeccion !== 'panel-admin') {
-        cargarTodosLosDatos();
+    // 4. Lógica de carga con protección total
+    // Si la función falla, el catch evita que la web se bloquee
+    try {
+        if (idSeccion === 'seccion-noticias') {
+            cargarNoticias();
+        } else if (idSeccion === 'seccion-circuitos') {
+            cargarCircuitos();
+        } else if (idSeccion === 'panel-admin') {
+            // El panel admin no carga datos generales
+        } else {
+            console.log("Intentando ejecutar cargarTodosLosDatos para:", idSeccion);
+            if (typeof cargarTodosLosDatos === 'function') {
+                cargarTodosLosDatos();
+            } else {
+                console.error("ERROR: La función cargarTodosLosDatos NO EXISTE.");
+            }
+        }
+    } catch (err) {
+        console.error("Error crítico en la carga de datos:", err);
     }
 }
 
