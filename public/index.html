@@ -91,6 +91,13 @@
     position: relative;
 }
 
+        .contenedor-jaula {
+    width: 250px; 
+    height: 150px; 
+    overflow: hidden; /* Esto corta todo lo que sobresalga */
+    border: 1px solid #333; /* Opcional: para ver el marco */
+}
+
 /* Forzamos el contenido interno, incluso si el script intenta cambiarlo */
 .sidebar-izquierda .my-banner > * {
     width: 100% !important;
@@ -221,9 +228,11 @@
 <body>
 
 <div class="main-wrapper">
-        <aside class="sidebar-izquierda">
-            <div class="my-banner"></div>
-        </aside>
+<aside class="sidebar-izquierda">
+    <div class="contenedor-jaula">
+        <div class="my-banner"></div>
+    </div>
+</aside>
 
         <main class="content">
             </main>
