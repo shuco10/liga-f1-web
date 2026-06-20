@@ -81,14 +81,21 @@
 
 /* Banner */
 
-    .my-banner {
-    /* Ajusta la altura máxima a lo que necesites */
-    max-height: 150px; 
-    /* Ajusta el ancho si es necesario */
-    max-width: 300px; 
-    /* Esto ayuda a que el banner se recorte o ajuste proporcionalmente */
-    overflow: hidden;
-    margin: 0 auto;
+/* Seleccionamos el contenedor de forma muy específica */
+.sidebar-izquierda .my-banner {
+    width: 250px !important;    /* Ajusta este ancho */
+    height: 150px !important;   /* Ajusta esta altura */
+    min-height: 150px !important;
+    max-height: 150px !important;
+    overflow: hidden !important;
+    position: relative;
+}
+
+/* Forzamos el contenido interno, incluso si el script intenta cambiarlo */
+.sidebar-izquierda .my-banner > * {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Recorta si es necesario para mantener el tamaño */
 }
 
 /* Opcional: Si quieres forzar que lo que hay dentro se adapte */
