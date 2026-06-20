@@ -1310,38 +1310,42 @@ window.onload = () => {
     }
 };
     
-// IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
-document.addEventListener('DOMContentLoaded', cargarNoticias);
+// Esperamos a que toda la página cargue para asegurar que el botón existe
+document.addEventListener('DOMContentLoaded', () => {
 
+    // 1. Definición de la función (se mantiene igual)
+    async function notificarDiscord(titulo, mensaje) {
+        const webhookUrl = "https://discord.com/api/webhooks/1517900569891704893/RU_kzhQQ3L9f0i0R5ovCFAg4-t2755smAGS_Tfy9XUyql1FFnE-beqiB4XWMYiGNR0iD"; 
+        
+        const data = {
+            embeds: [{
+                title: "📢 Nueva Noticia",
+                description: `**${titulo}**\n\n${mensaje}`,
+                color: 16711680 
+            }]
+        };
 
-// 1. Defino la función primero
-async function notificarDiscord(titulo, mensaje) {
-    const webhookUrl = "https://discord.com/api/webhooks/1517900569891704893/RU_kzhQQ3L9f0i0R5ovCFAg4-t2755smAGS_Tfy9XUyql1FFnE-beqiB4XWMYiGNR0iD"; // url webhook
+        await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    }
+
+    // 2. Listener seguro
+    const botonPublicar = document.getElementById("btn-publicar");
     
-    const data = {
-        embeds: [{
-            title: "📢 Nueva Noticia",
-            description: `**${titulo}**\n\n${mensaje}`,
-            color: 16711680 // Color rojo
-        }]
-    };
-
-    await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-}
-
-// 2. Aquí va tu listener (el que captura el clic o el envío)
-document.getElementById("btn-publicar").addEventListener("click", () => {
-    const titulo = document.getElementById("titulo").value;
-    const mensaje = document.getElementById("mensaje").value;
-    
-    // Llamas a la función que definiste arriba
-    notificarDiscord(titulo, mensaje);
-    
-    console.log("Notificación enviada a Discord");
+    if (botonPublicar) {
+        botonPublicar.addEventListener("click", () => {
+            const titulo = document.getElementById("titulo").value;
+            const mensaje = document.getElementById("mensaje").value;
+            
+            notificarDiscord(titulo, mensaje);
+            console.log("Notificación enviada a Discord");
+        });
+    } else {
+        console.error("No se encontró el botón btn-publicar en el DOM");
+    }
 });
     
     
