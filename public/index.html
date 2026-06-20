@@ -135,25 +135,24 @@
 
 /* TABLA CONSTRUCTORES */
 
-    .pilotos-escuderia {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 5px;
+
+#tabla-constructores td {
+    padding: 12px;
+    vertical-align: middle;
 }
 
+        .pilotos-escuderia {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
 .mini-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
     border: 2px solid #e10600;
     object-fit: cover;
-    background-color: #333;
-}
-
-#tabla-constructores td {
-    padding: 12px;
-    vertical-align: middle;
+    background-color: #444;
 }
         
 /* 1. La caja que contiene el banner */
@@ -420,7 +419,10 @@
                 <tr>
                     <th>Pos</th>
                     <th>Escudería</th>
-                    <th>Puntos Totales</th>
+                    <th>Pilotos</th>
+                    <th>Vics</th>
+                    <th>Podios</th>
+                    <th>Puntos</th>
                 </tr>
             </thead>
             <tbody id="tabla-constructores"></tbody>
@@ -712,8 +714,9 @@ listaPilotosGlobal.forEach(p => {
         constructoresMap[p.escuderia_id].podios += (Number(p.podios) || 0);
         constructoresMap[p.escuderia_id].victorias += (Number(p.victorias) || 0);
         
-        // Verifica que 'p.avatar' sea la propiedad correcta de tu imagen
-        if (p.avatar) constructoresMap[p.escuderia_id].pilotosFotos.push(p.avatar);
+        // CORRECCIÓN: usamos p.foto_url (la misma que en la tabla de pilotos)
+        const foto = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
+        constructoresMap[p.escuderia_id].pilotosFotos.push(foto);
     }
 });
 
@@ -729,10 +732,10 @@ if (tConst) {
         const pos = index + 1;
 
         const fotosHtml = c.pilotosFotos.map(url =>
-            `<img src="${url}" class="mini-avatar" onerror="this.style.display='none'">`
+            `<img src="${url}" class="mini-avatar">`
         ).join('');
 
-        let badgePos = `<td><strong>${pos}º</strong></td>`;
+        let badgePos = `<td><strong>${pos}</strong></td>`;
         if (pos === 1) badgePos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
         else if (pos === 2) badgePos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
         else if (pos === 3) badgePos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
@@ -740,7 +743,7 @@ if (tConst) {
         tConst.innerHTML += `
             <tr>
                 ${badgePos}
-                <td style="border-left: 4px solid ${c.color || '#444'}; padding-left:10px;">
+                <td style="border-left: 6px solid ${c.color || '#444'} !important; padding-left:10px;">
                     ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
                     ${c.nombre}
                 </td>
