@@ -1313,6 +1313,37 @@ window.onload = () => {
 // IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
 document.addEventListener('DOMContentLoaded', cargarNoticias);
 
+
+// 1. Defino la función primero
+async function notificarDiscord(titulo, mensaje) {
+    const webhookUrl = "https://discord.com/api/webhooks/1517900569891704893/RU_kzhQQ3L9f0i0R5ovCFAg4-t2755smAGS_Tfy9XUyql1FFnE-beqiB4XWMYiGNR0iD"; // url webhook
+    
+    const data = {
+        embeds: [{
+            title: "📢 Nueva Noticia",
+            description: `**${titulo}**\n\n${mensaje}`,
+            color: 16711680 // Color rojo
+        }]
+    };
+
+    await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+}
+
+// 2. Aquí va tu listener (el que captura el clic o el envío)
+document.getElementById("btn-publicar").addEventListener("click", () => {
+    const titulo = document.getElementById("titulo").value;
+    const mensaje = document.getElementById("mensaje").value;
+    
+    // Llamas a la función que definiste arriba
+    notificarDiscord(titulo, mensaje);
+    
+    console.log("Notificación enviada a Discord");
+});
+    
     
     
     </script>
