@@ -816,7 +816,7 @@ if (formCarrera) {
     });
 }
 
-// --- FORMULARIO SANCIÓN ---
+// --- FORMULARIO SANCIÓN (VERSIÓN PROTEGIDA) ---
 const formSancion = document.getElementById('form-sancion');
 if (formSancion) {
     formSancion.addEventListener('submit', async (e) => {
@@ -825,9 +825,20 @@ if (formSancion) {
             piloto_id: parseInt(document.getElementById('select-piloto-sancion').value), 
             puntos_restar: parseInt(document.getElementById('puntos_restar').value) 
         };
-        const res = await fetch('/api/restar-licencia', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-        if(res.ok) { 
-            document.getElementById('msg-sancion').innerText = "¡Sanción aplicada!"; 
+        
+        const res = await fetch('/api/restar-licencia', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(datos) 
+        });
+        
+        if (res.ok) { 
+            // Buscamos el elemento de forma segura
+            const msgSancion = document.getElementById('msg-sancion');
+            if (msgSancion) {
+                msgSancion.innerText = "¡Sanción aplicada!"; 
+            }
+            
             formSancion.reset(); 
             await cargarTodosLosDatos(); 
         }
