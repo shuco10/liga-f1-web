@@ -1230,12 +1230,13 @@ async function publicarNoticia() {
 async function notificarDiscord(titulo, descripcion, autor) {
     // Reemplaza esto con la URL que copiaste en el paso 1
     const webhookUrl = 'https://discord.com/api/webhooks/1517900569891704893/RU_kzhQQ3L9f0i0R5ovCFAg4-t2755smAGS_Tfy9XUyql1FFnE-beqiB4XWMYiGNR0iD'; 
+    const webUrl = "https://cazadores-de-curvas.onrender.com/"; 
 
     const mensaje = {
         content: "📢 **¡Nueva noticia en Cazadores de Curvas!**", // Texto fuera de la tarjeta
         embeds: [{
             title: titulo,
-            description: descripcion,
+           description: `${mensaje}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
             color: 16711680, // Color en formato decimal (16711680 es rojo)
             author: {
                 name: autor || "Administración"
