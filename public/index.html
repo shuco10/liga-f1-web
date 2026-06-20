@@ -47,22 +47,6 @@
 
 /* SCROLL PARA LAS NOTICIAS */
 
-        .pilotos-escuderia {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-}
-.mini-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid #e10600;
-    object-fit: cover;
-    background-color: #444;
-}
-/* Asegura que los números no se amontonen */
-#tabla-constructores td { text-align: center; }
-
 #lista-noticias {
     max-height: 600px;        /* Ajusta esta altura según prefieras (ej. 5 noticias suelen caber aquí) */
     overflow-y: auto;         /* Esto activa el scroll vertical cuando el contenido supera la altura */
@@ -145,9 +129,6 @@
     text-transform: uppercase;
     letter-spacing: 2px;
 }
-
-        .pilotos-escuderia { display: flex; gap: 5px; justify-content: center; }
-.mini-avatar { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #e10600; object-fit: cover; }
 
 /* 1. La caja que contiene el banner */
 .contenedor-jaula {
@@ -372,26 +353,19 @@
         </table>
     </div>
 
-<div id="mundial-constructores" class="seccion">
-    <h2>Campeonato de Constructores</h2>
-    <div style="overflow-x: auto;"> <!-- Esto permite el scroll horizontal en móviles -->
+    <div id="mundial-constructores" class="seccion">
+        <h2>Campeonato de Constructores</h2>
         <table>
             <thead>
                 <tr>
                     <th>Pos</th>
                     <th>Escudería</th>
-                    <th>Pilotos</th>
-                    <th>Vics</th>
-                    <th>Podios</th>
-                    <th>Pts</th>
+                    <th>Puntos Totales</th>
                 </tr>
             </thead>
-            <tbody id="tabla-constructores">
-                <!-- Se llenará con JavaScript -->
-            </tbody>
+            <tbody id="tabla-constructores"></tbody>
         </table>
     </div>
-</div>
 
     <div id="seccion-circuitos" class="seccion">
     <h2>Resultados por Circuito</h2>
@@ -660,88 +634,43 @@ async function cargarTodosLosDatos() {
             });
         }
 
-      // 2. TABLA CONSTRUCTORES
-const constructoresMap = {};
-listaPilotosGlobal.forEach(p => {
-    if(p.escuderia_id && !p.es_reserva) { 
-        if(!constructoresMap[p.escuderia_id]) {
-            constructoresMap[p.escuderia_id] = { 
-                puntos: 0, 
-                color: p.color_hex,
-                podios: 0, 
-                victorias: 0, 
-                pilotosAvatares: [] // Array para guardar los avatares
-            };
-        }
-        constructoresMap[p.escuderia_id].puntos += p.puntos_totales;
-        constructoresMap[p.escuderia_id].podios += (p.podios || 0);
-        constructoresMap[p.escuderia_id].victorias += (p.victorias || 0);
-        constructoresMap[p.escuderia_id].pilotosAvatares.push(p.avatar_url); // Asegúrate de que p.avatar_url sea la ruta correcta
-    }
-});
+        // 2. TABLA CONSTRUCTORES
+        const constructoresMap = {};
+        listaPilotosGlobal.forEach(p => {
+            if(p.escuderia_id && !p.es_reserva) { 
+                if(!constructoresMap[p.escuderia_id]) {
+                    constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex };
+                }
+                constructoresMap[p.escuderia_id].puntos += p.puntos_totales;
+            }
+        });
 
-// 2. TABLA CONSTRUCTORES
-const constructoresMap = {};
-
-// Primero: Acumulamos los datos de todos los pilotos en sus respectivas escuderías
-listaPilotosGlobal.forEach(p => {
-    if (p.escuderia_id && !p.es_reserva) {
-        if (!constructoresMap[p.escuderia_id]) {
-            constructoresMap[p.escuderia_id] = {
-                puntos: 0,
-                color: p.color_hex,
-                podios: 0,
-                victorias: 0,
-                pilotosAvatares: [] // Array para las imágenes
-            };
-        }
-        constructoresMap[p.escuderia_id].puntos += (p.puntos_totales || 0);
-        constructoresMap[p.escuderia_id].podios += (p.podios || 0);
-        constructoresMap[p.escuderia_id].victorias += (p.victorias || 0);
+        const listaConstructores = Object.keys(constructoresMap)
+            .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
+            .sort((a,b) => b.puntos - a.puntos);
         
-        // Asumiendo que 'p.avatar' es el nombre de tu propiedad de imagen
-        if (p.avatar) constructoresMap[p.escuderia_id].pilotosAvatares.push(p.avatar);
-    }
-});
+        const tConst = document.getElementById('tabla-constructores');
+        if(tConst) {
+            tConst.innerHTML = '';
+            listaConstructores.forEach((c, index) => {
+                const logoUrl = LOGOS_ESCUDERIAS[c.id] || '';
+                const pos = index + 1;
+                let badgePos = `<td><strong>${pos}</strong></td>`; 
+                if (pos === 1) badgePos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
+                else if (pos === 2) badgePos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
+                else if (pos === 3) badgePos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
 
-// Segundo: Convertimos el mapa a una lista ordenada
-const listaConstructores = Object.keys(constructoresMap)
-    .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
-    .sort((a, b) => b.puntos - a.puntos);
-
-// Tercero: Pintamos la tabla
-const tConst = document.getElementById('tabla-constructores');
-if (tConst) {
-    tConst.innerHTML = '';
-    listaConstructores.forEach((c, index) => {
-        const logoUrl = LOGOS_ESCUDERIAS[c.id] || '';
-        const pos = index + 1;
-
-        // Generación de avatares HTML
-        const avataresHtml = c.pilotosAvatares.map(url =>
-            `<img src="${url}" class="mini-avatar" onerror="this.style.display='none'">`
-        ).join('');
-
-        // Badge de posición
-        let badgePos = `<td><strong>${pos}º</strong></td>`;
-        if (pos === 1) badgePos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
-        else if (pos === 2) badgePos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
-        else if (pos === 3) badgePos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
-
-        tConst.innerHTML += `
-            <tr>
-                ${badgePos}
-                <td style="border-left: 4px solid ${c.color || '#444'}; padding-left:10px;">
-                    ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
-                    ${c.nombre}
-                </td>
-                <td class="pilotos-escuderia">${avataresHtml}</td>
-                <td>${c.victorias}</td>
-                <td>${c.podios}</td>
-                <td><strong>${c.puntos} pts</strong></td>
-            </tr>`;
-    });
-}
+                tConst.innerHTML += `
+                    <tr>
+                        ${badgePos}
+                        <td style="border-left: 4px solid ${c.color || '#444'}; padding-left:10px;">
+                            ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
+                            ${c.nombre}
+                        </td>
+                        <td><strong>${c.puntos} pts</strong></td>
+                    </tr>`;
+            });
+        }
 
         // 3. TABLA SANCIONES
         const tSanciones = document.getElementById('tabla-sanciones');
