@@ -439,7 +439,14 @@
 
     
 
-<h1 style="text-align: center;">🏁 CAZADORES DE CURVAS 🏁</h1>
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+    <h1 style="margin: 0;">🏁 CAZADORES DE CURVAS 🏁</h1>
+    
+    <button onclick="document.getElementById('modal-contacto').style.display='block'" 
+            style="padding: 10px 20px; background-color: #ff4444; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;">
+        Contactar
+    </button>
+</div>
 
 <div class="navbar">
     <button class="nav-btn" onclick="irA(event, 'zona-noticias')"><span class="emoji-nav">📢</span> Noticias</button>
@@ -642,6 +649,52 @@
 </div>
 
     <script>
+
+// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
+
+
+
+async function enviarContacto() {
+    const webhookUrl = 'https://discord.com/api/webhooks/1517934346617749634/aIzBB1eS8CQSBFRkdUKJ03atcmq0nydHeh8PIHfjlxpIiy_hL3RvQv3GoKc1AwneN2no'; 
+    const nombre = document.getElementById('nombre-contacto').value;
+    const asunto = document.getElementById('asunto-contacto').value;
+    const mensaje = document.getElementById('mensaje-contacto').value;
+
+    const payload = {
+        embeds: [{
+            title: "📩 Nuevo mensaje de contacto",
+            color: 3447003, // Color azul
+            fields: [
+                { name: "Nombre", value: nombre, inline: true },
+                { name: "Asunto", value: asunto, inline: true },
+                { name: "Mensaje", value: mensaje }
+            ],
+            timestamp: new Date().toISOString()
+        }]
+    };
+
+    const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert("¡Mensaje enviado correctamente!");
+        document.getElementById('modal-contacto').style.display = 'none';
+        // Limpiamos los campos
+        document.getElementById('nombre-contacto').value = '';
+        document.getElementById('asunto-contacto').value = '';
+        document.getElementById('mensaje-contacto').value = '';
+    } else {
+        alert("Error al enviar el mensaje.");
+    }
+}
+
+
+        
+// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
+        
         const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
         const NOMBRES_ESCUDERIAS = {
             1: 'Red Bull Racing', 2: 'Ferrari', 3: 'Mercedes-AMG', 4: 'McLaren',
