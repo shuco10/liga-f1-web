@@ -45,6 +45,29 @@
 }
 /* ICONOS EN LOS BOTONES */
 
+/* SCROLL PARA LAS NOTICIAS */
+
+#lista-noticias {
+    max-height: 600px;        /* Ajusta esta altura según prefieras (ej. 5 noticias suelen caber aquí) */
+    overflow-y: auto;         /* Esto activa el scroll vertical cuando el contenido supera la altura */
+    padding-right: 10px;      /* Espacio para que el scroll no toque el texto */
+    scrollbar-width: thin;    /* Hace el scroll más fino en navegadores modernos */
+}
+
+/* Opcional: Personalizar el aspecto de la barra de scroll (para navegadores Chrome/Edge/Safari) */
+#lista-noticias::-webkit-scrollbar {
+    width: 8px;
+}
+
+#lista-noticias::-webkit-scrollbar-track {
+    background: #1a1a1a;      /* Color del fondo del scroll */
+}
+
+#lista-noticias::-webkit-scrollbar-thumb {
+    background: #ff4444;      /* Color de la barra del scroll (hemos usado tu rojo) */
+    border-radius: 4px;
+}
+/* SCROLL PARA LAS NOTICIAS */        
         
 .noticia-item {
     background: #252525;
