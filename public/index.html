@@ -135,17 +135,40 @@
 
 /* TABLA CONSTRUCTORES */
 
-
-#tabla-constructores td {
+/* 1. Alineación base para toda la tabla */
+#tabla-constructores td, #tabla-constructores th {
     padding: 12px;
-    vertical-align: left;
+    vertical-align: middle;
 }
 
-        .pilotos-escuderia {
+/* 2. Escuderías: Siempre a la izquierda */
+#tabla-constructores td:nth-child(2), 
+#tabla-constructores th:nth-child(2) {
+    text-align: left !important;
+    padding-left: 20px !important;
+}
+
+/* 3. Pilotos: Centrado para que el título caiga sobre las imágenes */
+#tabla-constructores td:nth-child(3), 
+#tabla-constructores th:nth-child(3) {
+    text-align: center !important;
+}
+
+/* 4. El resto de columnas (Pos, Vics, Podios, Puntos) centradas */
+#tabla-constructores td:nth-child(1), #tabla-constructores th:nth-child(1),
+#tabla-constructores td:nth-child(4), #tabla-constructores th:nth-child(4),
+#tabla-constructores td:nth-child(5), #tabla-constructores th:nth-child(5),
+#tabla-constructores td:nth-child(6), #tabla-constructores th:nth-child(6) {
+    text-align: center;
+}
+
+/* Estilos de los elementos internos */
+.pilotos-escuderia {
     display: flex;
-    justify-content: center;
+    justify-content: center; /* Mantiene las fotos juntas en el centro de la columna */
     gap: 5px;
 }
+
 .mini-avatar {
     width: 32px;
     height: 32px;
