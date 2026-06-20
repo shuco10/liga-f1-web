@@ -1205,10 +1205,11 @@ async function verificarPassword() {
             }
         }
    
-    async function publicarNoticia() {
+async function publicarNoticia() {
     const titulo = document.getElementById('noticia-titulo').value;
     const contenido = document.getElementById('noticia-contenido').value;
 
+    // 1. Enviamos la noticia al servidor
     const res = await fetch('/api/noticias', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1216,12 +1217,24 @@ async function verificarPassword() {
     });
 
     if (res.ok) {
+        // 2. Si se guardó, notificamos a Discord
+        // Asegúrate de que esta función esté definida o importada en este archivo
+        try {
+            await notificarDiscord(titulo, contenido);
+        } catch (error) {
+            console.error("Error al notificar a Discord:", error);
+            // Opcional: alert("Noticia guardada, pero hubo un error al notificar a Discord");
+        }
+
+        // 3. Recargamos la página
         alert("Noticia publicada correctamente");
-        location.reload(); // Recarga para ver el cambio
+        location.reload(); 
+    } else {
+        alert("Hubo un error al publicar la noticia.");
     }
 }
 
-// --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
+
 // --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
 async function cargarNoticias() {
     const contenedor = document.getElementById('lista-noticias');
