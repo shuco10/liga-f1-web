@@ -133,32 +133,30 @@
 
 
 
-/* TABLA CONSTRUCTORES */
+/* TABLA DE CONSTRUCTORES: ALINEACIÓN FORZADA */
 
-/* TABLA DE CONSTRUCTORES: ALINEACIÓN PERFECTA */
-
-/* 1. Base */
-#tabla-constructores td, #tabla-constructores th {
+/* 1. Reseteo: aseguramos que todo empiece centrado */
+#tabla-constructores th, #tabla-constructores td {
     padding: 12px;
     vertical-align: middle;
+    text-align: center; /* Regla base para todos */
 }
 
-/* 2. Escuderías: Izquierda con sangría */
+/* 2. Escuderías: Forzamos IZQUIERDA tanto al título como a los datos */
 #tabla-constructores td:nth-child(2), 
 #tabla-constructores th:nth-child(2) {
     text-align: left !important;
     padding-left: 20px !important;
 }
 
-/* 3. Pilotos: Centrado y ancho fijo para que no baile */
+/* 3. Pilotos: Forzamos CENTRO tanto al título como a los datos */
 #tabla-constructores td:nth-child(3), 
 #tabla-constructores th:nth-child(3) {
     text-align: center !important;
-    min-width: 110px; /* Esto mantiene la columna estable con 1 o 2 fotos */
+    min-width: 120px; /* Ancho fijo para que no baile */
 }
 
-/* 4. Resto de columnas (Pos, Vics, Podios, Puntos) centradas */
-#tabla-constructores td:nth-child(1), #tabla-constructores th:nth-child(1),
+/* 4. Vics, Podios, Puntos: Forzamos CENTRO tanto a títulos como a datos */
 #tabla-constructores td:nth-child(4), #tabla-constructores th:nth-child(4),
 #tabla-constructores td:nth-child(5), #tabla-constructores th:nth-child(5),
 #tabla-constructores td:nth-child(6), #tabla-constructores th:nth-child(6) {
