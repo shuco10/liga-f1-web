@@ -447,7 +447,18 @@
         Contactar
     </button>
 </div>
+<div id="modal-contacto" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:20px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px;">
+    <h3>Formulario de Contacto</h3>
+    <input type="text" id="nombre-contacto" placeholder="Tu Nombre" style="display:block; margin-bottom:10px; width:100%;">
+    <input type="text" id="asunto-contacto" placeholder="Asunto" style="display:block; margin-bottom:10px; width:100%;">
+    <textarea id="mensaje-contacto" placeholder="Tu mensaje..." style="display:block; margin-bottom:10px; width:100%;"></textarea>
+    
+    <button onclick="enviarContacto()">Enviar Mensaje</button>
+    <button onclick="document.getElementById('modal-contacto').style.display='none'">Cancelar</button>
+</div>
 
+
+    
 <div class="navbar">
     <button class="nav-btn" onclick="irA(event, 'zona-noticias')"><span class="emoji-nav">📢</span> Noticias</button>
     <button class="nav-btn" onclick="irA(event, 'mundial-pilotos')"><span class="emoji-nav">🏆</span> Pilotos</button>
