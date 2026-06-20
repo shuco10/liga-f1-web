@@ -1437,8 +1437,9 @@ async function enviarContacto() {
     const mensaje = document.getElementById('mensaje-contacto').value;
 
     const payload = {
+        content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
         embeds: [{
-            title: "@admin 📩 Nuevo mensaje de contacto",
+            title: "📩 Nuevo mensaje de contacto",
             color: 3447003, // Color azul
             fields: [
                 { name: "Nombre", value: nombre, inline: true },
