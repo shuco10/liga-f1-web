@@ -79,6 +79,24 @@
     letter-spacing: 2px;
 }
 
+/* Banner */
+
+    .my-banner {
+    /* Ajusta la altura máxima a lo que necesites */
+    max-height: 150px; 
+    /* Ajusta el ancho si es necesario */
+    max-width: 300px; 
+    /* Esto ayuda a que el banner se recorte o ajuste proporcionalmente */
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+/* Opcional: Si quieres forzar que lo que hay dentro se adapte */
+.my-banner iframe, .my-banner img {
+    max-height: 150px !important;
+    width: auto !important;
+}
+        
 /* Botón estilo "Petronas Silver" */
 .btn-accion {
     background-color: #00d2be; /* El verde/teal icónico */
