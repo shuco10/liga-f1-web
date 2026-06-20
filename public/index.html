@@ -798,27 +798,41 @@ async function cargarDesplegablesAdmin() {
         }
     });
 
-    document.getElementById('form-carrera').addEventListener('submit', async (e) => {
+ // --- FORMULARIO CARRERA ---
+const formCarrera = document.getElementById('form-carrera');
+if (formCarrera) {
+    formCarrera.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const datos = { piloto_id: parseInt(document.getElementById('select-piloto').value), posicion_carrera: parseInt(document.getElementById('posicion_carrera').value) };
+        const datos = { 
+            piloto_id: parseInt(document.getElementById('select-piloto').value), 
+            posicion_carrera: parseInt(document.getElementById('posicion_carrera').value) 
+        };
         const res = await fetch('/api/subir-resultado', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
         if(res.ok) { 
             document.getElementById('msg-carrera').innerText = "¡Resultado subido!"; 
-            document.getElementById('form-carrera').reset(); 
+            formCarrera.reset(); 
             await cargarTodosLosDatos(); 
         }
     });
+}
 
-    document.getElementById('form-sancion').addEventListener('submit', async (e) => {
+// --- FORMULARIO SANCIÓN ---
+const formSancion = document.getElementById('form-sancion');
+if (formSancion) {
+    formSancion.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const datos = { piloto_id: parseInt(document.getElementById('select-piloto-sancion').value), puntos_restar: parseInt(document.getElementById('puntos_restar').value) };
+        const datos = { 
+            piloto_id: parseInt(document.getElementById('select-piloto-sancion').value), 
+            puntos_restar: parseInt(document.getElementById('puntos_restar').value) 
+        };
         const res = await fetch('/api/restar-licencia', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
         if(res.ok) { 
             document.getElementById('msg-sancion').innerText = "¡Sanción aplicada!"; 
-            document.getElementById('form-sancion').reset(); 
+            formSancion.reset(); 
             await cargarTodosLosDatos(); 
         }
     });
+}
 
     document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
         e.preventDefault();
