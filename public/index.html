@@ -135,31 +135,34 @@
 
 /* TABLA CONSTRUCTORES */
 
-/* 1. Alineación base para toda la tabla */
+/* TABLA DE CONSTRUCTORES: ALINEACIÓN PERFECTA */
+
+/* 1. Base */
 #tabla-constructores td, #tabla-constructores th {
     padding: 12px;
     vertical-align: middle;
 }
 
-/* 2. Escuderías: Siempre a la izquierda */
+/* 2. Escuderías: Izquierda con sangría */
 #tabla-constructores td:nth-child(2), 
 #tabla-constructores th:nth-child(2) {
     text-align: left !important;
     padding-left: 20px !important;
 }
 
-/* 3. Pilotos: Centrado para que el título caiga sobre las imágenes */
+/* 3. Pilotos: Centrado y ancho fijo para que no baile */
 #tabla-constructores td:nth-child(3), 
 #tabla-constructores th:nth-child(3) {
     text-align: center !important;
+    min-width: 110px; /* Esto mantiene la columna estable con 1 o 2 fotos */
 }
 
-/* 4. El resto de columnas (Pos, Vics, Podios, Puntos) centradas */
+/* 4. Resto de columnas (Pos, Vics, Podios, Puntos) centradas */
 #tabla-constructores td:nth-child(1), #tabla-constructores th:nth-child(1),
 #tabla-constructores td:nth-child(4), #tabla-constructores th:nth-child(4),
 #tabla-constructores td:nth-child(5), #tabla-constructores th:nth-child(5),
 #tabla-constructores td:nth-child(6), #tabla-constructores th:nth-child(6) {
-    text-align: center;
+    text-align: center !important;
 }
 
 /* Estilos de los elementos internos */
