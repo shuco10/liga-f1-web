@@ -1117,7 +1117,7 @@ async function cargarNoticias() {
             const horaFormateada = fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             div.innerHTML = `
-                <h4 style="margin: 0 0 10px 0; color: #ccff00;">${noticia.titulo}</h4>
+                <h4 style="margin: 0 0 10px 0; color: #ff4444;">${noticia.titulo}</h4>
                 <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
                 <small style="color: #666;">${fechaFormateada} - ${horaFormateada}</small>
                 ${botonesAdmin}
