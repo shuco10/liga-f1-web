@@ -1002,11 +1002,19 @@ async function verificarPassword() {
 
 // --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
 async function cargarNoticias() {
+    console.log("Cargando noticias..."); // <-- AÑADE ESTO
     const contenedor = document.getElementById('lista-noticias');
+    if (!contenedor) {
+        console.error("ERROR: No existe el contenedor 'lista-noticias' en tu HTML");
+        return;
+    }
     
     try {
         const respuesta = await fetch('/api/noticias');
+        console.log("Respuesta del servidor:", respuesta); // <-- AÑADE ESTO
+        
         const noticias = await respuesta.json();
+        console.log("Noticias recibidas:", noticias); // <-- AÑADE ESTO
         
         contenedor.innerHTML = ''; // Limpiamos el texto de carga
         
