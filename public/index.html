@@ -419,24 +419,20 @@
     <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
 </div>
 
-        <div id="admin-noticias" class="admin-only" style="background-color: #1e1e1e; padding: 20px; border: 1px solid #333; margin-top: 20px;">
+<div id="admin-noticias" class="admin-only">
+    <h3>📢 - Publicar Nueva Noticia - 📢</h3>
     
-    <h3 style="color: #fff; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #00ffcc; padding-bottom: 10px;">
-        📢 - PUBLICAR NUEVA NOTICIA - 📢
-    </h3>
-
-    <label style="color: #ccc; display: block; margin-bottom: 5px; font-weight: bold;">Título</label>
-    <input type="text" id="noticia-titulo" placeholder="Título del anuncio" 
-           style="width: 100%; background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; margin-bottom: 15px; border-radius: 4px; box-sizing: border-box;">
-
-    <label style="color: #ccc; display: block; margin-bottom: 5px; font-weight: bold;">Contenido</label>
-    <textarea id="noticia-contenido" placeholder="Contenido del aviso..." 
-              style="width: 100%; height: 150px; resize: vertical; background: #2a2a2a; border: 1px solid #444; color: white; padding: 10px; margin-bottom: 15px; border-radius: 4px; box-sizing: border-box;"></textarea>
-
-    <button onclick="publicarNoticia()" 
-            style="width: 100%; background: #95a5a6; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px;">
-        PUBLICAR AVISO
-    </button>
+    <div class="form-group">
+        <label>Título</label>
+        <input type="text" id="noticia-titulo" class="form-control" placeholder="Título del anuncio">
+    </div>
+    
+    <div class="form-group">
+        <label>Contenido</label>
+        <textarea id="noticia-contenido" class="form-control" placeholder="Contenido del aviso..." style="height: 150px; resize: vertical;"></textarea>
+    </div>
+    
+    <button onclick="publicarNoticia()" id="btn-plata-resultado" class="btn-accion">PUBLICAR AVISO</button>
 </div>
 
         <hr style="border-color: #444; margin: 20px 0;">
