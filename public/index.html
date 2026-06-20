@@ -120,10 +120,12 @@
     object-fit: cover !important; /* Recorta si es necesario para mantener el tamaño */
 }
 
-/* Opcional: Si quieres forzar que lo que hay dentro se adapte */
-.my-banner iframe, .my-banner img {
-    max-height: 150px !important;
-    width: auto !important;
+/* Esto obliga al banner a estirarse para llenar tu 'jaula' de 800px */
+.my-banner iframe, 
+.my-banner img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Asegura que se vea bien aunque sea un formato distinto */
 }
         
 /* Botón estilo "Petronas Silver" */
