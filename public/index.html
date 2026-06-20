@@ -29,6 +29,23 @@
     padding-bottom: 10px;
 }
 
+
+/* ICONOS EN LOS BOTONES */
+.nav-btn {
+    display: flex;       /* Alinea icono y texto en fila */
+    align-items: center; /* Centra verticalmente */
+    padding: 10px 15px;  /* Ajusta según necesites */
+    cursor: pointer;
+}
+
+.emoji-nav {
+    font-size: 24px !important; /* Aumenta este número para hacerlos más grandes */
+    margin-right: 8px;          /* Espacio entre el icono y la palabra */
+    line-height: 1;             /* Asegura que el emoji no se corte */
+}
+/* ICONOS EN LOS BOTONES */
+
+        
 .noticia-item {
     background: #252525;
     padding: 15px;
@@ -272,12 +289,12 @@
 <h1 style="text-align: center;">🏁 CAZADORES DE CURVAS 🏁</h1>
 
 <div class="navbar">
-    <button class="nav-btn" onclick="irA(event, 'zona-noticias')">📢 Noticias</button>
-    <button class="nav-btn" onclick="irA(event, 'mundial-pilotos')">🏆 Pilotos</button>
-    <button class="nav-btn" onclick="irA(event, 'mundial-constructores')">🏎️ Constructores</button>
-    <button class="nav-btn" onclick="irA(event, 'seccion-circuitos')">📍 Circuitos</button>
-    <button class="nav-btn" onclick="irA(event, 'licencias-sanciones')">⚠️ Sanciones</button>
-    <button class="nav-btn" style="border-color: #e10600;" onclick="irA(event, 'panel-admin')">🛠️ Comisarios</button>
+    <button class="nav-btn" onclick="irA(event, 'zona-noticias')"><span class="emoji-nav">📢</span> Noticias</button>
+    <button class="nav-btn" onclick="irA(event, 'mundial-pilotos')"><span class="emoji-nav">🏆</span> Pilotos</button>
+    <button class="nav-btn" onclick="irA(event, 'mundial-constructores')"><span class="emoji-nav">🏎️</span> Constructores</button>
+    <button class="nav-btn" onclick="irA(event, 'seccion-circuitos')"><span class="emoji-nav">📍</span> Circuitos</button>
+    <button class="nav-btn" onclick="irA(event, 'licencias-sanciones')"><span class="emoji-nav">⚠️</span> Sanciones</button>
+    <button class="nav-btn" style="border-color: #e10600;" onclick="irA(event, 'panel-admin')"><span class="emoji-nav">🛠️</span> Comisarios</button>
 </div>
 
 <script>
