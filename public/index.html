@@ -680,23 +680,50 @@ listaPilotosGlobal.forEach(p => {
     }
 });
 
+// 2. TABLA CONSTRUCTORES
+const constructoresMap = {};
+
+// Primero: Acumulamos los datos de todos los pilotos en sus respectivas escuderías
+listaPilotosGlobal.forEach(p => {
+    if (p.escuderia_id && !p.es_reserva) {
+        if (!constructoresMap[p.escuderia_id]) {
+            constructoresMap[p.escuderia_id] = {
+                puntos: 0,
+                color: p.color_hex,
+                podios: 0,
+                victorias: 0,
+                pilotosAvatares: [] // Array para las imágenes
+            };
+        }
+        constructoresMap[p.escuderia_id].puntos += (p.puntos_totales || 0);
+        constructoresMap[p.escuderia_id].podios += (p.podios || 0);
+        constructoresMap[p.escuderia_id].victorias += (p.victorias || 0);
+        
+        // Asumiendo que 'p.avatar' es el nombre de tu propiedad de imagen
+        if (p.avatar) constructoresMap[p.escuderia_id].pilotosAvatares.push(p.avatar);
+    }
+});
+
+// Segundo: Convertimos el mapa a una lista ordenada
 const listaConstructores = Object.keys(constructoresMap)
     .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
-    .sort((a,b) => b.puntos - a.puntos);
+    .sort((a, b) => b.puntos - a.puntos);
 
+// Tercero: Pintamos la tabla
 const tConst = document.getElementById('tabla-constructores');
-if(tConst) {
+if (tConst) {
     tConst.innerHTML = '';
     listaConstructores.forEach((c, index) => {
         const logoUrl = LOGOS_ESCUDERIAS[c.id] || '';
         const pos = index + 1;
-        
+
         // Generación de avatares HTML
-        const avataresHtml = c.pilotosAvatares.map(url => 
+        const avataresHtml = c.pilotosAvatares.map(url =>
             `<img src="${url}" class="mini-avatar" onerror="this.style.display='none'">`
         ).join('');
 
-        let badgePos = `<td><strong>${pos}</strong></td>`; 
+        // Badge de posición
+        let badgePos = `<td><strong>${pos}º</strong></td>`;
         if (pos === 1) badgePos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
         else if (pos === 2) badgePos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
         else if (pos === 3) badgePos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
