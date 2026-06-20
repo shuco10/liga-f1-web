@@ -1205,7 +1205,7 @@ async function verificarPassword() {
             }
         }
    
-    async function publicarNoticia() {
+async function publicarNoticia() {
     const titulo = document.getElementById('noticia-titulo').value;
     const contenido = document.getElementById('noticia-contenido').value;
 
@@ -1216,12 +1216,54 @@ async function verificarPassword() {
     });
 
     if (res.ok) {
-        alert("Noticia publicada correctamente");
-        location.reload(); // Recarga para ver el cambio
+        // 1. Llamamos a la función de Discord antes de recargar la página
+        await notificarDiscord(titulo, contenido);
+        
+        // 2. Alert y recarga
+        alert("Noticia publicada correctamente y enviada a Discord");
+        location.reload(); 
     }
 }
 
 // --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
+
+async function notificarDiscord(titulo, descripcion, autor) {
+    // Reemplaza esto con la URL que copiaste en el paso 1
+    const webhookUrl = 'https://discord.com/api/webhooks/1517900569891704893/RU_kzhQQ3L9f0i0R5ovCFAg4-t2755smAGS_Tfy9XUyql1FFnE-beqiB4XWMYiGNR0iD'; 
+
+    const mensaje = {
+        content: "📢 **¡Nueva noticia en Cazadores de Curvas!**", // Texto fuera de la tarjeta
+        embeds: [{
+            title: titulo,
+            description: descripcion,
+            color: 16711680, // Color en formato decimal (16711680 es rojo)
+            author: {
+                name: autor || "Administración"
+            },
+            timestamp: new Date().toISOString() // Añade la hora actual
+        }]
+    };
+
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(mensaje)
+        });
+
+        if (!response.ok) {
+            console.error('Error al enviar la notificación a Discord:', response.status);
+        } else {
+            console.log('Notificación enviada a Discord con éxito.');
+        }
+    } catch (error) {
+        console.error('Error de red al intentar notificar a Discord:', error);
+    }
+}
+
+    
 // --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
 async function cargarNoticias() {
     const contenedor = document.getElementById('lista-noticias');
