@@ -2,41 +2,275 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- El viewport es esencial para que los dispositivos móviles escalen correctamente -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cazadores de Curvas | Campeonato F1 2026</title>
     <script src="auth.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cazadores de Curvas | Campeonato F1 2026</title>
     <style>
-        /* REGLAS DE ADAPTABILIDAD GLOBAL */
-        * { box-sizing: border-box; max-width: 100%; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; margin: 0; padding: 10px; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; color: white; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: #e10600; text-transform: uppercase; margin-bottom: 5px; }
+        h2 { color: #e10600; text-transform: uppercase; text-align: center; font-size: 18px; }
+
+#zona-noticias {
+    max-width: 800px;
+    margin: 30px auto; /* Centrado */
+    padding: 25px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border-left: 6px solid #ff4444; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+#zona-noticias h2 {
+    color: #ffffff;
+    margin-top: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+}
+
+
+/* ICONOS EN LOS BOTONES */
+.nav-btn {
+    display: flex;       /* Alinea icono y texto en fila */
+    align-items: center; /* Centra verticalmente */
+    padding: 10px 15px;  /* Ajusta según necesites */
+    cursor: pointer;
+}
+
+.emoji-nav {
+    font-size: 24px !important; /* Aumenta este número para hacerlos más grandes */
+    margin-right: 8px;          /* Espacio entre el icono y la palabra */
+    line-height: 1;             /* Asegura que el emoji no se corte */
+}
+/* ICONOS EN LOS BOTONES */
+
+/* SCROLL PARA LAS NOTICIAS */
+
+#lista-noticias {
+    max-height: 600px;        /* Ajusta esta altura según prefieras (ej. 5 noticias suelen caber aquí) */
+    overflow-y: auto;         /* Esto activa el scroll vertical cuando el contenido supera la altura */
+    padding-right: 10px;      /* Espacio para que el scroll no toque el texto */
+    scrollbar-width: thin;    /* Hace el scroll más fino en navegadores modernos */
+}
+
+/* Opcional: Personalizar el aspecto de la barra de scroll (para navegadores Chrome/Edge/Safari) */
+#lista-noticias::-webkit-scrollbar {
+    width: 8px;
+}
+
+#lista-noticias::-webkit-scrollbar-track {
+    background: #1a1a1a;      /* Color del fondo del scroll */
+}
+
+#lista-noticias::-webkit-scrollbar-thumb {
+    background: #ff4444;      /* Color de la barra del scroll (hemos usado tu rojo) */
+    border-radius: 4px;
+}
+/* SCROLL PARA LAS NOTICIAS */        
         
-        h1 { text-align: center; color: #e10600; text-transform: uppercase; margin: 15px 0; font-size: 28px; }
+.noticia-item {
+    background: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: transform 0.2s;
+}
 
-        /* CONTENEDOR DE LOGOS ADAPTATIVO */
-        .logos-container { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .logos-container img { height: auto; max-width: 30%; }
+.noticia-item:hover {
+    transform: translateX(5px); /* Efecto sutil al pasar el ratón */
+    background: #2a2a2a;
+}
 
-        /* NAVBAR - USO DE FLEX-WRAP PARA EVITAR DESBORDAMIENTO */
-        .navbar { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px auto; max-width: 900px; }
-        .nav-btn { display: flex; align-items: center; padding: 12px 18px; cursor: pointer; background-color: #333; color: white; border: 2px solid #444; border-radius: 5px; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+.noticia-item h4 {
+    color: #00d2be;
+    margin: 0 0 10px 0;
+}
+
+
+        /* Esta clase nueva la aplicas solo a las noticias */
+.noticia-destacada-amarilla {
+    border-left: 5px solid #ccff00 !important;
+}
+
+.noticia-destacada-amarilla h2, 
+.noticia-destacada-amarilla .titulo {
+    color: #ff4444 !important;
+}
+        
+        /* Contenedor principal estilo Mercedes */
+
+#btn-plata-resultado {
+    background-color: #A5A9B4; /* Tono plata */
+    color: #000000;           /* Texto negro */
+    border: 1px solid #707070;
+}
+
+#btn-plata-resultado:hover {
+    background-color: #898E99; /* Plata más oscuro al pasar el ratón */
+    color: #ffffff;
+}
+
+    
+#admin-carreras, #admin-noticias {
+    background-color: #1e1e1e; /* Gris oscuro profundo */
+    border: 1px solid #4a4a4a;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px; /* Separación entre ambos bloques */
+}
+
+#admin-carreras h3, #admin-noticias h3 {
+    color: #e5e5e5;
+    border-bottom: 2px solid #00d2be;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* 1. La caja que contiene el banner */
+.contenedor-jaula {
+    width: 100% !important;       /* Ocupa todo el ancho disponible */
+    max-width: 800px !important;  /* Máximo 800px para que no se deforme */
+    height: 300px !important;     /* Altura fija para evitar saltos */
+    margin: 0 auto !important;    /* Centrado */
+    overflow: hidden !important;  /* Recorta lo que sobresalga */
+    position: relative !important;
+}
+
+/* 2. El contenedor del script de Instant Gaming */
+.my-banner {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 3. El contenido real que carga el script (iframe o imagen) */
+.my-banner iframe, 
+.my-banner img {
+    width: 100% !important;       /* Se ajusta al 100% de la jaula */
+    height: 100% !important;      /* Se ajusta al 100% de la altura */
+    object-fit: cover !important; /* Llena el espacio sin deformarse */
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+}
+        
+/* Botón estilo "Petronas Silver" */
+.btn-accion {
+    background-color: #00d2be; /* El verde/teal icónico */
+    color: #000000; /* Contraste fuerte en negro */
+    border: none;
+    padding: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-accion:hover {
+    background-color: #ffffff;
+    color: #00d2be;
+    box-shadow: 0 0 15px #00d2be;
+}
+
+/* Inputs y Selects */
+.form-control {
+    background-color: #2b2b2b;
+    border: 1px solid #555;
+    color: #e5e5e5;
+    padding: 10px;
+}
+        
+        /* Estilo del botón */
+        #btn-logout {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: none; /* Oculto por defecto */
+        }
+        #btn-logout:hover { background-color: #e10600; }
+        
+        .navbar { display: flex; justify-content: center; gap: 10px; margin: 20px auto; max-width: 900px; }
+        .nav-btn { padding: 12px 20px; background-color: #333; color: white; border: 2px solid #444; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .nav-btn:hover, .nav-btn.active { background-color: #e10600; border-color: #e10600; }
-        .emoji-nav { font-size: 20px; margin-right: 8px; }
+        
+        .seccion { display: none; max-width: 900px; margin: 20px auto; background-color: #262626; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .seccion.activa { display: block; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #404040; vertical-align: middle; }
+        th { background-color: #333; color: #e10600; text-transform: uppercase; font-size: 13px; }
+        tr:hover { background-color: #333; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #444; background-color: #333; color: white; border-radius: 4px; box-sizing: border-box; }
+        .btn-accion { width: 100%; padding: 12px; background-color: #e10600; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-accion:hover { background-color: #b80500; }
+        
+        .plataforma { font-size: 11px; padding: 3px 6px; border-radius: 4px; font-weight: bold; }
+        .PC { background-color: #0078d4; }
+        .PS5 { background-color: #ffffff; color: #00309a; }
+        .mensaje { text-align: center; margin-top: 10px; font-weight: bold; color: #00ff00; }
+        .numero-dorsal { background-color: #444; color: #fff; padding: 2px 6px; border-radius: 3px; font-weight: bold; margin-right: 8px; font-size: 13px; border: 1px solid #666; }
 
-        /* AJUSTES ESPECÍFICOS PARA MÓVILES (Media Queries) */
-        @media (max-width: 768px) {
-            .navbar { flex-direction: column; align-items: stretch; }
-            .nav-btn { width: 100%; justify-content: center; padding: 15px; }
-            .logos-container img { max-width: 45% !important; }
-            h1 { font-size: 22px; }
-            #zona-noticias { width: 95%; margin: 10px auto; padding: 15px; }
+        /* ESTILO AVATAR PILOTO */
+        .piloto-contenedor { display: flex; align-items: center; gap: 10px; }
+        .piloto-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #e10600; background-color: #444; }
+
+        #lista-circuitos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        #lista-circuitos h3 {
+            color: #e10600; 
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
         }
 
-        /* TUS OTROS ESTILOS MANTENIDOS */
-        .admin-bloque { background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 20px; border-radius: 8px; margin: 10px auto; width: 95%; max-width: 800px; }
-        .seccion { display: none; max-width: 900px; margin: 20px auto; background-color: #262626; padding: 20px; border-radius: 8px; }
-        .seccion.activa { display: block; }
-        #btn-logout { position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: #555; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        /* Configuración base para todos los trazados */
+        .trazado-mask { width: 100%; height: 120px; background-image: url('/webimagenes/circuitos.png'); background-repeat: no-repeat; background-size: 500% 500%; border-radius: 8px; margin-bottom: 10px; }
+        .trazado-melbourne { background-position: 0% 0%; }
+        .trazado-shanghai  { background-position: 25% 0%; }
+        .trazado-suzuka    { background-position: 50% 0%; }
+        .trazado-sakhir    { background-position: 75% 0%; }
+        .trazado-jeddah    { background-position: 100% 0%; }
+        .trazado-miami     { background-position: 0% 25%; }
+        .trazado-montreal  { background-position: 25% 25%; }
+        .trazado-monaco    { background-position: 50% 25%; }
+        .trazado-barcelona { background-position: 75% 25%; }
+        .trazado-spielberg { background-position: 100% 25%; }
+        .trazado-silverstone { background-position: 0% 50%; }
+        .trazado-spa       { background-position: 25% 50%; }
+        .trazado-budapest    { background-position: 75% 50%; }
+        .trazado-zandvoort   { background-position: 100% 50%; }
+        .trazado-monza     { background-position: 0% 75%; }
+        .trazado-madrid    { background-position: 25% 75%; }
+        .trazado-baku      { background-position: 50% 75%; }
+        .trazado-singapore { background-position: 75% 75%; }
+        .trazado-austin    { background-position: 100% 75%; }
+        .trazado-mexico   { background-position: 0% 100%; }
+        .trazado-saopaulo { background-position: 25% 100%; }
+        .trazado-lasvegas { background-position: 50% 100%; }
+        .trazado-lusail   { background-position: 75% 100%; }
+        .trazado-abudhabi { background-position: 100% 100%; }
+
+        .admin-only { display: none; }     
     </style>
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png">
 </head>
@@ -70,10 +304,10 @@
     <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas" style="max-width: 300px; height: auto;">
 </div>
 
-<div class="logos-container">
-    <img src="/webimagenes/musica.png" alt="Logo Música">
-    <img src="/webimagenes/taxibus.png" alt="Logo Taxibus">
-    <img src="/webimagenes/krv.png" alt="Logo KRV">
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px;">
+    <img src="/webimagenes/musica.png" style="max-width: 80px; height: auto;">
+    <img src="/webimagenes/taxibus.png" style="max-width: 250px; height: auto;">
+    <img src="/webimagenes/krv.png" style="max-width: 80px; height: auto;">
 </div>
 
 <h1 style="text-align: center;">🏁 CAZADORES DE CURVAS 🏁</h1>
