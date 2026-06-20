@@ -832,19 +832,24 @@ if (formSancion) {
             body: JSON.stringify(datos) 
         });
         
-if (msgSancion) {
-        msgSancion.innerText = "¡Sanción aplicada!"; 
-        
-        // 2. Mantenemos el mensaje visible durante 3 segundos (3000ms)
-        setTimeout(() => {
-            msgSancion.innerText = "";
-        }, 3000);
-    }
+if (res.ok) { 
+            // 1. Buscamos el elemento de forma segura
+            const msgSancion = document.getElementById('msg-sancion');
+            if (msgSancion) {
+                msgSancion.innerText = "¡Sanción aplicada!"; 
+                
+                // 2. Mantenemos el mensaje visible durante 3 segundos
+                setTimeout(() => {
+                    msgSancion.innerText = "";
+                }, 3000);
+            }
+            
+            // 3. Reseteamos y recargamos (esto debe ir dentro del IF)
             formSancion.reset(); 
             await cargarTodosLosDatos(); 
-        }
-    });
-}
+        } // <--- Esta llave cierra el IF (res.ok)
+    }); // <--- Esta llave cierra el EventListener
+} // <--- Esta llave cierra el IF (formSancion)
 
     document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
         e.preventDefault();
