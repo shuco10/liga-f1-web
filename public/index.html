@@ -132,18 +132,24 @@
 
 
 /* TITULO DE CAZADORES DE CURVAS */
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap');        
+/* Importación de fuente */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap');
 
-
+/* Tu título limpio */
 .titulo-liga {
     font-family: 'Rajdhani', sans-serif !important;
-    color: #ff0000 !important; /* Pongo rojo brillante */
-    border: 2px solid white !important; /* Pongo un borde */
+    font-size: 2.2rem !important;
+    color: #ffffff !important; /* Color blanco */
     text-transform: uppercase;
     letter-spacing: 3px;
     margin: 40px 0;
     text-align: center;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    
+    /* Limpieza de bordes */
+    border: none !important;
+    background: none !important;
+    padding: 0 !important;
 }
 
 
@@ -474,15 +480,7 @@
 
 
     
-   <!-- TITULO DE CAZADORES DE CURVAS --> 
-   <div id="titulo-placeholder"></div>
-    <script>
-    // Carga de todos los módulos
-    fetch('titulo.html')
-        .then(res => res.text())
-        .then(data => document.getElementById('titulo-placeholder').innerHTML = data);
-</script>
-   <!-- TITULO DE CAZADORES DE CURVAS --> 
+
 
     
     <button onclick="document.getElementById('modal-contacto').style.display='block'" 
