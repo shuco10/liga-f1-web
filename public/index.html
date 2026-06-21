@@ -132,8 +132,11 @@
 
 
 /* TITULO DE CAZADORES DE CURVAS */
-/* Importación de fuente */
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap');
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="estilos-cabecera.css">
 
 /* Tu título limpio */
 .titulo-liga {
@@ -385,6 +388,7 @@
         .admin-only { display: none; }     
     </style>
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    
 </head>
 <body>
 
@@ -479,12 +483,13 @@
 <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; max-width: 1000px; margin-left: auto; margin-right: auto; position: relative;">
 
  <!-- TITULO CAZADORES DE CURVAS -->
-    <div id="titulo-placeholder"></div>
-<script>
-    fetch('titulo.html')
-        .then(res => res.text())
-        .then(data => document.getElementById('titulo-placeholder').innerHTML = data);
-</script>
+<div id="titulo-placeholder"></div>
+
+    <script>
+        fetch('titulo.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('titulo-placeholder').innerHTML = data);
+    </script>
  <!-- TITULO CAZADORES DE CURVAS -->
 
     
