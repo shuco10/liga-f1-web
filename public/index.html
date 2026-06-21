@@ -501,23 +501,39 @@
 </div>
 
     
-    <div id="mundial-pilotos" class="seccion">
-        <h2>Campeonato Mundial de Pilotos</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>Piloto</th>
-                    <th>Plataforma</th>
-                    <th>Escudería</th>
-                    <th>Victorias</th>
-                    <th>Podios</th>
-                    <th>Puntos</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-pilotos"></tbody>
-        </table>
-    </div>
+<div id="mundial-pilotos" class="seccion">
+    <!-- Tabla de Titulares -->
+    <h2>Campeonato Mundial de Pilotos (Titulares)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Pos</th>
+                <th>Piloto</th>
+                <th>Plataforma</th>
+                <th>Escudería</th>
+                <th>Victorias</th>
+                <th>Podios</th>
+                <th>Puntos</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-pilotos"></tbody>
+    </table>
+
+    <!-- Tabla de Reservas (Nueva) -->
+    <h2 style="margin-top: 30px;">Pilotos Reserva</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Piloto</th>
+                <th>Plataforma</th>
+                <th>Victorias</th>
+                <th>Podios</th>
+                <th>Puntos</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-reservas"></tbody>
+    </table>
+</div>
 
     <div id="mundial-constructores" class="seccion">
         <h2>Campeonato de Constructores</h2>
@@ -753,117 +769,79 @@ async function cargarTodosLosDatos() {
         if (!res.ok) return;
         listaPilotosGlobal = await res.json();
         
-        // --- CÁLCULO DE PODIOS ---
         const resResultados = await fetch('/api/todos-los-resultados');
         const resultados = await resResultados.json();
 
-        // Mapeamos los podios a cada piloto antes de ordenar y pintar
         listaPilotosGlobal.forEach(p => {
             p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
         });
 
-        // ORDENAR: Importante para que el podio sea correcto
         listaPilotosGlobal.sort((a, b) => b.puntos_totales - a.puntos_totales);
         
-        // 1. TABLA PILOTOS
+        // 1. TABLA PILOTOS (Solo Titulares)
         const tPilotos = document.getElementById('tabla-pilotos');
-        if(tPilotos) {
-            tPilotos.innerHTML = '';
-            listaPilotosGlobal.forEach((p, index) => {
-                const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
-                const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
-                const badgeReserva = p.es_reserva ? '<span style="background: #e10600; color: white; padding: 1px 4px; border-radius: 3px; font-size: 10px; margin-left: 5px;">R</span>' : '';
-                
-                const pos = index + 1;
-                let badgePos = `<td><strong>${pos}</strong></td>`;
-                if (pos === 1) badgePos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
-                else if (pos === 2) badgePos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
-                else if (pos === 3) badgePos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
+        const tReservas = document.getElementById('tabla-reservas');
+        
+        if(tPilotos) tPilotos.innerHTML = '';
+        if(tReservas) tReservas.innerHTML = '';
 
-                const celdaEscuderia = p.es_reserva 
-                    ? `<td style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</td>` 
-                    : `<td style="border-left: 6px solid ${p.color_hex || '#444'} !important; padding-left:10px;">
-                        ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
-                        ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}
-                       </td>`;
-                
-                tPilotos.innerHTML += `
-                    <tr>
-                        ${badgePos}
-                        <td>
-                            <div class="piloto-contenedor">
-                                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
-                                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
-                                <strong>${p.gamertag}</strong> ${badgeReserva}
-                            </div>
-                        </td>
-                        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
-                        ${celdaEscuderia}
-                        <td>${p.victorias}</td>
-                        <td>${p.podios || '0'}</td>
-                        <td><strong>${p.puntos_totales} pts</strong></td>
-                    </tr>`;
+        listaPilotosGlobal.forEach((p, index) => {
+            const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
+            const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
+            
+            // Lógica de Renderizado
+            const fila = `
+                <tr>
+                    <td>${!p.es_reserva ? (index + 1) : '-'}</td>
+                    <td>
+                        <div class="piloto-contenedor">
+                            <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
+                            <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                            <strong>${p.gamertag}</strong>
+                        </div>
+                    </td>
+                    <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+                    <td>${p.es_reserva ? '<span style="color: #CCFF00;">[ RESERVA ]</span>' : (logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle;"> ` : '') + (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}</td>
+                    <td>${p.victorias}</td>
+                    <td>${p.podios || '0'}</td>
+                    <td><strong>${p.puntos_totales} pts</strong></td>
+                </tr>`;
+
+            if (p.es_reserva) {
+                if(tReservas) tReservas.innerHTML += fila;
+            } else {
+                if(tPilotos) tPilotos.innerHTML += fila;
+            }
+        });
+
+        // 2. TABLA CONSTRUCTORES
+        const constructoresMap = {};
+        listaPilotosGlobal.forEach(p => {
+            if (p.escuderia_id && !p.es_reserva) {
+                if (!constructoresMap[p.escuderia_id]) {
+                    constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex, podios: 0, victorias: 0, pilotosFotos: [] };
+                }
+                constructoresMap[p.escuderia_id].puntos += (Number(p.puntos_totales) || 0);
+                constructoresMap[p.escuderia_id].podios += (Number(p.podios) || 0);
+                constructoresMap[p.escuderia_id].victorias += (Number(p.victorias) || 0);
+                const foto = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
+                constructoresMap[p.escuderia_id].pilotosFotos.push(foto);
+            }
+        });
+
+        const listaConstructores = Object.keys(constructoresMap)
+            .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
+            .sort((a, b) => b.puntos - a.puntos);
+
+        const tConst = document.getElementById('tabla-constructores');
+        if (tConst) {
+            tConst.innerHTML = '';
+            listaConstructores.forEach((c, index) => {
+                const logoUrl = LOGOS_ESCUDERIAS[c.id] || '';
+                const fotosHtml = c.pilotosFotos.map(url => `<img src="${url}" class="mini-avatar">`).join('');
+                tConst.innerHTML += `<tr><td>${index+1}</td><td style="border-left: 6px solid ${c.color || '#444'} !important;">${logoUrl ? `<img src="${logoUrl}" style="width:25px; vertical-align:middle;">` : ''} ${c.nombre}</td><td>${fotosHtml}</td><td>${c.victorias}</td><td>${c.podios}</td><td><strong>${c.puntos} pts</strong></td></tr>`;
             });
         }
-
-// 2. TABLA CONSTRUCTORES
-const constructoresMap = {};
-
-listaPilotosGlobal.forEach(p => {
-    if (p.escuderia_id && !p.es_reserva) {
-        if (!constructoresMap[p.escuderia_id]) {
-            constructoresMap[p.escuderia_id] = {
-                puntos: 0,
-                color: p.color_hex,
-                podios: 0,
-                victorias: 0,
-                pilotosFotos: [] 
-            };
-        }
-        constructoresMap[p.escuderia_id].puntos += (Number(p.puntos_totales) || 0);
-        constructoresMap[p.escuderia_id].podios += (Number(p.podios) || 0);
-        constructoresMap[p.escuderia_id].victorias += (Number(p.victorias) || 0);
-        
-        // CORRECCIÓN: usamos p.foto_url (la misma que en la tabla de pilotos)
-        const foto = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
-        constructoresMap[p.escuderia_id].pilotosFotos.push(foto);
-    }
-});
-
-const listaConstructores = Object.keys(constructoresMap)
-    .map(id => ({ nombre: NOMBRES_ESCUDERIAS[id], ...constructoresMap[id], id: id }))
-    .sort((a, b) => b.puntos - a.puntos);
-
-const tConst = document.getElementById('tabla-constructores');
-if (tConst) {
-    tConst.innerHTML = '';
-    listaConstructores.forEach((c, index) => {
-        const logoUrl = LOGOS_ESCUDERIAS[c.id] || '';
-        const pos = index + 1;
-
-        const fotosHtml = c.pilotosFotos.map(url =>
-            `<img src="${url}" class="mini-avatar">`
-        ).join('');
-
-        let badgePos = `<td><strong>${pos}</strong></td>`;
-        if (pos === 1) badgePos = `<td><span style="background: #FFD700; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">1º</span></td>`;
-        else if (pos === 2) badgePos = `<td><span style="background: #C0C0C0; color: #000; padding: 2px 10px; border-radius: 4px; font-weight: bold;">2º</span></td>`;
-        else if (pos === 3) badgePos = `<td><span style="background: #CD7F32; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: bold;">3º</span></td>`;
-
-        tConst.innerHTML += `
-            <tr>
-                ${badgePos}
-                <td style="border-left: 6px solid ${c.color || '#444'} !important; padding-left:10px;">
-                    ${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle; margin-right:8px;">` : ''}
-                    ${c.nombre}
-                </td>
-                <td class="pilotos-escuderia">${fotosHtml}</td>
-                <td>${c.victorias}</td>
-                <td>${c.podios}</td>
-                <td><strong>${c.puntos} pts</strong></td>
-            </tr>`;
-    });
-}
 
         // 3. TABLA SANCIONES
         const tSanciones = document.getElementById('tabla-sanciones');
@@ -872,25 +850,7 @@ if (tConst) {
             listaPilotosGlobal.forEach(p => {
                 const licenciaActual = 12 - (p.puntos_sancion || 0);
                 const estado = licenciaActual <= 0 ? '<span style="color:red; font-weight:bold;">SUSPENDIDO</span>' : '🟢 Licencia OK';
-                const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
-                const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
-        
-                tSanciones.innerHTML += `
-                    <tr>
-                        <td>
-                            <div class="piloto-contenedor">
-                                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" style="width:28px; height:28px;">
-                                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
-                                ${p.gamertag}
-                            </div>
-                        </td>
-                        <td>
-                            ${p.es_reserva ? '-' : (logoUrl ? `<img src="${logoUrl}" style="width:20px; height:20px; vertical-align:middle; margin-right:5px;">` : '')}
-                            ${p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}
-                        </td>
-                        <td><strong style="color:${licenciaActual < 5 ? 'orange' : 'white'}">${licenciaActual} / 12</strong></td>
-                        <td>${estado}</td>
-                    </tr>`;
+                tSanciones.innerHTML += `<tr><td>${p.gamertag}</td><td>${p.es_reserva ? 'Reserva' : NOMBRES_ESCUDERIAS[p.escuderia_id]}</td><td>${licenciaActual} / 12</td><td>${estado}</td></tr>`;
             });
         }
 
