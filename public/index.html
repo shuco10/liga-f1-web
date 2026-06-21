@@ -1505,6 +1505,47 @@ async function enviarContacto() {
 
 <div style="clear: both; display: block; visibility: visible;"></div>
 
+
+
+
+
+
+
+
+<!-- Botón para abrir -->
+<button onclick="abrirModal()" style="padding: 10px 20px; cursor: pointer;">Información del Sistema</button>
+
+<!-- Estructura del Modal -->
+<div id="modal-acerca" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+    <div style="background: #161616; margin: 10% auto; padding: 20px; width: 80%; max-width: 800px; border: 1px solid #444; color: #aaa; position: relative;">
+        
+        <h2 style="color: #fff; text-align: center;">Funcionamiento del Sistema</h2>
+        
+        <!-- El contenido que diseñamos antes -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+            <div>
+                <h3 style="color: #ff0000; font-size: 1em;">Gestión de Clasificaciones</h3>
+                <p style="font-size: 0.9em;">Automatiza puntos, podios y victorias, separando titulares de reservas.</p>
+            </div>
+            <div>
+                <h3 style="color: #ff0000; font-size: 1em;">Panel de Comisarios</h3>
+                <p style="font-size: 0.9em;">Herramienta centralizada para sanciones, licencias y control de base de datos.</p>
+            </div>
+            <div>
+                <h3 style="color: #ff0000; font-size: 1em;">Notificaciones y Discord</h3>
+                <p style="font-size: 0.9em;">Feed de noticias público con sincronización automática mediante Webhooks a Discord.</p>
+            </div>
+        </div>
+
+        <!-- Botón cerrar -->
+        <button onclick="cerrarModal()" style="margin-top: 20px; cursor: pointer; padding: 10px; width: 100%;">Cerrar</button>
+    </div>
+</div>
+    
+    
+
+    
+
 <footer>
     <div class="footer-contenido" style="text-align: center; margin-top: 50px; padding: 20px;">
         <p style="color: #444; font-size: 0.9em;">Desarrollado con pasión por:</p>
