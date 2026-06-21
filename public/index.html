@@ -893,6 +893,51 @@ if (tReservas) {
 }
 
         // AQUI TERMINA EL CARGAR TODOS LOS DATOS
+//-----------------------------------------------------------------------------------------------------------------------------------------------------
+        async function cargarDesplegablesAdmin() {
+    // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
+    if (localStorage.getItem('rol') !== 'admin') {
+        console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
+        return; 
+    }
+
+    try {
+        // 1. Cargar Circuitos
+        const resC = await fetch('/api/circuitos');
+        const circuitos = await resC.json();
+        const selCircuito = document.getElementById('select-circuito-admin');
+        if (selCircuito) {
+            // Añadimos una opción por defecto vacía para forzar que el admin elija
+            selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
+                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        }
+
+        // 2. Cargar Pilotos
+        const res = await fetch('/api/lista-de-pilotos');
+        const pilotos = await res.json();
+        
+        // Ordenamos los pilotos por número antes de pintar los desplegables
+        pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
+
+        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
+
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
+                pilotos.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
+                    el.appendChild(opt);
+                });
+            }
+        });
+    } catch (err) {
+        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
+    }
+}
+
 
     function autocompletarFormEdicion() {
         const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
