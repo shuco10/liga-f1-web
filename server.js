@@ -339,21 +339,7 @@ app.get('/api/corregir-circuitos', async (req, res) => {
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
-function abrirModal() {
-    document.getElementById('modal-acerca').style.display = 'block';
-}
 
-function cerrarModal() {
-    document.getElementById('modal-acerca').style.display = 'none';
-}
-
-// Opcional: Cerrar si hacen clic fuera del cuadro gris
-window.onclick = function(event) {
-    const modal = document.getElementById('modal-acerca');
-    if (event.target == modal) {
-        modal.style.display = 'none';
-    }
-}
 
 
 
