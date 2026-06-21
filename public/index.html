@@ -789,23 +789,26 @@ async function cargarTodosLosDatos() {
             const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
             const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
             
-            // Lógica de Renderizado
-            const fila = `
-                <tr>
-                    <td>${!p.es_reserva ? (index + 1) : '-'}</td>
-                    <td>
-                        <div class="piloto-contenedor">
-                            <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
-                            <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
-                            <strong>${p.gamertag}</strong>
-                        </div>
-                    </td>
-                    <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
-                    <td>${p.es_reserva ? '<span style="color: #CCFF00;">[ RESERVA ]</span>' : (logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle;"> ` : '') + (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}</td>
-                    <td>${p.victorias}</td>
-                    <td>${p.podios || '0'}</td>
-                    <td><strong>${p.puntos_totales} pts</strong></td>
-                </tr>`;
+// Lógica de Renderizado
+// Definimos la etiqueta para la posición: si es reserva "S/C", si es titular el número
+const posDisplay = p.es_reserva ? '<span class="label-sc">S/C</span>' : (index + 1);
+
+const fila = `
+    <tr>
+        <td>${posDisplay}</td>
+        <td>
+            <div class="piloto-contenedor">
+                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
+                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                <strong>${p.gamertag}</strong>
+            </div>
+        </td>
+        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+        <td>${p.es_reserva ? '<span style="color: #CCFF00;">[ RESERVA ]</span>' : (logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle;"> ` : '') + (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}</td>
+        <td>${p.victorias}</td>
+        <td>${p.podios || '0'}</td>
+        <td><strong>${p.puntos_totales} pts</strong></td>
+    </tr>`;
 
             if (p.es_reserva) {
                 if(tReservas) tReservas.innerHTML += fila;
