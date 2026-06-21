@@ -15,3 +15,7 @@
 .contenedor-logos { display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; }
 .logo-patrocinador { height: auto; transition: transform 0.3s ease; }
 .logo-patrocinador:hover { transform: scale(1.05); }
+<!-- Título -->
+<div class="header-bottom-bar">
+    <h1 class="header-title">🏁 CAZADORES DE CURVAS 🏁</h1>
+</div>
