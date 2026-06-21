@@ -1,1 +1,22 @@
+/* Estilos extraídos de tu index.html */
+.contenedor-jaula {
+    width: 100% !important;
+    max-width: 800px !important;
+    height: 300px !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
 
+.my-banner { width: 100% !important; height: 100% !important; display: flex; justify-content: center; align-items: center; }
+.my-banner iframe, .my-banner img { width: 100% !important; height: 100% !important; object-fit: cover !important; position: absolute !important; top: 0 !important; left: 0 !important; }
+
+.seccion-patrocinadores {
+    max-width: 800px; margin: 30px auto; padding: 25px; background: #1a1a1a;
+    border-radius: 12px; border-left: 6px solid #ff4444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center;
+}
+
+.titulo-partners { color: #e10600; margin-bottom: 20px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+.contenedor-logos { display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; }
+.logo-patrocinador { height: auto; transition: transform 0.3s ease; }
+.logo-patrocinador:hover { transform: scale(1.05); }
