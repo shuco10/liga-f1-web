@@ -1,18 +1,15 @@
 /* --- IMPORTACIÓN DE FUENTES --- */
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap');
 
-/* --- ESTILOS CABECERA Y SPONSORS --- */
+/* --- ESTILOS GENERALES --- */
+body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
-/* Contenedor Banner */
+/* --- CONTENEDORES --- */
 .contenedor-jaula { width: 100%; max-width: 800px; height: 300px; margin: 0 auto; overflow: hidden; position: relative; }
-.my-banner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-.my-banner iframe, .my-banner img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-
-/* Contenedor Logo Central */
 .logo-main-container { text-align: center; margin: 30px 0; }
 .logo-main { max-width: 300px; height: auto; }
 
-/* Título de Liga (Nuevo estilo Racing) */
+/* --- TÍTULO DE LIGA --- */
 .titulo-liga {
     font-family: 'Rajdhani', sans-serif;
     font-size: 2.2rem;
@@ -24,74 +21,51 @@
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
-/* Sección Sponsors */
+/* --- SECCIÓN SPONSORS --- */
 .seccion-patrocinadores { max-width: 800px; margin: 30px auto; padding: 25px; background: #1a1a1a; border-radius: 12px; border-left: 6px solid #ff4444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
 .titulo-partners { color: #e10600; margin-bottom: 20px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
-.contenedor-logos { display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; }
-.logo-patrocinador { height: auto; transition: transform 0.3s ease; }
-.logo-patrocinador:hover { transform: scale(1.05); }
 
-/* Caja de contenido principal */
+/* --- CONTENIDO PRINCIPAL (UNIFICADO) --- */
 .caja-contenido {
     max-width: 800px;
     margin: 30px auto;
-    padding: 40px;
+    padding: 30px;
     background: #1a1a1a;
     border-radius: 12px;
     border-left: 6px solid #ff4444;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     color: #ffffff;
-    text-align: center;
-}
-
-.caja-contenido h1 {
-    color: #ffffff;
-    margin-bottom: 20px;
-    font-size: 2rem;
-}
-
-.caja-contenido p {
-    color: #aaa;
     line-height: 1.6;
-}
-
-
-/* --- ESTILOS DE LA CABECERA Y CONTENIDO --- */
-
-.caja-contenido {
-    padding: 20px;
-    color: #ffffff;
-    line-height: 1.6;
-    max-width: 800px; /* Opcional: limita el ancho para que no sea muy largo */
-    margin: 0 auto;
 }
 
 .bloques-info section {
     margin-bottom: 25px;
-    background: rgba(255, 255, 255, 0.05); /* Fondo oscuro muy suave */
-    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
     border-radius: 8px;
-    border-left: 4px solid #ff3333; /* Un toque de color rojo a la izquierda */
+    border-left: 4px solid #ff3333;
 }
 
 .bloques-info h4 {
     color: #ff3333;
-    margin-bottom: 10px;
-    margin-top: 0;
+    margin: 0 0 10px 0;
     font-family: 'Rajdhani', sans-serif;
     font-size: 1.4rem;
 }
 
+/* Listas corregidas para que no se vea el punto */
 .bloques-info ul {
-    padding-left: 20px;
+    list-style: none;
+    padding: 0;
     margin: 0;
 }
 
 .bloques-info li {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    padding-left: 0;
 }
 
-
+/* --- BOTONES DE ACCIÓN --- */
 .contenedor-botones {
     display: flex;
     justify-content: center;
@@ -100,7 +74,7 @@
 }
 
 .boton-accion {
-    background-color: #ff3333; /* Rojo corporativo */
+    background-color: #ff3333;
     color: #ffffff;
     padding: 12px 25px;
     text-decoration: none;
@@ -118,29 +92,6 @@
 
 .boton-accion:hover {
     background-color: transparent;
-    color: #ffffff;
     border-color: #ffffff;
     cursor: pointer;
 }
-
-/* Asegura que haya espacio entre el icono y el texto del botón */
-.boton-accion i {
-    margin-right: 8px; /* Ajusta este valor si quieres más o menos separación */
-    font-size: 1.1rem; /* Mantiene el icono alineado con el texto */
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
