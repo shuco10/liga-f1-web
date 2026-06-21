@@ -54,3 +54,45 @@
     color: #aaa;
     line-height: 1.6;
 }
+
+
+/* --- ESTILOS DE LA CABECERA Y CONTENIDO --- */
+
+.caja-contenido {
+    padding: 20px;
+    color: #ffffff;
+    line-height: 1.6;
+    max-width: 800px; /* Opcional: limita el ancho para que no sea muy largo */
+    margin: 0 auto;
+}
+
+.bloques-info section {
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.05); /* Fondo oscuro muy suave */
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #ff3333; /* Un toque de color rojo a la izquierda */
+}
+
+.bloques-info h4 {
+    color: #ff3333;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.4rem;
+}
+
+.bloques-info ul {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.bloques-info li {
+    margin-bottom: 5px;
+}
+
+
+
+
+
+
