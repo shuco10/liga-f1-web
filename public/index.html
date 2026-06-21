@@ -772,7 +772,7 @@ function verificarPassword() {
         }
     }
 
-
+// AQUI EMPIEZA EL CARGAR TODOS LOS DATOS
 
 async function cargarTodosLosDatos() {
     try {
@@ -783,63 +783,80 @@ async function cargarTodosLosDatos() {
         const resResultados = await fetch('/api/todos-los-resultados');
         const resultados = await resResultados.json();
 
+        // 1. CÁLCULO DINÁMICO DE VICTORIAS Y PODIOS
         listaPilotosGlobal.forEach(p => {
             p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
+            p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
         });
 
-        listaPilotosGlobal.sort((a, b) => b.puntos_totales - a.puntos_totales);
+        // 2. SEPARACIÓN Y ORDENACIÓN (Solo los titulares afectan al ranking)
+        const titulares = listaPilotosGlobal.filter(p => !p.es_reserva)
+                                           .sort((a, b) => b.puntos_totales - a.puntos_totales);
         
-        // 1. TABLA PILOTOS (Solo Titulares)
+        const reservas = listaPilotosGlobal.filter(p => p.es_reserva)
+                                          .sort((a, b) => b.puntos_totales - a.puntos_totales);
+
+        // 3. RENDERIZADO TITULARES
         const tPilotos = document.getElementById('tabla-pilotos');
+        if (tPilotos) {
+            tPilotos.innerHTML = '';
+            titulares.forEach((p, index) => {
+                const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
+                const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
+                tPilotos.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <div class="piloto-contenedor">
+                                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
+                                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                                <strong>${p.gamertag}</strong>
+                            </div>
+                        </td>
+                        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+                        <td>${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle;"> ` : ''} ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</td>
+                        <td>${p.victorias}</td>
+                        <td>${p.podios || '0'}</td>
+                        <td><strong>${p.puntos_totales} pts</strong></td>
+                    </tr>`;
+            });
+        }
+
+        // 4. RENDERIZADO RESERVAS
         const tReservas = document.getElementById('tabla-reservas');
-        
-        if(tPilotos) tPilotos.innerHTML = '';
-        if(tReservas) tReservas.innerHTML = '';
+        if (tReservas) {
+            tReservas.innerHTML = '';
+            reservas.forEach((p) => {
+                const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
+                tReservas.innerHTML += `
+                    <tr>
+                        <td><span class="label-sc">S/C</span></td>
+                        <td>
+                            <div class="piloto-contenedor">
+                                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
+                                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                                <strong>${p.gamertag}</strong>
+                            </div>
+                        </td>
+                        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+                        <td>${p.victorias}</td>
+                        <td>${p.podios || '0'}</td>
+                        <td><strong>${p.puntos_totales} pts</strong></td>
+                    </tr>`;
+            });
+        }
 
-        listaPilotosGlobal.forEach((p, index) => {
-            const avatarUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
-            const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
-            
-// Lógica de Renderizado
-// Definimos la etiqueta para la posición: si es reserva "S/C", si es titular el número
-const posDisplay = p.es_reserva ? '<span class="label-sc">S/C</span>' : (index + 1);
-
-const fila = `
-    <tr>
-        <td>${posDisplay}</td>
-        <td>
-            <div class="piloto-contenedor">
-                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar">
-                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
-                <strong>${p.gamertag}</strong>
-            </div>
-        </td>
-        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
-        <td>${p.es_reserva ? '<span style="color: #CCFF00;">[ RESERVA ]</span>' : (logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle;"> ` : '') + (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo')}</td>
-        <td>${p.victorias}</td>
-        <td>${p.podios || '0'}</td>
-        <td><strong>${p.puntos_totales} pts</strong></td>
-    </tr>`;
-
-            if (p.es_reserva) {
-                if(tReservas) tReservas.innerHTML += fila;
-            } else {
-                if(tPilotos) tPilotos.innerHTML += fila;
-            }
-        });
-
-        // 2. TABLA CONSTRUCTORES
+        // 5. TABLA CONSTRUCTORES (Usamos el array 'titulares' para no incluir reservas)
         const constructoresMap = {};
-        listaPilotosGlobal.forEach(p => {
-            if (p.escuderia_id && !p.es_reserva) {
+        titulares.forEach(p => {
+            if (p.escuderia_id) {
                 if (!constructoresMap[p.escuderia_id]) {
                     constructoresMap[p.escuderia_id] = { puntos: 0, color: p.color_hex, podios: 0, victorias: 0, pilotosFotos: [] };
                 }
                 constructoresMap[p.escuderia_id].puntos += (Number(p.puntos_totales) || 0);
                 constructoresMap[p.escuderia_id].podios += (Number(p.podios) || 0);
                 constructoresMap[p.escuderia_id].victorias += (Number(p.victorias) || 0);
-                const foto = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : FOTO_POR_DEFECTO;
-                constructoresMap[p.escuderia_id].pilotosFotos.push(foto);
+                constructoresMap[p.escuderia_id].pilotosFotos.push(p.foto_url || FOTO_POR_DEFECTO);
             }
         });
 
@@ -857,7 +874,7 @@ const fila = `
             });
         }
 
-        // 3. TABLA SANCIONES
+        // 6. TABLA SANCIONES
         const tSanciones = document.getElementById('tabla-sanciones');
         if(tSanciones) {
             tSanciones.innerHTML = '';
@@ -872,49 +889,8 @@ const fila = `
         console.error("Error al cargar:", e);
     }
 }
-async function cargarDesplegablesAdmin() {
-    // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
-    if (localStorage.getItem('rol') !== 'admin') {
-        console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
-        return; 
-    }
 
-    try {
-        // 1. Cargar Circuitos
-        const resC = await fetch('/api/circuitos');
-        const circuitos = await resC.json();
-        const selCircuito = document.getElementById('select-circuito-admin');
-        if (selCircuito) {
-            // Añadimos una opción por defecto vacía para forzar que el admin elija
-            selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
-                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-        }
-
-        // 2. Cargar Pilotos
-        const res = await fetch('/api/lista-de-pilotos');
-        const pilotos = await res.json();
-        
-        // Ordenamos los pilotos por número antes de pintar los desplegables
-        pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
-
-        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
-
-        ids.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-                pilotos.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
-                    el.appendChild(opt);
-                });
-            }
-        });
-    } catch (err) {
-        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
-    }
-}
+        // AQUI TERMINA EL CARGAR TODOS LOS DATOS
 
     function autocompletarFormEdicion() {
         const idBuscar = parseInt(document.getElementById('select-piloto-editar').value);
