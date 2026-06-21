@@ -1,27 +1,34 @@
-<header id="cabecera-principal" style="text-align: center; padding: 20px;">
-    <!-- Banner Instant Gaming -->
-    <div class="contenedor-jaula">
-        <div class="my-banner"></div>
-    </div>
+<!-- 1. Banner Instant Gaming -->
+<div class="contenedor-jaula">
+    <div class="my-banner"></div>
+</div>
 
-    <!-- Logo central que redirige a Discord -->
-    <div style="margin: 20px 0;">
-        <a href="https://discord.com/invite/xQjRc8vH5" target="_blank" rel="noopener noreferrer">
-            <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas" style="max-width: 300px; height: auto;">
+<!-- 2. Logo Central -->
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://discord.com/invite/xQjRc8vH5" target="_blank" rel="noopener noreferrer">
+        <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas" style="max-width: 300px; height: auto;">
+    </a>
+</div>
+
+<!-- 3. Caja de Sponsors (Esta clase ya la tienes en tu CSS) -->
+<div class="seccion-patrocinadores">
+    <h2 class="titulo-partners">Nuestros Sponsors</h2>
+    <div class="contenedor-logos">
+        <a href="https://musicanueva.es/" target="_blank" rel="noopener noreferrer">
+            <img src="/webimagenes/musica.png" class="logo-patrocinador" style="max-width: 100px;">
         </a>
+        <a href="https://taxibustenerife.com/" target="_blank" rel="noopener noreferrer">
+            <img src="/webimagenes/taxibus.png" class="logo-patrocinador" style="max-width: 250px;">
+        </a>
+        <img src="/webimagenes/krv.png" class="logo-patrocinador" style="max-width: 100px;">
     </div>
+</div>
 
-    <!-- Sección Sponsors -->
-    <div class="seccion-patrocinadores">
-        <h2 class="titulo-partners">Nuestros Sponsors</h2>
-        <div class="contenedor-logos">
-            <a href="https://musicanueva.es/" target="_blank" rel="noopener noreferrer">
-                <img src="/webimagenes/musica.png" class="logo-patrocinador" style="max-width: 100px;">
-            </a>
-            <a href="https://taxibustenerife.com/" target="_blank" rel="noopener noreferrer">
-                <img src="/webimagenes/taxibus.png" class="logo-patrocinador" style="max-width: 400px;">
-            </a>
-            <img src="/webimagenes/krv.png" class="logo-patrocinador" style="max-width: 150px;">
-        </div>
-    </div>
-</header>
+<!-- 4. Título y botón de contacto -->
+<div style="display: flex; justify-content: center; align-items: center; margin: 20px auto; max-width: 800px; position: relative; padding: 0 20px;">
+    <h1 style="margin: 0; text-align: center; flex: 1; color: white;">🏁 CAZADORES DE CURVAS 🏁</h1>
+    <button onclick="document.getElementById('modal-contacto').style.display='block'" 
+            style="padding: 10px 20px; background-color: #e10600; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; position: absolute; right: 0;">
+        Contactar
+    </button>
+</div>
