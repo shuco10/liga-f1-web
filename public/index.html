@@ -462,6 +462,12 @@
     
    <!-- TITULO DE CAZADORES DE CURVAS --> 
    <div id="titulo-placeholder"></div>
+    <script>
+    // Carga de todos los módulos
+    fetch('titulo.html')
+        .then(res => res.text())
+        .then(data => document.getElementById('titulo-placeholder').innerHTML = data);
+</script>
    <!-- TITULO DE CAZADORES DE CURVAS --> 
 
     
