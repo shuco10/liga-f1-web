@@ -131,30 +131,7 @@
 }
 
 
-<style>
-    /* Contenedor del título */
-    #titulo-placeholder {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin: 20px 0; /* Margen reducido para acercarlo más */
-    }
 
-    /* Estilo del título ajustado a un tamaño más pequeño y elegante */
-    #titulo-placeholder .titulo-liga {
-        font-family: 'Rajdhani', sans-serif !important;
-        font-size: 1.8rem !important; /* Reducido de 3.5 a 1.8 */
-        font-weight: 700 !important;
-        color: #ffffff !important;
-        text-transform: uppercase;
-        letter-spacing: 2px !important; /* Espaciado ajustado */
-        text-align: center;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5) !important;
-        border: none !important;
-        background: transparent !important;
-        padding: 0 !important;
-    }
-</style>
 
 /* TABLA DE CONSTRUCTORES: ALINEACIÓN FORZADA */
 
@@ -388,7 +365,6 @@
         .admin-only { display: none; }     
     </style>
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    
 </head>
 <body>
 
@@ -481,17 +457,8 @@
     
 
 <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; max-width: 1000px; margin-left: auto; margin-right: auto; position: relative;">
-
- <!-- TITULO CAZADORES DE CURVAS -->
-<div id="titulo-placeholder"></div>
-
-    <script>
-        fetch('titulo.html')
-            .then(res => res.text())
-            .then(data => document.getElementById('titulo-placeholder').innerHTML = data);
-    </script>
- <!-- TITULO CAZADORES DE CURVAS -->
-
+    
+    <h1 style="margin: 0; text-align: center; flex: 1;">🏁 CAZADORES DE CURVAS 🏁</h1>
     
     <button onclick="document.getElementById('modal-contacto').style.display='block'" 
             style="width: 100px; padding: 10px 0; background-color: #e10600; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; position: absolute; right: 0;">
