@@ -1,3 +1,6 @@
+/* --- IMPORTACIÓN DE FUENTES --- */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap');
+
 /* --- ESTILOS CABECERA Y SPONSORS --- */
 
 /* Contenedor Banner */
@@ -9,6 +12,18 @@
 .logo-main-container { text-align: center; margin: 30px 0; }
 .logo-main { max-width: 300px; height: auto; }
 
+/* Título de Liga (Nuevo estilo Racing) */
+.titulo-liga {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2.2rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 40px 0;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
 /* Sección Sponsors */
 .seccion-patrocinadores { max-width: 800px; margin: 30px auto; padding: 25px; background: #1a1a1a; border-radius: 12px; border-left: 6px solid #ff4444; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
 .titulo-partners { color: #e10600; margin-bottom: 20px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
@@ -16,33 +31,26 @@
 .logo-patrocinador { height: auto; transition: transform 0.3s ease; }
 .logo-patrocinador:hover { transform: scale(1.05); }
 
-/* Título y Botón Contacto */
-.header-bottom-bar { display: flex; justify-content: center; align-items: center; margin: 20px auto; max-width: 1000px; position: relative; padding: 0 20px; }
-.header-title { margin: 0; text-align: center; flex: 1; color: white; }
-.btn-header-contacto { padding: 10px 20px; background-color: #e10600; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; position: absolute; right: 0; }
-
-/* Caja de contenido principal (estilo similar a sponsors) */
+/* Caja de contenido principal */
 .caja-contenido {
-    max-width: 800px; /* Mismo ancho que los sponsors para mantener simetría */
+    max-width: 800px;
     margin: 30px auto;
-    padding: 40px; /* Un poco más de padding interior para que el texto respire */
-    background: #1a1a1a; /* El mismo gris oscuro/negro */
+    padding: 40px;
+    background: #1a1a1a;
     border-radius: 12px;
-    border-left: 6px solid #ff4444; /* La franja roja lateral */
+    border-left: 6px solid #ff4444;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    color: #ffffff; /* Asegura que el texto general sea blanco */
+    color: #ffffff;
     text-align: center;
 }
 
-/* Estilo para el título dentro de la caja */
 .caja-contenido h1 {
     color: #ffffff;
     margin-bottom: 20px;
     font-size: 2rem;
 }
 
-/* Estilo para el texto normal dentro de la caja */
 .caja-contenido p {
-    color: #aaa; /* Un gris clarito para el texto normal, más fácil de leer */
+    color: #aaa;
     line-height: 1.6;
 }
