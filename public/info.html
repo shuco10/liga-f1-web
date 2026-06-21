@@ -1,1 +1,21 @@
+<body>
 
+    <!-- 1. AQUÍ ES DONDE APARECERÁ TU CABECERA -->
+    <div id="header-placeholder"></div>
+
+    <!-- 2. AQUÍ VA EL CONTENIDO DE TU PÁGINA INFO -->
+    <main style="padding: 20px; color: white; text-align: center;">
+        <h1>Información del Sistema</h1>
+        <p>Aquí irá el texto sobre el funcionamiento de la web...</p>
+    </main>
+
+    <!-- 3. EL SCRIPT QUE CARGA EL HEADER (ponlo antes de cerrar el body) -->
+    <script>
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+            });
+    </script>
+
+</body>
