@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Enlace al nuevo archivo de estilos -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información | Cazadores de Curvas</title>
+    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
     
     <style>
@@ -10,6 +13,7 @@
     </style>
 </head>
 <body>
+    <!-- Aquí se cargará el contenido de header.html -->
     <div id="header-placeholder"></div>
 
     <main style="padding: 20px; text-align: center;">
@@ -20,7 +24,24 @@
     <script>
         fetch('header.html')
             .then(res => res.text())
-            .then(data => document.getElementById('header-placeholder').innerHTML = data);
+            .then(data => {
+                // 1. Inyectamos el HTML del header
+                document.getElementById('header-placeholder').innerHTML = data;
+
+                // 2. Configuramos el banner de Instant Gaming
+                window.igBannerConfig = {
+                    lang: 'es',
+                    igr: 'gamer-97d22e',
+                    banners: ['my-banner']
+                };
+
+                // 3. Cargamos el script del banner de forma dinámica
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
     </script>
 </body>
 </html>
