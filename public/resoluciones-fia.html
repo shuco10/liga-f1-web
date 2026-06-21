@@ -20,3 +20,29 @@
 </head>
 <body>
     <div id="header-placeholder"></div>
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // Cargar el Header y Banner
+        fetch('header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                window.igBannerConfig = {
+                    lang: 'es',
+                    igr: 'gamer-97d22e',
+                    banners: ['my-banner']
+                };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
+
+        // Cargar el Footer
+        fetch('footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
+            .catch(error => console.error('Error al cargar el footer:', error));
+    </script>
