@@ -123,7 +123,11 @@
     cursor: pointer;
 }
 
-
+/* Asegura que haya espacio entre el icono y el texto del botón */
+.boton-accion i {
+    margin-right: 8px; /* Ajusta este valor si quieres más o menos separación */
+    font-size: 1.1rem; /* Mantiene el icono alineado con el texto */
+}
 
 
 
