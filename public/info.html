@@ -76,68 +76,110 @@
     <div id="footer-placeholder"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. Cargar Header (ÚNICO FETCH)
-    fetch('/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-            
-            // Configurar Banner de Instant Gaming
-            window.igBannerConfig = {
-                lang: 'es',
-                igr: 'gamer-97d22e',
-                banners: ['my-banner']
-            };
-            const script = document.createElement('script');
-            script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-            script.defer = true;
-            document.body.appendChild(script);
+    // 1. Cargar todo en orden
+    document.addEventListener('DOMContentLoaded', () => {
+        // Carga el Header (una sola vez)
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                
+                // Configurar el Banner de Instant Gaming
+                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
 
-            // Verificación de sesión justo después de inyectar el HTML
-            verificarSesion();
-        })
-        .catch(error => console.error('Error al cargar la cabecera:', error));
+                // AHORA QUE EL HEADER ESTÁ CARGADO, VERIFICAMOS SESIÓN
+                verificarSesion();
+            });
 
-    // 2. Cargar Footer
-    fetch('/footer.html')
-        .then(res => res.text())
-        .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+        // Cargar Footer y Modal
+        fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
+        fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+
+        // Cargar datos
+        cargarPilotosDesdeBD();
+        cargarResoluciones();
+    });
+
+    // 2. Lógica de Sesión (Unificada)
+    function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const formAdmin = document.getElementById('form-admin');
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
         
-    // 3. Cargar el Modal de Login
-    fetch('/login-modal.html')
-        .then(res => res.text())
-        .then(data => document.body.insertAdjacentHTML('beforeend', data));
-});
-
-
-// Esta función permite abrir el modal desde cualquier página
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) {
-            modal.style.display = 'block';
-        } else {
-            console.warn("El modal de login aún no está cargado.");
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        }
+        
+        if (formAdmin) {
+            formAdmin.style.display = adminStatus ? 'block' : 'none';
         }
     }
 
-    
-// Función centralizada
-function verificarSesion() {
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-    
-    // Si los botones existen, aplicamos la lógica
-    if (btnLogin && btnLogout) {
-        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-    } else {
-        // Por si acaso, si no se encuentran, reintentamos en 100ms
-        setTimeout(verificarSesion, 100);
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
     }
-}
+
+    // 3. Tus funciones de API originales
+    async function cargarPilotosDesdeBD() {
+        try {
+            const res = await fetch('/api/lista-de-pilotos');
+            const listaPilotos = await res.json();
+            const selectReclamante = document.getElementById('reclamante');
+            const selectReclamado = document.getElementById('reclamado');
+            if (selectReclamante && selectReclamado) {
+                listaPilotos.forEach(p => {
+                    selectReclamante.add(new Option(p.gamertag, p.gamertag));
+                    selectReclamado.add(new Option(p.gamertag, p.gamertag));
+                });
+            }
+        } catch (error) { console.error("Error pilotos:", error); }
+    }
+
+    async function cargarResoluciones() {
+        try {
+            const res = await fetch('/api/resoluciones');
+            const data = await res.json();
+            const tbody = document.getElementById('cuerpo-tabla-resoluciones');
+            if (!tbody) return;
+            
+            tbody.innerHTML = data.map(r => {
+                const fechaLimpia = r.fecha ? r.fecha.split('T')[0] : 'N/A';
+                return `
+                    <tr style="border-bottom: 1px solid #333; text-align: left;">
+                        <td style="padding: 12px;">${fechaLimpia}</td>
+                        <td style="padding: 12px;">${r.reclamante}</td>
+                        <td style="padding: 12px;">${r.reclamado}</td>
+                        <td style="padding: 12px; font-weight: bold; color: #ff4444;">${r.sancion}</td>
+                        <td style="padding: 12px; font-size: 0.9em; color: #cccccc;">${r.explicacion}</td>
+                    </tr>
+                `;
+            }).join('');
+        } catch (error) { console.error("Error historial:", error); }
+    }
+
+    async function publicarResolucion() {
+        if (!esAdmin()) return alert("Acceso denegado");
+        const data = {
+            reclamante: document.getElementById('reclamante').value,
+            reclamado: document.getElementById('reclamado').value,
+            articulo: document.getElementById('articulo').value,
+            explicacion: document.getElementById('explicacion').value,
+            sancion: document.getElementById('sancion').value
+        };
+        const res = await fetch('/api/resoluciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (res.ok) { alert("Publicado"); location.reload(); }
+    }
 </script>
 </body>
 </html>
