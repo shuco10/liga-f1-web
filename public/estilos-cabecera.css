@@ -113,9 +113,17 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 
 /* --- Estructura de Tabla --- */
+/* --- Contenedor (Añade este div en tu HTML envolviendo las tablas) --- */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Evita que la tabla se salga de la caja */
+}
+
+/* --- Estructura de Tabla --- */
 .table-standings {
     width: 100%;
-    table-layout: fixed; /* Esto va SOLO aquí */
+    max-width: 100%; /* Asegura que nunca supere el ancho de su contenedor */
+    table-layout: fixed; 
     border-collapse: collapse;
     background-color: #1a1a1a;
     color: white;
@@ -123,31 +131,33 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 40px;
+    box-sizing: border-box; /* Crucial para que padding no ensanche la tabla */
 }
 
 .table-standings th {
     background-color: #262626;
-    padding: 15px;
+    padding: 15px 5px; /* Ligeramente más compacto */
     text-transform: uppercase;
     font-size: 0.85em;
     color: #ff3333;
+    text-align: center;
 }
 
 .table-standings td {
     padding: 12px 8px;
     text-align: center;
     border-bottom: 1px solid #333;
-    /* ELIMINA AQUÍ table-layout y width: 100% */
+    word-break: break-word; /* Si el texto es largo, salta de línea en lugar de estirar la tabla */
 }
 
-/* Fuerza anchos específicos para que sean IGUALES en ambas tablas */
-.table-standings th:nth-child(1), .table-standings td:nth-child(1) { width: 60px; } /* POS */
-.table-standings th:nth-child(2), .table-standings td:nth-child(2) { width: 250px; } /* PILOTO */
-.table-standings th:nth-child(3), .table-standings td:nth-child(3) { width: 100px; } /* PLATAFORMA */
-.table-standings th:nth-child(4), .table-standings td:nth-child(4) { width: 180px; } /* ESCUDERÍA */
-.table-standings th:nth-child(5), .table-standings td:nth-child(5) { width: 80px; }  /* VICTORIAS */
-.table-standings th:nth-child(6), .table-standings td:nth-child(6) { width: 80px; }  /* PODIOS */
-.table-standings th:nth-child(7), .table-standings td:nth-child(7) { width: 100px; } /* PUNTOS */
+/* Fuerza anchos específicos */
+.table-standings th:nth-child(1), .table-standings td:nth-child(1) { width: 50px; }
+.table-standings th:nth-child(2), .table-standings td:nth-child(2) { width: 220px; }
+.table-standings th:nth-child(3), .table-standings td:nth-child(3) { width: 90px; }
+.table-standings th:nth-child(4), .table-standings td:nth-child(4) { width: 160px; }
+.table-standings th:nth-child(5), .table-standings td:nth-child(5) { width: 70px; }
+.table-standings th:nth-child(6), .table-standings td:nth-child(6) { width: 70px; }
+.table-standings th:nth-child(7), .table-standings td:nth-child(7) { width: 90px; }
 
 .table-standings tbody tr:nth-child(even) { background-color: #222222; }
 
