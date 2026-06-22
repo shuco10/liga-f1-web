@@ -137,24 +137,29 @@ function renderizarTabla(id, data, esReserva) {
     if (!tabla) return;
 
     tabla.innerHTML = data.map((p, index) => {
+        // 1. Ruta de imagen limpia (sin doble //)
         const avatarUrl = (p.foto_url && p.foto_url.trim() !== '') 
-    ? `/pilotos/${p.foto_url.replace('pilotos/', '')}` 
-    : '/pilotos/R.png';
+            ? `/pilotos/${p.foto_url.replace('pilotos/', '')}` 
+            : '/pilotos/R.png';
         
-        // Lógica de la escudería: si es reserva, mostramos el texto, si no, el nombre
+        // 2. Lógica de Podio (Solo para titulares, index 0, 1, 2)
+        const posClass = (!esReserva && index < 3) ? `pos-${index + 1}` : '';
+        const posicionDisplay = esReserva ? 'S/C' : (index + 1);
+
+        // 3. Lógica de Escudería
         const escuderiaCol = esReserva 
             ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
             : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo');
 
         return `<tr>
-            <td>${esReserva ? 'S/C' : index + 1}</td>
+            <td class="pos-col ${posClass}">${posicionDisplay}</td>
             <td>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <img src="${avatarUrl}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'">
                     <strong>${p.gamertag}</strong>
                 </div>
             </td>
-            <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+            <td><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
             <td>${escuderiaCol}</td>
             <td>${p.victorias}</td>
             <td>${p.podios || '0'}</td>
