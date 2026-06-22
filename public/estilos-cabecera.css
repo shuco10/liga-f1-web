@@ -172,3 +172,12 @@ tbody tr:nth-child(even) {
     border-radius: 50%;
     object-fit: cover;
 }
+
+/* Estilos para el podio */
+.pos-1 { color: #FFD700; font-weight: bold; font-size: 1.2em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); } /* Oro */
+.pos-2 { color: #C0C0C0; font-weight: bold; } /* Plata */
+.pos-3 { color: #CD7F32; font-weight: bold; } /* Bronce */
+
+/* Ajuste para que se vea bien en la celda */
+.pos-col { text-align: center; }
+
