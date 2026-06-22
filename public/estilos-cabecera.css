@@ -112,38 +112,42 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
+/* --- Tabla --- */
 table { 
     width: 100%; 
     border-collapse: collapse; 
     margin-top: 10px; 
     background: #1a1a1a; 
     color: white; 
-    table-layout: fixed; /* Esto es vital */
+    table-layout: fixed; /* Esto es lo que evita el descuadre */
 }
 
-/* Definimos anchos fijos para que no se descuadre */
-th:nth-child(1), td:nth-child(1) { width: 40px; }  /* Pos */
-th:nth-child(2), td:nth-child(2) { width: auto; }  /* Piloto (que tome el resto) */
-th:nth-child(3), td:nth-child(3) { width: 90px; }  /* Plataforma */
-th:nth-child(4), td:nth-child(4) { width: 180px; } /* Escudería */
-th:nth-child(5), td:nth-child(5) { width: 70px; }  /* Victorias */
-th:nth-child(6), td:nth-child(6) { width: 70px; }  /* Podios */
-th:nth-child(7), td:nth-child(7) { width: 80px; }  /* Puntos */
+/* Anchos fijos por columna */
+th:nth-child(1), td:nth-child(1) { width: 40px; }
+th:nth-child(2), td:nth-child(2) { width: auto; }
+th:nth-child(3), td:nth-child(3) { width: 90px; }
+th:nth-child(4), td:nth-child(4) { width: 180px; }
+th:nth-child(5), td:nth-child(5) { width: 70px; }
+th:nth-child(6), td:nth-child(6) { width: 70px; }
+th:nth-child(7), td:nth-child(7) { width: 80px; }
 
 th, td { padding: 12px 8px; border-bottom: 1px solid #333; text-align: center; }
 
-/* Asegurar que el logo y texto no se deformen */
+/* --- Escudería --- */
+.col-escuderia { text-align: left !important; }
+
 .escuderia-contenedor { 
     display: flex; 
     align-items: center; 
     gap: 8px; 
-    overflow: hidden; /* Corta si es muy largo */
+    overflow: hidden; 
     text-align: left;
 }
 
 .escuderia-logo { 
     width: 25px; 
     height: 25px; 
-    flex-shrink: 0; /* Impide que el logo se encoja */
     object-fit: contain; 
+    display: block; 
+    flex-shrink: 0; 
 }
