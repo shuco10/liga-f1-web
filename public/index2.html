@@ -28,7 +28,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    
     // 1. Cargar Header (ÚNICO FETCH)
     fetch('/header.html')
         .then(res => res.text())
@@ -36,11 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('header-placeholder').innerHTML = data;
             
             // Configurar Banner de Instant Gaming
-            window.igBannerConfig = {
-                lang: 'es',
-                igr: 'gamer-97d22e',
-                banners: ['my-banner']
-            };
+            window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
             const script = document.createElement('script');
             script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
             script.defer = true;
@@ -60,68 +55,66 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/login-modal.html')
         .then(res => res.text())
         .then(data => document.body.insertAdjacentHTML('beforeend', data));
+
+    // 4. Cargar las noticias (Llamado aquí dentro para asegurar orden)
+    cargarNoticias();
 });
 
+// --- Funciones de soporte fuera del DOMContentLoaded ---
 
- // Cargar las noticias
- 
+async function cargarNoticias() {
+    const contenedor = document.getElementById('lista-noticias');
+    if (!contenedor) return; // Protección por si no existe en esta página
 
-    // 2. Funciones de Noticias
-    async function cargarNoticias() {
-        const contenedor = document.getElementById('lista-noticias');
-        try {
-            const respuesta = await fetch('/api/noticias');
-            const noticias = await respuesta.json();
-            
-            contenedor.innerHTML = ''; 
-            
-            if (noticias.length === 0) {
-                contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
-                return;
-            }
-
-            noticias.forEach(noticia => {
-                const div = document.createElement('div');
-                div.className = 'noticia-item noticia-destacada-amarilla'; 
-                div.style.marginBottom = "20px";
-                
-                const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
-                    <div style="margin-top: 10px; display: flex; gap: 10px;">
-                        <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
-                                style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
-                        <button onclick="eliminarNoticia(${noticia.id})" 
-                                style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
-                    </div>
-                ` : '';
-
-                const fechaObj = new Date(noticia.fecha);
-                div.innerHTML = `
-                    <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
-                    <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
-                    <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
-                    ${botonesAdmin}
-                `;
-                contenedor.appendChild(div);
-            });
-        } catch (error) {
-            console.error("Error cargando noticias:", error);
-            contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
+    try {
+        const respuesta = await fetch('/api/noticias');
+        const noticias = await respuesta.json();
+        
+        contenedor.innerHTML = ''; 
+        
+        if (noticias.length === 0) {
+            contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+            return;
         }
-    }
 
-    
-// Función centralizada
+        noticias.forEach(noticia => {
+            const div = document.createElement('div');
+            div.className = 'noticia-item noticia-destacada-amarilla'; 
+            div.style.marginBottom = "20px";
+            
+            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                            style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                    <button onclick="eliminarNoticia(${noticia.id})" 
+                            style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                </div>
+            ` : '';
+
+            const fechaObj = new Date(noticia.fecha);
+            div.innerHTML = `
+                <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
+                <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                ${botonesAdmin}
+            `;
+            contenedor.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Error cargando noticias:", error);
+        contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
+    }
+}
+
 function verificarSesion() {
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
     
-    // Si los botones existen, aplicamos la lógica
     if (btnLogin && btnLogout) {
         btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
         btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
     } else {
-        // Por si acaso, si no se encuentran, reintentamos en 100ms
         setTimeout(verificarSesion, 100);
     }
 }
