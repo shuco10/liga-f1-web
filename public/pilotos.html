@@ -61,136 +61,105 @@
     <div id="footer-placeholder"></div>
 
 <script>
-    // --- CONSTANTES CORREGIDAS SEGÚN TU ESTRUCTURA ---
-    // Nota: El navegador ya busca en 'public', por lo que usamos la ruta desde allí.
-
-    
+    // --- CONSTANTES DE RUTAS ---
     const FOTO_POR_DEFECTO = '/pilotos/R.png'; 
     const LOGOS_ESCUDERIAS = { 
-        1: '/logos/ferrari.png', 
-        2: '/logos/redbull.png',
-        3: '/logos/mclaren.png',
-        4: '/logos/mercedes.png',
-        5: '/logos/alpine.png',
-        6: '/logos/aston.png',
-        7: '/logos/audi.png',
-        8: '/logos/cadillac.png',
-        9: '/logos/hass.png',
-        10: '/logos/rb.png',
-        11: '/logos/williams.png'
+        1: '/logos/ferrari.png', 2: '/logos/redbull.png', 3: '/logos/mclaren.png',
+        4: '/logos/mercedes.png', 5: '/logos/alpine.png', 6: '/logos/aston.png',
+        7: '/logos/audi.png', 8: '/logos/cadillac.png', 9: '/logos/hass.png',
+        10: '/logos/rb.png', 11: '/logos/williams.png'
     }; 
     const NOMBRES_ESCUDERIAS = { 
         1: 'Ferrari', 2: 'Red Bull', 3: 'McLaren', 4: 'Mercedes', 
         5: 'Alpine', 6: 'Aston Martin', 7: 'Audi', 8: 'Cadillac', 
         9: 'Haas', 10: 'RB', 11: 'Williams' 
-    }; 
-    let listaPilotosGlobal = [];
+    };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        fetch('/header.html').then(res => res.text()).then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-            // ... (resto de tu lógica de banner)
-            verificarSesion();
-        });
+    // --- CARGA UNIFICADA ---
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 1. Carga de componentes de la web en paralelo
+        const [headerRes, footerRes, modalRes] = await Promise.all([
+            fetch('/header.html'),
+            fetch('/footer.html'),
+            fetch('/login-modal.html')
+        ]);
 
-        fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
-        fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+        document.getElementById('header-placeholder').innerHTML = await headerRes.text();
+        document.getElementById('footer-placeholder').innerHTML = await footerRes.text();
+        document.body.insertAdjacentHTML('beforeend', await modalRes.text());
 
+        // 2. Configuración Banner Instant Gaming
+        window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+        const script = document.createElement('script');
+        script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+        script.defer = true;
+        document.body.appendChild(script);
+
+        // 3. Ejecución lógica inicial
+        verificarSesion();
         cargarTodosLosDatos();
     });
 
-   async function cargarTodosLosDatos() {
-    try {
-        const res = await fetch('/api/lista-de-pilotos');
-        if (!res.ok) return;
-        listaPilotosGlobal = await res.json();
-        
-        const resResultados = await fetch('/api/todos-los-resultados');
-        const resultados = await resResultados.json();
+    // --- LÓGICA DE PILOTOS ---
+    async function cargarTodosLosDatos() {
+        try {
+            const [res, resResultados] = await Promise.all([
+                fetch('/api/lista-de-pilotos'),
+                fetch('/api/todos-los-resultados')
+            ]);
+            
+            const listaPilotosGlobal = await res.json();
+            const resultados = await resResultados.json();
 
-        // 1. CÁLCULO DINÁMICO DE VICTORIAS Y PODIOS
-        listaPilotosGlobal.forEach(p => {
-            p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
-            p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
-        });
-
-        // 2. SEPARACIÓN Y ORDENACIÓN
-        const titulares = listaPilotosGlobal.filter(p => !p.es_reserva)
-                                         .sort((a, b) => b.puntos_totales - a.puntos_totales);
-        
-        const reservas = listaPilotosGlobal.filter(p => p.es_reserva)
-                                         .sort((a, b) => b.puntos_totales - a.puntos_totales);
-
-        // 3. RENDERIZADO TITULARES
-        const tPilotos = document.getElementById('tabla-pilotos');
-        if (tPilotos) {
-            tPilotos.innerHTML = '';
-            titulares.forEach((p, index) => {
-                // AÑADIDO: Prefijo '/pilotos/' y protector 'onerror'
-                const rawUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : 'R.png';
-                const avatarUrl = rawUrl.startsWith('http') ? rawUrl : `/pilotos/${rawUrl}`;
-                
-                const logoUrl = LOGOS_ESCUDERIAS[p.escuderia_id] || '';
-                tPilotos.innerHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>
-                            <div class="piloto-contenedor">
-                                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" onerror="this.src='${FOTO_POR_DEFECTO}'">
-                                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
-                                <strong>${p.gamertag}</strong>
-                            </div>
-                        </td>
-                        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
-                        <td>${logoUrl ? `<img src="${logoUrl}" style="width:25px; height:25px; vertical-align:middle;"> ` : ''} ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</td>
-                        <td>${p.victorias}</td>
-                        <td>${p.podios || '0'}</td>
-                        <td><strong>${p.puntos_totales} pts</strong></td>
-                    </tr>`;
+            listaPilotosGlobal.forEach(p => {
+                p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
+                p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
             });
-        }
 
-        // 4. RENDERIZADO RESERVAS
-        const tReservas = document.getElementById('tabla-reservas');
-        if (tReservas) {
-            tReservas.innerHTML = '';
-            reservas.forEach((p) => {
-                // AÑADIDO: Prefijo '/pilotos/' y protector 'onerror'
-                const rawUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : 'R.png';
-                const avatarUrl = rawUrl.startsWith('http') ? rawUrl : `/pilotos/${rawUrl}`;
-                
-                tReservas.innerHTML += `
-                    <tr>
-                        <td><span class="label-sc">S/C</span></td>
-                        <td>
-                            <div class="piloto-contenedor">
-                                <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" onerror="this.src='${FOTO_POR_DEFECTO}'">
-                                <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
-                                <strong>${p.gamertag}</strong>
-                            </div>
-                        </td>
-                        <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
-                        <td><span style="color: #CCFF00;">[ RESERVA ]</span></td>
-                        <td>${p.victorias}</td>
-                        <td>${p.podios || '0'}</td>
-                        <td><strong>${p.puntos_totales} pts</strong></td>
-                    </tr>`;
-            });
-        }
-    } catch(e) { console.error(e); }
-}
-        // --- FUNCIONES GLOBALES ---
-        function verificarSesion() {
-            const btnLogin = document.getElementById('btn-login');
-            const btnLogout = document.getElementById('btn-logout');
-            const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-            if (btnLogin && btnLogout) {
-                btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-                btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-            } else { setTimeout(verificarSesion, 100); }
-        }
+            const titulares = listaPilotosGlobal.filter(p => !p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
+            const reservas = listaPilotosGlobal.filter(p => p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
 
-        function seguridadAbrirModal() { const modal = document.getElementById('login-modal'); if (modal) modal.style.display = 'block'; }
-    </script>
+            renderizarTabla('tabla-pilotos', titulares, false);
+            renderizarTabla('tabla-reservas', reservas, true);
+        } catch(e) { console.error("Error al cargar datos:", e); }
+    }
+
+    function renderizarTabla(id, data, esReserva) {
+        const tabla = document.getElementById(id);
+        if (!tabla) return;
+        tabla.innerHTML = data.map((p, index) => {
+            const rawUrl = p.foto_url && p.foto_url.trim() !== '' ? p.foto_url : 'R.png';
+            const avatarUrl = rawUrl.startsWith('http') ? rawUrl : `/pilotos/${rawUrl}`;
+            const logo = LOGOS_ESCUDERIAS[p.escuderia_id];
+            
+            return `<tr>
+                <td>${esReserva ? '<span class="label-sc">S/C</span>' : index + 1}</td>
+                <td><div class="piloto-contenedor">
+                    <img src="${avatarUrl}" class="piloto-avatar" alt="Avatar" onerror="this.src='${FOTO_POR_DEFECTO}'">
+                    <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                    <strong>${p.gamertag}</strong>
+                </div></td>
+                <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+                <td>${esReserva ? '<span style="color: #CCFF00;">[ RESERVA ]</span>' : (logo ? `<img src="${logo}" style="width:25px; height:25px;"> ` : '') + (NOMBRES_ESCUDERIAS[p.escuderia_id] || '')}</td>
+                <td>${p.victorias}</td>
+                <td>${p.podios || '0'}</td>
+                <td><strong>${p.puntos_totales} pts</strong></td>
+            </tr>`;
+        }).join('');
+    }
+
+    // --- FUNCIONES GLOBALES ---
+    function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        } else { setTimeout(verificarSesion, 100); }
+    }
+
+    function seguridadAbrirModal() { const modal = document.getElementById('login-modal'); if (modal) modal.style.display = 'block'; }
+</script>
 </body>
 </html>
