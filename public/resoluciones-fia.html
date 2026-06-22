@@ -2,24 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Icono para la pestaña del navegador -->
-    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas.png" type="image/png"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información | Cazadores de Curvas</title>
-    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Estilo base para el fondo de esta página */
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
-    </style>
-</head>
-<body>
-    <div id="header-placeholder"></div>
-    <div class="titulo-liga">🚩 RESOLUCIONES FIA 🚩</div>
-    <main class="caja-contenido">
+    <script src="auth.js"></script>
     <style>
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
         .form-resolucion { background: #2a2a2a; padding: 20px; border-radius: 8px; max-width: 600px; margin: 20px auto; }
@@ -28,14 +16,18 @@
         .form-resolucion button { margin-top: 15px; padding: 10px; background: #ffcc00; border: none; cursor: pointer; font-weight: bold; width: 100%; }
         .titulo-liga { text-align: center; font-size: 24px; margin-top: 20px; font-weight: bold; }
     </style>
-
-
-    <div id="auth-controls" style="text-align: right; margin: 10px;">
-        <button id="btn-login" onclick="window.location.href='index.html'">Login Admin</button>
-        <button id="btn-logout" onclick="cerrarSesion()" style="display: none;">Cerrar Sesión</button>
-    </div>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="titulo-liga">🚩 RESOLUCIONES FIA 🚩</div>
 
     <main class="caja-contenido">
+        <div id="auth-controls" style="text-align: right; margin: 10px;">
+            <button id="btn-login" onclick="window.location.href='index.html'">Login Admin</button>
+            <button id="btn-logout" onclick="cerrarSesion()" style="display: none;">Cerrar Sesión</button>
+        </div>
+
         <div id="form-admin" class="form-resolucion" style="display: none;">
             <h3>Nueva Resolución</h3>
             <label>Piloto Reclamante:</label>
@@ -70,7 +62,6 @@
     <div id="footer-placeholder"></div>
 
 <script>
-    // Carga de Pilotos
     async function cargarPilotosDesdeBD() {
         try {
             const res = await fetch('/api/lista-de-pilotos');
@@ -84,7 +75,6 @@
         } catch (error) { console.error("Error pilotos:", error); }
     }
 
-    // Carga de Resoluciones
     async function cargarResoluciones() {
         try {
             const res = await fetch('/api/resoluciones');
@@ -101,7 +91,6 @@
         } catch (error) { console.error("Error historial:", error); }
     }
 
-    // Publicar
     async function publicarResolucion() {
         if (!esAdmin()) return alert("Acceso denegado");
         const data = {
@@ -119,13 +108,11 @@
         if (res.ok) { alert("Publicado"); location.reload(); }
     }
 
-    // Cerrar Sesión fijo
     function cerrarSesion() {
         localStorage.removeItem('rol');
         location.reload();
     }
 
-    // Inicialización
     document.addEventListener('DOMContentLoaded', () => {
         cargarPilotosDesdeBD();
         cargarResoluciones();
@@ -135,14 +122,13 @@
             document.getElementById('btn-logout').style.display = 'inline-block';
             document.getElementById('form-admin').style.display = 'block';
         }
-    });
 
-    // Cargas de Header/Footer originales
-    fetch('header.html').then(res => res.text()).then(data => {
-        document.getElementById('header-placeholder').innerHTML = data;
-    });
-    fetch('footer.html').then(res => res.text()).then(data => {
-        document.getElementById('footer-placeholder').innerHTML = data;
+        fetch('header.html').then(res => res.text()).then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+        });
+        fetch('footer.html').then(res => res.text()).then(data => {
+            document.getElementById('footer-placeholder').innerHTML = data;
+        });
     });
 </script>
 </body>
