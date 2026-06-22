@@ -2,72 +2,140 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información | Cazadores de Curvas</title>
-    <!-- Ruta corregida con / al inicio -->
-    <link rel="stylesheet" href="/estilos-cabecera.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
-    </style>
-    <!-- Carga de lógica global -->
-    <script src="/auth.js"></script>
+    <title>Pilotos - Cazadores de Curvas</title>
+    <link rel="stylesheet" href="style.css"> 
+    <script src="https://kit.fontawesome.com/tu-codigo-fontawesome.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
     <div id="header-placeholder"></div>
 
     <main class="caja-contenido">
-        <h1>Nuestros Pilotos</h1>
-        <p>Aquí irá el contenido de tu página...</p>
+        <div id="mundial-pilotos" class="seccion">
+            <h1>Nuestros Pilotos</h1>
+            
+            <h2>Campeonato Mundial de Pilotos (Titulares)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Piloto</th>
+                        <th>Plataforma</th>
+                        <th>Escudería</th>
+                        <th>Victorias</th>
+                        <th>Podios</th>
+                        <th>Puntos</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-pilotos"></tbody>
+            </table>
+
+            <h2 style="margin-top: 30px;">Pilotos Reserva</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Piloto</th>
+                        <th>Plataforma</th>
+                        <th>Escudería</th>
+                        <th>Victorias</th>
+                        <th>Podios</th>
+                        <th>Puntos</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-reservas"></tbody>
+            </table>
+        </div>
     </main>
 
     <div id="footer-placeholder"></div>
 
     <script>
+        // --- CONSTANTES NECESARIAS ---
+        const FOTO_POR_DEFECTO = '/img/default-avatar.png'; // Cambia esto por tu ruta
+        const LOGOS_ESCUDERIAS = { 1: '/img/logo1.png', 2: '/img/logo2.png' }; // Ajusta tus IDs
+        const NOMBRES_ESCUDERIAS = { 1: 'Ferrari', 2: 'Red Bull' }; // Ajusta tus IDs
+        let listaPilotosGlobal = [];
+
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Carga modular (Header, Footer, Modal)
+            // 1. Carga modular
             fetch('/header.html').then(res => res.text()).then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
-                // Inicializar banner después de cargar el header
                 window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
                 const script = document.createElement('script');
                 script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
                 script.defer = true;
                 document.body.appendChild(script);
-                verificarSesion(); // Ajusta botones tras cargar header
+                verificarSesion();
             });
 
             fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
             fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+
+            // 2. Cargar los datos nada más cargar la página
+            cargarTodosLosDatos();
         });
 
-        // 2. Funciones globales de sesión (copia esto a todas las páginas)
+        // --- LÓGICA DE PILOTOS ---
+        async function cargarTodosLosDatos() {
+            try {
+                const res = await fetch('/api/lista-de-pilotos');
+                if (!res.ok) return;
+                listaPilotosGlobal = await res.json();
+                
+                const resResultados = await fetch('/api/todos-los-resultados');
+                const resultados = await resResultados.json();
+
+                listaPilotosGlobal.forEach(p => {
+                    p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
+                    p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
+                });
+
+                const titulares = listaPilotosGlobal.filter(p => !p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
+                const reservas = listaPilotosGlobal.filter(p => p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
+
+                const tPilotos = document.getElementById('tabla-pilotos');
+                if (tPilotos) {
+                    tPilotos.innerHTML = titulares.map((p, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><div class="piloto-contenedor"><img src="${p.foto_url || FOTO_POR_DEFECTO}" class="piloto-avatar"> <strong>${p.gamertag}</strong></div></td>
+                            <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+                            <td>${LOGOS_ESCUDERIAS[p.escuderia_id] ? `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id]}" style="width:25px;"> ` : ''} ${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</td>
+                            <td>${p.victorias}</td>
+                            <td>${p.podios || 0}</td>
+                            <td><strong>${p.puntos_totales} pts</strong></td>
+                        </tr>`).join('');
+                }
+
+                const tReservas = document.getElementById('tabla-reservas');
+                if (tReservas) {
+                    tReservas.innerHTML = reservas.map(p => `
+                        <tr>
+                            <td><span class="label-sc">S/C</span></td>
+                            <td><div class="piloto-contenedor"><img src="${p.foto_url || FOTO_POR_DEFECTO}" class="piloto-avatar"> <strong>${p.gamertag}</strong></div></td>
+                            <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+                            <td><span style="color: #CCFF00;">[ RESERVA ]</span></td>
+                            <td>${p.victorias}</td>
+                            <td>${p.podios || 0}</td>
+                            <td><strong>${p.puntos_totales} pts</strong></td>
+                        </tr>`).join('');
+                }
+            } catch (err) { console.error("Error cargando pilotos:", err); }
+        }
+
+        // --- FUNCIONES GLOBALES ---
         function verificarSesion() {
             const btnLogin = document.getElementById('btn-login');
             const btnLogout = document.getElementById('btn-logout');
             const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-            
             if (btnLogin && btnLogout) {
                 btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
                 btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-            } else {
-                setTimeout(verificarSesion, 100);
-            }
+            } else { setTimeout(verificarSesion, 100); }
         }
 
-        function seguridadAbrirModal() {
-            const modal = document.getElementById('login-modal');
-            if (modal) modal.style.display = 'block';
-        }
-
-        function cerrarSesion() {
-            localStorage.removeItem('rol');
-            location.reload();
-        }
+        function seguridadAbrirModal() { const modal = document.getElementById('login-modal'); if (modal) modal.style.display = 'block'; }
     </script>
 </body>
 </html>
