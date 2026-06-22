@@ -26,13 +26,15 @@
 
     <div id="footer-placeholder"></div>
 
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Cargar Header y Banner
+            // Cargar Header, Banner y verificar sesión UNIFICADO
             fetch('/header.html')
                 .then(res => res.text())
                 .then(data => {
                     document.getElementById('header-placeholder').innerHTML = data;
+                    
+                    // 1. Configurar Banner
                     window.igBannerConfig = {
                         lang: 'es',
                         igr: 'gamer-97d22e',
@@ -42,14 +44,20 @@
                     script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
                     script.defer = true;
                     document.body.appendChild(script);
-                });
 
+                    // 2. LLAMADA CLAVE: Verificar si es admin después de inyectar
+                    if (typeof verificarSesion === 'function') {
+                        verificarSesion();
+                    }
+                })
+                .catch(error => console.error('Error al cargar header:', error));
+            
             // Cargar Footer
             fetch('/footer.html')
                 .then(res => res.text())
                 .then(data => document.getElementById('footer-placeholder').innerHTML = data);
 
-            // Cargar el Modal de Login de forma segura
+            // Cargar el Modal de Login
             fetch('/login-modal.html')
                 .then(res => res.text())
                 .then(data => {
