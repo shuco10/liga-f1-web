@@ -26,7 +26,18 @@ async function inicializarBaseDeDatos() {
                 color_hex VARCHAR(7)
             );
         `);
-
+// Añadir dentro de inicializarBaseDeDatos()
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS resoluciones (
+        id SERIAL PRIMARY KEY,
+        reclamante VARCHAR(100),
+        reclamado VARCHAR(100),
+        articulo VARCHAR(50),
+        explicacion TEXT,
+        sancion VARCHAR(255),
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+`);
 
         // Crear la tabla noticias si no existe
 await pool.query(`
@@ -336,6 +347,32 @@ app.get('/api/corregir-circuitos', async (req, res) => {
     }
 });
 
+
+
+// API para GUARDAR una resolución (Solo para Admins)
+app.post('/api/resoluciones', async (req, res) => {
+    const { reclamante, reclamado, articulo, explicacion, sancion } = req.body;
+    try {
+        await pool.query(
+            "INSERT INTO resoluciones (reclamante, reclamado, articulo, explicacion, sancion) VALUES ($1, $2, $3, $4, $5)",
+            [reclamante, reclamado, articulo, explicacion, sancion]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error al guardar resolución" });
+    }
+});
+
+// API para OBTENER las resoluciones (Público)
+app.get('/api/resoluciones', async (req, res) => {
+    try {
+        const { rows } = await pool.query("SELECT * FROM resoluciones ORDER BY fecha DESC");
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: "Error al cargar resoluciones" });
+    }
+});
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 
