@@ -99,11 +99,7 @@
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
 
-        // Cargar datos
-        cargarPilotosDesdeBD();
-        cargarResoluciones();
-    });
-
+    
     // 2. Lógica de Sesión (Unificada)
     function verificarSesion() {
         const btnLogin = document.getElementById('btn-login');
@@ -126,60 +122,6 @@
         if (modal) modal.style.display = 'block';
     }
 
-    // 3. Tus funciones de API originales
-    async function cargarPilotosDesdeBD() {
-        try {
-            const res = await fetch('/api/lista-de-pilotos');
-            const listaPilotos = await res.json();
-            const selectReclamante = document.getElementById('reclamante');
-            const selectReclamado = document.getElementById('reclamado');
-            if (selectReclamante && selectReclamado) {
-                listaPilotos.forEach(p => {
-                    selectReclamante.add(new Option(p.gamertag, p.gamertag));
-                    selectReclamado.add(new Option(p.gamertag, p.gamertag));
-                });
-            }
-        } catch (error) { console.error("Error pilotos:", error); }
-    }
-
-    async function cargarResoluciones() {
-        try {
-            const res = await fetch('/api/resoluciones');
-            const data = await res.json();
-            const tbody = document.getElementById('cuerpo-tabla-resoluciones');
-            if (!tbody) return;
-            
-            tbody.innerHTML = data.map(r => {
-                const fechaLimpia = r.fecha ? r.fecha.split('T')[0] : 'N/A';
-                return `
-                    <tr style="border-bottom: 1px solid #333; text-align: left;">
-                        <td style="padding: 12px;">${fechaLimpia}</td>
-                        <td style="padding: 12px;">${r.reclamante}</td>
-                        <td style="padding: 12px;">${r.reclamado}</td>
-                        <td style="padding: 12px; font-weight: bold; color: #ff4444;">${r.sancion}</td>
-                        <td style="padding: 12px; font-size: 0.9em; color: #cccccc;">${r.explicacion}</td>
-                    </tr>
-                `;
-            }).join('');
-        } catch (error) { console.error("Error historial:", error); }
-    }
-
-    async function publicarResolucion() {
-        if (!esAdmin()) return alert("Acceso denegado");
-        const data = {
-            reclamante: document.getElementById('reclamante').value,
-            reclamado: document.getElementById('reclamado').value,
-            articulo: document.getElementById('articulo').value,
-            explicacion: document.getElementById('explicacion').value,
-            sancion: document.getElementById('sancion').value
-        };
-        const res = await fetch('/api/resoluciones', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (res.ok) { alert("Publicado"); location.reload(); }
-    }
 </script>
 </body>
 </html>
