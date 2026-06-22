@@ -137,7 +137,9 @@ function renderizarTabla(id, data, esReserva) {
     if (!tabla) return;
 
     tabla.innerHTML = data.map((p, index) => {
-        const avatarUrl = (p.foto_url && p.foto_url.trim() !== '') ? `/pilotos/${p.foto_url}` : '/pilotos/R.png';
+        const avatarUrl = (p.foto_url && p.foto_url.trim() !== '') 
+    ? `/pilotos/${p.foto_url.replace('pilotos/', '')}` 
+    : '/pilotos/R.png';
         
         // Lógica de la escudería: si es reserva, mostramos el texto, si no, el nombre
         const escuderiaCol = esReserva 
