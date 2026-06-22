@@ -98,9 +98,9 @@
         // Cargar Footer y Modal
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+    }); // <--- AQUÍ SE CIERRA EL EVENT LISTENER CORRECTAMENTE
 
-    
-    // 2. Lógica de Sesión (Unificada)
+    // 2. Lógica de Sesión (FUERA del DOMContentLoaded)
     function verificarSesion() {
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
@@ -121,7 +121,6 @@
         const modal = document.getElementById('login-modal');
         if (modal) modal.style.display = 'block';
     }
-
 </script>
 </body>
 </html>
