@@ -1,29 +1,23 @@
-<!-- Banner -->
 <div class="contenedor-jaula">
     <div class="my-banner"></div>
 </div>
 
-<!-- Logo -->
 <div class="logo-main-container">
     <a href="https://discord.com/invite/xQjRc8vH5" target="_blank" rel="noopener noreferrer">
         <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas" class="logo-main">
     </a>
 </div>
 
-<!-- BOTONES LOGIN Y OFICINA -->
 <div id="auth-controls" class="contenedor-botones" style="text-align: right; margin: 10px;">
-    <!-- Botón de Login -->
     <button id="btn-login" class="boton-accion" onclick="document.getElementById('login-modal').style.display='block'">
         <i class="fa-solid fa-right-to-bracket"></i> Login Admin
     </button>
     
-    <!-- Botón de Cerrar Sesión -->
     <button id="btn-logout" class="boton-accion" onclick="cerrarSesion()" style="display: none; background: #e74c3c;">
         <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
     </button>
 </div>
 
-<!-- Sponsors -->
 <div class="seccion-patrocinadores">
     <h2 class="titulo-partners">Nuestros Sponsors</h2>
     <div class="contenedor-logos">
@@ -33,12 +27,10 @@
     </div>
 </div>
 
-<!-- Titulo -->
 <div class="titulo-liga">
     🏁 CAZADORES DE CURVAS 🏁
 </div>
 
-<!-- Menú de navegación global -->
 <nav style="display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
     <a href="/index.html" class="boton-accion"><i class="fa-solid fa-house"></i> INICIO</a>
     <a href="/noticias.html" class="boton-accion"><i class="fa-solid fa-newspaper"></i> NOTICIAS</a>
@@ -55,8 +47,7 @@
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
         
-        // Ahora usamos la función esAdmin() de tu auth.js
-        // Esto es mucho más seguro y centralizado
+        // Verifica si el usuario es admin usando la función centralizada en auth.js
         if (btnLogin && btnLogout) {
             if (typeof esAdmin === 'function' && esAdmin()) {
                 btnLogin.style.display = 'none';
@@ -68,18 +59,6 @@
         }
     }
 
-    // Ejecutar al cargar la página
-    // Como esto está en el header.html, se ejecuta cada vez que el header se inyecta
+    // Ejecutar al cargar el header
     document.addEventListener('DOMContentLoaded', verificarSesion);
-
-    // Función de cierre de sesión unificada
-    function cerrarSesion() {
-        // Llamamos a la función de auth.js
-        if (typeof cerrarSesion === 'function') {
-            cerrarSesion();
-        } else {
-            localStorage.removeItem('rol');
-            location.reload();
-        }
-    }
 </script>
