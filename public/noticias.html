@@ -4,36 +4,30 @@
     <meta charset="UTF-8">
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información | Cazadores de Curvas</title>
+    <title>Noticias | Cazadores de Curvas</title>
     <link rel="stylesheet" href="/estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        #lista-noticias { padding: 20px; max-width: 800px; margin: auto; }
     </style>
 </head>
 <body>
 
-    <!-- Contenedores necesarios para que funcione el script -->
     <div id="header-placeholder"></div>
-    <!-- AQUÍ LLAMAS AL TÍTULO -->
+    
     <div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
+
+    <div id="lista-noticias">
+        <p style="text-align: center; color: #888;">Cargando avisos...</p>
+    </div>
+
     <div id="footer-placeholder"></div>
 
-
-
-
-
-
-
-
-
-
-    
-
     <script>
-        // Cargar el Header y Banner usando la ruta raíz con "/"
+        // 1. Cargar Header y Footer
         fetch('/header.html')
             .then(res => res.text())
             .then(data => {
@@ -50,14 +44,77 @@
             })
             .catch(error => console.error('Error al cargar la cabecera:', error));
 
-        // Cargar el Footer usando la ruta raíz con "/"
         fetch('/footer.html')
             .then(res => res.text())
-            .then(data => {
-                document.getElementById('footer-placeholder').innerHTML = data;
-            })
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
             .catch(error => console.error('Error al cargar el footer:', error));
-    </script>
 
+        // 2. Funciones de Noticias
+        async function cargarNoticias() {
+            const contenedor = document.getElementById('lista-noticias');
+            try {
+                const respuesta = await fetch('/api/noticias');
+                const noticias = await respuesta.json();
+                
+                contenedor.innerHTML = ''; 
+                
+                if (noticias.length === 0) {
+                    contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+                    return;
+                }
+
+                noticias.forEach(noticia => {
+                    const div = document.createElement('div');
+                    div.className = 'noticia-item noticia-destacada-amarilla'; 
+                    
+                    const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                        <div style="margin-top: 10px; display: flex; gap: 10px;">
+                            <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                                    style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                            <button onclick="eliminarNoticia(${noticia.id})" 
+                                    style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                        </div>
+                    ` : '';
+
+                    const fechaObj = new Date(noticia.fecha);
+                    const fechaFormateada = fechaObj.toLocaleDateString();
+                    const horaFormateada = fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                    div.innerHTML = `
+                        <h4 style="margin: 0 0 10px 0; color: #ff4444;">${noticia.titulo}</h4>
+                        <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                        <small style="color: #666;">${fechaFormateada} - ${horaFormateada}</small>
+                        ${botonesAdmin}
+                    `;
+                    contenedor.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Error cargando noticias:", error);
+                contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
+            }
+        }
+
+        async function eliminarNoticia(id) {
+            if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+                const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+                if (res.ok) location.reload();
+            }
+        }
+
+        async function editarNoticia(id, tituloActual, contenidoActual) {
+            const nuevoTitulo = prompt("Edita el título:", tituloActual);
+            const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+            if (nuevoTitulo !== null && nuevoContenido !== null) {
+                const res = await fetch(`/api/noticias/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
+                });
+                if (res.ok) location.reload();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarNoticias);
+    </script>
 </body>
 </html>
