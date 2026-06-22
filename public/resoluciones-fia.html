@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/webimagenes/cazadoresdecurvas.png" type="image/png"> 
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información | Cazadores de Curvas</title>
     <link rel="stylesheet" href="estilos-cabecera.css">
@@ -23,10 +23,12 @@
     <div class="titulo-liga">🚩 RESOLUCIONES FIA 🚩</div>
 
     <main class="caja-contenido">
-        <div id="auth-controls" style="text-align: right; margin: 10px;">
-            <button id="btn-login" onclick="window.location.href='index.html'">Login Admin</button>
-            <button id="btn-logout" onclick="cerrarSesion()" style="display: none;">Cerrar Sesión</button>
-        </div>
+<!-- Cambia las clases de los botones -->
+<div id="auth-controls" style="text-align: right; margin: 10px;">
+    <!-- Asegúrate de usar la clase que usa tu menú en header.html -->
+    <button id="btn-login" class="tu-clase-de-botones" onclick="window.location.href='index.html'">Login Admin</button>
+    <button id="btn-logout" class="tu-clase-de-botones" onclick="cerrarSesion()" style="display: none;">Cerrar Sesión</button>
+</div>
 
         <div id="form-admin" class="form-resolucion" style="display: none;">
             <h3>Nueva Resolución</h3>
