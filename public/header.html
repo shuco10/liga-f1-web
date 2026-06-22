@@ -55,11 +55,10 @@
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
         
-        // Verifica si el usuario es admin en localStorage
-        const esAdmin = localStorage.getItem('esAdmin') === 'true';
-
+        // Ahora usamos la función esAdmin() de tu auth.js
+        // Esto es mucho más seguro y centralizado
         if (btnLogin && btnLogout) {
-            if (esAdmin) {
+            if (typeof esAdmin === 'function' && esAdmin()) {
                 btnLogin.style.display = 'none';
                 btnLogout.style.display = 'inline-block';
             } else {
@@ -69,12 +68,18 @@
         }
     }
 
-    // Ejecutar al cargar el header
+    // Ejecutar al cargar la página
+    // Como esto está en el header.html, se ejecuta cada vez que el header se inyecta
     document.addEventListener('DOMContentLoaded', verificarSesion);
 
-    // Función global de cierre de sesión
+    // Función de cierre de sesión unificada
     function cerrarSesion() {
-        localStorage.removeItem('esAdmin');
-        location.reload();
+        // Llamamos a la función de auth.js
+        if (typeof cerrarSesion === 'function') {
+            cerrarSesion();
+        } else {
+            localStorage.removeItem('rol');
+            location.reload();
+        }
     }
 </script>
