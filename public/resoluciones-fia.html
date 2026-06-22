@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png">
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="auth.js"></script>
     <title>Resoluciones | Cazadores de Curvas</title>
@@ -14,20 +14,19 @@
         .form-resolucion label { display: block; margin-top: 10px; color: #ffcc00; }
         .form-resolucion select, .form-resolucion input, .form-resolucion textarea { width: 100%; padding: 8px; margin-top: 5px; background: #333; color: white; border: 1px solid #444; border-radius: 4px; }
         .form-resolucion button { margin-top: 15px; padding: 10px; background: #ffcc00; border: none; cursor: pointer; font-weight: bold; width: 100%; }
+        .titulo-liga { text-align: center; font-size: 24px; margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div id="header-placeholder"></div>
     <div class="titulo-liga">🚩 RESOLUCIONES FIA 🚩</div>
 
-    <!-- Controles de autenticación -->
     <div id="auth-controls" style="text-align: right; margin: 10px;">
         <button id="btn-login" onclick="window.location.href='index.html'">Login Admin</button>
         <button id="btn-logout" onclick="cerrarSesion()" style="display: none;">Cerrar Sesión</button>
     </div>
 
     <main class="caja-contenido">
-        <!-- Formulario con el ID para poder ocultarlo -->
         <div id="form-admin" class="form-resolucion" style="display: none;">
             <h3>Nueva Resolución</h3>
             <label>Piloto Reclamante:</label>
@@ -48,12 +47,11 @@
             <button onclick="publicarResolucion()">Publicar Resolución</button>
         </div>
 
-        <!-- Tabla de Historial -->
-        <div style="margin-top: 30px;">
+        <div style="margin-top: 30px; max-width: 800px; margin-left: auto; margin-right: auto;">
             <h3>Historial de Resoluciones</h3>
             <table id="tabla-resoluciones" style="width:100%; border-collapse: collapse; color: white;">
                 <thead>
-                    <tr><th>Fecha</th><th>Reclamante</th><th>Reclamado</th><th>Sanción</th></tr>
+                    <tr style="border-bottom: 1px solid #444;"><th>Fecha</th><th>Reclamante</th><th>Reclamado</th><th>Sanción</th></tr>
                 </thead>
                 <tbody id="cuerpo-tabla-resoluciones"></tbody>
             </table>
@@ -63,6 +61,7 @@
     <div id="footer-placeholder"></div>
 
 <script>
+    // Carga de Pilotos
     async function cargarPilotosDesdeBD() {
         try {
             const res = await fetch('/api/lista-de-pilotos');
@@ -76,22 +75,24 @@
         } catch (error) { console.error("Error pilotos:", error); }
     }
 
+    // Carga de Resoluciones
     async function cargarResoluciones() {
         try {
             const res = await fetch('/api/resoluciones');
             const data = await res.json();
             const tbody = document.getElementById('cuerpo-tabla-resoluciones');
             tbody.innerHTML = data.map(r => `
-                <tr>
-                    <td>${new Date(r.fecha).toLocaleDateString()}</td>
-                    <td>${r.reclamante}</td>
-                    <td>${r.reclamado}</td>
-                    <td>${r.sancion}</td>
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px;">${new Date(r.fecha).toLocaleDateString()}</td>
+                    <td style="padding: 10px;">${r.reclamante}</td>
+                    <td style="padding: 10px;">${r.reclamado}</td>
+                    <td style="padding: 10px;">${r.sancion}</td>
                 </tr>
             `).join('');
         } catch (error) { console.error("Error historial:", error); }
     }
 
+    // Publicar
     async function publicarResolucion() {
         if (!esAdmin()) return alert("Acceso denegado");
         const data = {
@@ -109,22 +110,31 @@
         if (res.ok) { alert("Publicado"); location.reload(); }
     }
 
+    // Cerrar Sesión fijo
+    function cerrarSesion() {
+        localStorage.removeItem('rol');
+        location.reload();
+    }
+
+    // Inicialización
     document.addEventListener('DOMContentLoaded', () => {
         cargarPilotosDesdeBD();
         cargarResoluciones();
 
-        // Lógica de botones y formulario
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const formAdmin = document.getElementById('form-admin');
-
         if (esAdmin()) {
-            btnLogin.style.display = 'none';
-            btnLogout.style.display = 'inline-block';
-            formAdmin.style.display = 'block';
+            document.getElementById('btn-login').style.display = 'none';
+            document.getElementById('btn-logout').style.display = 'inline-block';
+            document.getElementById('form-admin').style.display = 'block';
         }
     });
 
-    // Cargas de Header/Footer se mantienen igual...
+    // Cargas de Header/Footer originales
+    fetch('header.html').then(res => res.text()).then(data => {
+        document.getElementById('header-placeholder').innerHTML = data;
+    });
+    fetch('footer.html').then(res => res.text()).then(data => {
+        document.getElementById('footer-placeholder').innerHTML = data;
+    });
 </script>
 </body>
+</html>
