@@ -110,3 +110,12 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     border-color: #ffffff;
     cursor: pointer;
 }
+
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #1a1a1a; color: white; }
+th, td { padding: 12px; border-bottom: 1px solid #333; text-align: center; }
+.piloto-contenedor { display: flex; align-items: center; gap: 10px; }
+.piloto-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+.numero-dorsal { font-weight: bold; color: #ff3333; width: 25px; }
+.plataforma { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; background: #444; }
+
