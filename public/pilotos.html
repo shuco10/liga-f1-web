@@ -122,7 +122,7 @@
         } catch(e) { console.error("Error al cargar datos:", e); }
     }
 
-    function renderizarTabla(id, data, esReserva) {
+function renderizarTabla(id, data, esReserva) {
         const tabla = document.getElementById(id);
         if (!tabla) {
             console.warn(`No se encontró el elemento con ID: ${id}`);
@@ -138,9 +138,13 @@
             const posClass = (!esReserva && index < 3) ? `pos-${index + 1}` : '';
             const posicionDisplay = esReserva ? 'S/C' : (index + 1);
             
+            // Lógica Escudería con Logo
+            const logoUrl = (!esReserva && LOGOS_ESCUDERIAS[p.escuderia_id]) ? LOGOS_ESCUDERIAS[p.escuderia_id] : null;
+            const logoHtml = logoUrl ? `<img src="${logoUrl}" style="width: 25px; height: 25px; object-fit: contain; margin-right: 8px; vertical-align: middle;">` : '';
+            
             const escuderiaCol = esReserva 
                 ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
-                : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo');
+                : `<div style="display: flex; align-items: center;">${logoHtml}${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</div>`;
 
             return `<tr>
                 <td><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
