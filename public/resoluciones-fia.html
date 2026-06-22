@@ -2,12 +2,27 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png">
+    <!-- Icono para la pestaña del navegador -->
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="auth.js"></script>
-    <title>Resoluciones | Cazadores de Curvas</title>
+    <title>Información | Cazadores de Curvas</title>
+    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    <style>
+        /* Estilo base para el fondo de esta página */
+        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div class="titulo-liga">🚩 RESOLUCIONES FIA 🚩</div>
+    <main class="caja-contenido">
+   
     <style>
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
         .form-resolucion { background: #2a2a2a; padding: 20px; border-radius: 8px; max-width: 600px; margin: 20px auto; }
@@ -16,10 +31,7 @@
         .form-resolucion button { margin-top: 15px; padding: 10px; background: #ffcc00; border: none; cursor: pointer; font-weight: bold; width: 100%; }
         .titulo-liga { text-align: center; font-size: 24px; margin-top: 20px; font-weight: bold; }
     </style>
-</head>
-<body>
-    <div id="header-placeholder"></div>
-    <div class="titulo-liga">🚩 RESOLUCIONES FIA 🚩</div>
+
 
     <div id="auth-controls" style="text-align: right; margin: 10px;">
         <button id="btn-login" onclick="window.location.href='index.html'">Login Admin</button>
