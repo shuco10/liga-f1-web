@@ -25,9 +25,12 @@
     <main class="caja-contenido">
 <!-- Cambia las clases de los botones -->
 <div id="auth-controls" style="text-align: right; margin: 10px;">
-    <!-- Asegúrate de usar la clase que usa tu menú en header.html -->
-    <button id="btn-login" class="tu-clase-de-botones" onclick="window.location.href='index.html'">Login Admin</button>
-    <button id="btn-logout" class="tu-clase-de-botones" onclick="cerrarSesion()" style="display: none;">Cerrar Sesión</button>
+    <button id="btn-login" class="boton-accion" onclick="window.location.href='index.html'">
+        <i class="fa-solid fa-right-to-bracket"></i> Login Admin
+    </button>
+    <button id="btn-logout" class="boton-accion" onclick="cerrarSesion()" style="display: none;">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+    </button>
 </div>
 
         <div id="form-admin" class="form-resolucion" style="display: none;">
