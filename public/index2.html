@@ -27,43 +27,39 @@
     <div id="footer-placeholder"></div>
 
 <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Cargar Header, Banner y verificar sesión UNIFICADO
-            fetch('/header.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById('header-placeholder').innerHTML = data;
-                    
-                    // 1. Configurar Banner
-                    window.igBannerConfig = {
-                        lang: 'es',
-                        igr: 'gamer-97d22e',
-                        banners: ['my-banner']
-                    };
-                    const script = document.createElement('script');
-                    script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-                    script.defer = true;
-                    document.body.appendChild(script);
+document.addEventListener('DOMContentLoaded', () => {
+        // Cargar Header y verificar sesión inmediatamente
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                // Esto es lo que hace que el botón cambie según el rol
+                if (typeof verificarSesion === 'function') {
+                    verificarSesion();
+                }
+            });
 
-                    // 2. LLAMADA CLAVE: Verificar si es admin después de inyectar
-                    if (typeof verificarSesion === 'function') {
-                        verificarSesion();
-                    }
-                })
-                .catch(error => console.error('Error al cargar header:', error));
+        // Cargar Footer y Modal (puedes unificarlos también)
+        fetch('/footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data);
             
-            // Cargar Footer
-            fetch('/footer.html')
-                .then(res => res.text())
-                .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+        fetch('/login-modal.html')
+            .then(res => res.text())
+            .then(data => document.body.insertAdjacentHTML('beforeend', data));
+    });
 
-            // Cargar el Modal de Login
-            fetch('/login-modal.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById('modal-container').innerHTML = data;
-                });
-        });
+    // Tu función verificarSesion que definimos antes
+    function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        }
+    }
     </script>
 </body>
 </html>
