@@ -43,25 +43,54 @@
 
     <div id="footer-placeholder"></div>
 
-    <script>
-        // Cargar pilotos (Simulado: en producción esto leerá tu archivo pilotos.json)
-        const pilotos = ["Shuco_vsk", "Piloto_2", "Piloto_3", "Piloto_4"]; 
-        
-        function cargarPilotos() {
-            const selects = [document.getElementById('reclamante'), document.getElementById('reclamado')];
-            pilotos.forEach(p => {
-                selects.forEach(s => s.add(new Option(p, p)));
-            });
-        }
-        cargarPilotos();
+<script>
+    // Función para cargar los pilotos dinámicamente desde tu base de datos
+    async function cargarPilotosDesdeBD() {
+        try {
+            const res = await fetch('/api/lista-de-pilotos');
+            if (!res.ok) throw new Error('Error al obtener lista de pilotos');
+            
+            const listaPilotos = await res.json();
+            const selectReclamante = document.getElementById('reclamante');
+            const selectReclamado = document.getElementById('reclamado');
 
-        // Cargar Header y Footer igual que tenías
-        fetch('header.html').then(res => res.text()).then(data => {
+            listaPilotos.forEach(p => {
+                // Usamos gamertag para que coincida con tu index.html
+                let opt1 = new Option(p.gamertag, p.gamertag);
+                let opt2 = new Option(p.gamertag, p.gamertag);
+                selectReclamante.add(opt1);
+                selectReclamado.add(opt2);
+            });
+        } catch (error) {
+            console.error("Error al cargar pilotos para el formulario:", error);
+        }
+    }
+
+    // Ejecutar la carga de pilotos al iniciar
+    document.addEventListener('DOMContentLoaded', cargarPilotosDesdeBD);
+
+    // Cargar Header y Banner
+    fetch('header.html')
+        .then(res => res.text())
+        .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
-        });
-        fetch('footer.html').then(res => res.text()).then(data => {
-            document.getElementById('footer-placeholder').innerHTML = data;
-        });
-    </script>
+            window.igBannerConfig = {
+                lang: 'es',
+                igr: 'gamer-97d22e',
+                banners: ['my-banner']
+            };
+            const script = document.createElement('script');
+            script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+            script.defer = true;
+            document.body.appendChild(script);
+        })
+        .catch(error => console.error('Error al cargar la cabecera:', error));
+
+    // Cargar el Footer
+    fetch('footer.html')
+        .then(res => res.text())
+        .then(data => document.getElementById('footer-placeholder').innerHTML = data)
+        .catch(error => console.error('Error al cargar el footer:', error));
+</script>
 </body>
 </html>
