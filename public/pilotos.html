@@ -135,20 +135,23 @@
 function renderizarTabla(id, data, esReserva) {
     const tabla = document.getElementById(id);
     if (!tabla) return;
+    
     tabla.innerHTML = data.map((p, index) => {
-        // La ruta debe coincidir exactamente con lo que hay en tu servidor
-        const avatarUrl = (p.foto_url && p.foto_url.trim() !== '') ? `/pilotos/${p.foto_url}` : '/pilotos/R.png';
-        
+        // 1. Construir el nombre del archivo
+        // Ajusta esto si en tu DB el campo se llama diferente
+        const nombreArchivo = p.foto_url || (p.gamertag.toLowerCase().split('_')[0] + '.png');
+        const avatarUrl = `/pilotos/${nombreArchivo}`;
+
         return `<tr>
             <td>${esReserva ? 'S/C' : index + 1}</td>
             <td>
-                <div class="piloto-contenedor">
-                    <img src="${avatarUrl}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'">
-                    <span class="numero-dorsal">${p.numero_piloto || '0'}</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="${avatarUrl}" class="piloto-avatar" 
+                         onerror="this.src='/pilotos/R.png'">
                     <strong>${p.gamertag}</strong>
                 </div>
             </td>
-            <td><span class="plataforma ${p.plataforma}">${p.plataforma}</span></td>
+            <td><span class="plataforma">${p.plataforma}</span></td>
             <td>${NOMBRES_ESCUDERIAS[p.escuderia_id] || ''}</td>
             <td>${p.victorias}</td>
             <td>${p.podios || '0'}</td>
