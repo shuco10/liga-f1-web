@@ -11,14 +11,14 @@
 </div>
 
 <!-- BOTONES LOGIN Y OFICINA -->
-
-<!-- Cambia las clases de los botones -->
 <div id="auth-controls" class="contenedor-botones" style="text-align: right; margin: 10px;">
+    <!-- Botón de Login -->
     <button id="btn-login" class="boton-accion" onclick="document.getElementById('login-modal').style.display='block'">
         <i class="fa-solid fa-right-to-bracket"></i> Login Admin
     </button>
     
-    <button id="btn-logout" class="boton-accion" onclick="cerrarSesion()" style="display: none;">
+    <!-- Botón de Cerrar Sesión -->
+    <button id="btn-logout" class="boton-accion" onclick="cerrarSesion()" style="display: none; background: #e74c3c;">
         <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
     </button>
 </div>
@@ -34,20 +34,47 @@
 </div>
 
 <!-- Titulo -->
-
 <div class="titulo-liga">
-        🏁 CAZADORES DE CURVAS 🏁
+    🏁 CAZADORES DE CURVAS 🏁
 </div>
 
 <!-- Menú de navegación global -->
 <nav style="display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
-    <a href="/index.html" class="boton-accion"><i class="fas fa-home"></i> INICIO</a>
-    <a href="/noticias.html" class="boton-accion"><i class="fas fa-newspaper"></i> NOTICIAS</a>
-    <a href="/pilotos.html" class="boton-accion"><i class="fas fa-user-helmet-safety"></i> PILOTOS</a>
-    <a href="/constructores.html" class="boton-accion"><i class="fas fa-industry"></i> EQUIPOS</a>
-    <a href="/circuitos.html" class="boton-accion"><i class="fas fa-road"></i> CIRCUITOS</a>
-    <a href="/sanciones.html" class="boton-accion"><i class="fas fa-gavel"></i> SANCIONES</a>
-    <a href="/comisarios.html" class="boton-accion"><i class="fas fa-user-shield"></i> COMISARIOS</a>
+    <a href="/index.html" class="boton-accion"><i class="fa-solid fa-house"></i> INICIO</a>
+    <a href="/noticias.html" class="boton-accion"><i class="fa-solid fa-newspaper"></i> NOTICIAS</a>
+    <a href="/pilotos.html" class="boton-accion"><i class="fa-solid fa-helmet-safety"></i> PILOTOS</a>
+    <a href="/constructores.html" class="boton-accion"><i class="fa-solid fa-industry"></i> CONSTRUCTORES</a>
+    <a href="/circuitos.html" class="boton-accion"><i class="fa-solid fa-flag-checkered"></i> CIRCUITOS</a>
+    <a href="/sanciones.html" class="boton-accion"><i class="fa-solid fa-gavel"></i> SANCIONES</a>
+    <a href="/comisarios.html" class="boton-accion"><i class="fa-solid fa-user-tie"></i> COMISARIOS</a>
 </nav>
 
+<script>
+    // Lógica para alternar botones según la sesión
+    function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        // Verifica si el usuario es admin en localStorage
+        const esAdmin = localStorage.getItem('esAdmin') === 'true';
 
+        if (btnLogin && btnLogout) {
+            if (esAdmin) {
+                btnLogin.style.display = 'none';
+                btnLogout.style.display = 'inline-block';
+            } else {
+                btnLogin.style.display = 'inline-block';
+                btnLogout.style.display = 'none';
+            }
+        }
+    }
+
+    // Ejecutar al cargar el header
+    document.addEventListener('DOMContentLoaded', verificarSesion);
+
+    // Función global de cierre de sesión
+    function cerrarSesion() {
+        localStorage.removeItem('esAdmin');
+        location.reload();
+    }
+</script>
