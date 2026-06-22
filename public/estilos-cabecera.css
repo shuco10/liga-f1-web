@@ -119,3 +119,25 @@ th, td { padding: 12px; border-bottom: 1px solid #333; text-align: center; }
 .numero-dorsal { font-weight: bold; color: #ff3333; width: 25px; }
 .plataforma { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; background: #444; }
 
+/* Color para PS5 */
+.plataforma.PS5 {
+    background-color: #0070d1; /* Azul PlayStation */
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Alineación de Escuderías a la izquierda */
+.col-escuderia {
+    text-align: left !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Asegurar que el logo y texto estén alineados */
+.escuderia-contenedor {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espacio entre logo y nombre */
+}
