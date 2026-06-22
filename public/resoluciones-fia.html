@@ -55,7 +55,6 @@
             const selectReclamado = document.getElementById('reclamado');
 
             listaPilotos.forEach(p => {
-                // Usamos gamertag para que coincida con tu index.html
                 let opt1 = new Option(p.gamertag, p.gamertag);
                 let opt2 = new Option(p.gamertag, p.gamertag);
                 selectReclamante.add(opt1);
@@ -66,8 +65,49 @@
         }
     }
 
-    // Ejecutar la carga de pilotos al iniciar
-    document.addEventListener('DOMContentLoaded', cargarPilotosDesdeBD);
+    // Nueva función para publicar la resolución
+    async function publicarResolucion() {
+        if (!esAdmin()) {
+            alert("Acceso denegado: Solo administradores pueden publicar.");
+            return;
+        }
+
+        const data = {
+            reclamante: document.getElementById('reclamante').value,
+            reclamado: document.getElementById('reclamado').value,
+            articulo: document.getElementById('articulo').value,
+            explicacion: document.getElementById('explicacion').value,
+            sancion: document.getElementById('sancion').value
+        };
+
+        try {
+            const res = await fetch('/api/resoluciones', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert("Resolución publicada correctamente.");
+                location.reload(); // Recarga para mostrar la nueva resolución
+            } else {
+                alert("Error al guardar la resolución.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    // Inicialización al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarPilotosDesdeBD();
+
+        // Ocultar formulario si no es admin (asegúrate de que tu form tenga id="form-admin")
+        if (!esAdmin()) {
+            const formAdmin = document.getElementById('form-admin');
+            if (formAdmin) formAdmin.style.display = 'none';
+        }
+    });
 
     // Cargar Header y Banner
     fetch('header.html')
