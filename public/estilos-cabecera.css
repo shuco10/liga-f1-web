@@ -151,14 +151,14 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 /* Fuerza anchos específicos */
-.table-standings th:nth-child(1), .table-standings td:nth-child(1) { width: 50px; }
-.table-standings th:nth-child(2), .table-standings td:nth-child(2) { width: 220px; }
-.table-standings th:nth-child(3), .table-standings td:nth-child(3) { width: 90px; }
-.table-standings th:nth-child(4), .table-standings td:nth-child(4) { width: 160px; }
-.table-standings th:nth-child(5), .table-standings td:nth-child(5) { width: 70px; }
-.table-standings th:nth-child(6), .table-standings td:nth-child(6) { width: 70px; }
-.table-standings th:nth-child(7), .table-standings td:nth-child(7) { width: 90px; }
-
+/* --- Ajuste de anchos para quitar espacio sobrante --- */
+.table-standings th:nth-child(1), .table-standings td:nth-child(1) { width: 50px; }  /* Pos */
+.table-standings th:nth-child(2), .table-standings td:nth-child(2) { width: 180px; } /* Piloto (Más ajustado) */
+.table-standings th:nth-child(3), .table-standings td:nth-child(3) { width: 90px; }  /* Plataforma */
+.table-standings th:nth-child(4), .table-standings td:nth-child(4) { width: 140px; } /* Escudería (Más compacta) */
+.table-standings th:nth-child(5), .table-standings td:nth-child(5) { width: 60px; }  /* Victorias */
+.table-standings th:nth-child(6), .table-standings td:nth-child(6) { width: 60px; }  /* Podios */
+.table-standings th:nth-child(7), .table-standings td:nth-child(7) { width: 70px; }  /* Puntos */
 .table-standings tbody tr:nth-child(even) { background-color: #222222; }
 
 /* --- Títulos --- */
