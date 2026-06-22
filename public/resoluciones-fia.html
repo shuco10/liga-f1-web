@@ -56,10 +56,16 @@
 
         <div style="margin-top: 30px; max-width: 800px; margin-left: auto; margin-right: auto;">
             <h3>Historial de Resoluciones</h3>
-            <table id="tabla-resoluciones" style="width:100%; border-collapse: collapse; color: white;">
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px; color: white;">
                 <thead>
-                    <tr style="border-bottom: 1px solid #444;"><th>Fecha</th><th>Reclamante</th><th>Reclamado</th><th>Sanción</th></tr>
-                </thead>
+                <tr style="border-bottom: 2px solid #ff3333; text-align: left;">
+                <th style="padding: 10px;">Fecha</th>
+                <th style="padding: 10px;">Reclamante</th>
+                <th style="padding: 10px;">Reclamado</th>
+                <th style="padding: 10px;">Sanción</th>
+                <th style="padding: 10px;">Explicación</th> <!-- Nueva columna -->
+            </tr>
+        </thead>
                 <tbody id="cuerpo-tabla-resoluciones"></tbody>
             </table>
         </div>
@@ -87,12 +93,13 @@
             const data = await res.json();
             const tbody = document.getElementById('cuerpo-tabla-resoluciones');
             tbody.innerHTML = data.map(r => `
-                <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 10px;">${new Date(r.fecha).toLocaleDateString()}</td>
-                    <td style="padding: 10px;">${r.reclamante}</td>
-                    <td style="padding: 10px;">${r.reclamado}</td>
-                    <td style="padding: 10px;">${r.sancion}</td>
-                </tr>
+        <tr style="border-bottom: 1px solid #333; text-align: left;">
+            <td style="padding: 12px;">${fechaLimpia}</td>
+            <td style="padding: 12px;">${resolucion.reclamante}</td>
+            <td style="padding: 12px;">${resolucion.reclamado}</td>
+            <td style="padding: 12px; font-weight: bold; color: #ff4444;">${resolucion.sancion}</td>
+            <td style="padding: 12px; font-size: 0.9em; color: #cccccc;">${resolucion.explicacion}</td>
+        </tr>
             `).join('');
         } catch (error) { console.error("Error historial:", error); }
     }
