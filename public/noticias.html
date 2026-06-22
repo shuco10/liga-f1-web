@@ -138,4 +138,35 @@
             if (res.ok) location.reload();
         }
     }
+
+
+
+    // Esta función vivirá ahora permanentemente en noticias.html
+    function verificarSesion() {
+        console.log("DEBUG: Ejecutando verificación...");
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        
+        if (btnLogin && btnLogout) {
+            if (adminStatus === true) {
+                btnLogin.style.display = 'none';
+                btnLogout.style.display = 'inline-block';
+            } else {
+                btnLogin.style.display = 'inline-block';
+                btnLogout.style.display = 'none';
+            }
+        } else {
+            console.warn("DEBUG: Botones no encontrados todavía.");
+        }
+    }
+
+    // Esta función también la movemos aquí para que sea 100% accesible
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
+    }
+
+    
 </script>
