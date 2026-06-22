@@ -32,20 +32,21 @@
     <div id="footer-placeholder"></div>
 
 <script>
-        // 1. Cargar Header y Footer
+    // 1. Cargar Header, Footer y Modal de forma ordenada
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Cargar Header
         fetch('/header.html')
             .then(res => res.text())
             .then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
                 
-                // --- CAMBIO AQUÍ: Llamada de verificación forzada ---
-                // Esto asegura que, una vez que el HTML del header existe, 
-                // se compruebe la sesión y se ajusten los botones.
+                // Verificación de sesión tras cargar el header
                 if (typeof verificarSesion === 'function') {
                     verificarSesion();
                 }
-                // ----------------------------------------------------
 
+                // Configuración Banner
                 window.igBannerConfig = {
                     lang: 'es',
                     igr: 'gamer-97d22e',
@@ -58,76 +59,83 @@
             })
             .catch(error => console.error('Error al cargar la cabecera:', error));
 
+        // Cargar Footer
         fetch('/footer.html')
             .then(res => res.text())
             .then(data => document.getElementById('footer-placeholder').innerHTML = data)
             .catch(error => console.error('Error al cargar el footer:', error));
 
-        // 2. Funciones de Noticias
-        async function cargarNoticias() {
-            const contenedor = document.getElementById('lista-noticias');
-            try {
-                const respuesta = await fetch('/api/noticias');
-                const noticias = await respuesta.json();
+        // Cargar Modal de Login (Para evitar el error de null)
+        fetch('/login-modal.html')
+            .then(res => res.text())
+            .then(data => {
+                document.body.insertAdjacentHTML('beforeend', data);
+            });
+
+        // Cargar las noticias
+        cargarNoticias();
+    });
+
+    // 2. Funciones de Noticias
+    async function cargarNoticias() {
+        const contenedor = document.getElementById('lista-noticias');
+        try {
+            const respuesta = await fetch('/api/noticias');
+            const noticias = await respuesta.json();
+            
+            contenedor.innerHTML = ''; 
+            
+            if (noticias.length === 0) {
+                contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+                return;
+            }
+
+            noticias.forEach(noticia => {
+                const div = document.createElement('div');
+                div.className = 'noticia-item noticia-destacada-amarilla'; 
+                div.style.marginBottom = "20px";
                 
-                contenedor.innerHTML = ''; 
-                
-                if (noticias.length === 0) {
-                    contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
-                    return;
-                }
+                const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                                style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                        <button onclick="eliminarNoticia(${noticia.id})" 
+                                style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                    </div>
+                ` : '';
 
-                noticias.forEach(noticia => {
-                    const div = document.createElement('div');
-                    div.className = 'noticia-item noticia-destacada-amarilla'; 
-                    div.style.marginBottom = "20px";
-                    
-                    const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
-                        <div style="margin-top: 10px; display: flex; gap: 10px;">
-                            <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
-                                    style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
-                            <button onclick="eliminarNoticia(${noticia.id})" 
-                                    style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
-                        </div>
-                    ` : '';
-
-                    const fechaObj = new Date(noticia.fecha);
-                    const fechaFormateada = fechaObj.toLocaleDateString();
-                    const horaFormateada = fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                    div.innerHTML = `
-                        <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
-                        <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
-                        <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaFormateada} - ${horaFormateada}</small>
-                        ${botonesAdmin}
-                    `;
-                    contenedor.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Error cargando noticias:", error);
-                contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
-            }
+                const fechaObj = new Date(noticia.fecha);
+                div.innerHTML = `
+                    <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
+                    <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                    <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                    ${botonesAdmin}
+                `;
+                contenedor.appendChild(div);
+            });
+        } catch (error) {
+            console.error("Error cargando noticias:", error);
+            contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
         }
-        
-        async function eliminarNoticia(id) {
-            if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
-                const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
-                if (res.ok) location.reload();
-            }
+    }
+    
+    async function eliminarNoticia(id) {
+        if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+            const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+            if (res.ok) location.reload();
         }
+    }
 
-        async function editarNoticia(id, tituloActual, contenidoActual) {
-            const nuevoTitulo = prompt("Edita el título:", tituloActual);
-            const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
-            if (nuevoTitulo !== null && nuevoContenido !== null) {
-                const res = await fetch(`/api/noticias/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
-                });
-                if (res.ok) location.reload();
-            }
+    async function editarNoticia(id, tituloActual, contenidoActual) {
+        const nuevoTitulo = prompt("Edita el título:", tituloActual);
+        const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+        if (nuevoTitulo !== null && nuevoContenido !== null) {
+            const res = await fetch(`/api/noticias/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
+            });
+            if (res.ok) location.reload();
         }
-
-        document.addEventListener('DOMContentLoaded', cargarNoticias);
-    </script>
+    }
+</script>
