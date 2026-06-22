@@ -24,8 +24,8 @@
 
     <main class="caja-contenido">
 <!-- Cambia las clases de los botones -->
-<div id="auth-controls" style="text-align: right; margin: 10px;">
-    <button id="btn-login" class="boton-accion" onclick="window.location.href='index.html'">
+<div class="contenedor-botones" style="text-align: right; margin: 10px;">
+    <button id="btn-login" class="boton-accion" onclick="document.getElementById('login-modal').style.display='block'">
         <i class="fa-solid fa-right-to-bracket"></i> Login Admin
     </button>
     <button id="btn-logout" class="boton-accion" onclick="cerrarSesion()" style="display: none;">
@@ -119,6 +119,18 @@
     }
 
 
+    function verificarPass() {
+    const pass = document.getElementById('pass-admin').value;
+    // Sustituye 'TU_CONTRASEÑA' por la que uses en tu auth.js
+    if (pass === "admin123") {
+        localStorage.setItem('rol', 'admin');
+        document.getElementById('login-modal').style.display = 'none';
+        location.reload(); // Recarga la página ya logado
+    } else {
+        alert("Contraseña incorrecta");
+    }
+}
+
             // Cargar el Header y Banner
         fetch('header.html')
             .then(res => res.text())
@@ -155,5 +167,15 @@
         });
     });
 </script>
+
+<div id="login-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000;">
+    <div style="background:#2a2a2a; width:300px; margin:100px auto; padding:20px; border-radius:8px; text-align:center;">
+        <h3>Acceso Comisarios</h3>
+        <input type="password" id="pass-admin" placeholder="Contraseña" style="width:90%; margin-bottom:10px; color:black;">
+        <button class="boton-accion" onclick="verificarPass()">Entrar</button>
+        <button class="boton-accion" onclick="document.getElementById('login-modal').style.display='none'">Cancelar</button>
+    </div>
+</div>
+    
 </body>
 </html>
