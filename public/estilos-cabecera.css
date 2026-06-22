@@ -115,7 +115,7 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 /* --- Estructura de Tabla --- */
 .table-standings {
     width: 100%;
-    table-layout: fixed;
+    table-layout: fixed; /* Mantiene el ancho fijo */
     border-collapse: collapse;
     background-color: #1a1a1a;
     color: white;
@@ -137,10 +137,18 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     padding: 12px 8px;
     text-align: center;
     border-bottom: 1px solid #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /* QUITAMOS EL ELLIPSIS PARA QUE NO SALGAN LOS PUNTOS */
+    white-space: normal; 
 }
+
+/* Fuerza anchos específicos para que sean IGUALES en ambas tablas */
+.table-standings th:nth-child(1), .table-standings td:nth-child(1) { width: 60px; } /* POS */
+.table-standings th:nth-child(2), .table-standings td:nth-child(2) { width: 250px; } /* PILOTO */
+.table-standings th:nth-child(3), .table-standings td:nth-child(3) { width: 100px; } /* PLATAFORMA */
+.table-standings th:nth-child(4), .table-standings td:nth-child(4) { width: 180px; } /* ESCUDERÍA */
+.table-standings th:nth-child(5), .table-standings td:nth-child(5) { width: 80px; }  /* VICTORIAS */
+.table-standings th:nth-child(6), .table-standings td:nth-child(6) { width: 80px; }  /* PODIOS */
+.table-standings th:nth-child(7), .table-standings td:nth-child(7) { width: 100px; } /* PUNTOS */
 
 .table-standings tbody tr:nth-child(even) { background-color: #222222; }
 
@@ -159,11 +167,11 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 .plataforma.PS5 { background-color: #0070d1; color: white; }
 .plataforma.PC { background-color: #ffffff; color: #000000; border: 1px solid #ccc; }
 
-/* --- Podio (Círculos) --- */
+/* --- Podio --- */
 .pos-podio {
     width: 35px; height: 35px; border-radius: 50%; display: inline-flex;
     align-items: center; justify-content: center; font-weight: bold; border: 2px solid transparent;
 }
-.pos-1 { background-color: rgba(255, 215, 0, 0.2); color: #FFD700; border-color: #FFD700; }
-.pos-2 { background-color: rgba(192, 192, 192, 0.2); color: #C0C0C0; border-color: #C0C0C0; }
-.pos-3 { background-color: rgba(205, 127, 50, 0.2); color: #CD7F32; border-color: #CD7F32; }
+.pos-1 { color: #FFD700; border: 1px solid #FFD700; }
+.pos-2 { color: #C0C0C0; border: 1px solid #C0C0C0; }
+.pos-3 { color: #CD7F32; border: 1px solid #CD7F32; }
