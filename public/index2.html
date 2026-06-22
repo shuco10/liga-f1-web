@@ -2,76 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-        <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información | Cazadores de Curvas</title>
-    <!-- Enlace al archivo de estilos compartido -->
-    <link rel="stylesheet" href="estilos-cabecera.css">
+    <!-- Ruta corregida con / al inicio -->
+    <link rel="stylesheet" href="/estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    
     <style>
-        /* Estilo base para el fondo de esta página */
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
     </style>
+    <!-- Carga de lógica global -->
     <script src="/auth.js"></script>
 </head>
 <body>
+    <!-- Contenedores para las piezas dinámicas -->
     <div id="header-placeholder"></div>
+    <div id="modal-container"></div> 
     
     <main class="caja-contenido" id="contenedor-noticias">
     </main>
 
     <div id="footer-placeholder"></div>
 
-
-
-
-
-
-
-
     <script>
-        // Cargar el Header y Banner
-        fetch('header.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                window.igBannerConfig = {
-                    lang: 'es',
-                    igr: 'gamer-97d22e',
-                    banners: ['my-banner']
-                };
-                const script = document.createElement('script');
-                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-                script.defer = true;
-                document.body.appendChild(script);
-            })
-            .catch(error => console.error('Error al cargar la cabecera:', error));
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar Header y Banner
+            fetch('/header.html')
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById('header-placeholder').innerHTML = data;
+                    window.igBannerConfig = {
+                        lang: 'es',
+                        igr: 'gamer-97d22e',
+                        banners: ['my-banner']
+                    };
+                    const script = document.createElement('script');
+                    script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                    script.defer = true;
+                    document.body.appendChild(script);
+                });
 
+            // Cargar Footer
+            fetch('/footer.html')
+                .then(res => res.text())
+                .then(data => document.getElementById('footer-placeholder').innerHTML = data);
 
-
-        // Cargar el Footer
-        fetch('footer.html')
-            .then(res => res.text())
-            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
-            .catch(error => console.error('Error al cargar el footer:', error));
+            // Cargar el Modal de Login de forma segura
+            fetch('/login-modal.html')
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById('modal-container').innerHTML = data;
+                });
+        });
     </script>
-
-
-<div id="login-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000;">
-    <div style="background:#2a2a2a; width:300px; margin:100px auto; padding:20px; border-radius:8px; text-align:center;">
-        <h3 style="color: white; margin-top: 0;">Acceso Comisarios</h3>
-        <input type="password" id="pass-admin" placeholder="Contraseña" style="width:90%; margin-bottom:15px; padding: 8px; color:black;">
-        
-        <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-            <button class="boton-accion" style="padding: 6px 16px !important; font-size: 13px !important; margin: 0 !important;" onclick="verificarPass()">Entrar</button>
-            <button class="boton-accion" style="padding: 6px 16px !important; font-size: 13px !important; margin: 0 !important; background-color: #555;" onclick="document.getElementById('login-modal').style.display='none'">Cancelar</button>
-        </div>
-    </div>
-</div>
-  </body>
+</body>
 </html>
