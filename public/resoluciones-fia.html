@@ -87,22 +87,28 @@
         } catch (error) { console.error("Error pilotos:", error); }
     }
 
-    async function cargarResoluciones() {
-        try {
-            const res = await fetch('/api/resoluciones');
-            const data = await res.json();
-            const tbody = document.getElementById('cuerpo-tabla-resoluciones');
-            tbody.innerHTML = data.map(r => `
-        <tr style="border-bottom: 1px solid #333; text-align: left;">
-            <td style="padding: 12px;">${fechaLimpia}</td>
-            <td style="padding: 12px;">${resolucion.reclamante}</td>
-            <td style="padding: 12px;">${resolucion.reclamado}</td>
-            <td style="padding: 12px; font-weight: bold; color: #ff4444;">${resolucion.sancion}</td>
-            <td style="padding: 12px; font-size: 0.9em; color: #cccccc;">${resolucion.explicacion}</td>
-        </tr>
-            `).join('');
-        } catch (error) { console.error("Error historial:", error); }
-    }
+   async function cargarResoluciones() {
+    try {
+        const res = await fetch('/api/resoluciones');
+        const data = await res.json();
+        const tbody = document.getElementById('cuerpo-tabla-resoluciones');
+        
+        tbody.innerHTML = data.map(r => {
+            // Calculamos la fecha limpia para cada elemento 'r'
+            const fechaLimpia = r.fecha ? r.fecha.split('T')[0] : 'N/A';
+            
+            return `
+                <tr style="border-bottom: 1px solid #333; text-align: left;">
+                    <td style="padding: 12px;">${fechaLimpia}</td>
+                    <td style="padding: 12px;">${r.reclamante}</td>
+                    <td style="padding: 12px;">${r.reclamado}</td>
+                    <td style="padding: 12px; font-weight: bold; color: #ff4444;">${r.sancion}</td>
+                    <td style="padding: 12px; font-size: 0.9em; color: #cccccc;">${r.explicacion}</td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) { console.error("Error historial:", error); }
+}
 
     async function publicarResolucion() {
         if (!esAdmin()) return alert("Acceso denegado");
