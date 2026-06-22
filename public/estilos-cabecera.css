@@ -115,7 +115,7 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 /* --- Estructura de Tabla --- */
 .table-standings {
     width: 100%;
-    table-layout: fixed; /* Mantiene el ancho fijo */
+    table-layout: fixed; /* Esto va SOLO aquí */
     border-collapse: collapse;
     background-color: #1a1a1a;
     color: white;
@@ -137,10 +137,7 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     padding: 12px 8px;
     text-align: center;
     border-bottom: 1px solid #333;
-    /* QUITAMOS EL ELLIPSIS PARA QUE NO SALGAN LOS PUNTOS */
-    white-space: normal; 
-    table-layout: fixed;
-    width: 100%;
+    /* ELIMINA AQUÍ table-layout y width: 100% */
 }
 
 /* Fuerza anchos específicos para que sean IGUALES en ambas tablas */
@@ -177,3 +174,8 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 .pos-1 { color: #FFD700; border: 1px solid #FFD700; }
 .pos-2 { color: #C0C0C0; border: 1px solid #C0C0C0; }
 .pos-3 { color: #CD7F32; border: 1px solid #CD7F32; }
+
+
+.tabla-invisible thead {
+    display: none;
+}
