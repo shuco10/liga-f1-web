@@ -174,10 +174,40 @@ tbody tr:nth-child(even) {
 }
 
 /* Estilos para el podio */
-.pos-1 { color: #FFD700; font-weight: bold; font-size: 1.2em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); } /* Oro */
-.pos-2 { color: #C0C0C0; font-weight: bold; } /* Plata */
-.pos-3 { color: #CD7F32; font-weight: bold; } /* Bronce */
+/* Fondos para el Top 3 */
+.pos-1 { 
+    background-color: rgba(255, 215, 0, 0.2); /* Fondo Oro suave */
+    color: #FFD700; 
+    border: 1px solid #FFD700;
+    border-radius: 50%;
+    width: 30px; 
+    height: 30px; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+}
 
-/* Ajuste para que se vea bien en la celda */
-.pos-col { text-align: center; }
+.pos-2 { 
+    background-color: rgba(192, 192, 192, 0.2); /* Fondo Plata suave */
+    color: #C0C0C0; 
+    border: 1px solid #C0C0C0;
+    border-radius: 50%;
+    width: 30px; 
+    height: 30px; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.pos-3 { 
+    background-color: rgba(205, 127, 50, 0.2); /* Fondo Bronce suave */
+    color: #CD7F32; 
+    border: 1px solid #CD7F32;
+    border-radius: 50%;
+    width: 30px; 
+    height: 30px; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+}
 
