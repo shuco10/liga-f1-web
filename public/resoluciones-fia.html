@@ -113,6 +113,25 @@
         location.reload();
     }
 
+
+            // Cargar el Header y Banner
+        fetch('header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                window.igBannerConfig = {
+                    lang: 'es',
+                    igr: 'gamer-97d22e',
+                    banners: ['my-banner']
+                };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
+
+    
     document.addEventListener('DOMContentLoaded', () => {
         cargarPilotosDesdeBD();
         cargarResoluciones();
