@@ -17,3 +17,12 @@ function cerrarSesion() {
     localStorage.removeItem('rol');
     location.reload();
 }
+// /auth.js (Añade esto al final)
+function seguridadAbrirModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) {
+        modal.style.display = 'block';
+    } else {
+        alert("El sistema de login aún se está cargando, espera un segundo.");
+    }
+}
