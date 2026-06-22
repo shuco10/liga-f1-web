@@ -5,6 +5,7 @@
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noticias | Cazadores de Curvas</title>
+    <script src="/auth.js"></script>
     <link rel="stylesheet" href="/estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,6 +18,7 @@
 <body>
 
     <div id="header-placeholder"></div>
+    <div id="modal-container"></div>
     
     <div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
 
@@ -29,29 +31,32 @@
     <div id="footer-placeholder"></div>
 
     <script>
-        // 1. Cargar Header y Footer
-        fetch('/header.html')
-            .then(res => res.text())
-            .then(data => {
+        // 1. Cargar piezas dinámicas (Header, Footer, Modal)
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/header.html').then(res => res.text()).then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
-                window.igBannerConfig = {
-                    lang: 'es',
-                    igr: 'gamer-97d22e',
-                    banners: ['my-banner']
-                };
+                // Inicializar banner de Instant Gaming
+                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
                 const script = document.createElement('script');
                 script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
                 script.defer = true;
                 document.body.appendChild(script);
-            })
-            .catch(error => console.error('Error al cargar la cabecera:', error));
+            });
 
-        fetch('/footer.html')
-            .then(res => res.text())
-            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
-            .catch(error => console.error('Error al cargar el footer:', error));
+            fetch('/footer.html').then(res => res.text()).then(data => {
+                document.getElementById('footer-placeholder').innerHTML = data;
+            });
 
-        // 2. Funciones de Noticias
+            // Cargar el modal de login
+            fetch('/login-modal.html').then(res => res.text()).then(data => {
+                document.getElementById('modal-container').innerHTML = data;
+            });
+
+            // Cargar noticias
+            cargarNoticias();
+        });
+
+        // 2. Funciones de Noticias (Se mantiene igual, ahora usando esAdmin() de auth.js)
         async function cargarNoticias() {
             const contenedor = document.getElementById('lista-noticias');
             try {
@@ -67,9 +72,9 @@
 
                 noticias.forEach(noticia => {
                     const div = document.createElement('div');
-                    div.className = 'noticia-item noticia-destacada-amarilla'; 
-                    div.style.marginBottom = "20px"; // Espaciado entre noticias
+                    div.style.marginBottom = "20px";
                     
+                    // Aquí llamamos a la función esAdmin() centralizada
                     const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
                         <div style="margin-top: 10px; display: flex; gap: 10px;">
                             <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
@@ -80,34 +85,30 @@
                     ` : '';
 
                     const fechaObj = new Date(noticia.fecha);
-                    const fechaFormateada = fechaObj.toLocaleDateString();
-                    const horaFormateada = fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
                     div.innerHTML = `
                         <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
                         <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
-                        <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaFormateada} - ${horaFormateada}</small>
+                        <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
                         ${botonesAdmin}
                     `;
                     contenedor.appendChild(div);
                 });
             } catch (error) {
-                console.error("Error cargando noticias:", error);
+                console.error("Error:", error);
                 contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
             }
         }
-        
-        // ... (las funciones eliminarNoticia y editarNoticia se quedan igual)
+
         async function eliminarNoticia(id) {
-            if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+            if (confirm("¿Borrar anuncio?")) {
                 const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
                 if (res.ok) location.reload();
             }
         }
 
-        async function editarNoticia(id, tituloActual, contenidoActual) {
-            const nuevoTitulo = prompt("Edita el título:", tituloActual);
-            const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+        async function editarNoticia(id, titulo, contenido) {
+            const nuevoTitulo = prompt("Edita el título:", titulo);
+            const nuevoContenido = prompt("Edita el contenido:", contenido);
             if (nuevoTitulo !== null && nuevoContenido !== null) {
                 const res = await fetch(`/api/noticias/${id}`, {
                     method: 'PUT',
@@ -117,8 +118,6 @@
                 if (res.ok) location.reload();
             }
         }
-
-        document.addEventListener('DOMContentLoaded', cargarNoticias);
     </script>
 </body>
 </html>
