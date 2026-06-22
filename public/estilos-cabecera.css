@@ -112,24 +112,26 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
-/* Corrección de seguridad para imágenes dentro de la tabla */
-.piloto-contenedor img, .escuderia-contenedor img {
-    max-width: 100%;
-    height: auto;
+/* Ajustes de seguridad para la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Esto evita que las columnas se muevan solas */
 }
 
-/* Forzar que los elementos dentro de las celdas no desborden */
-td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Restaurar el tamaño específico del avatar que se te rompió */
+/* Forzar tamaño de avatares */
 .piloto-avatar {
     width: 35px !important;
     height: 35px !important;
     border-radius: 50%;
     object-fit: cover;
-    flex-shrink: 0;
+    display: block;
+}
+
+/* Alineación de columnas */
+td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
 }
