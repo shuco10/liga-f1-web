@@ -112,32 +112,24 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #1a1a1a; color: white; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #1a1a1a; color: white; table-layout: fixed; }
 th, td { padding: 12px; border-bottom: 1px solid #333; text-align: center; }
-.piloto-contenedor { display: flex; align-items: center; gap: 10px; }
+
+/* Piloto */
+.piloto-contenedor { display: flex; align-items: center; gap: 10px; justify-content: flex-start; }
 .piloto-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
 .numero-dorsal { font-weight: bold; color: #ff3333; width: 25px; }
+
+/* Plataformas */
 .plataforma { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; background: #444; }
+.plataforma.PS5 { background-color: #0070d1; color: white; }
 
-/* Color para PS5 */
-.plataforma.PS5 {
-    background-color: #0070d1; /* Azul PlayStation */
-    color: white;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-/* Alineación de Escuderías a la izquierda */
-.col-escuderia {
-    text-align: left !important;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-/* Asegurar que el logo y texto estén alineados */
-.escuderia-contenedor {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Espacio entre logo y nombre */
+/* Escuderías: Corrección clave aquí */
+.col-escuderia { text-align: left !important; }
+.escuderia-contenedor { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    justify-content: flex-start; 
+    white-space: nowrap; 
 }
