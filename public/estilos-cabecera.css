@@ -112,26 +112,58 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
-/* Ajustes de seguridad para la tabla */
+/* --- Estilos Generales de la Tabla --- */
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Esto evita que las columnas se muevan solas */
+    background-color: #1a1a1a;
+    color: white;
+    font-family: sans-serif;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-/* Forzar tamaño de avatares */
+th {
+    background-color: #262626;
+    padding: 15px;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    color: #ff3333; /* Rojo para cabeceras */
+}
+
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+}
+
+/* Alternar colores de filas (Zebra Striping) */
+tbody tr:nth-child(even) {
+    background-color: #222222;
+}
+
+/* --- Estilos de Plataforma --- */
+.plataforma {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.plataforma.PS5 {
+    background-color: #0070d1; /* Azul PlayStation */
+    color: white;
+}
+
+.plataforma.PC {
+    background-color: #ffffff; /* Fondo blanco */
+    color: #000000;           /* Texto negro */
+}
+
+/* --- Ajuste de Avatares --- */
 .piloto-avatar {
-    width: 35px !important;
-    height: 35px !important;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     object-fit: cover;
-    display: block;
-}
-
-/* Alineación de columnas */
-td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: middle;
 }
