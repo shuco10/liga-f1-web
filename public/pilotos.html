@@ -22,7 +22,7 @@
 
     <main class="caja-contenido">
         <div id="mundial-pilotos" class="seccion">
-            <h1>Clasificacion Pilotos - Cazadores de Curvas</h1>
+         
             
 <div class="tabla-wrapper">
     <h2 class="section-title">Campeonato Mundial de Pilotos (Titulares)</h2>
@@ -97,7 +97,7 @@
         cargarTodosLosDatos();
     });
 
-    // --- LÓGICA DE PILOTOS ---
+ // --- LÓGICA DE PILOTOS ---
     async function cargarTodosLosDatos() {
         try {
             const [res, resResultados] = await Promise.all([
@@ -116,45 +116,48 @@
             const titulares = listaPilotosGlobal.filter(p => !p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
             const reservas = listaPilotosGlobal.filter(p => p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
 
-            renderizarTabla('tabla-pilotos', titulares, false);
+            // CORREGIDO: Ahora el ID es 'tabla-titulares' para que coincida con tu HTML
+            renderizarTabla('tabla-titulares', titulares, false);
             renderizarTabla('tabla-reservas', reservas, true);
         } catch(e) { console.error("Error al cargar datos:", e); }
     }
 
-function renderizarTabla(id, data, esReserva) {
-    const tabla = document.getElementById(id);
-    if (!tabla) return;
+    function renderizarTabla(id, data, esReserva) {
+        const tabla = document.getElementById(id);
+        if (!tabla) {
+            console.warn(`No se encontró el elemento con ID: ${id}`);
+            return;
+        }
 
-    tabla.innerHTML = data.map((p, index) => {
-        // Ruta limpia
-        const avatarUrl = (p.foto_url && p.foto_url.trim() !== '') 
-            ? `/pilotos/${p.foto_url.replace('pilotos/', '')}` 
-            : '/pilotos/R.png';
-        
-        // Lógica Podio y Reserva
-        const posClass = (!esReserva && index < 3) ? `pos-${index + 1}` : '';
-        const posicionDisplay = esReserva ? 'S/C' : (index + 1);
-        
-        const escuderiaCol = esReserva 
-            ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
-            : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo');
+        tabla.innerHTML = data.map((p, index) => {
+            // Ruta limpia: eliminamos prefijos de carpeta para evitar duplicados
+            const nombreArchivo = (p.foto_url || 'R.png').replace('pilotos/', '');
+            const avatarUrl = `/pilotos/${nombreArchivo}`;
+            
+            // Lógica Podio (solo para titulares)
+            const posClass = (!esReserva && index < 3) ? `pos-${index + 1}` : '';
+            const posicionDisplay = esReserva ? 'S/C' : (index + 1);
+            
+            const escuderiaCol = esReserva 
+                ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
+                : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo');
 
-        return `<tr>
-            <td><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
-            <td style="text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <img src="${avatarUrl}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'">
-                    <strong>${p.gamertag}</strong>
-                </div>
-            </td>
-            <td><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
-            <td>${escuderiaCol}</td>
-            <td>${p.victorias}</td>
-            <td>${p.podios || '0'}</td>
-            <td><strong>${p.puntos_totales} pts</strong></td>
-        </tr>`;
-    }).join('');
-}
+            return `<tr>
+                <td><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
+                <td style="text-align: left;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="${avatarUrl}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'">
+                        <strong>${p.gamertag}</strong>
+                    </div>
+                </td>
+                <td><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
+                <td>${escuderiaCol}</td>
+                <td>${p.victorias}</td>
+                <td>${p.podios || '0'}</td>
+                <td><strong>${p.puntos_totales} pts</strong></td>
+            </tr>`;
+        }).join('');
+    }
 
     // --- FUNCIONES GLOBALES ---
     function verificarSesion() {
