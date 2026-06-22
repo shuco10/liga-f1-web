@@ -20,8 +20,10 @@
     
     <div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
 
-    <div id="lista-noticias">
-        <p style="text-align: center; color: #888;">Cargando avisos...</p>
+    <div style="background-color: #262626; padding: 25px; border-radius: 10px; max-width: 900px; margin: 20px auto; border: 1px solid #444; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        <div id="lista-noticias">
+            <p style="text-align: center; color: #888;">Cargando avisos...</p>
+        </div>
     </div>
 
     <div id="footer-placeholder"></div>
@@ -66,6 +68,7 @@
                 noticias.forEach(noticia => {
                     const div = document.createElement('div');
                     div.className = 'noticia-item noticia-destacada-amarilla'; 
+                    div.style.marginBottom = "20px"; // Espaciado entre noticias
                     
                     const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
                         <div style="margin-top: 10px; display: flex; gap: 10px;">
@@ -81,9 +84,9 @@
                     const horaFormateada = fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
                     div.innerHTML = `
-                        <h4 style="margin: 0 0 10px 0; color: #ff4444;">${noticia.titulo}</h4>
+                        <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
                         <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
-                        <small style="color: #666;">${fechaFormateada} - ${horaFormateada}</small>
+                        <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaFormateada} - ${horaFormateada}</small>
                         ${botonesAdmin}
                     `;
                     contenedor.appendChild(div);
@@ -93,7 +96,8 @@
                 contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
             }
         }
-
+        
+        // ... (las funciones eliminarNoticia y editarNoticia se quedan igual)
         async function eliminarNoticia(id) {
             if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
                 const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
