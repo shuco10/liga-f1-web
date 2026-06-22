@@ -112,42 +112,24 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
-/* --- Tabla --- */
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin-top: 10px; 
-    background: #1a1a1a; 
-    color: white; 
-    table-layout: fixed; /* Esto es lo que evita el descuadre */
+/* Corrección de seguridad para imágenes dentro de la tabla */
+.piloto-contenedor img, .escuderia-contenedor img {
+    max-width: 100%;
+    height: auto;
 }
 
-/* Anchos fijos por columna */
-th:nth-child(1), td:nth-child(1) { width: 40px; }
-th:nth-child(2), td:nth-child(2) { width: auto; }
-th:nth-child(3), td:nth-child(3) { width: 90px; }
-th:nth-child(4), td:nth-child(4) { width: 180px; }
-th:nth-child(5), td:nth-child(5) { width: 70px; }
-th:nth-child(6), td:nth-child(6) { width: 70px; }
-th:nth-child(7), td:nth-child(7) { width: 80px; }
-
-th, td { padding: 12px 8px; border-bottom: 1px solid #333; text-align: center; }
-
-/* --- Escudería --- */
-.col-escuderia { text-align: left !important; }
-
-.escuderia-contenedor { 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-    overflow: hidden; 
-    text-align: left;
+/* Forzar que los elementos dentro de las celdas no desborden */
+td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.escuderia-logo { 
-    width: 25px; 
-    height: 25px; 
-    object-fit: contain; 
-    display: block; 
-    flex-shrink: 0; 
+/* Restaurar el tamaño específico del avatar que se te rompió */
+.piloto-avatar {
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
 }
