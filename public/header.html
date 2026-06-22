@@ -39,34 +39,4 @@
     <a href="/comisarios.html" class="boton-accion"><i class="fa-solid fa-user-tie"></i> COMISARIOS</a>
 </nav>
 
-<script>
-function verificarSesion() {
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    
-    // Verificamos si la función esAdmin existe y qué devuelve
-    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : "Función esAdmin no encontrada";
-    console.log("DEBUG: Estado de esAdmin():", adminStatus);
-    console.log("DEBUG: btnLogin encontrado:", !!btnLogin);
-    console.log("DEBUG: btnLogout encontrado:", !!btnLogout);
 
-    if (btnLogin && btnLogout) {
-        if (adminStatus === true) {
-            btnLogin.style.display = 'none';
-            btnLogout.style.display = 'inline-block';
-        } else {
-            btnLogin.style.display = 'inline-block';
-            btnLogout.style.display = 'none';
-        }
-    }
-}
-
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) {
-            modal.style.display = 'block';
-        } else {
-            console.warn("El modal de login aún no está cargado.");
-        }
-    }
-</script>
