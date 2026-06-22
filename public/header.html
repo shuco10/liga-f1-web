@@ -9,7 +9,7 @@
 </div>
 
 <div id="auth-controls" class="contenedor-botones" style="text-align: right; margin: 10px;">
-    <button id="btn-login" class="boton-accion" onclick="document.getElementById('login-modal').style.display='block'">
+    <button id="btn-login" class="boton-accion" onclick="seguridadAbrirModal()">
         <i class="fa-solid fa-right-to-bracket"></i> Login Admin
     </button>
     
@@ -27,9 +27,7 @@
     </div>
 </div>
 
-<div class="titulo-liga">
-    🏁 CAZADORES DE CURVAS 🏁
-</div>
+<div class="titulo-liga">🏁 CAZADORES DE CURVAS 🏁</div>
 
 <nav style="display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
     <a href="/index.html" class="boton-accion"><i class="fa-solid fa-house"></i> INICIO</a>
@@ -47,6 +45,7 @@
         const btnLogout = document.getElementById('btn-logout');
         
         if (btnLogin && btnLogout) {
+            // Comprobamos el estado centralizado en auth.js
             if (typeof esAdmin === 'function' && esAdmin()) {
                 btnLogin.style.display = 'none';
                 btnLogout.style.display = 'inline-block';
@@ -56,5 +55,13 @@
             }
         }
     }
-    // Ya no necesitas el document.addEventListener aquí
+
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.style.display = 'block';
+        } else {
+            console.warn("El modal de login aún no está cargado.");
+        }
+    }
 </script>
