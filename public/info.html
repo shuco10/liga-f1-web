@@ -111,6 +111,18 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => document.body.insertAdjacentHTML('beforeend', data));
 });
 
+
+// Esta función permite abrir el modal desde cualquier página
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.style.display = 'block';
+        } else {
+            console.warn("El modal de login aún no está cargado.");
+        }
+    }
+
+    
 // Función centralizada
 function verificarSesion() {
     const btnLogin = document.getElementById('btn-login');
