@@ -139,6 +139,8 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     border-bottom: 1px solid #333;
     /* QUITAMOS EL ELLIPSIS PARA QUE NO SALGAN LOS PUNTOS */
     white-space: normal; 
+    table-layout: fixed;
+    width: 100%;
 }
 
 /* Fuerza anchos específicos para que sean IGUALES en ambas tablas */
