@@ -112,24 +112,38 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #1a1a1a; color: white; table-layout: fixed; }
-th, td { padding: 12px; border-bottom: 1px solid #333; text-align: center; }
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 10px; 
+    background: #1a1a1a; 
+    color: white; 
+    table-layout: fixed; /* Esto es vital */
+}
 
-/* Piloto */
-.piloto-contenedor { display: flex; align-items: center; gap: 10px; justify-content: flex-start; }
-.piloto-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-.numero-dorsal { font-weight: bold; color: #ff3333; width: 25px; }
+/* Definimos anchos fijos para que no se descuadre */
+th:nth-child(1), td:nth-child(1) { width: 40px; }  /* Pos */
+th:nth-child(2), td:nth-child(2) { width: auto; }  /* Piloto (que tome el resto) */
+th:nth-child(3), td:nth-child(3) { width: 90px; }  /* Plataforma */
+th:nth-child(4), td:nth-child(4) { width: 180px; } /* Escudería */
+th:nth-child(5), td:nth-child(5) { width: 70px; }  /* Victorias */
+th:nth-child(6), td:nth-child(6) { width: 70px; }  /* Podios */
+th:nth-child(7), td:nth-child(7) { width: 80px; }  /* Puntos */
 
-/* Plataformas */
-.plataforma { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; background: #444; }
-.plataforma.PS5 { background-color: #0070d1; color: white; }
+th, td { padding: 12px 8px; border-bottom: 1px solid #333; text-align: center; }
 
-/* Escuderías: Corrección clave aquí */
-.col-escuderia { text-align: left !important; }
+/* Asegurar que el logo y texto no se deformen */
 .escuderia-contenedor { 
     display: flex; 
     align-items: center; 
     gap: 8px; 
-    justify-content: flex-start; 
-    white-space: nowrap; 
+    overflow: hidden; /* Corta si es muy largo */
+    text-align: left;
+}
+
+.escuderia-logo { 
+    width: 25px; 
+    height: 25px; 
+    flex-shrink: 0; /* Impide que el logo se encoja */
+    object-fit: contain; 
 }
