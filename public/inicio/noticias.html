@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Icono para la pestaña del navegador -->
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    <!-- Icono para la pestaña del navegador -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información | Cazadores de Curvas</title>
+    <!-- Enlace al archivo de estilos compartido -->
+    <link rel="stylesheet" href="estilos-cabecera.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    <style>
+        /* Estilo base para el fondo de esta página */
+        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+
+
+
+
+
+
+
+
+
+    <script>
+        // Cargar el Header y Banner
+        fetch('header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                window.igBannerConfig = {
+                    lang: 'es',
+                    igr: 'gamer-97d22e',
+                    banners: ['my-banner']
+                };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
+
+
+
+        // Cargar el Footer
+        fetch('footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
+            .catch(error => console.error('Error al cargar el footer:', error));
+    </script>
+
+
+
+  </body>
+</html>
