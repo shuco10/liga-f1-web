@@ -112,102 +112,58 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
-/* --- Estilos Generales de la Tabla --- */
-table {
+/* --- Estructura de Tabla --- */
+.table-standings {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     background-color: #1a1a1a;
     color: white;
     font-family: sans-serif;
     border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 40px;
 }
 
-th {
+.table-standings th {
     background-color: #262626;
     padding: 15px;
     text-transform: uppercase;
-    font-size: 0.9em;
-    color: #ff3333; /* Rojo para cabeceras */
+    font-size: 0.85em;
+    color: #ff3333;
 }
 
-td {
-    padding: 12px;
+.table-standings td {
+    padding: 12px 8px;
     text-align: center;
     border-bottom: 1px solid #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Alternar colores de filas (Zebra Striping) */
-tbody tr:nth-child(even) {
-    background-color: #222222;
-}
+.table-standings tbody tr:nth-child(even) { background-color: #222222; }
 
-/* --- Estilos de Plataforma --- */
-.plataforma {
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 0.75em;
-    font-weight: bold;
-    display: inline-block;
+/* --- Títulos --- */
+.section-title {
+    text-align: center;
+    color: #ff3333;
     text-transform: uppercase;
+    margin: 40px 0 20px 0;
+    font-weight: bold;
 }
 
-/* Azul para PS5 */
-.plataforma.PS5 {
-    background-color: #0070d1;
-    color: white;
-}
+/* --- Elementos --- */
+.piloto-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+.plataforma { padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; }
+.plataforma.PS5 { background-color: #0070d1; color: white; }
+.plataforma.PC { background-color: #ffffff; color: #000000; border: 1px solid #ccc; }
 
-/* Recuadro blanco para PC */
-.plataforma.PC {
-    background-color: #ffffff;
-    color: #000000;
-    border: 1px solid #ccc; /* El recuadro */
+/* --- Podio (Círculos) --- */
+.pos-podio {
+    width: 35px; height: 35px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-weight: bold; border: 2px solid transparent;
 }
-
-/* --- Ajuste de Avatares --- */
-.piloto-avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-/* Estilos para el podio */
-/* Fondos para el Top 3 */
-.pos-1 { 
-    background-color: rgba(255, 215, 0, 0.2); /* Fondo Oro suave */
-    color: #FFD700; 
-    border: 1px solid #FFD700;
-    border-radius: 50%;
-    width: 30px; 
-    height: 30px; 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center;
-}
-
-.pos-2 { 
-    background-color: rgba(192, 192, 192, 0.2); /* Fondo Plata suave */
-    color: #C0C0C0; 
-    border: 1px solid #C0C0C0;
-    border-radius: 50%;
-    width: 30px; 
-    height: 30px; 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center;
-}
-
-.pos-3 { 
-    background-color: rgba(205, 127, 50, 0.2); /* Fondo Bronce suave */
-    color: #CD7F32; 
-    border: 1px solid #CD7F32;
-    border-radius: 50%;
-    width: 30px; 
-    height: 30px; 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center;
-}
-
+.pos-1 { background-color: rgba(255, 215, 0, 0.2); color: #FFD700; border-color: #FFD700; }
+.pos-2 { background-color: rgba(192, 192, 192, 0.2); color: #C0C0C0; border-color: #C0C0C0; }
+.pos-3 { background-color: rgba(205, 127, 50, 0.2); color: #CD7F32; border-color: #CD7F32; }
