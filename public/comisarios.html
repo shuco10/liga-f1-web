@@ -203,48 +203,35 @@ async function guardarResultado() {
     const posicion = document.getElementById('input-posicion').value;
     const escuderiaId = document.getElementById('select-escuderia').value;
 
-    // 1. Validación de campos obligatorios
     if (!pilotoId || !gpId || !posicion) {
-        alert("Por favor, rellena todos los campos (Piloto, Circuito y Posición).");
+        alert("Por favor, rellena todos los campos.");
         return;
     }
 
     try {
-        // 2. Envío al servidor
         const res = await fetch('/api/guardar-resultado', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ 
-                id_piloto: pilotoId, 
-                id_gp: gpId, 
-                posicion: parseInt(posicion), 
-                escuderia_id: escuderiaId 
+            body: JSON.stringify({
+                id_piloto: parseInt(pilotoId),
+                id_gp: parseInt(gpId),
+                posicion: parseInt(posicion),
+                escuderia_id: escuderiaId ? parseInt(escuderiaId) : null
             })
         });
 
-        // 3. Lectura inteligente de la respuesta (Texto plano o JSON)
-        const respuestaTexto = await res.text();
+        // Capturamos el error real del servidor si existe
+        const resultado = await res.text();
 
         if (res.ok) {
-            try {
-                // Si el servidor envía un JSON (ej. con puntos calculados), lo procesamos
-                const data = JSON.parse(respuestaTexto);
-                alert("¡Éxito! Se han sumado " + (data.puntos || "varios") + " puntos.");
-            } catch (e) {
-                // Si es solo texto (el "OK" que recibías antes), mostramos el mensaje
-                alert("Respuesta del servidor: " + respuestaTexto);
-            }
-            
-            // 4. Limpieza y cierre tras el éxito
+            alert("Resultado guardado correctamente.");
             document.getElementById('modal-resultados').style.display = 'none';
-            // Opcional: si quieres refrescar los datos automáticamente
-             await abrirModalResultados(); 
         } else {
-            alert("Error del servidor: " + respuestaTexto);
+            // Esto imprimirá el error real (ej: "columna no encontrada")
+            alert("Error del servidor: " + resultado);
         }
     } catch (err) {
-        console.error("Error crítico en el fetch:", err);
-        alert("Error de conexión con el servidor.");
+        alert("Error de conexión: " + err.message);
     }
 }
     
