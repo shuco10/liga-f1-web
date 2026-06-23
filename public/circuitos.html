@@ -1,1 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Icono para la pestaña del navegador -->
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    <!-- Icono para la pestaña del navegador -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuitos | Cazadores de Curvas</title>
+    <!-- Enlace al archivo de estilos compartido -->
+    <link rel="stylesheet" href="estilos-cabecera.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    <style>
+        /* Estilo base para el fondo de esta página */
+        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+    </style>
+    <script src="/auth.js"></script>
+</head>
+  <body>
+    <div id="header-placeholder"></div>
+<div class="titulo-liga">🏎️ CLASIFICACION DE CONSTRUCTORES 🏎️</div>
 
+
+
+
+      <div id="footer-placeholder"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. Cargar Header (ÚNICO FETCH)
+    fetch('/header.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+            
+            // Configurar Banner de Instant Gaming
+            window.igBannerConfig = {
+                lang: 'es',
+                igr: 'gamer-97d22e',
+                banners: ['my-banner']
+            };
+            const script = document.createElement('script');
+            script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+            script.defer = true;
+            document.body.appendChild(script);
+
+            // Verificación de sesión justo después de inyectar el HTML
+            verificarSesion();
+        })
+        .catch(error => console.error('Error al cargar la cabecera:', error));
+
+    // 2. Cargar Footer
+    fetch('/footer.html')
+        .then(res => res.text())
+        .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+        
+    // 3. Cargar el Modal de Login
+    fetch('/login-modal.html')
+        .then(res => res.text())
+        .then(data => document.body.insertAdjacentHTML('beforeend', data));
+});
+
+
+// Esta función permite abrir el modal desde cualquier página
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) {
+            modal.style.display = 'block';
+        } else {
+            console.warn("El modal de login aún no está cargado.");
+        }
+    }
+
+    
+// Función centralizada
+function verificarSesion() {
+    const btnLogin = document.getElementById('btn-login');
+    const btnLogout = document.getElementById('btn-logout');
+    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+    
+    // Si los botones existen, aplicamos la lógica
+    if (btnLogin && btnLogout) {
+        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+    } else {
+        // Por si acaso, si no se encuentran, reintentamos en 100ms
+        setTimeout(verificarSesion, 100);
+    }
+}
+
+
+        async function enviarContacto() {
+        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+        const nombre = document.getElementById('nombre-contacto').value;
+        const asunto = document.getElementById('asunto-contacto').value;
+        const mensaje = document.getElementById('mensaje-contacto').value;
+
+        // Validacion simple
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
+            return;
+        }
+
+        const payload = {
+            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+            embeds: [{
+                title: "📩 Nuevo mensaje de contacto",
+                color: 3447003,
+                fields: [
+                    { name: "Nombre", value: nombre, inline: true },
+                    { name: "Asunto", value: asunto, inline: true },
+                    { name: "Mensaje", value: mensaje }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("¡Mensaje enviado correctamente!");
+            document.getElementById('modal-contacto').style.display = 'none';
+            document.getElementById('nombre-contacto').value = '';
+            document.getElementById('asunto-contacto').value = '';
+            document.getElementById('mensaje-contacto').value = '';
+        } else {
+            alert("Error al enviar el mensaje.");
+        }
+    }
+
+    
+</script>
