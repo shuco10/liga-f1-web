@@ -28,6 +28,26 @@
 
       <div id="footer-placeholder"></div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -64,6 +84,80 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => document.body.insertAdjacentHTML('beforeend', data));
 });
 
+
+
+
+    async function cargarCircuitos() {
+    try {
+        const res = await fetch('/api/circuitos');
+        const circuitosRaw = await res.json();
+        const resResultados = await fetch('/api/todos-los-resultados');
+        const resultados = await resResultados.json();
+        const contenedor = document.getElementById('lista-circuitos');
+        
+        const listaMaestra = [
+            { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
+            { nombre: "Suzuka", archivo: "suzuka" }, { nombre: "Sakhir", archivo: "sakir" },
+            { nombre: "Yeda", archivo: "yeda" }, { nombre: "Miami", archivo: "miami" },
+            { nombre: "Montreal", archivo: "monreal" }, { nombre: "Mónaco", archivo: "montecarlo" },
+            { nombre: "Barcelona", archivo: "barcelona" }, { nombre: "Spielberg", archivo: "spilberg" },
+            { nombre: "Silverstone", archivo: "silverstone" }, { nombre: "Spa", archivo: "spa" },
+            { nombre: "Budapest", archivo: "budapest" }, { nombre: "Zandvoort", archivo: "zandvoort" },
+            { nombre: "Monza", archivo: "monza" }, { nombre: "Madrid", archivo: "madrid" },
+            { nombre: "Bakú", archivo: "baku" }, { nombre: "Singapur", archivo: "singapur" },
+            { nombre: "Austin", archivo: "austin" }, { nombre: "Ciudad de México", archivo: "mejico" },
+            { nombre: "São Paulo", archivo: "saopaulo" }, { nombre: "Las Vegas", archivo: "lasvegas" },
+            { nombre: "Losail", archivo: "losail" }, { nombre: "Abu Dabi", archivo: "abudabi" }
+        ];
+
+        // Función para renderizar botones de admin
+        const renderAcciones = (id) => `
+            <div class="admin-only" style="display:inline-block; margin-left: 5px;">
+                <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
+                <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
+            </div>`;
+
+        contenedor.innerHTML = listaMaestra.map(item => {
+            const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
+            const resultadosCircuito = c ? resultados.filter(r => {
+                const circuitoDB = circuitosRaw.find(x => x.id === r.circuito_id);
+                return circuitoDB && circuitoDB.nombre === item.nombre;
+            }).sort((a, b) => a.posicion - b.posicion) : [];
+
+            const podio = resultadosCircuito.filter(r => r.posicion <= 3);
+            const resto = resultadosCircuito.filter(r => r.posicion > 3);
+            
+            const htmlPodio = podio.map(p => `
+                <div class="podio-item pos-${p.posicion}">
+                    <strong>${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
+                    <span style="font-size: 11px;">${p.piloto_nombre}</span>
+                </div>`).join('');
+                
+            const htmlResto = resto.map(p => `
+                <li class="item-resto">
+                    <span>${p.posicion}º ${p.piloto_nombre}</span>
+                    ${renderAcciones(p.id)}
+                </li>`).join('');
+            
+            return `
+            <div class="circuito-card">
+                <h3 class="circuito-titulo">${item.nombre}</h3>
+                <div class="circuito-imagen-container">
+                    <img src="/circuitos/${item.archivo}.png" alt="${item.nombre}" onerror="this.style.display='none'">
+                </div>
+                ${podio.length > 0 ? `<div class="podio-container">${htmlPodio}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
+                <ul class="resultados-resto">${htmlResto}</ul>
+            </div>`;
+        }).join('');
+    } catch (e) {
+        console.error("Error al cargar los circuitos:", e);
+    }
+}
+
+
+
+
+    
 
 // Esta función permite abrir el modal desde cualquier página
     function seguridadAbrirModal() {
