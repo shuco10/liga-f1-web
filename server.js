@@ -375,7 +375,15 @@ app.get('/api/resoluciones', async (req, res) => {
 });
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
-
+// Añade esta ruta a server.js para que el navegador pueda pedir las escuderías
+app.get('/api/escuderias', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM escuderias');
+        res.json(rows);
+    } catch (err) { 
+        res.status(500).send("Error al obtener escuderías"); 
+    }
+});
 
 
 
