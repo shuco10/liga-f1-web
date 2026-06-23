@@ -537,3 +537,30 @@ table tr td:nth-child(2) {
 .btn-sancion { background-color: #d4a000; color: black; }
 .btn-eliminar { background-color: #7a0000; }
 .btn-actualizar { background-color: #229971; }
+
+
+
+/* Estilos para que los inputs y selects se vean integrados */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px 0;
+    background-color: #262626; /* Gris oscuro para el interior */
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    box-sizing: border-box; /* Importante para que no se salgan del cajón */
+}
+
+/* Para que los labels se vean bien */
+.form-group label {
+    display: block;
+    color: #bbb;
+    font-size: 0.9em;
+    margin-bottom: -5px;
+    text-transform: uppercase;
+}
+
+
+
