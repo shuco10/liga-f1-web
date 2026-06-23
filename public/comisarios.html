@@ -33,6 +33,35 @@
 <div id="panel-comisarios" style="display: none;">
     </div>
 
+      
+<!-- Modal para meter resultados de las carreras -->
+
+<div id="modal-resultados" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000;">
+    <div style="background:#222; color:white; width: 400px; margin: 100px auto; padding: 20px; border-radius: 10px;">
+        <h3 style="text-align:center;">🏁 CARGAR RESULTADOS 🏁</h3>
+        
+        <label>Circuito:</label>
+        <select id="select-gp" style="width:100%; margin-bottom:10px; padding:5px;"></select>
+        
+        <label>Piloto:</label>
+        <select id="select-piloto" onchange="checkReserva()" style="width:100%; margin-bottom:10px; padding:5px;"></select>
+        
+        <div id="div-escuderia" style="display:none;">
+            <label>Escudería que puntúa:</label>
+            <select id="select-escuderia" style="width:100%; margin-bottom:10px; padding:5px;"></select>
+        </div>
+
+        <label>Posición:</label>
+        <input type="number" id="input-posicion" style="width:100%; margin-bottom:20px; padding:5px;">
+
+        <button onclick="guardarResultado()" style="width:100%; padding:10px; background:#ff4444; border:none; color:white; cursor:pointer;">GUARDAR RESULTADO</button>
+        <button onclick="document.getElementById('modal-resultados').style.display='none'" style="width:100%; margin-top:5px; padding:5px; background:transparent; border:none; color:#888; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
+
+
+
+      
       <div id="footer-placeholder"></div>
 
 <script>
@@ -116,6 +145,28 @@ function verificarSesion() {
 }
 
 
+
+async function guardarResultado() {
+    const pilotoId = document.getElementById('select-piloto').value;
+    const posicion = document.getElementById('input-posicion').value;
+    // Si el piloto es reserva, habrás puesto un select para la escudería
+    const escuderiaId = document.getElementById('select-escuderia').value; 
+
+    const res = await fetch('/api/resultados', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+            id_piloto: pilotoId, 
+            id_gp: 1, // Esto vendría del select de circuitos
+            posicion: parseInt(posicion), 
+            escuderia_id: escuderiaId 
+        })
+    });
+
+    if (res.ok) alert("¡Resultado guardado y puntos sumados!");
+}
+
+    
         async function enviarContacto() {
         const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
         const nombre = document.getElementById('nombre-contacto').value;
