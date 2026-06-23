@@ -191,33 +191,33 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
-/* Reducir tamaño de fuente y padding para que sea más compacta */
+/* Forzar la tabla a ser compacta */
+#tabla-sanciones {
+    width: 100%;
+    border-collapse: collapse;
+}
+
 .fila-piloto td {
-    padding: 8px 12px !important;
-    font-size: 0.9em;
+    padding: 2px 10px !important; /* Mínimo espacio posible */
+    line-height: 1;
+    vertical-align: middle;
 }
 
-/* Alinear columna de piloto a la izquierda */
-.col-piloto {
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Ajuste del avatar y logos para que no ocupen tanto espacio */
+/* Reducir los elementos dentro de la celda */
 .avatar-piloto, .logo-escuderia {
-    width: 30px; 
-    height: 30px;
-    object-fit: cover;
-    border-radius: 50%;
+    width: 24px !important; 
+    height: 24px !important;
+    margin-right: 8px;
 }
 
-/* Contenedor de la barra más pequeño */
-.contenedor-barra {
-    width: 100px;
-    height: 8px;
-    background: #333;
+/* Asegurar que la fila no tenga altura mínima forzada */
+.fila-piloto {
+    height: 35px !important;
+}
+
+/* Ajuste de fuente */
+.fila-piloto td {
+    font-size: 14px !important;
 }
 
 
