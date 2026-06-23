@@ -214,6 +214,39 @@ async function guardarResultado() {
 
 
 
+
+async function guardarResultado() {
+    const pilotoId = document.getElementById('select-piloto').value;
+    const gpId = document.getElementById('select-gp').value;
+    const posicion = document.getElementById('input-posicion').value;
+    const escuderiaId = document.getElementById('select-escuderia').value;
+
+    // Validación básica
+    if (!pilotoId || !gpId || !posicion) {
+        alert("Por favor, rellena todos los campos (Piloto, Circuito y Posición).");
+        return;
+    }
+
+    const res = await fetch('/api/guardar-resultado', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+            id_piloto: pilotoId, 
+            id_gp: gpId, 
+            posicion: parseInt(posicion), 
+            escuderia_id: escuderiaId 
+        })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+        alert("¡Éxito! Se han sumado " + data.puntos + " puntos.");
+    } else {
+        alert("Error: " + data.error);
+    }
+}
+
+    
     async function abrirModalResultados() {
     // 1. Mostrar la modal
     document.getElementById('modal-resultados').style.display = 'block';
