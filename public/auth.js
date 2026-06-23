@@ -84,17 +84,15 @@ function eliminarResultado(id) {
 }
 
 function prepararEdicion(id, reclamante, reclamado, articulo, explicacion, sancion) {
-    // 1. Mostrar el formulario
     document.getElementById('form-admin').style.display = 'block';
+    document.getElementById('titulo-form').innerText = "Editar Resolución"; // Cambia el título
     
-    // 2. Rellenar los campos
+    document.getElementById('edit-id').value = id;
     document.getElementById('reclamante').value = reclamante;
     document.getElementById('reclamado').value = reclamado;
     document.getElementById('articulo').value = articulo;
     document.getElementById('explicacion').value = explicacion;
     document.getElementById('sancion').value = sancion;
-
-    console.log("Editando resolución ID:", id);
 }
 
 function eliminarResolucion(id) {
@@ -113,4 +111,50 @@ function eliminarResolucion(id) {
         }
     })
     .catch(err => console.error("Error:", err));
+}
+async function guardarResolucion() {
+    // Obtenemos el ID del campo oculto (estará vacío si es nueva, o tendrá número si editamos)
+    const id = document.getElementById('edit-id').value;
+    
+    const datos = {
+        reclamante: document.getElementById('reclamante').value,
+        reclamado: document.getElementById('reclamado').value,
+        articulo: document.getElementById('articulo').value,
+        explicacion: document.getElementById('explicacion').value,
+        sancion: document.getElementById('sancion').value
+    };
+
+    // Si hay ID, usamos PUT (editar). Si no, usamos POST (crear).
+    const metodo = id ? 'PUT' : 'POST';
+    const url = id ? `/api/resoluciones/${id}` : '/api/resoluciones';
+
+    try {
+        const res = await fetch(url, {
+            method: metodo,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+
+        if (res.ok) {
+            alert(id ? "Resolución actualizada correctamente" : "Resolución publicada");
+            
+            // Limpiamos y cerramos
+            document.getElementById('form-admin').style.display = 'none';
+            document.getElementById('edit-id').value = ''; 
+            document.getElementById('titulo-form').innerText = "Nueva Resolución";
+            
+            // Limpiamos los campos del formulario
+            document.getElementById('reclamante').value = '';
+            document.getElementById('reclamado').value = '';
+            document.getElementById('articulo').value = '';
+            document.getElementById('explicacion').value = '';
+            document.getElementById('sancion').value = '';
+
+            cargarResoluciones(); // Refrescamos las tarjetas
+        } else {
+            alert("Error al guardar la resolución.");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+    }
 }
