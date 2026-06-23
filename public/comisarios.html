@@ -198,40 +198,26 @@ function verificarSesion() {
 
 
 async function guardarResultado() {
-    const pilotoId = document.getElementById('select-piloto').value;
-    const gpId = document.getElementById('select-gp').value;
-    const posicion = document.getElementById('input-posicion').value;
-    const escuderiaId = document.getElementById('select-escuderia').value;
+    const data = {
+        id_piloto: parseInt(document.getElementById('select-piloto').value),
+        id_gp: parseInt(document.getElementById('select-gp').value),
+        posicion: parseInt(document.getElementById('input-posicion').value),
+        // Si el valor está vacío, enviamos null explícitamente
+        escuderia_id: document.getElementById('select-escuderia').value ? parseInt(document.getElementById('select-escuderia').value) : null
+    };
 
-    if (!pilotoId || !gpId || !posicion) {
-        alert("Por favor, rellena todos los campos.");
-        return;
-    }
+    const res = await fetch('/api/guardar-resultado', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
 
-    try {
-        const res = await fetch('/api/guardar-resultado', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                id_piloto: parseInt(pilotoId),
-                id_gp: parseInt(gpId),
-                posicion: parseInt(posicion),
-                escuderia_id: escuderiaId ? parseInt(escuderiaId) : null
-            })
-        });
-
-        // Capturamos el error real del servidor si existe
-        const resultado = await res.text();
-
-        if (res.ok) {
-            alert("Resultado guardado correctamente.");
-            document.getElementById('modal-resultados').style.display = 'none';
-        } else {
-            // Esto imprimirá el error real (ej: "columna no encontrada")
-            alert("Error del servidor: " + resultado);
-        }
-    } catch (err) {
-        alert("Error de conexión: " + err.message);
+    const respuesta = await res.text();
+    if (res.ok) {
+        alert("Guardado con éxito");
+    } else {
+        // AQUÍ VEREMOS EL ERROR REAL EN LA PANTALLA
+        alert("Error del servidor: " + respuesta);
     }
 }
     
