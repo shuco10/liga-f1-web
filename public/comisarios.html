@@ -22,7 +22,13 @@
   <body>
     <div id="header-placeholder"></div>
 <div class="titulo-liga">👔 EQUIPO DE COMISARIOS 👔</div>
-
+      <!-- boton para abri modales -->
+<div id="panel-comisarios" style="display: none; text-align: center; padding: 20px;">
+    <button onclick="document.getElementById('modal-resultados').style.display = 'block'" 
+            style="padding: 15px 30px; background: #ff4444; color: white; border: none; cursor: pointer; font-size: 1.1em; border-radius: 5px;">
+        <i class="fa-solid fa-plus"></i> Cargar Resultado
+    </button>
+</div>
 
 <div id="login-aviso" style="display: none; text-align: center; padding: 50px; background: #222; margin: 20px auto; max-width: 600px; border-radius: 10px; border: 1px solid #444;">
     <h2 style="color: #ff4444;">⚠️ Acceso Restringido</h2>
@@ -115,17 +121,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Función centralizada modificada
  // --- FUNCIONES GLOBALES ---
-    function verificarSesion() {
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-        if (btnLogin && btnLogout) {
-            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-        } else { setTimeout(verificarSesion, 100); }
+function verificarSesion() {
+    const btnLogin = document.getElementById('btn-login');
+    const btnLogout = document.getElementById('btn-logout');
+    const aviso = document.getElementById('login-aviso');
+    const panel = document.getElementById('panel-comisarios');
+    
+    // Comprobamos el estado del admin
+    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+    
+    // Si los botones existen (el DOM ya cargó)
+    if (btnLogin && btnLogout) {
+        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        
+        // Si el aviso y el panel existen, controlamos su visibilidad
+        if (aviso && panel) {
+            aviso.style.display = adminStatus ? 'none' : 'block';
+            panel.style.display = adminStatus ? 'block' : 'none';
+        }
+    } else { 
+        // Si no existen todavía, reintentamos
+        setTimeout(verificarSesion, 100); 
     }
-
-    function seguridadAbrirModal() { const modal = document.getElementById('login-modal'); if (modal) modal.style.display = 'block'; }
+}
 
 
 
