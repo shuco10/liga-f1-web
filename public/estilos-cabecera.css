@@ -191,6 +191,39 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 }
 
 
+
+
+
+.contenedor-caja {
+    background-color: #1a1a1a; /* El color oscuro de fondo */
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #333; /* El borde fino que se ve en la captura */
+    margin: 20px auto;
+    max-width: 900px; /* Ajusta según el ancho que quieras */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.titulo-seccion {
+    color: #ff3e3e; /* El rojo característico de tus títulos */
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Para que la tabla dentro de la caja no se vea gigante */
+#tabla-sanciones {
+    width: 100%;
+    color: white;
+    border-collapse: collapse;
+}
+
+#tabla-sanciones th {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 2px solid #333;
+}
+
 /* Forzar la tabla a ser compacta */
 #tabla-sanciones {
     width: 100%;
