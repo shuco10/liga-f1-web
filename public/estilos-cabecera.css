@@ -189,3 +189,42 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 .tabla-invisible thead {
     display: none;
 }
+
+
+/* Reducir tamaño de fuente y padding para que sea más compacta */
+.fila-piloto td {
+    padding: 8px 12px !important;
+    font-size: 0.9em;
+}
+
+/* Alinear columna de piloto a la izquierda */
+.col-piloto {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Ajuste del avatar y logos para que no ocupen tanto espacio */
+.avatar-piloto, .logo-escuderia {
+    width: 30px; 
+    height: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Contenedor de la barra más pequeño */
+.contenedor-barra {
+    width: 100px;
+    height: 8px;
+    background: #333;
+}
+
+
+
+
+
+
+
+
+
