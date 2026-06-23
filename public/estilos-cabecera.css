@@ -311,16 +311,18 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 
 .numero-piloto {
-    background-color: #2c3e50; /* Un azul oscuro muy F1 */
-    color: #ffffff;
-    padding: 2px 8px;
+    background-color: #2c3e50;
+    color: #ff3333;
+    /* Reducimos el padding y el font-size para que sea más compacto */
+    padding: 2px 6px; 
     border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace; /* Fuente tipo marcador */
+    font-family: 'Courier New', Courier, monospace;
     font-weight: 800;
-    font-size: 1.1em;
-    border-left: 4px solid #e74c3c; /* Un toque de color lateral */
-    min-width: 30px;
+    font-size: 0.9em; /* Bajamos de 1.1em a 0.9em */
+    border-left: 3px solid #e74c3c; /* Un borde un poco más fino */
+    min-width: 28px; /* Un poco más estrecho */
     text-align: center;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
 }
 
 
