@@ -82,30 +82,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderizarConstructores(pilotos, escuderias) {
     const body = document.getElementById('tabla-body-constructores');
+    if (!body) {
+        console.error("No se encontró el elemento con ID 'tabla-body-constructores'");
+        return;
+    }
     body.innerHTML = "";
 
-    // Mapeo de colores a clases CSS
+    // Mapeo de colores para las bandas
     const mapaColores = {
-        "Audi": "banda-audi",
-        "Cadillac": "banda-cadillac",
-        "Red Bull Racing": "banda-redbull",
-        "Mercedes-AMG": "banda-mercedes",
-        "Ferrari": "banda-ferrari",
-        "Aston Martin": "banda-aston",
-        "Williams": "banda-williams",
-        "Alpine": "banda-alpine",
-        "Haas": "banda-haas",
-        "Visa Cash App RB": "banda-visa",
-        "McLaren": "banda-mclaren"
+        "Audi": "banda-audi", "Cadillac": "banda-cadillac", "Red Bull Racing": "banda-redbull",
+        "Mercedes-AMG": "banda-mercedes", "Ferrari": "banda-ferrari", "Aston Martin": "banda-aston",
+        "Williams": "banda-williams", "Alpine": "banda-alpine", "Haas": "banda-haas",
+        "Visa Cash App RB": "banda-visa", "McLaren": "banda-mclaren"
     };
 
-    // 1. Procesar datos
+    // 1. Procesar y calcular
     const datosConstructores = escuderias.map(esc => {
-        const pilotosEscuderia = pilotos.filter(p => p.escuderia_id === esc.id);
+        // Filtramos pilotos por escudería asegurando comparación de tipos
+        const pilotosEscuderia = pilotos.filter(p => String(p.escuderia_id) === String(esc.id));
         
         return {
             nombre: esc.nombre,
-            logo: LOGOS_ESCUDERIAS[esc.id] || '/logos/default.png',
+            logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
             pilotos: pilotosEscuderia,
             victorias: pilotosEscuderia.reduce((sum, p) => sum + (parseInt(p.victorias) || 0), 0),
             podios: pilotosEscuderia.reduce((sum, p) => sum + (parseInt(p.podios) || 0), 0),
@@ -113,15 +111,17 @@ function renderizarConstructores(pilotos, escuderias) {
         };
     }).sort((a, b) => b.puntos - a.puntos);
 
-    // 2. Renderizar
+    // 2. Renderizar filas
     datosConstructores.forEach((c, index) => {
         const claseBanda = mapaColores[c.nombre] || "banda-default";
         
+        // Generar HTML de los avatares con seguridad
         const avatars = c.pilotos.map(p => {
             const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'default.png';
             return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'">`;
         }).join('');
 
+        // Solo añadimos la fila si hay datos o si prefieres mostrar todas las escuderías
         body.innerHTML += `
             <tr>
                 <td>${index + 1}</td>
@@ -129,7 +129,7 @@ function renderizarConstructores(pilotos, escuderias) {
                     <span class="color-banda ${claseBanda}"></span>
                     <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
                 </td>
-                <td>${avatars}</td>
+                <td>${avatars || '-'}</td>
                 <td>${c.victorias}</td>
                 <td>${c.podios}</td>
                 <td style="font-weight:bold">${c.puntos} pts</td>
@@ -137,7 +137,6 @@ function renderizarConstructores(pilotos, escuderias) {
         `;
     });
 }
-
 
 
 
