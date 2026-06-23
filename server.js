@@ -108,7 +108,7 @@ app.put('/api/noticias/:id', async (req, res) => {
                 (3, 'Mercedes-AMG', '#27F4D2'), (4, 'McLaren', '#FF8000'),
                 (5, 'Aston Martin', '#229971'), (6, 'Alpine', '#FF69B4'),
                 (7, 'Williams', '#00A0DE'), (8, 'Visa Cash App RB', '#0078FF'),
-                (9, 'Kick Sauber', '#52E252'), (10, 'Haas', '#B6BABD'),
+                (9, 'Audi', '#52E252'), (10, 'Haas', '#B6BABD'),
                 (11, 'Cadillac', '#FFFFFF')
                 ON CONFLICT DO NOTHING;
             `);
