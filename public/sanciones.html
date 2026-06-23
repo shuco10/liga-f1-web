@@ -119,7 +119,7 @@ function renderizarSanciones(pilotos) {
         const nombreEquipo = esReserva ? '<span class="badge-reserva">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
         const logoEquipo = esReserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id]}" class="logo-escuderia">`;
         
-        const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'default.png';
+        const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
         const rutaAvatar = `/pilotos/${nombreArchivo}`;
 
         // 4. RENDERIZADO
