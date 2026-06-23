@@ -20,201 +20,155 @@
     <script src="/auth.js"></script>
 </head>
   <body>
-    <div id="header-placeholder"></div>
-<div class="titulo-liga">🛣️ CALENDARIO DE CIRCUITOS 🛣️</div>
-
-
-
-
-      <div id="footer-placeholder"></div>
-
- 
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
+   <div id="header-placeholder"></div>
     
-    // 1. Cargar Header (ÚNICO FETCH)
-    fetch('/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-            
-            // Configurar Banner de Instant Gaming
-            window.igBannerConfig = {
-                lang: 'es',
-                igr: 'gamer-97d22e',
-                banners: ['my-banner']
-            };
-            const script = document.createElement('script');
-            script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-            script.defer = true;
-            document.body.appendChild(script);
+    <div class="titulo-liga">🛣️ CALENDARIO DE CIRCUITOS 🛣️</div>
 
-            // Verificación de sesión justo después de inyectar el HTML
-            verificarSesion();
-        })
-        .catch(error => console.error('Error al cargar la cabecera:', error));
+    <main id="lista-circuitos"></main>
 
-    // 2. Cargar Footer
-    fetch('/footer.html')
-        .then(res => res.text())
-        .then(data => document.getElementById('footer-placeholder').innerHTML = data);
-        
-    // 3. Cargar el Modal de Login
-    fetch('/login-modal.html')
-        .then(res => res.text())
-        .then(data => document.body.insertAdjacentHTML('beforeend', data));
-    // 4. cargo circuitos
-    if (document.getElementById('lista-circuitos')) {
-        cargarCircuitos();
-    }
-});
+    <div id="footer-placeholder"></div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Cargar Header (con Banner Instant Gaming)
+            fetch('/header.html')
+                .then(res => res.text())
+                .then(data => {
+                    document.getElementById('header-placeholder').innerHTML = data;
+                    window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+                    const script = document.createElement('script');
+                    script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                    script.defer = true;
+                    document.body.appendChild(script);
+                    verificarSesion();
+                })
+                .catch(error => console.error('Error al cargar la cabecera:', error));
 
-
-
-    async function cargarCircuitos() {
-    try {
-        const res = await fetch('/api/circuitos');
-        const circuitosRaw = await res.json();
-        const resResultados = await fetch('/api/todos-los-resultados');
-        const resultados = await resResultados.json();
-        const contenedor = document.getElementById('lista-circuitos');
-        
-        const listaMaestra = [
-            { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
-            { nombre: "Suzuka", archivo: "suzuka" }, { nombre: "Sakhir", archivo: "sakir" },
-            { nombre: "Yeda", archivo: "yeda" }, { nombre: "Miami", archivo: "miami" },
-            { nombre: "Montreal", archivo: "monreal" }, { nombre: "Mónaco", archivo: "montecarlo" },
-            { nombre: "Barcelona", archivo: "barcelona" }, { nombre: "Spielberg", archivo: "spilberg" },
-            { nombre: "Silverstone", archivo: "silverstone" }, { nombre: "Spa", archivo: "spa" },
-            { nombre: "Budapest", archivo: "budapest" }, { nombre: "Zandvoort", archivo: "zandvoort" },
-            { nombre: "Monza", archivo: "monza" }, { nombre: "Madrid", archivo: "madrid" },
-            { nombre: "Bakú", archivo: "baku" }, { nombre: "Singapur", archivo: "singapur" },
-            { nombre: "Austin", archivo: "austin" }, { nombre: "Ciudad de México", archivo: "mejico" },
-            { nombre: "São Paulo", archivo: "saopaulo" }, { nombre: "Las Vegas", archivo: "lasvegas" },
-            { nombre: "Losail", archivo: "losail" }, { nombre: "Abu Dabi", archivo: "abudabi" }
-        ];
-
-        // Función para renderizar botones de admin
-        const renderAcciones = (id) => `
-            <div class="admin-only" style="display:inline-block; margin-left: 5px;">
-                <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
-                <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
-            </div>`;
-
-        contenedor.innerHTML = listaMaestra.map(item => {
-            const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
-            const resultadosCircuito = c ? resultados.filter(r => {
-                const circuitoDB = circuitosRaw.find(x => x.id === r.circuito_id);
-                return circuitoDB && circuitoDB.nombre === item.nombre;
-            }).sort((a, b) => a.posicion - b.posicion) : [];
-
-            const podio = resultadosCircuito.filter(r => r.posicion <= 3);
-            const resto = resultadosCircuito.filter(r => r.posicion > 3);
-            
-            const htmlPodio = podio.map(p => `
-                <div class="podio-item pos-${p.posicion}">
-                    <strong>${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
-                    <span style="font-size: 11px;">${p.piloto_nombre}</span>
-                </div>`).join('');
+            // 2. Cargar Footer
+            fetch('/footer.html')
+                .then(res => res.text())
+                .then(data => document.getElementById('footer-placeholder').innerHTML = data);
                 
-            const htmlResto = resto.map(p => `
-                <li class="item-resto">
-                    <span>${p.posicion}º ${p.piloto_nombre}</span>
-                    ${renderAcciones(p.id)}
-                </li>`).join('');
+            // 3. Cargar Modal de Login
+            fetch('/login-modal.html')
+                .then(res => res.text())
+                .then(data => document.body.insertAdjacentHTML('beforeend', data));
             
-            return `
-            <div class="circuito-card">
-                <h3 class="circuito-titulo">${item.nombre}</h3>
-                <div class="circuito-imagen-container">
-                    <img src="/circuitos/${item.archivo}.png" alt="${item.nombre}" onerror="this.style.display='none'">
-                </div>
-                ${podio.length > 0 ? `<div class="podio-container">${htmlPodio}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
-                <ul class="resultados-resto">${htmlResto}</ul>
-            </div>`;
-        }).join('');
-    } catch (e) {
-        console.error("Error al cargar los circuitos:", e);
-    }
-}
-
-
-
-
-    
-
-// Esta función permite abrir el modal desde cualquier página
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) {
-            modal.style.display = 'block';
-        } else {
-            console.warn("El modal de login aún no está cargado.");
-        }
-    }
-
-    
-// Función centralizada
-function verificarSesion() {
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-    
-    // Si los botones existen, aplicamos la lógica
-    if (btnLogin && btnLogout) {
-        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-    } else {
-        // Por si acaso, si no se encuentran, reintentamos en 100ms
-        setTimeout(verificarSesion, 100);
-    }
-}
-
-
-        async function enviarContacto() {
-        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
-        const nombre = document.getElementById('nombre-contacto').value;
-        const asunto = document.getElementById('asunto-contacto').value;
-        const mensaje = document.getElementById('mensaje-contacto').value;
-
-        // Validacion simple
-        if(!nombre || !asunto || !mensaje) {
-            alert("Por favor, rellena todos los campos.");
-            return;
-        }
-
-        const payload = {
-            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-            embeds: [{
-                title: "📩 Nuevo mensaje de contacto",
-                color: 3447003,
-                fields: [
-                    { name: "Nombre", value: nombre, inline: true },
-                    { name: "Asunto", value: asunto, inline: true },
-                    { name: "Mensaje", value: mensaje }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
-
-        const res = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            // 4. Cargar Circuitos
+            if (document.getElementById('lista-circuitos')) cargarCircuitos();
         });
 
-        if (res.ok) {
-            alert("¡Mensaje enviado correctamente!");
-            document.getElementById('modal-contacto').style.display = 'none';
-            document.getElementById('nombre-contacto').value = '';
-            document.getElementById('asunto-contacto').value = '';
-            document.getElementById('mensaje-contacto').value = '';
-        } else {
-            alert("Error al enviar el mensaje.");
-        }
-    }
+        async function cargarCircuitos() {
+            try {
+                const res = await fetch('/api/circuitos');
+                const circuitosRaw = await res.json();
+                const resResultados = await fetch('/api/todos-los-resultados');
+                const resultados = await resResultados.json();
+                const contenedor = document.getElementById('lista-circuitos');
+                
+                const listaMaestra = [
+                    { nombre: "Melbourne", archivo: "melburne" }, { nombre: "Shanghái", archivo: "sangai" },
+                    { nombre: "Suzuka", archivo: "suzuka" }, { nombre: "Sakhir", archivo: "sakir" },
+                    { nombre: "Yeda", archivo: "yeda" }, { nombre: "Miami", archivo: "miami" },
+                    { nombre: "Montreal", archivo: "monreal" }, { nombre: "Mónaco", archivo: "montecarlo" },
+                    { nombre: "Barcelona", archivo: "barcelona" }, { nombre: "Spielberg", archivo: "spilberg" },
+                    { nombre: "Silverstone", archivo: "silverstone" }, { nombre: "Spa", archivo: "spa" },
+                    { nombre: "Budapest", archivo: "budapest" }, { nombre: "Zandvoort", archivo: "zandvoort" },
+                    { nombre: "Monza", archivo: "monza" }, { nombre: "Madrid", archivo: "madrid" },
+                    { nombre: "Bakú", archivo: "baku" }, { nombre: "Singapur", archivo: "singapur" },
+                    { nombre: "Austin", archivo: "austin" }, { nombre: "Ciudad de México", archivo: "mejico" },
+                    { nombre: "São Paulo", archivo: "saopaulo" }, { nombre: "Las Vegas", archivo: "lasvegas" },
+                    { nombre: "Losail", archivo: "losail" }, { nombre: "Abu Dabi", archivo: "abudabi" }
+                ];
 
-    
-</script>
+                const renderAcciones = (id) => `
+                    <div class="admin-only" style="display:inline-block; margin-left: 5px;">
+                        <button onclick="editarResultado(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
+                        <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
+                    </div>`;
+
+                contenedor.innerHTML = listaMaestra.map(item => {
+                    const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
+                    const resultadosCircuito = c ? resultados.filter(r => {
+                        const circuitoDB = circuitosRaw.find(x => x.id === r.circuito_id);
+                        return circuitoDB && circuitoDB.nombre === item.nombre;
+                    }).sort((a, b) => a.posicion - b.posicion) : [];
+
+                    const podio = resultadosCircuito.filter(r => r.posicion <= 3);
+                    const resto = resultadosCircuito.filter(r => r.posicion > 3);
+                    
+                    return `
+                    <div class="circuito-card">
+                        <h3 class="circuito-titulo">${item.nombre}</h3>
+                        <div class="circuito-imagen-container">
+                            <img src="/circuitos/${item.archivo}.png" alt="${item.nombre}" onerror="this.style.display='none'">
+                        </div>
+                        ${podio.length > 0 ? `<div class="podio-container">${podio.map(p => `
+                            <div class="podio-item pos-${p.posicion}">
+                                <strong>${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
+                                <span style="font-size: 11px;">${p.piloto_nombre}</span>
+                            </div>`).join('')}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
+                        <ul class="resultados-resto">${resto.map(p => `<li class="item-resto"><span>${p.posicion}º ${p.piloto_nombre}</span> ${renderAcciones(p.id)}</li>`).join('')}</ul>
+                    </div>`;
+                }).join('');
+            } catch (e) { console.error("Error al cargar los circuitos:", e); }
+        }
+
+        function seguridadAbrirModal() {
+            const modal = document.getElementById('login-modal');
+            if (modal) modal.style.display = 'block';
+            else console.warn("El modal de login aún no está cargado.");
+        }
+
+        function verificarSesion() {
+            const btnLogin = document.getElementById('btn-login');
+            const btnLogout = document.getElementById('btn-logout');
+            const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+            if (btnLogin && btnLogout) {
+                btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+                btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+            } else { setTimeout(verificarSesion, 100); }
+        }
+
+        async function enviarContacto() {
+            const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+            const nombre = document.getElementById('nombre-contacto').value;
+            const asunto = document.getElementById('asunto-contacto').value;
+            const mensaje = document.getElementById('mensaje-contacto').value;
+
+            if(!nombre || !asunto || !mensaje) {
+                alert("Por favor, rellena todos los campos.");
+                return;
+            }
+
+            const payload = {
+                content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+                embeds: [{
+                    title: "📩 Nuevo mensaje de contacto",
+                    color: 3447003,
+                    fields: [
+                        { name: "Nombre", value: nombre, inline: true },
+                        { name: "Asunto", value: asunto, inline: true },
+                        { name: "Mensaje", value: mensaje }
+                    ],
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            const res = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("¡Mensaje enviado correctamente!");
+                document.getElementById('modal-contacto').style.display = 'none';
+                document.getElementById('nombre-contacto').value = '';
+                document.getElementById('asunto-contacto').value = '';
+                document.getElementById('mensaje-contacto').value = '';
+            } else { alert("Error al enviar el mensaje."); }
+        }
+    </script>
+</body>
+</html>
