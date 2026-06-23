@@ -211,38 +211,29 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     font-weight: bold;
 }
 
-/* Para que la tabla dentro de la caja no se vea gigante */
-/* Compactar la tabla al máximo */
-.fila-sancion {
-    border-bottom: 1px solid #333;
-}
-
-.fila-sancion td {
-    padding: 10px 5px !important;
+/* Asegurar que el avatar en sanciones sea consistente con la clasificación */
+.piloto-avatar { 
+    width: 35px; 
+    height: 35px; 
+    border-radius: 50%; 
+    object-fit: cover; 
     vertical-align: middle;
-}
-
-/* Ajuste de elementos */
-.avatar-piloto {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
     margin-right: 10px;
-    vertical-align: middle;
 }
 
+/* El logo de escudería igual de compacto */
 .logo-escuderia {
     width: 24px;
     height: 24px;
-    margin-right: 8px;
     vertical-align: middle;
+    margin-right: 8px;
 }
 
-/* Alineación de columnas */
-.col-piloto { text-align: left; }
-.col-escuderia { text-align: center; }
-.col-estado { text-align: center; font-weight: bold; }
-.col-puntos { text-align: right; width: 150px; }
+
+.barra-progreso {
+    height: 100%;
+    border-radius: 4px;
+}
 
 /* Contenedor barra más delgado */
 .contenedor-barra {
