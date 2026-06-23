@@ -150,22 +150,31 @@ function verificarSesion() {
 
 async function guardarResultado() {
     const pilotoId = document.getElementById('select-piloto').value;
+    const gpId = document.getElementById('select-gp').value;
     const posicion = document.getElementById('input-posicion').value;
-    // Si el piloto es reserva, habrás puesto un select para la escudería
     const escuderiaId = document.getElementById('select-escuderia').value; 
 
-    const res = await fetch('/api/resultados', {
+    const res = await fetch('/api/guardar-resultado', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ 
             id_piloto: pilotoId, 
-            id_gp: 1, // Esto vendría del select de circuitos
+            id_gp: gpId, 
             posicion: parseInt(posicion), 
             escuderia_id: escuderiaId 
         })
     });
 
-    if (res.ok) alert("¡Resultado guardado y puntos sumados!");
+    // CAMBIO AQUÍ: leemos como texto en lugar de .json()
+    const respuestaTexto = await res.text();
+
+    if (res.ok) {
+        alert("¡Éxito! " + respuestaTexto);
+        // Opcional: cerrar modal
+        document.getElementById('modal-resultados').style.display = 'none';
+    } else {
+        alert("Error en el servidor: " + respuestaTexto);
+    }
 }
 
     
