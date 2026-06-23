@@ -248,5 +248,25 @@ async function guardarResultado() {
         alert("Error al cargar pilotos o circuitos.");
     }
 }
+
+    function checkReserva() {
+    const selectPiloto = document.getElementById('select-piloto');
+    const divEscuderia = document.getElementById('div-escuderia');
+    
+    // Obtenemos la opción seleccionada
+    const opcionSeleccionada = selectPiloto.options[selectPiloto.selectedIndex];
+    
+    // Si el data-tipo es '1' (o el valor que uses para reserva), mostramos el campo
+    if (opcionSeleccionada && opcionSeleccionada.getAttribute('data-tipo') === '1') {
+        divEscuderia.style.display = 'block';
+    } else {
+        divEscuderia.style.display = 'none';
+        // Opcional: limpiar la selección si se oculta
+        document.getElementById('select-escuderia').value = '';
+    }
+}
+
+
+
     
 </script>
