@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Usamos los diccionarios para obtener datos correctos
             const nombreEquipo = p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
             const logoEquipo = LOGOS_ESCUDERIAS[p.escuderia_id] || '/logos/default.png';
-            const rutaAvatar = p.foto_url ? `/pilotos/${p.foto_url}` : 'https://www.w3schools.com/howto/img_avatar.png';
+            const rutaAvatar = p.foto_url ? `/${p.foto_url}` : 'https://www.w3schools.com/howto/img_avatar.png';
 
             body.innerHTML += `
                 <tr>
