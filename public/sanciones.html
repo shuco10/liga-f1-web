@@ -107,7 +107,7 @@ function renderizarSanciones(pilotos) {
         const porcentaje = (licenciaActual / 12) * 100;
         
         const color = licenciaActual <= 0 ? "#e74c3c" : (licenciaActual <= 3 ? "#f1c40f" : "#2ecc71");
-        const estado = licenciaActual <= 0 ? "SUSPENDIDO" : "OK";
+        const estado = licenciaActual <= 0 ? "SUSP." : "OK";
         
         // Estilo de Reserva
         const nombreEquipo = p.es_reserva ? '<span style="color: #CCFF00; border: 1px solid #CCFF00; padding: 2px 6px;">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
