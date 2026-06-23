@@ -83,7 +83,19 @@ function eliminarResultado(id) {
     }
 }
 
+function prepararEdicion(id, reclamante, reclamado, articulo, explicacion, sancion) {
+    // 1. Mostrar el formulario
+    document.getElementById('form-admin').style.display = 'block';
+    
+    // 2. Rellenar los campos
+    document.getElementById('reclamante').value = reclamante;
+    document.getElementById('reclamado').value = reclamado;
+    document.getElementById('articulo').value = articulo;
+    document.getElementById('explicacion').value = explicacion;
+    document.getElementById('sancion').value = sancion;
 
+    console.log("Editando resolución ID:", id);
+}
 
 function eliminarResolucion(id) {
     if (!confirm("¿Estás seguro de que quieres eliminar esta resolución?")) return;
