@@ -29,20 +29,22 @@
     
     <div class="titulo-liga">👨‍⚖️ TABLA DE SANCIONES 👨‍⚖️</div>
 
-<div class="contenedor-caja">
-    <h2 class="titulo-seccion">TABLA DE SANCIONES</h2>
-    <table id="tabla-sanciones">
-        <thead>
-            <tr>
-                <th>Piloto</th>
-                <th>Escudería</th>
-                <th>Estado Licencia</th>
-                <th>Puntos</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-body">
-            </tbody>
-    </table>
+<div class="caja-contenido">
+    <h2 class="section-title">TABLA DE SANCIONES</h2>
+    <div class="table-wrapper">
+        <table class="table-standings">
+            <thead>
+                <tr>
+                    <th style="width: 250px;">PILOTO</th>
+                    <th style="width: 200px;">ESCUDERÍA</th>
+                    <th style="width: 100px;">ESTADO</th>
+                    <th style="width: 150px;">LICENCIA</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-body">
+                </tbody>
+        </table>
+    </div>
 </div>
 
     <div id="footer-placeholder"></div>
@@ -104,31 +106,24 @@ function renderizarSanciones(pilotos) {
         const licenciaActual = 12 - puntosSancion;
         const porcentaje = (licenciaActual / 12) * 100;
         
-        // Colores de estado: OK (verde), Alerta (amarillo), Suspendido (rojo)
         const color = licenciaActual <= 0 ? "#e74c3c" : (licenciaActual <= 3 ? "#f1c40f" : "#2ecc71");
         const estado = licenciaActual <= 0 ? "SUSPENDIDO" : "OK";
         
-        // Lógica de Escudería vs Reserva
-        let celdaEscuderia;
-        if (p.es_reserva) {
-            celdaEscuderia = `<span style="color: #CCFF00; font-weight: bold; border: 1px solid #CCFF00; padding: 2px 6px;">[ RESERVA ]</span>`;
-        } else {
-            const logo = LOGOS_ESCUDERIAS[p.escuderia_id] || '/logos/default.png';
-            const nombre = NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido';
-            celdaEscuderia = `<img src="${logo}" class="logo-escuderia"> ${nombre}`;
-        }
-
+        // Estilo de Reserva
+        const nombreEquipo = p.es_reserva ? '<span style="color: #CCFF00; border: 1px solid #CCFF00; padding: 2px 6px;">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
+        const logoEquipo = p.es_reserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id]}" class="logo-escuderia">`;
+        
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : null;
         const rutaAvatar = nombreArchivo ? `/pilotos/${nombreArchivo}` : 'https://www.w3schools.com/howto/img_avatar.png';
 
         body.innerHTML += `
-            <tr class="fila-sancion">
-                <td class="col-piloto">
-                    <img src="${rutaAvatar}" class="avatar-piloto"> ${p.gamertag}
+            <tr>
+                <td style="text-align: left; padding-left: 20px;">
+                    <img src="${rutaAvatar}" class="piloto-avatar"> ${p.gamertag}
                 </td>
-                <td class="col-escuderia">${celdaEscuderia}</td>
-                <td class="col-estado"><span style="color:${color}">${estado}</span></td>
-                <td class="col-puntos">
+                <td>${logoEquipo} ${nombreEquipo}</td>
+                <td style="font-weight:bold; color:${color}">${estado}</td>
+                <td>
                     ${licenciaActual} / 12
                     <div class="contenedor-barra"><div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div></div>
                 </td>
