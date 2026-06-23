@@ -133,17 +133,23 @@ async function cargarResoluciones() {
     try {
         const res = await fetch('/api/resoluciones');
         const data = await res.json();
-        
-        // Buscamos el contenedor nuevo (el div, no el tbody)
         const contenedor = document.getElementById('contenedor-resoluciones');
         if (!contenedor) return;
-        
+
+        // Comprobamos si es admin una vez
+        const admin = typeof esAdmin === 'function' ? esAdmin() : false;
+
         contenedor.innerHTML = data.map(r => {
             const fechaLimpia = r.fecha ? r.fecha.split('T')[0] : 'N/A';
             
-            // Generamos la tarjeta en lugar de la fila
             return `
-                <div class="tarjeta-resolucion">
+                <div class="tarjeta-resolucion" style="position: relative;">
+                    ${admin ? `
+                        <button onclick="eliminarResolucion(${r.id})" 
+                            style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #ff3333; font-size: 20px; cursor: pointer; font-weight: bold; line-height: 1;">
+                            ✕
+                        </button>` : ''}
+                    
                     <h4>${r.articulo}</h4>
                     <div class="campo-resolucion"><strong>Fecha:</strong> ${fechaLimpia}</div>
                     <div class="campo-resolucion"><strong>Reclamante:</strong> ${r.reclamante}</div>
