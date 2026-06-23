@@ -143,7 +143,7 @@ function renderizarConstructores(pilotos, escuderias) {
         );
         
         return {
-            nombre: (String(esc.id) === '9' ? 'Audi' : esc.nombre), // AQUÍ ESTÁ EL CAMBIO
+            nombre: (String(esc.id) === '9' ? 'Audi' : esc.nombre),
             logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
             pilotos: pilotosEscuderia,
             victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
@@ -153,15 +153,21 @@ function renderizarConstructores(pilotos, escuderias) {
     }).sort((a, b) => b.puntos - a.puntos);
 
     datosConstructores.forEach((c, index) => {
+        // Lógica de Podio: solo para los 3 primeros
+        const esPodio = index < 3;
+        const posClass = esPodio ? `pos-${index + 1}` : '';
+        const numeroDisplay = index + 1;
+        
         const claseBanda = mapaColores[c.nombre] || "banda-default";
+        
         const avatars = c.pilotos.map(p => {
             const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
-            return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'">`;
+            return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='/pilotos/R.png'">`;
         }).join('');
 
         body.innerHTML += `
             <tr>
-                <td>${index + 1}</td>
+                <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
                 <td style="text-align: left;">
                     <span class="color-banda ${claseBanda}"></span>
                     <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
