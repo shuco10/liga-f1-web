@@ -563,4 +563,38 @@ table tr td:nth-child(2) {
 }
 
 
+/* Botón de acción destructiva base */
+.btn-peligro {
+    background-color: #7a0000;
+    color: #ffffff;
+    border: 2px solid #7a0000;
+    padding: 12px 25px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Efecto suave */
+    border-radius: 5px;
+}
 
+/* Efecto al pasar el ratón (Hover) */
+.btn-peligro:hover {
+    background-color: #ff0000; /* Se vuelve un rojo más vivo */
+    border-color: #ff4444;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); /* Un suave resplandor rojo */
+    transform: scale(1.02); /* Crece ligeramente */
+}
+
+/* Estilo específico para la "Zona de peligro" */
+.zona-peligro {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    border-top: 1px solid #333;
+}
+
+.zona-peligro h4 {
+    color: #ff4444;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
