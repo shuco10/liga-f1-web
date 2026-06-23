@@ -270,9 +270,44 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     border-radius: 4px;
 }
 
+/* Banda de color a la izquierda del nombre de escudería */
+.color-banda {
+    display: inline-block;
+    width: 6px;
+    height: 25px;
+    margin-right: 10px;
+    vertical-align: middle;
+    border-radius: 2px;
+}
 
+/* Avatares más pequeños para la tabla de constructores */
+.piloto-avatar-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+    border: 1px solid #444;
+}
 
+/* Reutilizando la estructura de la tabla de pilotos */
+.table-standings td {
+    padding: 15px 8px;
+    vertical-align: middle;
+}
 
+/* Colores de las bandas laterales de las escuderías */
+.banda-audi { background-color: #C0C0C0; } /* Plata */
+.banda-cadillac { background-color: #FFFFFF; } /* Blanco */
+.banda-redbull { background-color: #1e41ff; } /* Azul Red Bull */
+.banda-mercedes { background-color: #00D2BE; } /* Turquesa */
+.banda-ferrari { background-color: #DC0000; } /* Rojo Ferrari */
+.banda-aston { background-color: #006F62; } /* Verde British Racing */
+.banda-williams { background-color: #005AFF; } /* Azul Williams */
+.banda-alpine { background-color: #FF87BC; } /* Rosa Alpine */
+.banda-haas { background-color: #B6B6B6; } /* Gris/Blanco Haas */
+.banda-visa { background-color: #4692FF; } /* Azul Visa */
+.banda-mclaren { background-color: #FF8000; } /* Papaya */
+.banda-default { background-color: #CCCCCC; } /* por defecto */
 
 
 
