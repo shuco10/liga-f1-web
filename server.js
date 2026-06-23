@@ -373,6 +373,17 @@ app.get('/api/resoluciones', async (req, res) => {
         res.status(500).json({ error: "Error al cargar resoluciones" });
     }
 });
+// API para ELIMINAR una resolución (Solo para Admins)
+app.delete('/api/resoluciones/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM resoluciones WHERE id = $1", [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al eliminar resolución:", err);
+        res.status(500).json({ error: "Error al eliminar resolución" });
+    }
+});
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 // Añade esta ruta a server.js para que el navegador pueda pedir las escuderías
