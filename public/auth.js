@@ -66,14 +66,15 @@ function eliminarResultado(id) {
     }
     
     if (confirm("¿Estás seguro de que quieres eliminar este resultado?")) {
-        fetch(`/api/eliminar-resultado/${id}`, {
+        // CORREGIDO: Cambiamos la ruta de /api/eliminar-resultado/ a /api/resultados/
+        fetch(`/api/resultados/${id}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         })
         .then(res => {
             if (res.ok) {
                 alert("Resultado eliminado correctamente.");
-                location.reload(); // Recarga la página para ver los cambios
+                location.reload(); 
             } else {
                 alert("Error al eliminar el resultado.");
             }
