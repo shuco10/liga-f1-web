@@ -116,17 +116,19 @@ function renderizarSanciones(pilotos) {
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : null;
         const rutaAvatar = nombreArchivo ? `/pilotos/${nombreArchivo}` : 'https://www.w3schools.com/howto/img_avatar.png';
 
-        body.innerHTML += `
-            <tr class="fila-piloto">
-                <td class="col-piloto"><img src="${rutaAvatar}" class="avatar-piloto" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'"> ${p.gamertag}</td>
-                <td class="col-escuderia"><img src="${logoEquipo}" class="logo-escuderia"> ${nombreEquipo}</td>
-                <td><span style="color:${color}; font-weight:bold">${estado}</span></td>
-                <td>
-                    ${licenciaActual} / 12
-                    <div class="contenedor-barra"><div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div></div>
-                </td>
-            </tr>
-        `;
+body.innerHTML += `
+    <tr class="fila-piloto">
+        <td style="text-align: left; padding-left: 20px;">
+            <img src="${rutaAvatar}" class="avatar-piloto"> ${p.gamertag}
+        </td>
+        <td><img src="${logoEquipo}" class="logo-escuderia"> ${nombreEquipo}</td>
+        <td><span style="color:${color}; font-weight:bold">${estado}</span></td>
+        <td>
+            ${licenciaActual} / 12
+            <div class="contenedor-barra" style="width: 80px; height: 6px;"><div class="barra-progreso" style="width:${porcentaje}%; height:100%; background:${color}"></div></div>
+        </td>
+    </tr>
+`;
     });
 }
 
