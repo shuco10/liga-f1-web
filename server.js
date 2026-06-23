@@ -384,6 +384,20 @@ app.delete('/api/resoluciones/:id', async (req, res) => {
         res.status(500).json({ error: "Error al eliminar resolución" });
     }
 });
+//Editar las resoluciones
+app.put('/api/resoluciones/:id', async (req, res) => {
+    const { reclamante, reclamado, articulo, explicacion, sancion } = req.body;
+    try {
+        await pool.query(
+            "UPDATE resoluciones SET reclamante=$1, reclamado=$2, articulo=$3, explicacion=$4, sancion=$5 WHERE id=$6",
+            [reclamante, reclamado, articulo, explicacion, sancion, req.params.id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Error al editar" });
+    }
+});
+
 
 // PARCHES: METER AQUI LOS PARCHES DE ACTUALIZACION DE TABLAS Y DEMAS
 // Añade esta ruta a server.js para que el navegador pueda pedir las escuderías
