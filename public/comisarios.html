@@ -148,34 +148,7 @@ function verificarSesion() {
 
 
 
-async function guardarResultado() {
-    const pilotoId = document.getElementById('select-piloto').value;
-    const gpId = document.getElementById('select-gp').value;
-    const posicion = document.getElementById('input-posicion').value;
-    const escuderiaId = document.getElementById('select-escuderia').value; 
 
-    const res = await fetch('/api/guardar-resultado', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ 
-            id_piloto: pilotoId, 
-            id_gp: gpId, 
-            posicion: parseInt(posicion), 
-            escuderia_id: escuderiaId 
-        })
-    });
-
-    // CAMBIO AQUÍ: leemos como texto en lugar de .json()
-    const respuestaTexto = await res.text();
-
-    if (res.ok) {
-        alert("¡Éxito! " + respuestaTexto);
-        // Opcional: cerrar modal
-        document.getElementById('modal-resultados').style.display = 'none';
-    } else {
-        alert("Error en el servidor: " + respuestaTexto);
-    }
-}
 
     
         async function enviarContacto() {
@@ -265,7 +238,7 @@ async function guardarResultado() {
             // 4. Limpieza y cierre tras el éxito
             document.getElementById('modal-resultados').style.display = 'none';
             // Opcional: si quieres refrescar los datos automáticamente
-            // await abrirModalResultados(); 
+             await abrirModalResultados(); 
         } else {
             alert("Error del servidor: " + respuestaTexto);
         }
