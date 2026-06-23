@@ -328,4 +328,9 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     white-space: nowrap;   /* Evita que el número salte de línea */
 }
 
-
+/* Esto selecciona la segunda columna de todas las tablas de tu web */
+table tr th:nth-child(2),
+table tr td:nth-child(2) {
+    min-width: 250px; /* Ajusta este valor (250px, 300px...) hasta que te guste cómo queda */
+    width: auto;
+}
