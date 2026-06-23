@@ -238,38 +238,47 @@ app.get('/api/circuitos', async (req, res) => {
     } catch (err) { console.error(err); res.status(500).send("Error al obtener circuitos"); }
 });
 
-// --- RUTA POST UNIFICADA ---
+// --- RUTA POST UNIFICADA Y CORREGIDA ---
 app.post('/api/guardar-resultado', async (req, res) => {
-    // Aceptamos ambos nombres (los nuevos y los viejos) usando el operador ||
+    // 1. Capturamos los datos con compatibilidad para nombres viejos y nuevos
     const id_piloto = req.body.id_piloto || req.body.piloto_id;
     const id_gp = req.body.id_gp || req.body.circuito_id;
     const posicion = parseInt(req.body.posicion);
-    const escuderia_id = req.body.escuderia_id || null;
+    
+    // 2. FORZAMOS A 0 SI ESTÁ VACÍO: Esto evita el error "not-null constraint"
+    // Si viene undefined, null o "" (vacío), le asignamos 0.
+    let escuderia_id = req.body.escuderia_id;
+    if (!escuderia_id || escuderia_id === "" || escuderia_id === "null") {
+        escuderia_id = 0;
+    } else {
+        escuderia_id = parseInt(escuderia_id);
+    }
     
     const puntosTabla = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     const puntosObtenidos = puntosTabla[posicion] || 0;
 
     try {
-        // Asegúrate de que los nombres de las columnas aquí sean los REALES de tu base de datos
-        // Si tienes dudas, usa los que aparecen en tu GET (piloto_id y circuito_id)
+        // 3. Insertamos usando escuderia_id que ahora es un número (0 o el ID real)
         await pool.query(
             'INSERT INTO resultados_carrera (piloto_id, circuito_id, posicion, puntos, escuderia_id) VALUES ($1, $2, $3, $4, $5)', 
             [id_piloto, id_gp, posicion, puntosObtenidos, escuderia_id]
         );
 
+        // 4. Sumamos puntos al piloto
         await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, id_piloto]);
 
-        if (escuderia_id) {
+        // 5. Solo sumamos puntos a escudería si el ID es mayor a 0 (es decir, si se seleccionó una real)
+        if (escuderia_id > 0) {
             await pool.query('UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, escuderia_id]);
         }
 
         res.sendStatus(200);
     } catch (err) { 
         console.error("Error SQL:", err);
+        // Enviamos el mensaje real del error para saber si sigue fallando algo
         res.status(500).send("Error al guardar: " + err.message); 
     }
 });
-
 // -----------------------------------------------------------
 
 app.get('/api/todos-los-resultados', async (req, res) => {
