@@ -104,34 +104,36 @@ function renderizarSanciones(pilotos) {
         const licenciaActual = 12 - puntosSancion;
         const porcentaje = (licenciaActual / 12) * 100;
         
-        // Color amarillo flúor (#CCFF00) para reservas, rojo o verde para titulares
-        let color = "#2ecc71"; // Verde por defecto
-        if (licenciaActual <= 0) color = "#e74c3c"; // Rojo
-        else if (p.es_reserva) color = "#CCFF00"; // Amarillo flúor para reservas
-        else if (licenciaActual <= 3) color = "#f1c40f"; // Amarillo
-        
+        // Colores de estado: OK (verde), Alerta (amarillo), Suspendido (rojo)
+        const color = licenciaActual <= 0 ? "#e74c3c" : (licenciaActual <= 3 ? "#f1c40f" : "#2ecc71");
         const estado = licenciaActual <= 0 ? "SUSPENDIDO" : "OK";
         
-        // Lógica: Si es reserva, nombre equipo "Reserva" y logo genérico
-        const nombreEquipo = p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
-        const logoEquipo = p.es_reserva ? '/logos/reserva.png' : (LOGOS_ESCUDERIAS[p.escuderia_id] || '/logos/default.png');
-        
+        // Lógica de Escudería vs Reserva
+        let celdaEscuderia;
+        if (p.es_reserva) {
+            celdaEscuderia = `<span style="color: #CCFF00; font-weight: bold; border: 1px solid #CCFF00; padding: 2px 6px;">[ RESERVA ]</span>`;
+        } else {
+            const logo = LOGOS_ESCUDERIAS[p.escuderia_id] || '/logos/default.png';
+            const nombre = NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido';
+            celdaEscuderia = `<img src="${logo}" class="logo-escuderia"> ${nombre}`;
+        }
+
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : null;
         const rutaAvatar = nombreArchivo ? `/pilotos/${nombreArchivo}` : 'https://www.w3schools.com/howto/img_avatar.png';
 
-body.innerHTML += `
-    <tr class="fila-piloto">
-        <td style="text-align: left; padding-left: 20px;">
-            <img src="${rutaAvatar}" class="avatar-piloto"> ${p.gamertag}
-        </td>
-        <td><img src="${logoEquipo}" class="logo-escuderia"> ${nombreEquipo}</td>
-        <td><span style="color:${color}; font-weight:bold">${estado}</span></td>
-        <td>
-            ${licenciaActual} / 12
-            <div class="contenedor-barra" style="width: 80px; height: 6px;"><div class="barra-progreso" style="width:${porcentaje}%; height:100%; background:${color}"></div></div>
-        </td>
-    </tr>
-`;
+        body.innerHTML += `
+            <tr class="fila-sancion">
+                <td class="col-piloto">
+                    <img src="${rutaAvatar}" class="avatar-piloto"> ${p.gamertag}
+                </td>
+                <td class="col-escuderia">${celdaEscuderia}</td>
+                <td class="col-estado"><span style="color:${color}">${estado}</span></td>
+                <td class="col-puntos">
+                    ${licenciaActual} / 12
+                    <div class="contenedor-barra"><div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div></div>
+                </td>
+            </tr>
+        `;
     });
 }
 
