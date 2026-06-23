@@ -194,55 +194,80 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 
 
+/* --- ESTILO CONTENEDOR (Igual al de Pilotos) --- */
 .contenedor-caja {
-    background-color: #1a1a1a; /* El color oscuro de fondo */
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #333; /* El borde fino que se ve en la captura */
-    margin: 20px auto;
-    max-width: 900px; /* Ajusta según el ancho que quieras */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border-left: 6px solid #ff4444; /* El borde rojo característico */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    color: #ffffff;
 }
 
 .titulo-seccion {
-    color: #ff3e3e; /* El rojo característico de tus títulos */
+    color: #ff3333;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 2rem;
+    text-transform: uppercase;
     text-align: center;
-    margin-bottom: 20px;
-    font-weight: bold;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
-/* Asegurar que el avatar en sanciones sea consistente con la clasificación */
+/* --- AJUSTES TABLA --- */
+.table-standings {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.table-standings th {
+    color: #ff3333;
+    text-align: center;
+    padding: 15px 5px;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    border-bottom: 2px solid #333;
+}
+
+.table-standings td {
+    padding: 12px 8px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+}
+
+/* --- ELEMENTOS DE FILA --- */
 .piloto-avatar { 
-    width: 35px; 
-    height: 35px; 
+    width: 35px; height: 35px; 
     border-radius: 50%; 
     object-fit: cover; 
-    vertical-align: middle;
-    margin-right: 10px;
+    vertical-align: middle; 
+    margin-right: 10px; 
 }
 
-/* El logo de escudería igual de compacto */
-.logo-escuderia {
-    width: 24px;
-    height: 24px;
-    vertical-align: middle;
-    margin-right: 8px;
+.logo-escuderia { 
+    width: 24px; height: 24px; 
+    vertical-align: middle; 
+    margin-right: 8px; 
 }
 
+/* --- BARRA DE PROGRESO --- */
+.contenedor-barra {
+    display: inline-block;
+    width: 80px; /* Un poco más larga para que se vea bien */
+    height: 8px;
+    background: #222;
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
 
 .barra-progreso {
     height: 100%;
     border-radius: 4px;
-}
-
-/* Contenedor barra más delgado */
-.contenedor-barra {
-    display: inline-block;
-    width: 60px;
-    height: 6px;
-    background: #222;
-    margin-left: 10px;
-    border-radius: 3px;
 }
 
 
