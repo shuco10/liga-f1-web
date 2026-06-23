@@ -147,23 +147,24 @@ function renderizarTabla(id, data, esReserva) {
             ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
             : `<div style="display: flex; align-items: center;">${logoHtml}${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</div>`;
 
-        return `<tr>
-            <td><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
-            <td style="text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <img src="${avatarUrl}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'">
-                    
-                    <span class="numero-piloto">${p.numero_piloto || '00'}</span>
-                    
-                    <strong>${p.gamertag}</strong>
-                </div>
-            </td>
-            <td><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
-            <td>${escuderiaCol}</td>
-            <td>${p.victorias}</td>
-            <td>${p.podios || '0'}</td>
-            <td><strong>${p.puntos_totales} pts</strong></td>
-        </tr>`;
+return `<tr>
+    <td><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
+    <td style="text-align: left;">
+        <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
+            
+            <img src="${avatarUrl}" class="piloto-avatar" style="flex-shrink: 0;" onerror="this.src='/pilotos/R.png'">
+            
+            <span class="numero-piloto">${p.numero_piloto || '00'}</span>
+            
+            <strong style="overflow: hidden; text-overflow: ellipsis;">${p.gamertag}</strong>
+        </div>
+    </td>
+    <td><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
+    <td>${escuderiaCol}</td>
+    <td>${p.victorias}</td>
+    <td>${p.podios || '0'}</td>
+    <td><strong>${p.puntos_totales} pts</strong></td>
+</tr>`;
     }).join('');
 }
 
