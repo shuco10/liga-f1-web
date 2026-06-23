@@ -143,9 +143,12 @@ function renderizarTabla(id, data, esReserva) {
         const logoUrl = (!esReserva && LOGOS_ESCUDERIAS[p.escuderia_id]) ? LOGOS_ESCUDERIAS[p.escuderia_id] : null;
         const logoHtml = logoUrl ? `<img src="${logoUrl}" style="width: 25px; height: 25px; object-fit: contain; margin-right: 8px; vertical-align: middle;">` : '';
         
-        const escuderiaCol = esReserva 
-            ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
-            : `<div style="display: flex; align-items: center;">${logoHtml}${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</div>`;
+const escuderiaCol = esReserva 
+    ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
+    : `<div style="display: flex; align-items: center; gap: 8px;">
+        ${logoHtml}
+        <span class="nombre-escuderia">${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</span>
+       </div>`;
 
 return `<tr>
     <td><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
