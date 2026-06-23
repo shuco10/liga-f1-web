@@ -138,14 +138,19 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const datosConstructores = escuderias.map(esc => {
-            const pilotosEscuderia = pilotos.filter(p => String(p.escuderia_id) === String(esc.id));
+    // 1. Filtrar escudería Y excluir reservas (es_reserva === 0 o '0')
+            const pilotosEscuderia = pilotos.filter(p => 
+                String(p.escuderia_id) === String(esc.id) && String(p.es_reserva) === '0'
+            );
+    
             return {
                 nombre: esc.nombre,
                 logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
                 pilotos: pilotosEscuderia,
-                victorias: pilotosEscuderia.reduce((sum, p) => sum + (parseInt(p.victorias) || 0), 0),
-                podios: pilotosEscuderia.reduce((sum, p) => sum + (parseInt(p.podios) || 0), 0),
-                puntos: pilotosEscuderia.reduce((sum, p) => sum + (parseInt(p.puntos) || 0), 0)
+        // 2. Usar Number() y apuntar a 'puntos_totales' (como está en tu BD)
+                victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
+                podios: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.podios) || 0), 0),
+                puntos: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0)
             };
         }).sort((a, b) => b.puntos - a.puntos);
 
