@@ -233,23 +233,23 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     border-bottom: 2px solid #333;
 }
 
+/* Reducimos el padding lateral de 8px a 4px para ganar espacio */
 .table-standings td {
-    padding: 12px 8px;
+    padding: 12px 4px; 
     text-align: center;
     border-bottom: 1px solid #333;
 }
 
-/* --- Prioridad para la columna de Piloto --- */
-.table-standings th:nth-child(2), 
+/* --- Ajuste específico para ganar esos 4-6 caracteres --- */
 .table-standings td:nth-child(2) {
-    text-align: left;       /* Alineación a la izquierda para el nombre */
-    min-width: 220px;       /* Espacio reservado para que no salte de línea */
-    white-space: nowrap;    /* Impide que el nombre baje a la línea siguiente */
+    text-align: left;
+    min-width: 240px; /* Aumentamos el mínimo para asegurar que entre */
+    white-space: nowrap;
+    padding-left: 10px; /* Un poco de margen para que no toque el borde */
 }
 
-/* Ajuste del nombre dentro de la celda */
 .table-standings td:nth-child(2) strong {
-    font-size: 0.9em;       /* Tamaño más compacto */
+    font-size: 0.85em;  /* Un pelín más pequeño para ganar esos caracteres */
     display: inline-block;
     vertical-align: middle;
 }
