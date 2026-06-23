@@ -471,3 +471,29 @@ table tr td:nth-child(2) {
     padding: 10px;
     font-style: italic;
 }
+
+
+.grid-resoluciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.tarjeta-resolucion {
+    background: #1a1a1a;
+    border: 2px solid #ff3333;
+    border-radius: 10px;
+    padding: 15px;
+    color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.tarjeta-resolucion h4 { margin: 0 0 10px 0; color: #ff3333; border-bottom: 1px solid #333; padding-bottom: 5px; }
+.campo-resolucion { font-size: 14px; margin-bottom: 5px; }
+.campo-resolucion span { color: #aaa; }
+
+
+
+
+
