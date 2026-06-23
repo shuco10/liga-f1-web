@@ -144,6 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
             );
     
             return {
+                // Dentro de la función renderizarConstructores, en el .map():
+                nombre: (esc.id == 9 ? 'Audi' : esc.nombre),
                 nombre: esc.nombre,
                 logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
                 pilotos: pilotosEscuderia,
@@ -177,23 +179,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Carga automática al abrir la página
-    document.addEventListener("DOMContentLoaded", async () => {
-        try {
-            // Hacemos las peticiones al servidor (que configuramos antes en server.js)
-            const [resPilotos, resEscuderias] = await Promise.all([
-                fetch('/api/lista-de-pilotos'),
-                fetch('/api/escuderias')
-            ]);
+// 2. Carga automática al abrir la página
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        // Añadimos fetch('/api/todos-los-resultados') a la lista
+        const [resP, resE, resR] = await Promise.all([
+            fetch('/api/lista-de-pilotos'),
+            fetch('/api/escuderias'),
+            fetch('/api/todos-los-resultados')
+        ]);
 
-            const pilotos = await resPilotos.json();
-            const escuderias = await resEscuderias.json();
+        const pilotos = await resP.json();
+        const escuderias = await resE.json();
+        const resultados = await resR.json();
 
-            renderizarConstructores(pilotos, escuderias);
-        } catch (error) {
-            console.error("Error al cargar los datos:", error);
-        }
-    });
+        // Aplicamos la lógica de cálculo que funciona en tu página de Pilotos
+        pilotos.forEach(p => {
+            p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
+            p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
+        });
+
+        renderizarConstructores(pilotos, escuderias);
+    } catch (error) {
+        console.error("Error al cargar los datos:", error);
+    }
+});
 
 // --- INICIALIZADOR AUTOMÁTICO ---
 // Pon aquí el nombre de las funciones que usas para obtener tus datos
