@@ -27,17 +27,23 @@
     
 
 <div id="panel-admin" class="seccion">
-    <h2>Área Privada de Comisarios</h2>
-
-<div class="contenedor-caja" id="bloque-login" style="max-width: 400px; margin: 100px auto;">
-    <h3 class="titulo-seccion">🔑 Acceso Comisarios</h3>
-    <div class="form-group">
-        <label>Contraseña:</label>
-        <input type="password" id="pass-comisario" class="form-control" placeholder="••••••••">
+    
+    <div style="max-width: 800px; margin: 40px auto 20px auto; display: flex; align-items: center; gap: 15px;">
+        <div style="width: 6px; height: 40px; background-color: #ff3333; border-radius: 2px;"></div>
+        <h2 style="font-family: 'Rajdhani', sans-serif; color: white; text-transform: uppercase; margin: 0; font-size: 1.8rem; letter-spacing: 1px;">
+            Panel de Control: Comisarios
+        </h2>
     </div>
-    <button class="boton-accion" style="width: 100%; justify-content: center;" onclick="verificarPassword()">Acceder</button>
-    <div id="error-login" class="mensaje" style="color: #ff3333; text-align: center; margin-top: 10px;"></div>
-</div>
+
+    <div class="contenedor-caja" id="bloque-login" style="max-width: 400px; margin: 50px auto;">
+        <h3 class="titulo-seccion" style="font-size: 1.5rem;">🔑 Acceso Comisarios</h3>
+        <div class="form-group">
+            <label>Contraseña:</label>
+            <input type="password" id="pass-comisario" class="form-control" placeholder="••••••••">
+        </div>
+        <button class="boton-accion" style="width: 100%; justify-content: center;" onclick="verificarPassword()">Acceder</button>
+        <div id="error-login" class="mensaje" style="color: #ff3333; text-align: center; margin-top: 10px;"></div>
+    </div>
 
     <div id="contenido-admin" style="display: none;">
         
