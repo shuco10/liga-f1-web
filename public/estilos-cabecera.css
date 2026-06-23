@@ -598,3 +598,12 @@ table tr td:nth-child(2) {
     text-transform: uppercase;
     letter-spacing: 2px;
 }
+
+/* Asegura que el título también tenga un pequeño margen en móviles */
+@media (max-width: 800px) {
+    .titulo-panel-admin {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
