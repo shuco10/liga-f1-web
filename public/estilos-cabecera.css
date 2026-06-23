@@ -361,3 +361,29 @@ table tr td:nth-child(2) {
     min-width: 250px; /* Ajusta este valor (250px, 300px...) hasta que te guste cómo queda */
     width: auto;
 }
+
+
+/* Estilo para los nombres de las escuderías */
+.nombre-escuderia {
+    font-size: 0.9em;         /* Igual que el nombre del piloto */
+    white-space: nowrap;      /* Mantiene el nombre en una línea */
+    overflow: hidden;
+    text-overflow: ellipsis;  /* Pone '...' si el nombre es muy largo */
+    max-width: 140px;         /* Ajusta según el espacio que quieras darles */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Alineamos la celda de Escudería también a la izquierda para mantener orden */
+.table-standings td:nth-child(4) {
+    text-align: left;
+    padding-left: 10px;
+}
+
+
+
+
+
+
+
+
