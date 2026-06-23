@@ -26,16 +26,39 @@ function seguridadAbrirModal() {
         alert("El sistema de login aún se está cargando, espera un segundo.");
     }
 }
+
+// Editar resultados en circuitos
 function editarResultado(id) {
-    if (!esAdmin()) {
-        alert("No tienes permisos para editar.");
-        return;
-    }
-    // Aquí iría tu lógica de edición, por ejemplo abrir un modal:
-    console.log("Editando resultado con ID:", id);
-    alert("Función de edición en desarrollo para el ID: " + id);
+    if (!esAdmin()) return alert("No tienes permisos.");
+    
+    // Mostramos el modal
+    const modal = document.getElementById('modal-editar');
+    modal.style.display = 'block';
+    
+    // Guardamos el ID en un campo oculto para saber qué estamos editando
+    document.getElementById('edit-id').value = id;
 }
 
+// Nueva función para enviar los datos al servidor
+async function guardarEdicion() {
+    const id = document.getElementById('edit-id').value;
+    const piloto = document.getElementById('edit-piloto').value;
+    const posicion = document.getElementById('edit-posicion').value;
+
+    const res = await fetch(`/api/editar-resultado/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ piloto_nombre: piloto, posicion: posicion })
+    });
+
+    if (res.ok) {
+        alert("Resultado actualizado");
+        location.reload();
+    } else {
+        alert("Error al actualizar");
+    }
+}
+// Eliminar resultados en circuitos
 function eliminarResultado(id) {
     if (!esAdmin()) {
         alert("No tienes permisos para eliminar.");
