@@ -239,15 +239,34 @@ app.get('/api/circuitos', async (req, res) => {
 });
 
 app.post('/api/guardar-resultado', async (req, res) => {
-    const { circuito_id, piloto_id, posicion } = req.body;
-    const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntosObtenidos = puntos[posicion] || 0;
+    // Hemos añadido escuderia_id que viene de tu nuevo formulario
+    const { id_piloto, id_gp, posicion, escuderia_id } = req.body;
+    
+    const puntosTabla = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    const puntosObtenidos = puntosTabla[posicion] || 0;
 
     try {
-        await pool.query('INSERT INTO resultados_carrera (circuito_id, piloto_id, posicion) VALUES ($1, $2, $3)', [circuito_id, piloto_id, posicion]);
-        await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, piloto_id]);
+        // 1. Guardamos en tu tabla de resultados
+        // NOTA: Asegúrate de que los nombres de las columnas coincidan con tu tabla
+        await pool.query(
+            'INSERT INTO resultados (id_piloto, id_gp, posicion, puntos, escuderia_puntos) VALUES ($1, $2, $3, $4, $5)', 
+            [id_piloto, id_gp, posicion, puntosObtenidos, escuderia_id]
+        );
+
+        // 2. Sumamos puntos al piloto (igual que hacías antes)
+        await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, id_piloto]);
+
+        // 3. NUEVO: Sumamos puntos a la escudería si se ha seleccionado una
+        if (escuderia_id) {
+            await pool.query('UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, escuderia_id]);
+        }
+
+        // Enviamos el OK que tu sistema antiguo espera
         res.sendStatus(200);
-    } catch (err) { res.status(500).send("Error al guardar resultado"); }
+    } catch (err) { 
+        console.error(err);
+        res.status(500).send("Error al guardar resultado"); 
+    }
 });
 
 app.get('/api/todos-los-resultados', async (req, res) => {
@@ -420,34 +439,6 @@ app.get('/api/escuderias', async (req, res) => {
     }
 });
 
-// --- RUTAS DE RESULTADOS ---
-app.post('/api/guardar-resultado', async (req, res) => {
-    const { id_piloto, id_gp, posicion, escuderia_id } = req.body;
-    
-    // Tabla de puntos (igual que antes)
-    const puntosPorPosicion = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntos = puntosPorPosicion[posicion] || 0;
-
-    try {
-        // 1. Guardar el resultado en la tabla general
-        await pool.query(
-            "INSERT INTO resultados (id_piloto, id_gp, posicion, puntos, escuderia_puntos) VALUES ($1, $2, $3, $4, $5)",
-            [id_piloto, id_gp, posicion, puntos, escuderia_id]
-        );
-
-        // 2. Sumar al Piloto
-        await pool.query("UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, id_piloto]);
-
-        // 3. Sumar a la Escudería (si tiene id)
-        if (escuderia_id) {
-            await pool.query("UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, escuderia_id]);
-        }
-
-        res.json({ success: true, puntos: puntos });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
 
 
 
