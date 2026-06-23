@@ -37,9 +37,19 @@ await pool.query(`
         sancion VARCHAR(255),
         fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+        CREATE TABLE IF NOT EXISTS resultados (
+        id SERIAL PRIMARY KEY,
+        id_piloto INTEGER REFERENCES pilotos(id),
+        id_gp INTEGER, -- O referencia a tu tabla de carreras
+        posicion INTEGER,
+        puntos INTEGER,
+        escuderia_puntos INTEGER
+    );
 `);
 
-        // Crear la tabla noticias si no existe
+
+       
+// Crear la tabla noticias si no existe
 await pool.query(`
     CREATE TABLE IF NOT EXISTS noticias (
         id SERIAL PRIMARY KEY,
@@ -410,6 +420,25 @@ app.get('/api/escuderias', async (req, res) => {
     }
 });
 
+// --- RUTAS DE RESULTADOS ---
+app.post('/api/resultados', async (req, res) => {
+    const { id_piloto, id_gp, posicion, escuderia_id } = req.body;
+    
+    // 1. Tabla de puntos (puedes ampliarla a tu gusto)
+    const puntosPorPosicion = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    const puntos = puntosPorPosicion[posicion] || 0;
+
+    try {
+        // Guardamos resultado
+        await pool.query(
+            "INSERT INTO resultados (id_piloto, id_gp, posicion, puntos, escuderia_puntos) VALUES ($1, $2, $3, $4, $5)",
+            [id_piloto, id_gp, posicion, puntos, escuderia_id]
+        );
+        res.json({ success: true, puntosAsignados: puntos });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 
 
