@@ -170,5 +170,15 @@
             } else { alert("Error al enviar el mensaje."); }
         }
     </script>
+      <div id="modal-editar" style="display:none; position:fixed; top:20%; left:30%; background:#222; padding:20px; border:2px solid #ff3333; z-index:1000;">
+    <h3>Editar Resultado</h3>
+    <input type="hidden" id="edit-id">
+    <label>Piloto:</label><br>
+    <input type="text" id="edit-piloto"><br><br>
+    <label>Posición:</label><br>
+    <input type="number" id="edit-posicion"><br><br>
+    <button onclick="guardarEdicion()">Guardar</button>
+    <button onclick="document.getElementById('modal-editar').style.display='none'">Cancelar</button>
+</div>
 </body>
 </html>
