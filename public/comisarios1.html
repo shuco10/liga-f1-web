@@ -26,11 +26,11 @@
 <!-- HASTA AQUI ES CABECERA VAMOS A VER SI NO ROMPEMOS LO QUE NECESITAMOS-->
     
 
-<div id="panel-admin" class="seccion">
-    
-    <div style="max-width: 800px; margin: 40px auto 20px auto; display: flex; align-items: center; gap: 15px;">
+<div id="panel-admin" class="seccion" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
         <div style="width: 6px; height: 40px; background-color: #ff3333; border-radius: 2px;"></div>
-        <h2 style="font-family: 'Rajdhani', sans-serif; color: white; text-transform: uppercase; margin: 0; font-size: 1.8rem; letter-spacing: 1px;">
+        <h2 style="font-family: 'Rajdhani', sans-serif; color: white; text-transform: uppercase; margin: 0; font-size: 1.8rem;">
             Panel de Control: Comisarios
         </h2>
     </div>
@@ -44,6 +44,11 @@
         <button class="boton-accion" style="width: 100%; justify-content: center;" onclick="verificarPassword()">Acceder</button>
         <div id="error-login" class="mensaje" style="color: #ff3333; text-align: center; margin-top: 10px;"></div>
     </div>
+
+    <div id="contenido-admin" style="display: none;">
+        </div>
+
+</div>
 
     <div id="contenido-admin" style="display: none;">
         
