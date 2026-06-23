@@ -67,43 +67,42 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarSanciones();
 });
 
-// SIMULACIÓN DE DATOS (Más adelante lo conectarás a tu DB)
-const listaSanciones = [
-    { nombre: "Piloto A", equipo: "Red Bull", pts: 8, total: 12, avatar: "ruta/avatar1.jpg", logo: "ruta/logo1.png" },
-    { nombre: "Piloto B", equipo: "Ferrari", pts: 2, total: 12, avatar: "ruta/avatar2.jpg", logo: "ruta/logo2.png" }
-];
+// En lugar de usar una variable global inexistente, hacemos un fetch:
+async function renderizarSanciones() {
+    try {
+        const response = await fetch('/api/lista-de-pilotos');
+        const listaPilotosGlobal = await response.json(); // Ahora sí, aquí tienes los datos
+        
+        const body = document.getElementById('tabla-body');
+        body.innerHTML = ""; 
 
-function renderizarSanciones() {
-    const body = document.getElementById('tabla-body');
-    body.innerHTML = ""; 
-
-    listaPilotosGlobal.forEach(p => {
-        const puntosSancion = p.puntos_sancion || 0;
-        const licenciaActual = 12 - puntosSancion;
-        
-        const porcentaje = (licenciaActual / 12) * 100;
-        const color = licenciaActual <= 0 ? "#e74c3c" : (licenciaActual <= 3 ? "#f1c40f" : "#2ecc71");
-        const estado = licenciaActual <= 0 ? "SUSPENDIDO" : "OK";
-        const nombreEquipo = p.es_reserva ? 'Reserva' : NOMBRES_ESCUDERIAS[p.escuderia_id];
-        
-        // --- AQUÍ ESTÁ LA MAGIA ---
-        // Construimos las rutas basándonos en tu estructura de carpetas
-        // Asumiendo que el nombre del archivo coincide con el ID o nombre que tienes en el JSON
-        const rutaAvatar = `/public/pilotos/${p.imagen_piloto}`; // Asegúrate que tu objeto piloto tenga esta propiedad
-        const rutaLogo = `/public/logos/${p.nombre_archivo_logo}`; // O ajusta según cómo guardes el logo
-        
-        body.innerHTML += `
-            <tr>
-                <td><img src="${rutaAvatar}" class="avatar-piloto" onerror="this.src='/public/pilotos/R.png'"> ${p.gamertag}</td>
-                <td><img src="${rutaLogo}" class="logo-escuderia"> ${nombreEquipo}</td>
-                <td><span style="color:${color}; font-weight:bold">${estado}</span></td>
-                <td>
-                    ${licenciaActual} / 12
-                    <div class="contenedor-barra"><div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div></div>
-                </td>
-            </tr>
-        `;
-    });
+        listaPilotosGlobal.forEach(p => {
+            const puntosSancion = p.puntos_sancion || 0;
+            const licenciaActual = 12 - puntosSancion;
+            
+            const porcentaje = (licenciaActual / 12) * 100;
+            const color = licenciaActual <= 0 ? "#e74c3c" : (licenciaActual <= 3 ? "#f1c40f" : "#2ecc71");
+            const estado = licenciaActual <= 0 ? "SUSPENDIDO" : "OK";
+            
+            // Usamos las rutas de imágenes basadas en tu estructura
+            const rutaAvatar = `/public/pilotos/${p.foto_url}`; 
+            const rutaLogo = `/public/logos/${p.escuderia.toLowerCase().replace(/\s/g, '')}.png`; // Ajusta si el nombre del archivo es distinto
+            
+            body.innerHTML += `
+                <tr>
+                    <td><img src="${rutaAvatar}" class="avatar-piloto" onerror="this.src='/public/pilotos/R.png'"> ${p.gamertag}</td>
+                    <td><img src="${rutaLogo}" class="logo-escuderia"> ${p.escuderia}</td>
+                    <td><span style="color:${color}; font-weight:bold">${estado}</span></td>
+                    <td>
+                        ${licenciaActual} / 12
+                        <div class="contenedor-barra"><div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div></div>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error("Error al cargar los pilotos:", err);
+    }
 }
 
 function seguridadAbrirModal() {
