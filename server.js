@@ -240,16 +240,21 @@ app.get('/api/circuitos', async (req, res) => {
 
 // --- RUTA POST UNIFICADA ---
 app.post('/api/guardar-resultado', async (req, res) => {
-    const { id_piloto, id_gp, posicion, escuderia_id } = req.body;
+    // Aceptamos ambos nombres (los nuevos y los viejos) usando el operador ||
+    const id_piloto = req.body.id_piloto || req.body.piloto_id;
+    const id_gp = req.body.id_gp || req.body.circuito_id;
+    const posicion = parseInt(req.body.posicion);
+    const escuderia_id = req.body.escuderia_id || null;
     
     const puntosTabla = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     const puntosObtenidos = puntosTabla[posicion] || 0;
 
     try {
-        // Guardamos en 'resultados_carrera' para que coincida con tu GET
+        // Asegúrate de que los nombres de las columnas aquí sean los REALES de tu base de datos
+        // Si tienes dudas, usa los que aparecen en tu GET (piloto_id y circuito_id)
         await pool.query(
             'INSERT INTO resultados_carrera (piloto_id, circuito_id, posicion, puntos, escuderia_id) VALUES ($1, $2, $3, $4, $5)', 
-            [id_piloto, id_gp, posicion, puntosObtenidos, escuderia_id || null]
+            [id_piloto, id_gp, posicion, puntosObtenidos, escuderia_id]
         );
 
         await pool.query('UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2', [puntosObtenidos, id_piloto]);
@@ -264,6 +269,8 @@ app.post('/api/guardar-resultado', async (req, res) => {
         res.status(500).send("Error al guardar: " + err.message); 
     }
 });
+
+// -----------------------------------------------------------
 
 app.get('/api/todos-los-resultados', async (req, res) => {
     const { rows } = await pool.query(`
