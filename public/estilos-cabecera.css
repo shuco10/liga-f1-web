@@ -517,4 +517,23 @@ table tr td:nth-child(2) {
     box-sizing: border-box;
 }
 
+/* Estilos unificados para tus paneles de administración */
+.admin-bloque {
+    background-color: #1e1e1e;
+    border: 1px solid #4a4a4a;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
 
+.admin-bloque h3 {
+    color: #e5e5e5;
+    border-bottom: 2px solid #00d2be;
+    padding-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* Ajustes para botones específicos */
+.btn-sancion { background-color: #d4a000; color: black; }
+.btn-eliminar { background-color: #7a0000; }
+.btn-actualizar { background-color: #229971; }
