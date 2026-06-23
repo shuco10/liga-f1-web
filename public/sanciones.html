@@ -98,14 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 function renderizarSanciones(pilotos) {
-    // 1. PROTECCIÓN: Si los datos no existen o no son un array, paramos aquí
+    // 1. PROTECCIÓN
     if (!pilotos || !Array.isArray(pilotos)) {
         console.warn("Los datos de pilotos no están listos todavía.");
         return;
     }
 
     const body = document.getElementById('tabla-body');
-    if (!body) return; // Protección extra por si falta el elemento HTML
+    if (!body) return;
     body.innerHTML = "";
 
     pilotos.forEach(p => {
@@ -126,7 +126,6 @@ function renderizarSanciones(pilotos) {
         const nombreEquipo = esReserva ? '<span class="badge-reserva">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
         const logoEquipo = esReserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id] || ''}" class="logo-escuderia" onerror="this.style.display='none'">`;
         
-        // Lógica de avatar: Si no hay foto, usa R.png. Si R.png falla, lo maneja el onerror
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
         const rutaAvatar = `/pilotos/${nombreArchivo}`;
 
@@ -134,8 +133,11 @@ function renderizarSanciones(pilotos) {
         body.innerHTML += `
             <tr>
                 <td style="text-align: left; padding-left: 20px;">
-                    <img src="${rutaAvatar}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'"> 
-                    ${p.gamertag}
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="${rutaAvatar}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'"> 
+                        <span class="numero-piloto">${p.numero || '00'}</span>
+                        <strong style="font-size: 1.1em;">${p.gamertag}</strong>
+                    </div>
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
                 <td style="font-weight:bold; color:${color}">${estado}</td>
@@ -149,7 +151,6 @@ function renderizarSanciones(pilotos) {
         `;
     });
 }
-
     
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
