@@ -102,30 +102,40 @@ function renderizarSanciones(pilotos) {
     body.innerHTML = "";
 
     pilotos.forEach(p => {
+        // 1. CÁLCULOS
         const puntosSancion = p.puntos_sancion || 0;
         const licenciaActual = 12 - puntosSancion;
         const porcentaje = (licenciaActual / 12) * 100;
-        
-        const color = licenciaActual <= 0 ? "#e74c3c" : (licenciaActual <= 3 ? "#f1c40f" : "#2ecc71");
-        const estado = licenciaActual <= 0 ? "SUSP." : "OK";
-        
-        // Estilo de Reserva
-        const nombreEquipo = p.es_reserva ? '<span style="color: #CCFF00; border: 1px solid #CCFF00; padding: 2px 6px;">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
-        const logoEquipo = p.es_reserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id]}" class="logo-escuderia">`;
-        
-        const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : null;
-        const rutaAvatar = nombreArchivo ? `/pilotos/${nombreArchivo}` : 'https://www.w3schools.com/howto/img_avatar.png';
 
+        // 2. LÓGICA DE ESTILOS (Colores según rangos)
+        let color = "#2ecc71"; // Verde por defecto
+        if (licenciaActual <= 2) color = "#e74c3c";      // Rojo (1-2 pts)
+        else if (licenciaActual <= 4) color = "#f1c40f"; // Amarillo (3-4 pts)
+        
+        const estado = licenciaActual <= 0 ? "SUSP." : "OK";
+
+        // 3. DATOS DE ESCUDERÍA Y AVATAR
+        const esReserva = p.es_reserva;
+        const nombreEquipo = esReserva ? '<span class="badge-reserva">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
+        const logoEquipo = esReserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id]}" class="logo-escuderia">`;
+        
+        const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'default.png';
+        const rutaAvatar = `/pilotos/${nombreArchivo}`;
+
+        // 4. RENDERIZADO
         body.innerHTML += `
             <tr>
                 <td style="text-align: left; padding-left: 20px;">
-                    <img src="${rutaAvatar}" class="piloto-avatar"> ${p.gamertag}
+                    <img src="${rutaAvatar}" class="piloto-avatar" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'"> 
+                    ${p.gamertag}
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
                 <td style="font-weight:bold; color:${color}">${estado}</td>
                 <td>
-                    ${licenciaActual} / 12
-                    <div class="contenedor-barra"><div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div></div>
+                    <span style="color:${color}">${licenciaActual} / 12</span>
+                    <div class="contenedor-barra">
+                        <div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div>
+                    </div>
                 </td>
             </tr>
         `;
