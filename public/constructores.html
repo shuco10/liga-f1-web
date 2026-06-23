@@ -155,7 +155,7 @@ function renderizarConstructores(pilotos, escuderias) {
     datosConstructores.forEach((c, index) => {
         const claseBanda = mapaColores[c.nombre] || "banda-default";
         const avatars = c.pilotos.map(p => {
-            const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'default.png';
+            const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
             return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'">`;
         }).join('');
 
