@@ -24,20 +24,26 @@
 <div class="titulo-liga">🏎️ CLASIFICACION DE CONSTRUCTORES 🏎️</div>
 
 
-      <table class="table-standings">
-    <thead>
-        <tr>
-            <th>POS</th>
-            <th>ESCUDERÍA</th>
-            <th>PILOTOS</th>
-            <th>VICS</th>
-            <th>PODIOS</th>
-            <th>PUNTOS</th>
-        </tr>
-    </thead>
-    <tbody id="tabla-body-constructores">
-    </tbody>
-</table>
+<div class="caja-contenido">
+    <h2 class="titulo-tabla-constructores">CLASIFICACIÓN DE CONSTRUCTORES</h2>
+    
+    <div class="table-wrapper">
+        <table class="table-standings">
+            <thead>
+                <tr>
+                    <th>POS</th>
+                    <th>ESCUDERÍA</th>
+                    <th>PILOTOS</th>
+                    <th>VICS</th>
+                    <th>PODIOS</th>
+                    <th>PUNTOS</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-body-constructores">
+                </tbody>
+        </table>
+    </div>
+</div>
 
 
       <div id="footer-placeholder"></div>
@@ -93,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+// --- FUNCIÓN PRINCIPAL DE RENDERIZADO ---
 function renderizarConstructores(pilotos, escuderias) {
     const body = document.getElementById('tabla-body-constructores');
     if (!body) {
@@ -101,7 +108,6 @@ function renderizarConstructores(pilotos, escuderias) {
     }
     body.innerHTML = "";
 
-    // Mapeo de colores para las bandas
     const mapaColores = {
         "Audi": "banda-audi", "Cadillac": "banda-cadillac", "Red Bull Racing": "banda-redbull",
         "Mercedes-AMG": "banda-mercedes", "Ferrari": "banda-ferrari", "Aston Martin": "banda-aston",
@@ -109,9 +115,7 @@ function renderizarConstructores(pilotos, escuderias) {
         "Visa Cash App RB": "banda-visa", "McLaren": "banda-mclaren"
     };
 
-    // 1. Procesar y calcular
     const datosConstructores = escuderias.map(esc => {
-        // Filtramos pilotos por escudería asegurando comparación de tipos
         const pilotosEscuderia = pilotos.filter(p => String(p.escuderia_id) === String(esc.id));
         
         return {
@@ -124,17 +128,14 @@ function renderizarConstructores(pilotos, escuderias) {
         };
     }).sort((a, b) => b.puntos - a.puntos);
 
-    // 2. Renderizar filas
     datosConstructores.forEach((c, index) => {
         const claseBanda = mapaColores[c.nombre] || "banda-default";
         
-        // Generar HTML de los avatares con seguridad
         const avatars = c.pilotos.map(p => {
             const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'default.png';
             return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'">`;
         }).join('');
 
-        // Solo añadimos la fila si hay datos o si prefieres mostrar todas las escuderías
         body.innerHTML += `
             <tr>
                 <td>${index + 1}</td>
@@ -151,6 +152,20 @@ function renderizarConstructores(pilotos, escuderias) {
     });
 }
 
+// --- INICIALIZADOR AUTOMÁTICO ---
+// Pon aquí el nombre de las funciones que usas para obtener tus datos
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        // AJUSTA ESTOS NOMBRES SEGÚN TU server.js
+        const listaPilotos = await obtenerPilotos(); 
+        const listaEscuderias = await obtenerEscuderias();
+        
+        renderizarConstructores(listaPilotos, listaEscuderias);
+        console.log("Tabla de constructores cargada correctamente");
+    } catch (error) {
+        console.error("Error al cargar datos en Constructores:", error);
+    }
+});
 
 
 
