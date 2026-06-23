@@ -26,25 +26,26 @@
     <main class="caja-contenido">
 
 
-        <div id="form-admin" class="form-resolucion" style="display: none;">
-            <h3>Nueva Resolución</h3>
-            <label>Piloto Reclamante:</label>
-            <select id="reclamante"><option value="">Seleccione piloto...</option></select>
-            
-            <label>Piloto Reclamado:</label>
-            <select id="reclamado"><option value="">Seleccione piloto...</option></select>
-            
-            <label>Artículo Aplicado:</label>
-            <input type="text" id="articulo" placeholder="Ej: Artículo 7.3 - Ataque Responsable">
-            
-            <label>Explicación de la decisión:</label>
-            <textarea id="explicacion" rows="4" placeholder="Detalle técnico de la sanción..."></textarea>
-            
-            <label>Sanción Aplicada:</label>
-            <input type="text" id="sancion" placeholder="Ej: 5 segundos / 4p Superlicencia">
-            
-            <button onclick="publicarResolucion()">Publicar Resolución</button>
-        </div>
+<div id="form-admin" class="form-resolucion" style="display: none;">
+    <input type="hidden" id="edit-id" value="">
+    
+    <h3 id="titulo-form">Nueva Resolución</h3> <label>Piloto Reclamante:</label>
+    <select id="reclamante"><option value="">Seleccione piloto...</option></select>
+    
+    <label>Piloto Reclamado:</label>
+    <select id="reclamado"><option value="">Seleccione piloto...</option></select>
+    
+    <label>Artículo Aplicado:</label>
+    <input type="text" id="articulo" placeholder="Ej: Artículo 7.3 - Ataque Responsable">
+    
+    <label>Explicación de la decisión:</label>
+    <textarea id="explicacion" rows="4" placeholder="Detalle técnico de la sanción..."></textarea>
+    
+    <label>Sanción Aplicada:</label>
+    <input type="text" id="sancion" placeholder="Ej: 5 segundos / 4p Superlicencia">
+    
+    <button onclick="guardarResolucion()">Guardar Resolución</button>
+</div>
 
 <div style="margin: 30px auto; max-width: 800px; text-align: center;">
     <h3 style="font-size: 32px; color: #ff3333; margin-bottom: 20px;">Tarjetas de la FIA</h3>
