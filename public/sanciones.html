@@ -2,139 +2,132 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sanciones | Cazadores de Curvas</title>
-    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    
     <style>
-        /* Estilo base para el fondo de esta página */
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        .titulo-liga { text-align: center; font-size: 24px; margin: 20px 0; font-weight: bold; }
+        
+        /* Estilos tabla sanciones */
+        .tabla-sanciones { width: 90%; margin: 20px auto; border-collapse: collapse; background: #222; border-radius: 8px; overflow: hidden; }
+        .tabla-sanciones th, .tabla-sanciones td { padding: 15px; border-bottom: 1px solid #333; text-align: center; }
+        .avatar-piloto { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #e10600; vertical-align: middle; margin-right: 10px; }
+        .logo-escuderia { width: 30px; height: 30px; vertical-align: middle; margin-right: 8px; }
+        .contenedor-barra { width: 100px; background: #333; height: 10px; border-radius: 5px; margin: 5px auto; overflow: hidden; }
+        .barra-progreso { height: 100%; border-radius: 5px; transition: width 0.3s; }
     </style>
     <script src="/auth.js"></script>
 </head>
-  <body>
+<body>
     <div id="header-placeholder"></div>
-<div class="titulo-liga">👨‍⚖️ TABLA DE SANCIONES 👨‍⚖️</div>
+    
+    <div class="titulo-liga">👨‍⚖️ TABLA DE SANCIONES 👨‍⚖️</div>
 
+    <table class="tabla-sanciones">
+        <thead>
+            <tr>
+                <th>Piloto</th>
+                <th>Escudería</th>
+                <th>Estado Licencia</th>
+                <th>Puntos</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-body">
+            </tbody>
+    </table>
 
-
-
-      <div id="footer-placeholder"></div>
+    <div id="footer-placeholder"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. Cargar Header (ÚNICO FETCH)
+    // 1. Cargar Header
     fetch('/header.html')
         .then(res => res.text())
         .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
-            
-            // Configurar Banner de Instant Gaming
-            window.igBannerConfig = {
-                lang: 'es',
-                igr: 'gamer-97d22e',
-                banners: ['my-banner']
-            };
+            window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
             const script = document.createElement('script');
             script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
             script.defer = true;
             document.body.appendChild(script);
-
-            // Verificación de sesión justo después de inyectar el HTML
             verificarSesion();
-        })
-        .catch(error => console.error('Error al cargar la cabecera:', error));
+        });
 
-    // 2. Cargar Footer
-    fetch('/footer.html')
-        .then(res => res.text())
-        .then(data => document.getElementById('footer-placeholder').innerHTML = data);
-        
-    // 3. Cargar el Modal de Login
-    fetch('/login-modal.html')
-        .then(res => res.text())
-        .then(data => document.body.insertAdjacentHTML('beforeend', data));
+    // 2. Cargar Footer y Modal
+    fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
+    fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+
+    // 3. Renderizar sanciones al cargar
+    renderizarSanciones();
 });
 
+// SIMULACIÓN DE DATOS (Más adelante lo conectarás a tu DB)
+const listaSanciones = [
+    { nombre: "Piloto A", equipo: "Red Bull", pts: 8, total: 12, avatar: "ruta/avatar1.jpg", logo: "ruta/logo1.png" },
+    { nombre: "Piloto B", equipo: "Ferrari", pts: 2, total: 12, avatar: "ruta/avatar2.jpg", logo: "ruta/logo2.png" }
+];
 
-// Esta función permite abrir el modal desde cualquier página
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) {
-            modal.style.display = 'block';
-        } else {
-            console.warn("El modal de login aún no está cargado.");
-        }
-    }
+function renderizarSanciones() {
+    const body = document.getElementById('tabla-body');
+    body.innerHTML = ""; // Limpiar antes de cargar
+    listaSanciones.forEach(p => {
+        const porcentaje = (p.pts / p.total) * 100;
+        const color = p.pts <= 2 ? "#e74c3c" : (p.pts <= 5 ? "#f1c40f" : "#2ecc71");
+        const estado = p.pts === 0 ? "SUSPENDIDO" : "OK";
 
-    
-// Función centralizada
+        body.innerHTML += `
+            <tr>
+                <td><img src="${p.avatar}" class="avatar-piloto"> ${p.nombre}</td>
+                <td><img src="${p.logo}" class="logo-escuderia">${p.equipo}</td>
+                <td><span style="color:${color}; font-weight:bold">${estado}</span></td>
+                <td>
+                    ${p.pts} / ${p.total}
+                    <div class="contenedor-barra"><div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div></div>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function seguridadAbrirModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) modal.style.display = 'block';
+}
+
 function verificarSesion() {
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-    
-    // Si los botones existen, aplicamos la lógica
     if (btnLogin && btnLogout) {
         btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
         btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
     } else {
-        // Por si acaso, si no se encuentran, reintentamos en 100ms
         setTimeout(verificarSesion, 100);
     }
 }
 
-
-        async function enviarContacto() {
-        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
-        const nombre = document.getElementById('nombre-contacto').value;
-        const asunto = document.getElementById('asunto-contacto').value;
-        const mensaje = document.getElementById('mensaje-contacto').value;
-
-        // Validacion simple
-        if(!nombre || !asunto || !mensaje) {
-            alert("Por favor, rellena todos los campos.");
-            return;
-        }
-
-        const payload = {
+async function enviarContacto() {
+    const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+    const nombre = document.getElementById('nombre-contacto').value;
+    const asunto = document.getElementById('asunto-contacto').value;
+    const mensaje = document.getElementById('mensaje-contacto').value;
+    if(!nombre || !asunto || !mensaje) { alert("Por favor, rellena todos los campos."); return; }
+    const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
             content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-            embeds: [{
-                title: "📩 Nuevo mensaje de contacto",
-                color: 3447003,
-                fields: [
-                    { name: "Nombre", value: nombre, inline: true },
-                    { name: "Asunto", value: asunto, inline: true },
-                    { name: "Mensaje", value: mensaje }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
-
-        const res = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-            alert("¡Mensaje enviado correctamente!");
-            document.getElementById('modal-contacto').style.display = 'none';
-            document.getElementById('nombre-contacto').value = '';
-            document.getElementById('asunto-contacto').value = '';
-            document.getElementById('mensaje-contacto').value = '';
-        } else {
-            alert("Error al enviar el mensaje.");
-        }
-    }
-
-    
+            embeds: [{ title: "📩 Nuevo mensaje", color: 3447003, fields: [{name: "Nombre", value: nombre}, {name: "Asunto", value: asunto}, {name: "Mensaje", value: mensaje}] }]
+        })
+    });
+    if (res.ok) { alert("¡Mensaje enviado!"); document.getElementById('modal-contacto').style.display = 'none'; }
+    else { alert("Error al enviar."); }
+}
 </script>
+</body>
+</html>
