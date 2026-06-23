@@ -82,3 +82,23 @@ function eliminarResultado(id) {
         .catch(err => console.error("Error:", err));
     }
 }
+
+
+
+function eliminarResolucion(id) {
+    if (!confirm("¿Estás seguro de que quieres eliminar esta resolución?")) return;
+
+    fetch(`/api/resoluciones/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => {
+        if (res.ok) {
+            alert("Resolución eliminada correctamente.");
+            cargarResoluciones(); // Esto refresca la lista automáticamente
+        } else {
+            alert("Error al eliminar la resolución.");
+        }
+    })
+    .catch(err => console.error("Error:", err));
+}
