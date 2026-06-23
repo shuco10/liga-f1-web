@@ -40,8 +40,8 @@
 
     <div id="contenido-admin" style="display: none;">
         
-<div id="admin-carreras" class="admin-bloque">
-    <h3>🏁 - Cargar Resultados de carrera - 🏁</h3>
+<div class="contenedor-caja">
+    <h3 class="titulo-seccion">🏁 Cargar Resultados</h3>
     <div class="form-group">
         <label>Circuito</label>
         <select id="select-circuito-admin" class="form-control"></select>
@@ -54,66 +54,45 @@
         <label>Posición</label>
         <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
     </div>
-    <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
+    <button onclick="guardarResultado()" class="boton-accion">GUARDAR RESULTADO</button>
 </div>
 
-<!-- PANEL 1 -->
-<div class="admin-bloque">
-    <h3>👤 1. Inscribir Nuevo Piloto</h3>
+<div class="contenedor-caja">
+    <h3 class="titulo-seccion">👤 Inscribir Piloto</h3>
     <form id="form-piloto">
-        <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" class="form-control" required></div>
-        <div class="form-group"><label>Dorsal / Número del Piloto:</label><input type="number" id="numero_piloto" class="form-control" min="1" max="99" required></div>
-        <div class="form-group"><label>Enlace de Foto (Discord URL):</label><input type="text" id="foto_url" class="form-control"></div>
-        <div class="form-group"><label>Plataforma:</label><select id="plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
-        <div class="form-group">
-            <label>Escudería:</label>
-            <select id="escuderia_id" class="form-control">
-                <!-- Considera rellenar esto dinámicamente con JS para no tener que editar el HTML si cambias escuderías -->
-            </select>
-        </div>
-        <div class="form-group"><label>Rol del Piloto:</label><select id="es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
-        <button type="submit" class="btn-accion">Guardar Piloto</button>
+        <div class="form-group"><label>Gamertag:</label><input type="text" id="gamertag" class="form-control" required></div>
+        <div class="form-group"><label>Dorsal:</label><input type="number" id="numero_piloto" class="form-control" min="1" max="99" required></div>
+        <div class="form-group"><label>Escudería:</label><select id="escuderia_id" class="form-control"></select></div>
+        <button type="submit" class="boton-accion">Guardar Piloto</button>
         <div id="msg-piloto" class="mensaje"></div>
     </form>
 </div>
 
-<!-- PANEL 2 -->
-<div class="admin-bloque">
-    <h3>✏️ 2. Editar Piloto Existente</h3>
+<div class="contenedor-caja">
+    <h3 class="titulo-seccion">✏️ Editar Piloto</h3>
     <form id="form-editar">
-        <div class="form-group"><label>Selecciona el Piloto a Modificar:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()" required></select></div>
-        <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" class="form-control" required></div>
-        <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" class="form-control" min="1" max="99" required></div>
-        <div class="form-group"><label>Nuevo Enlace de Foto:</label><input type="text" id="edit-foto" class="form-control"></div>
-        <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
-        <div class="form-group">
-            <label>Nueva Escudería:</label>
-            <select id="edit-escuderia" class="form-control"></select>
-        </div>
-        <div class="form-group"><label>Nuevo Rol:</label><select id="edit-es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
-        <button type="submit" class="btn-accion btn-actualizar">Actualizar Datos</button>
+        <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()"></select></div>
+        <div class="form-group"><label>Nuevo Gamertag:</label><input type="text" id="edit-gamertag" class="form-control"></div>
+        <div class="form-group"><label>Nueva Escudería:</label><select id="edit-escuderia" class="form-control"></select></div>
+        <button type="submit" class="boton-accion">Actualizar Datos</button>
         <div id="msg-editar" class="mensaje"></div>
     </form>
 </div>
 
-<!-- PANEL 3 -->
-<div class="admin-bloque">
-    <h3>🚨 3. Aplicar Penalización de Licencia</h3>
-    <form id="form-sancion">
-        <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-sancion" class="form-control" required></select></div>
-        <div class="form-group"><label>Puntos a retirar:</label><input type="number" id="puntos_restar" class="form-control" placeholder="Ej: 2 o -2" required></div>
-        <button type="submit" class="btn-accion btn-sancion">Aplicar Sanción</button>
-        <div id="msg-sancion" style="color: #d4a000; margin-top: 10px; font-weight: bold;"></div>
+<div class="contenedor-caja">
+    <h3 class="titulo-seccion">🚨 Gestión de Licencia</h3>
+    <form id="form-sancion" style="margin-bottom: 20px;">
+        <label>Penalizar Piloto:</label>
+        <select id="select-piloto-sancion" class="form-control"></select>
+        <input type="number" id="puntos_restar" class="form-control" placeholder="Puntos a restar">
+        <button type="submit" class="boton-accion">Aplicar Sanción</button>
     </form>
-</div>
-
-<!-- PANEL 4 -->
-<div class="admin-bloque">
-    <h3>❌ 4. Eliminar Piloto de la Liga</h3>
+    
     <form id="form-eliminar">
-        <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" class="form-control" required></select></div>
-        <button type="submit" class="btn-accion btn-eliminar">Eliminar Permanentemente</button>
-        <div id="msg-eliminar" style="color: #ff4444; margin-top: 10px; font-weight: bold;"></div>
+        <label>Dar de Baja:</label>
+        <select id="select-piloto-eliminar" class="form-control"></select>
+        <button type="submit" class="boton-accion" style="background-color: #7a0000; border-color: #7a0000;">Eliminar Piloto</button>
+        <div id="msg-eliminar" class="mensaje"></div>
     </form>
 </div>
 
