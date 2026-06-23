@@ -125,14 +125,25 @@
     }
 
     // 3. Acciones Admin
-    async function publicarNoticia() {
-        const res = await fetch('/api/noticias', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ titulo: document.getElementById('nueva-noticia-titulo').value, contenido: document.getElementById('nueva-noticia-cuerpo').value })
-        });
-        if (res.ok) { cargarNoticias(); alert("Publicado"); }
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    const res = await fetch('/api/noticias', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ titulo: tituloInput.value, contenido: contenidoInput.value })
+    });
+    
+    if (res.ok) { 
+        // Limpiamos los campos
+        tituloInput.value = '';
+        contenidoInput.value = '';
+        
+        cargarNoticias(); 
+        alert("Publicado"); 
     }
+}
 
     async function eliminarNoticia(id) {
         if (confirm("¿Borrar?")) { await fetch(`/api/noticias/${id}`, { method: 'DELETE' }); cargarNoticias(); }
