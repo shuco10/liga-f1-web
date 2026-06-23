@@ -11,12 +11,12 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 /* --- TÍTULO DE LIGA --- */
 .titulo-liga {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 2.2rem;
-    color: #ffffff;
+    font-family: 'Rajdhani', sans-serif !important;
+    font-size: 2.2rem !important; /* Fuerza el tamaño grande */
+    color: #ffffff !important;
     text-transform: uppercase;
     letter-spacing: 3px;
-    margin: 40px 0;
+    margin: 40px 0 !important;
     text-align: center;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
