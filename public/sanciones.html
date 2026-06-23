@@ -85,8 +85,8 @@ async function renderizarSanciones() {
             const estado = licenciaActual <= 0 ? "SUSPENDIDO" : "OK";
             
             // Usamos las rutas de imágenes basadas en tu estructura
-            const rutaAvatar = `/public/pilotos/${p.foto_url}`; 
-            const rutaLogo = `/public/logos/${p.escuderia.toLowerCase().replace(/\s/g, '')}.png`; // Ajusta si el nombre del archivo es distinto
+            const rutaAvatar = `/pilotos/${p.foto_url}`; 
+            const rutaLogo = `/logos/${p.escuderia.toLowerCase().replace(/\s/g, '')}.png`; // Ajusta si el nombre del archivo es distinto
             
             body.innerHTML += `
                 <tr>
