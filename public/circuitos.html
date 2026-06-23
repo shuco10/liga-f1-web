@@ -170,15 +170,19 @@
             } else { alert("Error al enviar el mensaje."); }
         }
     </script>
-      <div id="modal-editar" style="display:none; position:fixed; top:20%; left:30%; background:#222; padding:20px; border:2px solid #ff3333; z-index:1000;">
-    <h3>Editar Resultado</h3>
+
+
+      
+<div id="modal-editar" style="display:none; position:fixed; top:20%; left:30%; background:#1a1a1a; padding:20px; border:2px solid #ff3333; z-index:1000; color:white; border-radius:10px;">
+    <h3>Editar Posición</h3>
     <input type="hidden" id="edit-id">
-    <label>Piloto:</label><br>
-    <input type="text" id="edit-piloto"><br><br>
-    <label>Posición:</label><br>
-    <input type="number" id="edit-posicion"><br><br>
-    <button onclick="guardarEdicion()">Guardar</button>
-    <button onclick="document.getElementById('modal-editar').style.display='none'">Cancelar</button>
+    <label>Nueva Posición:</label><br>
+    <input type="number" id="edit-posicion" style="width:100%; padding:8px; margin:10px 0;"><br>
+    <button onclick="guardarEdicion()" style="background:#ff3333; color:white; border:none; padding:10px; cursor:pointer;">Guardar Cambios</button>
+    <button onclick="document.getElementById('modal-editar').style.display='none'" style="background:#444; color:white; border:none; padding:10px; cursor:pointer;">Cancelar</button>
 </div>
+
+
+      
 </body>
 </html>
