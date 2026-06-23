@@ -155,6 +155,212 @@
 
     <script>
 
+       // CODIGO GENERICO DE LAS NUEVAS PAGINAS ///
+        
+  // 1. Cargar Header, Footer y Modal de forma ordenada
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Cargar Header
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                
+                // Verificación de sesión tras cargar el header
+                if (typeof verificarSesion === 'function') {
+                    verificarSesion();
+                }
+
+                // Configuración Banner
+                window.igBannerConfig = {
+                    lang: 'es',
+                    igr: 'gamer-97d22e',
+                    banners: ['my-banner']
+                };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
+
+        // Cargar Footer
+        fetch('/footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
+            .catch(error => console.error('Error al cargar el footer:', error));
+
+        // Cargar Modal de Login (Para evitar el error de null)
+        fetch('/login-modal.html')
+            .then(res => res.text())
+            .then(data => {
+                document.body.insertAdjacentHTML('beforeend', data);
+            });
+
+        // Cargar las noticias
+        cargarNoticias();
+    });
+
+// 1. Mostrar form si es admin
+    if (typeof esAdmin === 'function' && esAdmin()) {
+        document.getElementById('form-noticia-admin').style.display = 'block';
+    }
+
+    // 2. Cargar Noticias
+async function cargarNoticias() {
+    const contenedor = document.getElementById('lista-noticias');
+    if (!contenedor) return; // Protección por si no existe en esta página
+
+    try {
+        const respuesta = await fetch('/api/noticias');
+        const noticias = await respuesta.json();
+        
+        contenedor.innerHTML = ''; 
+        
+        if (noticias.length === 0) {
+            contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+            return;
+        }
+
+        noticias.forEach(noticia => {
+            const div = document.createElement('div');
+            div.className = 'noticia-item noticia-destacada-amarilla'; 
+            div.style.marginBottom = "20px";
+            
+            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                            style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                    <button onclick="eliminarNoticia(${noticia.id})" 
+                            style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                </div>
+            ` : '';
+
+            const fechaObj = new Date(noticia.fecha);
+            div.innerHTML = `
+                <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
+                <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                ${botonesAdmin}
+            `;
+            contenedor.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Error cargando noticias:", error);
+        contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
+    }
+}
+
+    // 3. Acciones Admin
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    const res = await fetch('/api/noticias', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ titulo: tituloInput.value, contenido: contenidoInput.value })
+    });
+    
+    if (res.ok) { 
+        // Limpiamos los campos
+        tituloInput.value = '';
+        contenidoInput.value = '';
+        
+        cargarNoticias(); 
+        alert("Publicado"); 
+    }
+}
+
+    async function eliminarNoticia(id) {
+        if (confirm("¿Borrar?")) { await fetch(`/api/noticias/${id}`, { method: 'DELETE' }); cargarNoticias(); }
+    }
+
+    async function editarNoticia(id, t, c) {
+        const nt = prompt("Nuevo título:", t);
+        const nc = prompt("Nuevo contenido:", c);
+        if (nt && nc) {
+            await fetch(`/api/noticias/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ titulo: nt, contenido: nc }) });
+            cargarNoticias();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarNoticias);
+
+
+    // Esta función vivirá ahora permanentemente en noticias.html
+    function verificarSesion() {
+        console.log("DEBUG: Ejecutando verificación...");
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        
+        if (btnLogin && btnLogout) {
+            if (adminStatus === true) {
+                btnLogin.style.display = 'none';
+                btnLogout.style.display = 'inline-block';
+            } else {
+                btnLogin.style.display = 'inline-block';
+                btnLogout.style.display = 'none';
+            }
+        } else {
+            console.warn("DEBUG: Botones no encontrados todavía.");
+        }
+    }
+
+    // Esta función también la movemos aquí para que sea 100% accesible
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
+    }
+
+
+        async function enviarContacto() {
+        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+        const nombre = document.getElementById('nombre-contacto').value;
+        const asunto = document.getElementById('asunto-contacto').value;
+        const mensaje = document.getElementById('mensaje-contacto').value;
+
+        // Validacion simple
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
+            return;
+        }
+
+        const payload = {
+            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+            embeds: [{
+                title: "📩 Nuevo mensaje de contacto",
+                color: 3447003,
+                fields: [
+                    { name: "Nombre", value: nombre, inline: true },
+                    { name: "Asunto", value: asunto, inline: true },
+                    { name: "Mensaje", value: mensaje }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("¡Mensaje enviado correctamente!");
+            document.getElementById('modal-contacto').style.display = 'none';
+            document.getElementById('nombre-contacto').value = '';
+            document.getElementById('asunto-contacto').value = '';
+            document.getElementById('mensaje-contacto').value = '';
+        } else {
+            alert("Error al enviar el mensaje.");
+        }
+    }
+
+        // CODIGO GENERICO DE LAS NUEVAS PAGINAS ///
+
 
         
         const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
