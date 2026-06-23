@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/login-modal.html')
         .then(res => res.text())
         .then(data => document.body.insertAdjacentHTML('beforeend', data));
+    // 4. cargo circuitos
+    if (document.getElementById('lista-circuitos')) {
+        cargarCircuitos();
+    }
 });
 
 
