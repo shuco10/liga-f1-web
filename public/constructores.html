@@ -125,64 +125,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // 1. La lógica de renderizado
-    function renderizarConstructores(pilotos, escuderias) {
-        const body = document.getElementById('tabla-body-constructores');
-        if (!body) return;
-        body.innerHTML = "";
+function renderizarConstructores(pilotos, escuderias) {
+    const body = document.getElementById('tabla-body-constructores');
+    if (!body) return;
+    body.innerHTML = "";
 
-        const mapaColores = {
-            "Audi": "banda-audi", "Cadillac": "banda-cadillac", "Red Bull Racing": "banda-redbull",
-            "Mercedes-AMG": "banda-mercedes", "Ferrari": "banda-ferrari", "Aston Martin": "banda-aston",
-            "Williams": "banda-williams", "Alpine": "banda-alpine", "Haas": "banda-haas",
-            "Visa Cash App RB": "banda-visa", "McLaren": "banda-mclaren"
+    const mapaColores = {
+        "Audi": "banda-audi", "Cadillac": "banda-cadillac", "Red Bull Racing": "banda-redbull",
+        "Mercedes-AMG": "banda-mercedes", "Ferrari": "banda-ferrari", "Aston Martin": "banda-aston",
+        "Williams": "banda-williams", "Alpine": "banda-alpine", "Haas": "banda-haas",
+        "Visa Cash App RB": "banda-visa", "McLaren": "banda-mclaren"
+    };
+
+    const datosConstructores = escuderias.map(esc => {
+        const pilotosEscuderia = pilotos.filter(p => 
+            String(p.escuderia_id) === String(esc.id) && String(p.es_reserva) === '0'
+        );
+        
+        return {
+            nombre: (String(esc.id) === '9' ? 'Audi' : esc.nombre), // AQUÍ ESTÁ EL CAMBIO
+            logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
+            pilotos: pilotosEscuderia,
+            victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
+            podios: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.podios) || 0), 0),
+            puntos: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0)
         };
+    }).sort((a, b) => b.puntos - a.puntos);
 
-        const datosConstructores = escuderias.map(esc => {
-    // 1. Filtrar escudería Y excluir reservas (es_reserva === 0 o '0')
-            const pilotosEscuderia = pilotos.filter(p => 
-                String(p.escuderia_id) === String(esc.id) && String(p.es_reserva) === '0'
-            );
-    
-            return {
-                // Dentro de la función renderizarConstructores, en el .map():
-                nombre: (esc.id == 9 ? 'Audi' : esc.nombre),
-                nombre: esc.nombre,
-                logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
-                pilotos: pilotosEscuderia,
-        // 2. Usar Number() y apuntar a 'puntos_totales' (como está en tu BD)
-                victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
-                podios: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.podios) || 0), 0),
-                puntos: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0)
-            };
-        }).sort((a, b) => b.puntos - a.puntos);
+    datosConstructores.forEach((c, index) => {
+        const claseBanda = mapaColores[c.nombre] || "banda-default";
+        const avatars = c.pilotos.map(p => {
+            const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'default.png';
+            return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'">`;
+        }).join('');
 
-        datosConstructores.forEach((c, index) => {
-            const claseBanda = mapaColores[c.nombre] || "banda-default";
-            const avatars = c.pilotos.map(p => {
-                const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'default.png';
-                return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'">`;
-            }).join('');
+        body.innerHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td style="text-align: left;">
+                    <span class="color-banda ${claseBanda}"></span>
+                    <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
+                </td>
+                <td>${avatars || '-'}</td>
+                <td>${c.victorias}</td>
+                <td>${c.podios}</td>
+                <td style="font-weight:bold">${c.puntos} pts</td>
+            </tr>
+        `;
+    });
+}
 
-            body.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td style="text-align: left;">
-                        <span class="color-banda ${claseBanda}"></span>
-                        <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
-                    </td>
-                    <td>${avatars || '-'}</td>
-                    <td>${c.victorias}</td>
-                    <td>${c.podios}</td>
-                    <td style="font-weight:bold">${c.puntos} pts</td>
-                </tr>
-            `;
-        });
-    }
-
-// 2. Carga automática al abrir la página
+// 2. Carga única y correcta
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // Añadimos fetch('/api/todos-los-resultados') a la lista
         const [resP, resE, resR] = await Promise.all([
             fetch('/api/lista-de-pilotos'),
             fetch('/api/escuderias'),
@@ -193,7 +188,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const escuderias = await resE.json();
         const resultados = await resR.json();
 
-        // Aplicamos la lógica de cálculo que funciona en tu página de Pilotos
         pilotos.forEach(p => {
             p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
             p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
@@ -204,22 +198,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("Error al cargar los datos:", error);
     }
 });
-
-// --- INICIALIZADOR AUTOMÁTICO ---
-// Pon aquí el nombre de las funciones que usas para obtener tus datos
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        // AJUSTA ESTOS NOMBRES SEGÚN TU server.js
-        const listaPilotos = await obtenerPilotos(); 
-        const listaEscuderias = await obtenerEscuderias();
-        
-        renderizarConstructores(listaPilotos, listaEscuderias);
-        console.log("Tabla de constructores cargada correctamente");
-    } catch (error) {
-        console.error("Error al cargar datos en Constructores:", error);
-    }
-});
-
 
 
 
