@@ -494,6 +494,27 @@ table tr td:nth-child(2) {
 .campo-resolucion span { color: #aaa; }
 
 
+.resoluciones-grid {
+    display: grid;
+    /* Esto hace que en móvil se vea 1 columna, y en PC tantas como quepan de 300px */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    /* Limitamos el ancho total para que no se desparramen en pantallas gigantes */
+    max-width: 1000px; 
+    margin: 0 auto;
+}
 
+.tarjeta-resolucion {
+    background: #1a1a1a;
+    border: 2px solid #ff3333;
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    /* Esto evita que la tarjeta sea excesivamente ancha en PC */
+    width: 100%; 
+    box-sizing: border-box;
+}
 
 
