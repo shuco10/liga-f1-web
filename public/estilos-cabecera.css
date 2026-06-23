@@ -309,6 +309,12 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 .banda-mclaren { background-color: #FF8000; } /* Papaya */
 .banda-default { background-color: #CCCCCC; } /* por defecto */
 
+/* Ajuste fino para el nombre del piloto */
+.tabla-pilotos td strong {
+    font-size: 0.85em;      /* Reducimos un poco el tamaño */
+    line-height: 1.2;       /* Asegura que las líneas no se separen demasiado */
+    display: block;         /* Ayuda a controlar mejor el bloque de texto */
+}
 
 .numero-piloto {
     background-color: #2c3e50;
