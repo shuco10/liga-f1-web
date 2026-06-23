@@ -230,9 +230,8 @@ async function guardarResultado() {
     const posicion = document.getElementById('input-posicion').value;
     const escuderiaId = document.getElementById('select-escuderia').value;
 
-    // Validación básica
     if (!pilotoId || !gpId || !posicion) {
-        alert("Por favor, rellena todos los campos (Piloto, Circuito y Posición).");
+        alert("Por favor, rellena todos los campos.");
         return;
     }
 
@@ -247,14 +246,22 @@ async function guardarResultado() {
         })
     });
 
-    const data = await res.json();
+    // --- CAMBIO AQUÍ: Primero leemos como texto ---
+    const respuestaTexto = await res.text();
+
     if (res.ok) {
-        alert("¡Éxito! Se han sumado " + data.puntos + " puntos.");
+        // --- Si es OK, probamos si es JSON o solo texto ---
+        try {
+            const data = JSON.parse(respuestaTexto);
+            alert("¡Éxito! Se han sumado " + (data.puntos || "varios") + " puntos.");
+        } catch (e) {
+            // Si no es JSON (ej. si el servidor devolvió "OK"), mostramos el texto
+            alert("Respuesta del servidor: " + respuestaTexto);
+        }
     } else {
-        alert("Error: " + data.error);
+        alert("Error del servidor: " + respuestaTexto);
     }
 }
-
     
     async function abrirModalResultados() {
     // 1. Mostrar la modal
