@@ -101,23 +101,25 @@ function renderizarSanciones(pilotos) {
         const licenciaActual = 12 - puntosSancion;
         const porcentaje = (licenciaActual / 12) * 100;
         
-        const color = licenciaActual <= 0 ? "#e74c3c" : (licenciaActual <= 3 ? "#f1c40f" : "#2ecc71");
+        // Color amarillo flúor (#CCFF00) para reservas, rojo o verde para titulares
+        let color = "#2ecc71"; // Verde por defecto
+        if (licenciaActual <= 0) color = "#e74c3c"; // Rojo
+        else if (p.es_reserva) color = "#CCFF00"; // Amarillo flúor para reservas
+        else if (licenciaActual <= 3) color = "#f1c40f"; // Amarillo
+        
         const estado = licenciaActual <= 0 ? "SUSPENDIDO" : "OK";
         
+        // Lógica: Si es reserva, nombre equipo "Reserva" y logo genérico
         const nombreEquipo = p.es_reserva ? 'Reserva' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
-        const logoEquipo = LOGOS_ESCUDERIAS[p.escuderia_id] || '/logos/default.png';
+        const logoEquipo = p.es_reserva ? '/logos/reserva.png' : (LOGOS_ESCUDERIAS[p.escuderia_id] || '/logos/default.png');
         
-        // --- CÓDIGO CORREGIDO PARA LA IMAGEN ---
-        // 1. Extraemos solo el nombre del archivo por si foto_url trae "pilotos/ricardet.png"
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : null;
-        
-        // 2. Construimos la ruta absoluta forzando la carpeta /pilotos/
         const rutaAvatar = nombreArchivo ? `/pilotos/${nombreArchivo}` : 'https://www.w3schools.com/howto/img_avatar.png';
 
         body.innerHTML += `
-            <tr>
-                <td><img src="${rutaAvatar}" class="avatar-piloto" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'"> ${p.gamertag}</td>
-                <td><img src="${logoEquipo}" class="logo-escuderia"> ${nombreEquipo}</td>
+            <tr class="fila-piloto">
+                <td class="col-piloto"><img src="${rutaAvatar}" class="avatar-piloto" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'"> ${p.gamertag}</td>
+                <td class="col-escuderia"><img src="${logoEquipo}" class="logo-escuderia"> ${nombreEquipo}</td>
                 <td><span style="color:${color}; font-weight:bold">${estado}</span></td>
                 <td>
                     ${licenciaActual} / 12
@@ -127,6 +129,9 @@ function renderizarSanciones(pilotos) {
         `;
     });
 }
+
+
+    
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
     if (modal) modal.style.display = 'block';
