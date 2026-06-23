@@ -114,35 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
 // Función centralizada modificada
-function verificarSesion() {
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    
-    // Contenedores nuevos
-    const loginAviso = document.getElementById('login-aviso');
-    const panelComisarios = document.getElementById('panel-comisarios');
-    
-    // Verificamos si hay usuario (asumiendo que esAdmin() o verificar si hay token)
-    const logueado = (typeof esAdmin === 'function'); 
-    
-    if (btnLogin && btnLogout && loginAviso && panelComisarios) {
-        if (logueado) {
-            // Usuario dentro: ocultamos aviso, mostramos panel
-            loginAviso.style.display = 'none';
-            panelComisarios.style.display = 'block';
-            btnLogin.style.display = 'none';
-            btnLogout.style.display = 'inline-block';
-        } else {
-            // Usuario fuera: mostramos aviso, ocultamos panel
-            loginAviso.style.display = 'block';
-            panelComisarios.style.display = 'none';
-            btnLogin.style.display = 'inline-block';
-            btnLogout.style.display = 'none';
-        }
-    } else {
-        setTimeout(verificarSesion, 100);
+ // --- FUNCIONES GLOBALES ---
+    function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        } else { setTimeout(verificarSesion, 100); }
     }
-}
+
+    function seguridadAbrirModal() { const modal = document.getElementById('login-modal'); if (modal) modal.style.display = 'block'; }
 
 
 
