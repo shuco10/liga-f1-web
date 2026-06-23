@@ -98,35 +98,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 function renderizarSanciones(pilotos) {
+    // 1. PROTECCIÓN: Si los datos no existen o no son un array, paramos aquí
+    if (!pilotos || !Array.isArray(pilotos)) {
+        console.warn("Los datos de pilotos no están listos todavía.");
+        return;
+    }
+
     const body = document.getElementById('tabla-body');
+    if (!body) return; // Protección extra por si falta el elemento HTML
     body.innerHTML = "";
 
     pilotos.forEach(p => {
-        // 1. CÁLCULOS
+        // 2. CÁLCULOS
         const puntosSancion = p.puntos_sancion || 0;
         const licenciaActual = 12 - puntosSancion;
         const porcentaje = (licenciaActual / 12) * 100;
 
-        // 2. LÓGICA DE ESTILOS (Colores según rangos)
-        let color = "#2ecc71"; // Verde por defecto
-        if (licenciaActual <= 2) color = "#e74c3c";      // Rojo (1-2 pts)
-        else if (licenciaActual <= 4) color = "#f1c40f"; // Amarillo (3-4 pts)
+        // 3. LÓGICA DE ESTILOS
+        let color = "#2ecc71"; // Verde
+        if (licenciaActual <= 2) color = "#e74c3c";     // Rojo
+        else if (licenciaActual <= 4) color = "#f1c40f"; // Amarillo
         
         const estado = licenciaActual <= 0 ? "SUSP." : "OK";
 
-        // 3. DATOS DE ESCUDERÍA Y AVATAR
+        // 4. DATOS DE ESCUDERÍA Y AVATAR
         const esReserva = p.es_reserva;
         const nombreEquipo = esReserva ? '<span class="badge-reserva">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
-        const logoEquipo = esReserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id]}" class="logo-escuderia">`;
+        const logoEquipo = esReserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id] || ''}" class="logo-escuderia" onerror="this.style.display='none'">`;
         
+        // Lógica de avatar: Si no hay foto, usa R.png. Si R.png falla, lo maneja el onerror
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
         const rutaAvatar = `/pilotos/${nombreArchivo}`;
 
-        // 4. RENDERIZADO
+        // 5. RENDERIZADO
         body.innerHTML += `
             <tr>
                 <td style="text-align: left; padding-left: 20px;">
-                    <img src="${rutaAvatar}" class="piloto-avatar" onerror="this.src='https://www.w3schools.com/howto/img_avatar.png'"> 
+                    <img src="${rutaAvatar}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'"> 
                     ${p.gamertag}
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
@@ -141,7 +149,6 @@ function renderizarSanciones(pilotos) {
         `;
     });
 }
-
 
     
 function seguridadAbrirModal() {
