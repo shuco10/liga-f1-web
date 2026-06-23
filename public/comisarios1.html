@@ -46,27 +46,26 @@
 
     <div id="contenido-admin" style="display: none;">
         
-<div id="admin-carreras">
+<div id="admin-carreras" class="admin-bloque">
     <h3>🏁 - Cargar Resultados de carrera - 🏁</h3>
-    
     <div class="form-group">
         <label>Circuito</label>
         <select id="select-circuito-admin" class="form-control"></select>
     </div>
-        <div class="form-group">
+    <div class="form-group">
         <label>Piloto</label>
         <select id="select-piloto-admin" class="form-control"></select>
     </div>
-        <div class="form-group">
+    <div class="form-group">
         <label>Posición</label>
         <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
     </div>
     <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
 </div>
 
-       
-<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
-    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">👤 1. Inscribir Nuevo Piloto</h3>
+<!-- PANEL 1 -->
+<div class="admin-bloque">
+    <h3>👤 1. Inscribir Nuevo Piloto</h3>
     <form id="form-piloto">
         <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" class="form-control" required></div>
         <div class="form-group"><label>Dorsal / Número del Piloto:</label><input type="number" id="numero_piloto" class="form-control" min="1" max="99" required></div>
@@ -75,10 +74,7 @@
         <div class="form-group">
             <label>Escudería:</label>
             <select id="escuderia_id" class="form-control">
-                <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                <option value="10">Haas</option><option value="11">Cadillac</option>
+                <!-- Considera rellenar esto dinámicamente con JS para no tener que editar el HTML si cambias escuderías -->
             </select>
         </div>
         <div class="form-group"><label>Rol del Piloto:</label><select id="es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
@@ -87,8 +83,9 @@
     </form>
 </div>
 
-<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
-    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">✏️ 2. Editar Piloto Existente</h3>
+<!-- PANEL 2 -->
+<div class="admin-bloque">
+    <h3>✏️ 2. Editar Piloto Existente</h3>
     <form id="form-editar">
         <div class="form-group"><label>Selecciona el Piloto a Modificar:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()" required></select></div>
         <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" class="form-control" required></div>
@@ -97,37 +94,31 @@
         <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
         <div class="form-group">
             <label>Nueva Escudería:</label>
-            <select id="edit-escuderia" class="form-control">
-                <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                <option value="10">Haas</option><option value="11">Cadillac</option>
-            </select>
+            <select id="edit-escuderia" class="form-control"></select>
         </div>
         <div class="form-group"><label>Nuevo Rol:</label><select id="edit-es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
-        <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos</button>
-        <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
+        <button type="submit" class="btn-accion btn-actualizar">Actualizar Datos</button>
+        <div id="msg-editar" class="mensaje"></div>
     </form>
 </div>
 
-<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
-    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">🚨 3. Aplicar Penalización de Licencia</h3>
-    
+<!-- PANEL 3 -->
+<div class="admin-bloque">
+    <h3>🚨 3. Aplicar Penalización de Licencia</h3>
     <form id="form-sancion">
         <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-sancion" class="form-control" required></select></div>
         <div class="form-group"><label>Puntos a retirar:</label><input type="number" id="puntos_restar" class="form-control" placeholder="Ej: 2 o -2" required></div>
-        <button type="submit" class="btn-accion" style="background-color: #d4a000; color: black;">Aplicar Sanción</button>
-        
+        <button type="submit" class="btn-accion btn-sancion">Aplicar Sanción</button>
         <div id="msg-sancion" style="color: #d4a000; margin-top: 10px; font-weight: bold;"></div>
     </form>
 </div>
 
-<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
-    <h3 style="color: #e5e5e5; border-bottom: 2px solid #00d2be; padding-bottom: 10px; text-transform: uppercase;">❌ 4. Eliminar Piloto de la Liga</h3>
+<!-- PANEL 4 -->
+<div class="admin-bloque">
+    <h3>❌ 4. Eliminar Piloto de la Liga</h3>
     <form id="form-eliminar">
         <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" class="form-control" required></select></div>
-        <button type="submit" class="btn-accion" style="background-color: #7a0000;">Eliminar Permanentemente</button>
-        
+        <button type="submit" class="btn-accion btn-eliminar">Eliminar Permanentemente</button>
         <div id="msg-eliminar" style="color: #ff4444; margin-top: 10px; font-weight: bold;"></div>
     </form>
 </div>
