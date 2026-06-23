@@ -239,6 +239,27 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     border-bottom: 1px solid #333;
 }
 
+/* --- Prioridad para la columna de Piloto --- */
+.table-standings th:nth-child(2), 
+.table-standings td:nth-child(2) {
+    text-align: left;       /* Alineación a la izquierda para el nombre */
+    min-width: 220px;       /* Espacio reservado para que no salte de línea */
+    white-space: nowrap;    /* Impide que el nombre baje a la línea siguiente */
+}
+
+/* Ajuste del nombre dentro de la celda */
+.table-standings td:nth-child(2) strong {
+    font-size: 0.9em;       /* Tamaño más compacto */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* --- Ajuste para móviles --- */
+.tabla-wrapper {
+    overflow-x: auto;       /* Permite scroll si la tabla es muy ancha */
+    width: 100%;
+}
+
 /* --- ELEMENTOS DE FILA --- */
 .piloto-avatar { 
     width: 35px; height: 35px; 
