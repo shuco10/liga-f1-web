@@ -40,22 +40,22 @@ function editarResultado(id) {
 }
 
 // Nueva función para enviar los datos al servidor
+
 async function guardarEdicion() {
     const id = document.getElementById('edit-id').value;
-    const piloto = document.getElementById('edit-piloto').value;
-    const posicion = document.getElementById('edit-posicion').value;
+    const nuevaPosicion = document.getElementById('edit-posicion').value;
 
-    const res = await fetch(`/api/editar-resultado/${id}`, {
+    const res = await fetch(`/api/resultados/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ piloto_nombre: piloto, posicion: posicion })
+        body: JSON.stringify({ posicion: parseInt(nuevaPosicion) })
     });
 
     if (res.ok) {
-        alert("Resultado actualizado");
+        alert("Resultado actualizado correctamente");
         location.reload();
     } else {
-        alert("Error al actualizar");
+        alert("Error al actualizar la posición");
     }
 }
 // Eliminar resultados en circuitos
