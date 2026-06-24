@@ -607,3 +607,8 @@ table tr td:nth-child(2) {
     }
 }
 
+
+/* Esta clase oculta cualquier elemento que la tenga */
+.oculto-siempre {
+    display: none !important;
+}
