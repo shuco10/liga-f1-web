@@ -25,31 +25,25 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. Cargar Header y configurar banner
+    // 1. Cargar Header (ÚNICO FETCH)
     fetch('/header.html')
         .then(res => res.text())
-        .then(async (data) => { // Lo hacemos async aquí para poder usar await
+        .then(data => {
             document.getElementById('header-placeholder').innerHTML = data;
             
-            // ... (tu código de Instant Gaming) ...
-            
-            // AHORA AQUÍ: Unificamos todo el inicio
-            verificarSesion();
-            await cargarTodosLosDatos();
-            if (localStorage.getItem('rol') === 'admin') {
-                await cargarDesplegablesAdmin();
-            }
-            aplicarPermisos();
+            // Configurar Banner de Instant Gaming
+            window.igBannerConfig = {
+                lang: 'es',
+                igr: 'gamer-97d22e',
+                banners: ['my-banner']
+            };
+            const script = document.createElement('script');
+            script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+            script.defer = true;
+            document.body.appendChild(script);
 
-            // Lógica de navegación basada en la URL (el hash)
-            const hash = window.location.hash;
-            if (hash === '#panel-admin' && localStorage.getItem('rol') === 'admin') {
-                irA(null, 'panel-admin');
-                marcarBotonActivo('panel-admin');
-            } else {
-                irA(null, 'zona-noticias');
-                marcarBotonActivo('zona-noticias');
-            }
+            // Verificación de sesión justo después de inyectar el HTML
+            verificarSesion();
         })
         .catch(error => console.error('Error al cargar la cabecera:', error));
 
@@ -57,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/footer.html')
         .then(res => res.text())
         .then(data => document.getElementById('footer-placeholder').innerHTML = data);
-            
+        
     // 3. Cargar el Modal de Login
     fetch('/login-modal.html')
         .then(res => res.text())
