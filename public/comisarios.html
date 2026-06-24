@@ -181,6 +181,24 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 </div>
 
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">        
+    <h4 style="color: #fff; margin-top: 0;">Registro de Puntos a Escudería</h4>
+    
+    <select id="select-escuderia" class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        <option value="">Selecciona Escudería...</option>
+        <option value="1">Red Bull Racing</option><option value="2">Ferrari</option>
+        <option value="3">Mercedes-AMG</option><option value="4">McLaren</option>
+        <option value="5">Aston Martin</option><option value="6">Alpine</option>
+        <option value="7">Williams</option><option value="8">Visa Cash App RB</option>
+        <option value="9">Audi</option><option value="10">Haas</option><option value="11">Cadillac</option>
+    </select>
+
+    <input type="number" id="input-posicion-escuderia" placeholder="Posición final de la Escudería" style="width: 100%; padding: 8px;">
+</div>
+
+<button onclick="sumarPuntosManual()" style="margin-top: 10px; background: #CCFF00; color: black; border: none; padding: 10px; width: 100%; font-weight: bold; cursor: pointer;">
+    SUMAR PUNTOS A TABLA
+</button>
 
 
     
@@ -204,24 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 </div>
 
-<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">        
-    <h4 style="color: #fff; margin-top: 0;">Registro de Puntos a Escudería</h4>
-    
-    <select id="select-escuderia" class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-        <option value="">Selecciona Escudería...</option>
-        <option value="1">Red Bull Racing</option><option value="2">Ferrari</option>
-        <option value="3">Mercedes-AMG</option><option value="4">McLaren</option>
-        <option value="5">Aston Martin</option><option value="6">Alpine</option>
-        <option value="7">Williams</option><option value="8">Visa Cash App RB</option>
-        <option value="9">Audi</option><option value="10">Haas</option><option value="11">Cadillac</option>
-    </select>
-
-    <input type="number" id="input-posicion-escuderia" placeholder="Posición final de la Escudería" style="width: 100%; padding: 8px;">
-</div>
-
-<button onclick="guardarPuntosEscuderia()" style="margin-top: 20px; background: #e10600; color: white; padding: 15px; border: none; cursor: pointer; width: 100%; font-weight: bold;">
-    SUMAR PUNTOS A ESCUDERÍA
-</button>
 
         
 <div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
@@ -848,7 +848,39 @@ async function sumarPuntosManual() {
     }
 }
 
-        
+   async function guardarPuntosEscuderia() {
+    const circuitoId = document.getElementById('select-circuito-admin')?.value;
+    const escuderiaId = document.getElementById('select-escuderia-puntos').value;
+    const posicion = document.getElementById('input-posicion-escuderia').value;
+
+    if (!circuitoId || !escuderiaId || !posicion) {
+        alert("Por favor, selecciona circuito, escudería y posición.");
+        return;
+    }
+
+    const datos = {
+        circuito_id: circuitoId,
+        escuderia_id: escuderiaId,
+        posicion: parseInt(posicion)
+    };
+
+    try {
+        const res = await fetch('/api/guardar-resultado', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(datos)
+        });
+
+        if (res.ok) {
+            alert("Puntos sumados a la escudería correctamente.");
+            if (typeof cargarTodosLosDatos === 'function') cargarTodosLosDatos();
+        } else {
+            alert("Error al guardar.");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+    }
+}     
 
 // A. Llenar el desplegable usando tu variable global 'listaPilotosGlobal'
 function inicializarSelectReservas() {
