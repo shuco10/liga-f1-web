@@ -261,12 +261,12 @@ app.post('/api/guardar-puntos-escuderia', async (req, res) => {
     const puntosObtenidos = puntos[posicion] || 0;
 
     try {
-        // Ejecutamos la consulta
+        // Ejecutamos la consulta y pedimos que nos devuelva el error real
         await pool.query('UPDATE constructores SET puntos = puntos + $1 WHERE id = $2', [puntosObtenidos, escuderia_id]);
         res.sendStatus(200);
     } catch (err) { 
-        console.error("DETALLE DEL ERROR:", err); // <-- Esto es lo importante
-        res.status(500).send("Error: " + err.message); // <-- Esto hará que el mensaje salga en el alert
+        console.error("Error completo:", err); // Esto se verá en los logs de Render
+        res.status(500).send(err.message); // Esto hará que el alert en tu web muestre el mensaje técnico
     }
 });
 
