@@ -68,17 +68,21 @@
 <div class="contenedor-caja">
     <h3 class="titulo-seccion">👤 Inscribir Piloto</h3>
     <form id="form-piloto">
-        <div class="form-group"><label>Gamertag:</label><input type="text" id="gamertag" class="form-control" required></div>
-        <div class="form-group"><label>Dorsal:</label><input type="number" id="numero_piloto" class="form-control" min="1" max="99" required></div>
-        <div class="form-group"><label>Escudería:</label>
+        <div class="form-group"><label>Gamertag / Nick:</label><input type="text" id="gamertag" class="form-control" required></div>
+        <div class="form-group"><label>Dorsal / Número del Piloto:</label><input type="number" id="numero_piloto" class="form-control" min="1" max="99" required></div>
+        <div class="form-group"><label>Enlace de Foto (Discord URL):</label><input type="text" id="foto_url" class="form-control"></div>
+        <div class="form-group"><label>Plataforma:</label><select id="plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
+        <div class="form-group">
+            <label>Escudería:</label>
             <select id="escuderia_id" class="form-control">
-                <option value="0">- Selecciona escuderia -</option><option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+                <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
                 <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
                 <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
                 <option value="10">Haas</option><option value="11">Cadillac</option>
             </select>
         </div>
-        <button type="submit" class="boton-accion">Guardar Piloto</button>
+        <div class="form-group"><label>Rol del Piloto:</label><select id="es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
+        <button type="submit" class="btn-accion">Guardar Piloto</button>
         <div id="msg-piloto" class="mensaje"></div>
     </form>
 </div>
@@ -86,18 +90,23 @@
 <div class="contenedor-caja">
     <h3 class="titulo-seccion">✏️ Editar Piloto</h3>
     <form id="form-editar">
-        <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()"></select></div>
-        <div class="form-group"><label>Nuevo Gamertag:</label><input type="text" id="edit-gamertag" class="form-control"></div>
-        <div class="form-group"><label>Nueva Escudería:</label>
-            <select id="escuderia_id" class="form-control">
-                <option value="0">- Selecciona escuderia -</option><option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+        <div class="form-group"><label>Selecciona el Piloto a Modificar:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()" required></select></div>
+        <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" class="form-control" required></div>
+        <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" class="form-control" min="1" max="99" required></div>
+        <div class="form-group"><label>Nuevo Enlace de Foto:</label><input type="text" id="edit-foto" class="form-control"></div>
+        <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option></select></div>
+        <div class="form-group">
+            <label>Nueva Escudería:</label>
+            <select id="edit-escuderia" class="form-control">
+                <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
                 <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
                 <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
                 <option value="10">Haas</option><option value="11">Cadillac</option>
-            </select>    
+            </select>
         </div>
-        <button type="submit" class="boton-accion">Actualizar Datos</button>
-        <div id="msg-editar" class="mensaje"></div>
+        <div class="form-group"><label>Nuevo Rol:</label><select id="edit-es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
+        <button type="submit" class="btn-accion" style="background-color: #229971;">Actualizar Datos</button>
+        <div id="msg-editar" class="mensaje" style="color: #229971;"></div>
     </form>
 </div>
 
