@@ -179,30 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </div>    
 
-<div class="admin-bloque" style="...">
-    <div id="admin-carreras-reserva">
-        <h3>🏁 - Cargar Resultados del Reserva - 🏁</h3>
-        <div class="form-group">
-            <label>Circuito</label>
-            <select id="select-circuito-reserva" class="form-control"></select>
-        </div>
-        <div class="form-group">
-            <label>Piloto</label>
-            <select id="select-piloto-reserva" class="form-control"></select>
-        </div>
-        <div class="form-group">
-            <label>Posición</label>
-            <input type="number" id="input-posicion-reserva" class="form-control" placeholder="Posición final">
-        </div>
-        <div class="form-group">
-            <label>Escudería:</label>
-            <select id="escuderia_id" class="form-control">
-                </select>
-        </div>
-        <button onclick="guardarResultadoReserva()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
-    </div>
-</div>
-    
 <div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">    
 <div id="admin-noticias">
     <h3>📢 - Publicar Nueva Noticia - 📢</h3>
@@ -491,15 +467,13 @@ if (tReservas) {
 
     try {
         // 1. Cargar Circuitos
-const resC = await fetch('/api/circuitos');
+        const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
-        const opcionesCircuitos = '<option value="">-- Selecciona circuito --</option>' + 
-                                  circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-        
-        const selAdmin = document.getElementById('select-circuito-admin');
-        const selReserva = document.getElementById('select-circuito-reserva');
-        if (selAdmin) selAdmin.innerHTML = opcionesCircuitos;
-        if (selReserva) selReserva.innerHTML = opcionesCircuitos;
+        const selCircuito = document.getElementById('select-circuito-admin');
+        if (selCircuito) {
+            // Añadimos una opción por defecto vacía para forzar que el admin elija
+            selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
+                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
         // 2. Cargar Pilotos
@@ -509,7 +483,7 @@ const resC = await fetch('/api/circuitos');
         // Ordenamos los pilotos por número antes de pintar los desplegables
         pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
-        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin', 'select-piloto-reserva'];
+        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
 
         ids.forEach(id => {
             const el = document.getElementById(id);
@@ -790,46 +764,25 @@ async function editarResultado(id) {
 
         
 
-// --- FUNCIÓN PARA PILOTOS TITULARES ---
-async function guardarResultado() {
-    const data = {
-        circuito_id: document.getElementById('select-circuito-admin').value,
-        piloto_id: document.getElementById('select-piloto-admin').value,
-        posicion: parseInt(document.getElementById('input-posicion').value),
-        idEscuderia: document.getElementById('escuderia_id').value
-    };
-    // ¡Aquí es donde llamas a la función que envía!
-    await enviarResultado(data, "Resultado guardado y puntos actualizados");
-}
-
-// --- FUNCIÓN PARA RESERVAS ---
-async function guardarResultadoReserva() {
-    const data = {
-        circuito_id: document.getElementById('select-circuito-reserva').value,
-        piloto_id: document.getElementById('select-piloto-reserva').value,
-        posicion: parseInt(document.getElementById('input-posicion-reserva').value),
-        idEscuderia: document.getElementById('escuderia_id').value
-    };
-    // ¡Aquí también la llamas!
-    await enviarResultado(data, "Resultado del reserva guardado y puntos actualizados");
-}
-
-// --- TRABAJO PESADO ---
-async function enviarResultado(data, mensajeExito) {
-    const res = await fetch('/api/guardar-resultado', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
-
-    if(res.ok) {
-        alert(mensajeExito);
-        cargarTodosLosDatos(); 
-        cargarCircuitos(); 
-    } else {
-        alert("Error al guardar el resultado");
+    async function guardarResultado() {
+        const data = {
+            circuito_id: document.getElementById('select-circuito-admin').value,
+            piloto_id: document.getElementById('select-piloto-admin').value,
+            posicion: parseInt(document.getElementById('input-posicion').value)
+        };
+        const res = await fetch('/api/guardar-resultado', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if(res.ok) {
+            alert("Resultado guardado y puntos actualizados");
+            cargarTodosLosDatos(); 
+            cargarCircuitos(); 
+        } else {
+            alert("Error al guardar el resultado");
+        }
     }
-}
 </script>
 <script>
         function aplicarPermisos() {
