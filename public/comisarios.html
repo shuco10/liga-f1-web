@@ -23,38 +23,46 @@
 <div class="titulo-liga">👔 EQUIPO DE COMISARIOS 👔</div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        
-        // 1. Cargar Header y configurar banner
-        fetch('/header.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                
-                window.igBannerConfig = {
-                    lang: 'es',
-                    igr: 'gamer-97d22e',
-                    banners: ['my-banner']
-                };
-                const script = document.createElement('script');
-                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-                script.defer = true;
-                document.body.appendChild(script);
-
-                verificarSesion(); // Llamamos aquí tras inyectar el HTML
-            })
-            .catch(error => console.error('Error al cargar la cabecera:', error));
-
-        // 2. Cargar Footer
-        fetch('/footer.html')
-            .then(res => res.text())
-            .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. Cargar Header y configurar banner
+    fetch('/header.html')
+        .then(res => res.text())
+        .then(async (data) => { // Lo hacemos async aquí para poder usar await
+            document.getElementById('header-placeholder').innerHTML = data;
             
-        // 3. Cargar el Modal de Login
-        fetch('/login-modal.html')
-            .then(res => res.text())
-            .then(data => document.body.insertAdjacentHTML('beforeend', data));
-    });
+            // ... (tu código de Instant Gaming) ...
+            
+            // AHORA AQUÍ: Unificamos todo el inicio
+            verificarSesion();
+            await cargarTodosLosDatos();
+            if (localStorage.getItem('rol') === 'admin') {
+                await cargarDesplegablesAdmin();
+            }
+            aplicarPermisos();
+
+            // Lógica de navegación basada en la URL (el hash)
+            const hash = window.location.hash;
+            if (hash === '#panel-admin' && localStorage.getItem('rol') === 'admin') {
+                irA(null, 'panel-admin');
+                marcarBotonActivo('panel-admin');
+            } else {
+                irA(null, 'zona-noticias');
+                marcarBotonActivo('zona-noticias');
+            }
+        })
+        .catch(error => console.error('Error al cargar la cabecera:', error));
+
+    // 2. Cargar Footer
+    fetch('/footer.html')
+        .then(res => res.text())
+        .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+            
+    // 3. Cargar el Modal de Login
+    fetch('/login-modal.html')
+        .then(res => res.text())
+        .then(data => document.body.insertAdjacentHTML('beforeend', data));
+});
 
     // --- FUNCIONES (Fuera del DOMContentLoaded) ---
 
@@ -1108,21 +1116,7 @@ window.onload = () => {
     // 1. Mostrar la sección de noticias por defecto al entrar
     irA(null, 'zona-noticias');
     
-    // 2. Forzar que el botón de Noticias tenga la clase 'active'
-// Cambia 'zona-comisarios' por el valor real que pasas a tu función en el HTML
-//const botonComisarios = document.querySelector('button[onclick*="admin"]'); 
-//if (botonComisarios) {
-//    botonComisarios.classList.add('active');
-//}
-//};
-  // 2. Forzar que el botón de Comisarios tenga la clase 'active'
-// Activar el que corresponde
-    const btnActivo = document.querySelector(`button[onclick*="${nombrePanel}"]`);
-    if (btnActivo) {
-        btnActivo.classList.add('active');
-        btnActivo.style.borderColor = "#e10600";
-    }
-}
+
 
 // Para usarlo con tu caso específico:
 marcarBotonActivo('panel-admin');
