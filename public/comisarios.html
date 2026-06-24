@@ -790,26 +790,29 @@ async function editarResultado(id) {
         }
 
 async function verificarPassword() {
-            const password = document.getElementById('pass-comisario').value;
-            const errorDiv = document.getElementById('error-login');
-            
-            if (password === "admin123") { 
-                localStorage.setItem('rol', 'admin');
-                
-                // 1. Primero, hacemos visible el panel
-                aplicarPermisos();
-                
-                // 2. Esperamos una fracción de segundo para que el navegador "pinte" el panel
-                // Esto asegura que los <select> ya existan cuando JS quiera escribirlos
-                setTimeout(() => {
-                    cargarDesplegablesAdmin();
-                    alert("Acceso concedido");
-                }, 100); 
-                
-            } else {
-                errorDiv.textContent = "Contraseña incorrecta";
-            }
+    const password = document.getElementById('pass-comisario').value;
+    const errorDiv = document.getElementById('error-login');
+    
+    if (password === "admin123") { 
+        localStorage.setItem('rol', 'admin');
+        
+        // 1. Hacemos visible el panel inmediatamente
+        aplicarPermisos();
+        
+        // 2. Ejecución asíncrona controlada: 
+        // Esperamos a que los datos se descarguen y se pinten los selects
+        try {
+            await cargarDesplegablesAdmin();
+            alert("Acceso concedido");
+        } catch (error) {
+            console.error("Error al cargar los datos tras el login:", error);
+            errorDiv.textContent = "Error al cargar los datos del panel.";
         }
+                
+    } else {
+        errorDiv.textContent = "Contraseña incorrecta";
+    }
+}
 
 
         // --- RESET DE PUNTOS Y BASE DE DATOS ---
