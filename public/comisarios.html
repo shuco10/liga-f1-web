@@ -178,6 +178,32 @@ document.addEventListener('DOMContentLoaded', () => {
     <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
 </div>
 </div>
+
+<div style="display: flex; gap: 20px; background: #1a1a1a; padding: 20px; border-radius: 8px;">
+    
+    <div style="flex: 1;">
+        <h4 style="color: #e10600; margin-top: 0;">Registro Piloto (Reserva)</h4>
+        <select id="select-reserva" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            <option value="">Selecciona Piloto...</option>
+            </select>
+        <input type="number" id="input-posicion-piloto" placeholder="Posición final (Reserva)" style="width: 100%; padding: 8px;">
+    </div>
+
+    <div style="flex: 1;">
+        <h4 style="color: #fff; margin-top: 0;">Registro Escudería</h4>
+        <select id="select-escuderia" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            <option value="">Selecciona Escudería...</option>
+            </select>
+        <input type="number" id="input-posicion-escuderia" placeholder="Posición final (Escudería)" style="width: 100%; padding: 8px;">
+    </div>
+
+</div>
+
+<button onclick="guardarResultado()" style="margin-top: 20px; background: #e10600; color: white; padding: 10px 20px; border: none; cursor: pointer; width: 100%; font-weight: bold;">
+    GUARDAR AMBOS REGISTROS
+</button>
+
+    
 <div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">        
 <div id="admin-noticias">
     <h3>📢 - Publicar Nueva Noticia - 📢</h3>
