@@ -811,6 +811,74 @@ async function editarResultado(id) {
             alert("Error al guardar el resultado");
         }
     }
+
+
+async function guardarAmbosRegistros() {
+    // 1. Confirmación de seguridad
+    if (!confirm("¿Seguro que quieres registrar los puntos del reserva y la escudería?")) {
+        return;
+    }
+
+    // 2. Obtener valores (Protegidos)
+    const circuitoId = document.getElementById('select-circuito-admin')?.value; // El select de arriba
+    const reservaId = document.getElementById('select-reserva')?.value;
+    const posReserva = document.getElementById('input-posicion-piloto')?.value;
+    const escuderiaId = document.getElementById('select-escuderia')?.value;
+    const posEscuderia = document.getElementById('input-posicion-escuderia')?.value;
+
+    if (!circuitoId) {
+        alert("Por favor, selecciona un circuito primero.");
+        return;
+    }
+
+    try {
+        // 3. Envío paralelo de datos
+        const promesas = [];
+
+        // Si hay datos de reserva, añadimos al array de envíos
+        if (reservaId && posReserva) {
+            promesas.push(fetch('/api/guardar-resultado', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ circuito_id: circuitoId, piloto_id: reservaId, posicion: parseInt(posReserva) })
+            }));
+        }
+
+        // Si hay datos de escudería, añadimos al array de envíos
+        if (escuderiaId && posEscuderia) {
+            promesas.push(fetch('/api/guardar-resultado', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ circuito_id: circuitoId, escuderia_id: escuderiaId, posicion: parseInt(posEscuderia) })
+            }));
+        }
+
+        // Ejecutar todo
+        if (promesas.length > 0) {
+            await Promise.all(promesas);
+            alert("Registros guardados con éxito.");
+            
+            // Limpieza de campos
+            document.getElementById('select-reserva').value = "";
+            document.getElementById('input-posicion-piloto').value = "";
+            document.getElementById('select-escuderia').value = "";
+            document.getElementById('input-posicion-escuderia').value = "";
+            
+            // Refrescar
+            cargarTodosLosDatos(); 
+            cargarCircuitos();
+        } else {
+            alert("No has rellenado ningún dato para guardar.");
+        }
+
+    } catch (err) {
+        console.error("Error al guardar:", err);
+        alert("Hubo un error al guardar. Revisa la consola.");
+    }
+}
+
+
+        
 </script>
 <script>
         function aplicarPermisos() {
