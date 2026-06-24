@@ -816,7 +816,6 @@ async function sumarPuntosManual() {
     const elEscuderia = document.getElementById('select-escuderia-puntos') || document.getElementById('select-escuderia');
     const laPosicion = document.getElementById('input-posicion-escuderia');
 
-    // Validación mínima
     if (!elEscuderia || !laPosicion) { 
         alert("Error: Faltan elementos en el formulario."); 
         return; 
@@ -827,14 +826,12 @@ async function sumarPuntosManual() {
         return;
     }
 
-    // Datos simplificados para la nueva ruta
     const datos = {
         escuderia_id: elEscuderia.value,
         posicion: parseInt(laPosicion.value)
     };
 
     try {
-        // IMPORTANTE: Cambiamos la ruta a '/api/guardar-puntos-escuderia'
         const res = await fetch('/api/guardar-puntos-escuderia', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -843,13 +840,16 @@ async function sumarPuntosManual() {
 
         if (res.ok) {
             alert("¡Puntos sumados a la escudería correctamente!");
-            // Refresca la tabla
             if (typeof cargarTodosLosDatos === 'function') cargarTodosLosDatos();
         } else {
-            alert("Error al guardar en el servidor. Asegúrate de haber añadido la nueva ruta en server.js.");
+            // ESTO ES LO QUE NOS VA A SALVAR:
+            // Leemos el mensaje real que el servidor está devolviendo
+            const errorText = await res.text();
+            alert("ERROR DEL SERVIDOR: " + errorText); 
         }
     } catch (err) {
-        console.error("Error:", err);
+        console.error("Error completo:", err);
+        alert("Error de conexión: " + err.message);
     }
 }
 
