@@ -774,6 +774,9 @@ async function editarResultado(id) {
         });
         if(res.ok) {
             alert("Resultado guardado y puntos actualizados");
+            if(document.getElementById('select-circuito-admin')) document.getElementById('select-circuito-admin').value = "";
+            if(document.getElementById('select-piloto-admin')) document.getElementById('select-piloto-admin').value = "";
+            if(document.getElementById('input-posicion')) document.getElementById('input-posicion').value = "";
             cargarTodosLosDatos(); 
             cargarCircuitos(); 
         } else {
