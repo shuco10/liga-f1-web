@@ -1136,17 +1136,23 @@ async function enviarContacto() {
     }
 }
 
-// --- ÚNICO PUNTO DE ENTRADA (DOMContentLoaded) ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Lógica de navegación basada en el hash de la URL
-    const hash = window.location.hash;
-    
-    if (hash === '#panel-admin' && localStorage.getItem('rol') === 'admin') {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Cargamos datos y permisos primero
+    await cargarTodosLosDatos();
+    if (localStorage.getItem('rol') === 'admin') {
+        await cargarDesplegablesAdmin();
+    }
+    aplicarPermisos();
+
+    // 2. Comprobación de seguridad y carga automática
+    if (localStorage.getItem('rol') === 'admin') {
+        // Como es una página exclusiva, abrimos el panel directamente
         irA(null, 'panel-admin');
         marcarBotonActivo('panel-admin');
     } else {
-        irA(null, 'zona-noticias');
-        marcarBotonActivo('zona-noticias');
+        // Si alguien que no es admin entra aquí, lo mandamos a la home
+        alert("Acceso denegado");
+        window.location.href = "/index.html";
     }
 });
 </script>
@@ -1171,12 +1177,6 @@ document.addEventListener('DOMContentLoaded', () => {
 <div style="clear: both; display: block; visibility: visible;"></div>
 
 
-
-<div class="contenedor-botones">
-    <a href="info.html" class="boton-accion">
-        <i class="fa-solid fa-building"></i> Oficinas
-    </a>
-</div>
 
 
 
