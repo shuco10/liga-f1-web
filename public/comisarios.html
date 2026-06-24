@@ -1109,17 +1109,26 @@ window.onload = () => {
     
     // 2. Forzar que el botón de Noticias tenga la clase 'active'
 // Cambia 'zona-comisarios' por el valor real que pasas a tu función en el HTML
-const botonComisarios = document.querySelector('button[onclick*="admin"]'); 
-if (botonComisarios) {
-    botonComisarios.classList.add('active');
+//const botonComisarios = document.querySelector('button[onclick*="admin"]'); 
+//if (botonComisarios) {
+//    botonComisarios.classList.add('active');
+//}
+//};
+  // 2. Forzar que el botón de Comisarios tenga la clase 'active'
+// Activar el que corresponde
+    const btnActivo = document.querySelector(`button[onclick*="${nombrePanel}"]`);
+    if (btnActivo) {
+        btnActivo.classList.add('active');
+        btnActivo.style.borderColor = "#e10600";
+    }
 }
-};
 
-
+// Para usarlo con tu caso específico:
+marcarBotonActivo('panel-admin');
 
    
 // IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
-document.addEventListener('DOMContentLoaded', cargarNoticias);
+document.addEventListener('DOMContentLoaded', ();
 
 
 
