@@ -1068,11 +1068,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         irA(null, 'panel-admin');
         marcarBotonActivo('panel-admin');
     } else {
-        // Si NO es admin, simplemente ocultamos el panel
-        // (El usuario se queda en la página, pero no ve las herramientas de admin)
-        if (panelAdmin) panelAdmin.style.display = 'none';
-        
-        console.log("Modo usuario: panel administrativo oculto.");
+// Si no es admin, ocultamos el panel
+        const panel = document.getElementById('panel-admin');
+        if (panel) panel.style.display = 'none';
     }
 });
 </script>
