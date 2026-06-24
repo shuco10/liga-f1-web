@@ -612,3 +612,18 @@ table tr td:nth-child(2) {
 .oculto-siempre {
     display: none !important;
 }
+
+
+.nav-btn-icon {
+    padding: 5px 10px;      /* Ajusta el tamaño del botón */
+    font-size: 20px;        /* Tamaño del emoji */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.nav-btn-icon:hover {
+    transform: scale(1.1);  /* Efecto al pasar el ratón */
+}
+
