@@ -252,16 +252,7 @@ function irA(evento, idSeccion) {
     }
 }
 
-function verificarPassword() {
-        const pass = document.getElementById('pass-comisario').value;
-        if(pass === 'admin123') {
-            document.getElementById('bloque-login').style.display = 'none';
-            document.getElementById('contenido-admin').style.display = 'block';
-            cargarDesplegablesAdmin();
-        } else {
-            document.getElementById('error-login').innerText = "Contraseña incorrecta. Acceso denegado.";
-        }
-    }
+
 
 // AQUI EMPIEZA EL CARGAR TODOS LOS DATOS
 
@@ -385,47 +376,41 @@ if (tReservas) {
 
         // AQUI TERMINA EL CARGAR TODOS LOS DATOS
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
-        async function cargarDesplegablesAdmin() {
-    // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
-    if (localStorage.getItem('rol') !== 'admin') {
-        console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
-        return; 
-    }
+async function cargarDesplegablesAdmin() {
+    // 1. Verificación de seguridad
+    if (localStorage.getItem('rol') !== 'admin') return;
 
     try {
-        // 1. Cargar Circuitos
-        const resC = await fetch('/api/circuitos');
-        const circuitos = await resC.json();
-        const selCircuito = document.getElementById('select-circuito-admin');
-        if (selCircuito) {
-            // Añadimos una opción por defecto vacía para forzar que el admin elija
-            selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
-                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-        }
-
-        // 2. Cargar Pilotos
-        const res = await fetch('/api/lista-de-pilotos');
-        const pilotos = await res.json();
+        // Carga paralela de datos (más rápido)
+        const [resC, resP] = await Promise.all([
+            fetch('/api/circuitos'),
+            fetch('/api/lista-de-pilotos')
+        ]);
         
-        // Ordenamos los pilotos por número antes de pintar los desplegables
+        const circuitos = await resC.json();
+        const pilotos = await resP.json();
         pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
+        // Rellenar Circuitos
+        const selCircuito = document.getElementById('select-circuito-admin');
+        if (selCircuito) {
+            selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
+                                    circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        }
+
+        // Rellenar Pilotos (usando querySelector para evitar errores si el ID no existe en el HTML actual)
         const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
 
         ids.forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>';
-                pilotos.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.textContent = `#${p.numero_piloto} - ${p.gamertag}`;
-                    el.appendChild(opt);
-                });
+                el.innerHTML = '<option value="">-- Selecciona un piloto --</option>' +
+                               pilotos.map(p => `<option value="${p.id}">#${p.numero_piloto} - ${p.gamertag}</option>`).join('');
             }
         });
+        console.log("Desplegables cargados correctamente.");
     } catch (err) {
-        console.error("CRÍTICO en cargarDesplegablesAdmin:", err);
+        console.error("Error al cargar desplegables:", err);
     }
 }
 
@@ -483,6 +468,66 @@ if (tReservas) {
             setTimeout(() => { document.getElementById('msg-editar').innerText = ""; }, 3000);
         }
     });
+        // --- FORMULARIO SANCIÓN (VERSIÓN PROTEGIDA) ---
+const formSancion = document.getElementById('form-sancion');
+if (formSancion) {
+    formSancion.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = { 
+            piloto_id: parseInt(document.getElementById('select-piloto-sancion').value), 
+            puntos_restar: parseInt(document.getElementById('puntos_restar').value) 
+        };
+        
+        const res = await fetch('/api/restar-licencia', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(datos) 
+        });
+        
+if (res.ok) { 
+            // 1. Buscamos el elemento de forma segura
+            const msgSancion = document.getElementById('msg-sancion');
+            if (msgSancion) {
+                msgSancion.innerText = "¡Sanción aplicada!"; 
+                
+                // 2. Mantenemos el mensaje visible durante 3 segundos
+                setTimeout(() => {
+                    msgSancion.innerText = "";
+                }, 3000);
+            }
+            
+            // 3. Reseteamos y recargamos (esto debe ir dentro del IF)
+            formSancion.reset(); 
+            await cargarTodosLosDatos(); 
+        } // <--- Esta llave cierra el IF (res.ok)
+    }); // <--- Esta llave cierra el EventListener
+} // <--- Esta llave cierra el IF (formSancion)
+
+    document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pilotoNombre = document.getElementById('select-piloto-eliminar').options[document.getElementById('select-piloto-eliminar').selectedIndex].text;
+        if(!confirm(`¿Seguro de eliminar a ${pilotoNombre}?`)) return;
+        const datos = { piloto_id: parseInt(document.getElementById('select-piloto-eliminar').value) };
+        const res = await fetch('/api/eliminar-piloto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+        if(res.ok) { 
+            document.getElementById('msg-eliminar').innerText = "Piloto eliminado."; 
+            await cargarTodosLosDatos(); 
+            await cargarDesplegablesAdmin(); 
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', async () => {
+    // 1. Cargamos datos base
+    await cargarTodosLosDatos();
+    
+    // 2. Si es admin, cargamos desplegables inmediatamente
+    if (localStorage.getItem('rol') === 'admin') {
+        await cargarDesplegablesAdmin();
+    }
+    
+    // 3. Navegación inicial
+    irA(null, 'mundial-pilotos');
+});
 
  // --- FORMULARIO CARRERA ---
 const formCarrera = document.getElementById('form-carrera');
@@ -555,6 +600,7 @@ if (res.ok) {
         irA(null, 'mundial-pilotos');
     });
 
+        
 // 1. Llamada a los circuitos de la imagen
 const MAPA_TRAZADOS = {
     "Melbourne": "trazado-melbourne",
