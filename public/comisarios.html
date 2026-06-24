@@ -1085,59 +1085,19 @@ async function eliminarNoticia(id) {
     }
 }
 
-// --- FUNCIÓN PARA EDITAR ---
 async function editarNoticia(id, tituloActual, contenidoActual) {
     const nuevoTitulo = prompt("Edita el título:", tituloActual);
     const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
-
     if (nuevoTitulo !== null && nuevoContenido !== null) {
         const res = await fetch(`/api/noticias/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
         });
-
-        if (res.ok) {
-            location.reload();
-        } else {
-            alert("Error al actualizar la noticia.");
-        }
+        if (res.ok) location.reload();
+        else alert("Error al actualizar la noticia.");
     }
 }
-
-    // --- PÓNLO AQUÍ ABAJO, AL FINAL DEL TODO ---
-window.onload = () => {
-    // 1. Mostrar la sección de noticias por defecto al entrar
-    irA(null, 'zona-noticias');
-    
-
-
-// Para usarlo con tu caso específico:
-marcarBotonActivo('panel-admin');
-
-   
-// IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
-document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Cargas iniciales (Header, Footer, datos, etc.)
-    // ... tus fetch aquí ...
-    
-    // 2. Aquí es donde decides qué se abre al entrar
-    const hash = window.location.hash; // Detecta si la URL trae #panel-admin
-    
-    if (hash === '#panel-admin' && localStorage.getItem('rol') === 'admin') {
-        // Esto fuerza que al cargar se abra el panel si es admin
-        irA(null, 'panel-admin');
-        marcarBotonActivo('panel-admin');
-    } else {
-        // Esto es lo que se abre si no hay hash o no es admin
-        irA(null, 'zona-noticias');
-        marcarBotonActivo('zona-noticias');
-    }
-});
-
-// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
-
-
 
 async function enviarContacto() {
     const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
@@ -1149,7 +1109,7 @@ async function enviarContacto() {
         content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
         embeds: [{
             title: "📩 Nuevo mensaje de contacto",
-            color: 3447003, // Color azul
+            color: 3447003,
             fields: [
                 { name: "Nombre", value: nombre, inline: true },
                 { name: "Asunto", value: asunto, inline: true },
@@ -1168,16 +1128,28 @@ async function enviarContacto() {
     if (res.ok) {
         alert("¡Mensaje enviado correctamente!");
         document.getElementById('modal-contacto').style.display = 'none';
-        // Limpiamos los campos
         document.getElementById('nombre-contacto').value = '';
         document.getElementById('asunto-contacto').value = '';
         document.getElementById('mensaje-contacto').value = '';
     } else {
         alert("Error al enviar el mensaje.");
     }
-}       
-// AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------       
-    </script>
+}
+
+// --- ÚNICO PUNTO DE ENTRADA (DOMContentLoaded) ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Lógica de navegación basada en el hash de la URL
+    const hash = window.location.hash;
+    
+    if (hash === '#panel-admin' && localStorage.getItem('rol') === 'admin') {
+        irA(null, 'panel-admin');
+        marcarBotonActivo('panel-admin');
+    } else {
+        irA(null, 'zona-noticias');
+        marcarBotonActivo('zona-noticias');
+    }
+});
+</script>
 
 
 
