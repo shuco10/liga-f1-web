@@ -91,7 +91,12 @@
 <div class="contenedor-caja">
     <h3 class="titulo-seccion">✏️ Editar Piloto</h3>
     <form id="form-editar">
-        <div class="form-group"><label>Selecciona el Piloto a Modificar:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()" required></select></div>
+       <div class="form-group">
+           <label>Selecciona el Piloto a Modificar:</label>
+            <select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()" required>
+                <option value="" disabled selected>-- Selecciona un piloto --</option>
+            </select>
+        </div>
         <div class="form-group"><label>Nuevo Gamertag / Nick:</label><input type="text" id="edit-gamertag" class="form-control" required></div>
         <div class="form-group"><label>Nuevo Dorsal / Número:</label><input type="number" id="edit-numero" class="form-control" min="1" max="99" required></div>
         <div class="form-group"><label>Nuevo Enlace de Foto:</label><input type="text" id="edit-foto" class="form-control"></div>
