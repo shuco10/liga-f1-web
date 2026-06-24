@@ -1137,22 +1137,28 @@ async function enviarContacto() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Cargamos datos y permisos primero
+    // 1. Cargamos datos iniciales
     await cargarTodosLosDatos();
-    if (localStorage.getItem('rol') === 'admin') {
+    
+    // 2. Definimos elementos
+    const esAdmin = localStorage.getItem('rol') === 'admin';
+    const panelAdmin = document.getElementById('panel-admin');
+    
+    // 3. Lógica de visibilidad
+    if (esAdmin) {
+        // Si es admin, cargamos sus herramientas y mostramos el panel
         await cargarDesplegablesAdmin();
-    }
-    aplicarPermisos();
-
-    // 2. Comprobación de seguridad y carga automática
-    if (localStorage.getItem('rol') === 'admin') {
-        // Como es una página exclusiva, abrimos el panel directamente
+        aplicarPermisos();
+        
+        if (panelAdmin) panelAdmin.style.display = 'block';
         irA(null, 'panel-admin');
         marcarBotonActivo('panel-admin');
     } else {
-        // Si alguien que no es admin entra aquí, lo mandamos a la home
-        alert("Acceso denegado");
-        window.location.href = "/index.html";
+        // Si NO es admin, simplemente ocultamos el panel
+        // (El usuario se queda en la página, pero no ve las herramientas de admin)
+        if (panelAdmin) panelAdmin.style.display = 'none';
+        
+        console.log("Modo usuario: panel administrativo oculto.");
     }
 });
 </script>
