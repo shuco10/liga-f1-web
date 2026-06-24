@@ -155,7 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="btn-accion" onclick="verificarPassword()">Acceder al Panel</button>
         <div id="error-login" style="color: red; text-align: center; margin-top: 10px;"></div>--> 
     </div>
+        </div>
 </main>
+        
     <div id="contenido-admin" style="display: none;">
 
 <main class="caja-contenido">     
@@ -183,23 +185,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     <div style="flex: 1;">
         <h4 style="color: #e10600; margin-top: 0;">Registro Piloto (Reserva)</h4>
-        <select id="select-reserva" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-            <option value="">Selecciona Piloto...</option>
-            </select>
+        <select id="select-reserva" class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            <option value="">Cargando reservas...</option>
+        </select>
         <input type="number" id="input-posicion-piloto" placeholder="Posición final (Reserva)" style="width: 100%; padding: 8px;">
     </div>
 
     <div style="flex: 1;">
         <h4 style="color: #fff; margin-top: 0;">Registro Escudería</h4>
-        <select id="select-escuderia" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+        <select id="select-escuderia" class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px;">
             <option value="">Selecciona Escudería...</option>
-            </select>
+            <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+            <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
+            <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
+            <option value="10">Haas</option><option value="11">Cadillac</option>
+        </select>
         <input type="number" id="input-posicion-escuderia" placeholder="Posición final (Escudería)" style="width: 100%; padding: 8px;">
     </div>
-
 </div>
 
-<button onclick="guardarResultado()" style="margin-top: 20px; background: #e10600; color: white; padding: 10px 20px; border: none; cursor: pointer; width: 100%; font-weight: bold;">
+<button onclick="guardarAmbosRegistros()" style="margin-top: 20px; background: #e10600; color: white; padding: 15px; border: none; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px;">
     GUARDAR AMBOS REGISTROS
 </button>
 
@@ -368,7 +373,7 @@ async function cargarTodosLosDatos() {
         const res = await fetch('/api/lista-de-pilotos');
         if (!res.ok) return;
         listaPilotosGlobal = await res.json();
-        
+        inicializarSelectReservas();
         const resResultados = await fetch('/api/todos-los-resultados');
         const resultados = await resResultados.json();
 
@@ -813,29 +818,32 @@ async function editarResultado(id) {
     }
 
 
-async function guardarAmbosRegistros() {
-    // 1. Confirmación de seguridad
-    if (!confirm("¿Seguro que quieres registrar los puntos del reserva y la escudería?")) {
-        return;
-    }
+// A. Llenar el desplegable usando tu variable global 'listaPilotosGlobal'
+function inicializarSelectReservas() {
+    const selectReserva = document.getElementById('select-reserva');
+    if (!selectReserva || !window.listaPilotosGlobal) return;
 
-    // 2. Obtener valores (Protegidos)
-    const circuitoId = document.getElementById('select-circuito-admin')?.value; // El select de arriba
+    // Filtramos solo los que son reserva (es_reserva === 1)
+    const soloReservas = listaPilotosGlobal.filter(p => p.es_reserva === 1);
+    
+    selectReserva.innerHTML = '<option value="">Selecciona Reserva...</option>' + 
+        soloReservas.map(p => `<option value="${p.id}">${p.gamertag}</option>`).join('');
+}
+
+// B. Enviar los datos al servidor
+async function guardarAmbosRegistros() {
+    if (!confirm("¿Seguro que quieres registrar los puntos del reserva y la escudería?")) return;
+
+    const circuitoId = document.getElementById('select-circuito-admin')?.value;
     const reservaId = document.getElementById('select-reserva')?.value;
     const posReserva = document.getElementById('input-posicion-piloto')?.value;
     const escuderiaId = document.getElementById('select-escuderia')?.value;
     const posEscuderia = document.getElementById('input-posicion-escuderia')?.value;
 
-    if (!circuitoId) {
-        alert("Por favor, selecciona un circuito primero.");
-        return;
-    }
-
     try {
-        // 3. Envío paralelo de datos
         const promesas = [];
 
-        // Si hay datos de reserva, añadimos al array de envíos
+        // Registro Reserva
         if (reservaId && posReserva) {
             promesas.push(fetch('/api/guardar-resultado', {
                 method: 'POST',
@@ -844,7 +852,7 @@ async function guardarAmbosRegistros() {
             }));
         }
 
-        // Si hay datos de escudería, añadimos al array de envíos
+        // Registro Escudería
         if (escuderiaId && posEscuderia) {
             promesas.push(fetch('/api/guardar-resultado', {
                 method: 'POST',
@@ -853,31 +861,21 @@ async function guardarAmbosRegistros() {
             }));
         }
 
-        // Ejecutar todo
         if (promesas.length > 0) {
             await Promise.all(promesas);
             alert("Registros guardados con éxito.");
-            
-            // Limpieza de campos
-            document.getElementById('select-reserva').value = "";
+            // Limpiar
             document.getElementById('input-posicion-piloto').value = "";
-            document.getElementById('select-escuderia').value = "";
             document.getElementById('input-posicion-escuderia').value = "";
-            
-            // Refrescar
-            cargarTodosLosDatos(); 
-            cargarCircuitos();
+            if (typeof cargarTodosLosDatos === 'function') cargarTodosLosDatos();
         } else {
-            alert("No has rellenado ningún dato para guardar.");
+            alert("Por favor, rellena al menos uno de los bloques.");
         }
-
     } catch (err) {
         console.error("Error al guardar:", err);
-        alert("Hubo un error al guardar. Revisa la consola.");
+        alert("Error al guardar en el servidor.");
     }
 }
-
-
         
 </script>
 <script>
