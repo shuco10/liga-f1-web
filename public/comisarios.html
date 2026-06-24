@@ -194,11 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
     </select>
 
     <input type="number" id="input-posicion-escuderia" placeholder="Posición final de la Escudería" style="width: 100%; padding: 8px;">
+    <button onclick="sumarPuntosManual()" style="margin-top: 10px; background: #CCFF00; color: black; border: none; padding: 10px; width: 100%; font-weight: bold; cursor: pointer;">
+    SUMAR PUNTOS A ESCUDERIA
+    </button>
 </div>
 
-<button onclick="sumarPuntosManual()" style="margin-top: 10px; background: #CCFF00; color: black; border: none; padding: 10px; width: 100%; font-weight: bold; cursor: pointer;">
-    SUMAR PUNTOS A TABLA
-</button>
+
 
 
     
@@ -811,23 +812,28 @@ async function editarResultado(id) {
 
 
 async function sumarPuntosManual() {
-    const circuitoId = document.getElementById('select-circuito-admin')?.value;
-    const escuderiaId = document.getElementById('select-escuderia-puntos').value;
-    const posicion = document.getElementById('input-posicion-escuderia').value;
+    // Intentamos obtener los elementos
+    const elCircuito = document.getElementById('select-circuito-admin');
+    // Buscamos el ID nuevo o el antiguo (por si acaso)
+    const elEscuderia = document.getElementById('select-escuderia-puntos') || document.getElementById('select-escuderia');
+    const laPosicion = document.getElementById('input-posicion-escuderia');
 
-    if (!circuitoId || !escuderiaId || !posicion) {
-        alert("Rellena todos los campos");
+    // Validación: Si algún elemento no existe, te avisamos cuál es
+    if (!elCircuito) { alert("Error: No encuentro el select de circuito (id='select-circuito-admin')"); return; }
+    if (!elEscuderia) { alert("Error: No encuentro el select de escudería. Revisa el ID en el HTML."); return; }
+    if (!laPosicion) { alert("Error: No encuentro el input de posición (id='input-posicion-escuderia')"); return; }
+
+    const datos = {
+        circuito_id: elCircuito.value,
+        escuderia_id: elEscuderia.value,
+        posicion: parseInt(laPosicion.value),
+        piloto_id: null
+    };
+
+    if (!datos.circuito_id || !datos.escuderia_id || !datos.posicion) {
+        alert("Por favor, selecciona circuito, escudería y pon una posición.");
         return;
     }
-
-    // Enviamos el objeto al servidor. 
-    // Al no incluir 'piloto_id', el servidor registrará los puntos directamente al equipo.
-    const datos = {
-        circuito_id: circuitoId,
-        escuderia_id: escuderiaId,
-        posicion: parseInt(posicion),
-        piloto_id: null // Explicitamente nulo
-    };
 
     try {
         const res = await fetch('/api/guardar-resultado', {
@@ -837,14 +843,13 @@ async function sumarPuntosManual() {
         });
 
         if (res.ok) {
-            alert("Puntos sumados a la escudería correctamente.");
-            // Esto refrescará automáticamente la tabla de constructores que ya tienes hecha
+            alert("Puntos sumados correctamente.");
             if (typeof cargarTodosLosDatos === 'function') cargarTodosLosDatos();
         } else {
             alert("Error al guardar en el servidor.");
         }
     } catch (err) {
-        console.error(err);
+        console.error("Error:", err);
     }
 }
 
