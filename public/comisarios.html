@@ -1123,9 +1123,23 @@ marcarBotonActivo('panel-admin');
 
    
 // IMPORTANTE: Esto ejecuta la función automáticamente al cargar la página
-document.addEventListener('DOMContentLoaded', ();
-
-
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Cargas iniciales (Header, Footer, datos, etc.)
+    // ... tus fetch aquí ...
+    
+    // 2. Aquí es donde decides qué se abre al entrar
+    const hash = window.location.hash; // Detecta si la URL trae #panel-admin
+    
+    if (hash === '#panel-admin' && localStorage.getItem('rol') === 'admin') {
+        // Esto fuerza que al cargar se abra el panel si es admin
+        irA(null, 'panel-admin');
+        marcarBotonActivo('panel-admin');
+    } else {
+        // Esto es lo que se abre si no hay hash o no es admin
+        irA(null, 'zona-noticias');
+        marcarBotonActivo('zona-noticias');
+    }
+});
 
 // AQUI PONGO EL CONTACTAR ------------------------------------------------------------------------------------
 
