@@ -250,6 +250,23 @@ app.post('/api/guardar-resultado', async (req, res) => {
     } catch (err) { res.status(500).send("Error al guardar resultado"); }
 });
 
+
+app.post('/api/guardar-puntos-escuderia', async (req, res) => {
+    const { escuderia_id, posicion } = req.body;
+    const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    const puntosObtenidos = puntos[posicion] || 0;
+
+    try {
+        // Actualiza directamente la tabla de escuderías (o constructores)
+        // Asegúrate de que el nombre de tu tabla sea 'constructores' o 'escuderias'
+        await pool.query('UPDATE constructores SET puntos = puntos + $1 WHERE id = $2', [puntosObtenidos, escuderia_id]);
+        res.sendStatus(200);
+    } catch (err) { 
+        console.error(err);
+        res.status(500).send("Error al actualizar escudería"); 
+    }
+});
+
 app.get('/api/todos-los-resultados', async (req, res) => {
     const { rows } = await pool.query(`
             SELECT r.*, p.gamertag as piloto_nombre 
