@@ -158,7 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
 </main>
     <div id="contenido-admin" style="display: none;">
 
-<main class="caja-contenido">        
+<main class="caja-contenido">     
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">    
 <div id="admin-carreras">
     <h3>🏁 - Cargar Resultados de carrera - 🏁</h3>
     
@@ -175,8 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
     </div>
     <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
-</div>
+    </div>
+</div>    
 
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">    
 <div id="admin-noticias">
     <h3>📢 - Publicar Nueva Noticia - 📢</h3>
     
@@ -193,8 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     
     <button onclick="publicarNoticia()" id="btn-plata-resultado" class="btn-accion">PUBLICAR AVISO</button>
+    </div>
 </div>
-
 
 
 
