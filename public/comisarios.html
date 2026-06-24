@@ -516,16 +516,19 @@ if (res.ok) {
         }
     });
 
-    window.addEventListener('DOMContentLoaded', async () => {
-    // 1. Cargamos datos base
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Aplicar la visibilidad inicial según el rol (Admin o no)
+    aplicarPermisos();
+
+    // 2. Cargar los datos base de la liga
     await cargarTodosLosDatos();
-    
-    // 2. Si es admin, cargamos desplegables inmediatamente
+
+    // 3. Si es admin, cargamos los desplegables una sola vez
     if (localStorage.getItem('rol') === 'admin') {
         await cargarDesplegablesAdmin();
     }
-    
-    // 3. Navegación inicial
+
+    // 4. Navegación inicial
     irA(null, 'mundial-pilotos');
 });
 
@@ -595,10 +598,6 @@ if (res.ok) {
         }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-        cargarTodosLosDatos();
-        irA(null, 'mundial-pilotos');
-    });
 
         
 // 1. Llamada a los circuitos de la imagen
@@ -799,13 +798,7 @@ async function verificarPassword() {
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            aplicarPermisos();
-            if (localStorage.getItem('rol') === 'admin') {
-                cargarDesplegablesAdmin();
-            }
-        });
-   
+
         // --- RESET DE PUNTOS Y BASE DE DATOS ---
         function confirmarReset() {
             if (confirm("⚠️ ¿ESTÁS SEGURO?\nEsto borrará todos los puntos y resultados.")) {
