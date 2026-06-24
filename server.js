@@ -257,16 +257,31 @@ app.post('/api/guardar-resultado', async (req, res) => {
 
 app.post('/api/guardar-puntos-escuderia', async (req, res) => {
     const { escuderia_id, posicion } = req.body;
+    
+    // Convertimos a número por si acaso llega como texto
+    const idEscuderiaNum = parseInt(escuderia_id);
+    const posNum = parseInt(posicion);
+
     const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntosObtenidos = puntos[posicion] || 0;
+    const puntosObtenidos = puntos[posNum] || 0;
 
     try {
-        // Ejecutamos la consulta y pedimos que nos devuelva el error real
-        await pool.query('UPDATE constructores SET puntos = puntos + $1 WHERE id = $2', [puntosObtenidos, escuderia_id]);
+        // Ejecutamos la consulta
+        const result = await pool.query(
+            'UPDATE constructores SET puntos = puntos + $1 WHERE id = $2', 
+            [puntosObtenidos, idEscuderiaNum]
+        );
+        
+        // Verificamos si realmente se actualizó alguna fila
+        if (result.rowCount === 0) {
+            return res.status(404).send("Error: No se encontró la escudería con ese ID.");
+        }
+
         res.sendStatus(200);
     } catch (err) { 
-        console.error("Error completo:", err); // Esto se verá en los logs de Render
-        res.status(500).send(err.message); // Esto hará que el alert en tu web muestre el mensaje técnico
+        console.error("ERROR REAL EN EL SERVIDOR:", err);
+        // ENVIAMOS EL ERROR REAL AL FRONTEND
+        res.status(500).send("Error DB: " + err.message); 
     }
 });
 
