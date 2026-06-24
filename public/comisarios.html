@@ -1068,16 +1068,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         irA(null, 'panel-admin');
         marcarBotonActivo('panel-admin');
     } else {
-// --- CASO NO ADMIN (OBLIGAR LOGIN) ---
-        // Ocultamos el panel de gestión
-        if (panelAdmin) panelAdmin.style.display = 'none';
-        
-        // MOSTRAR EL PANEL DE CONTRASEÑA OBLIGATORIAMENTE
-        if (modalLogin) {
-            modalLogin.style.display = 'flex'; // O 'block', según tu CSS
-        }
-        
-        console.log("Acceso restringido: mostrando panel de login.");
+
+     // --- SI NO ERES ADMIN ---
+        bloqueLogin.style.display = 'block';   // Muestras el login
+        panelAdmin.style.display = 'none';     // Ocultas el panel
     }
 });
 </script>
