@@ -812,41 +812,41 @@ async function editarResultado(id) {
 
 
 async function sumarPuntosManual() {
-    // Intentamos obtener los elementos
-    const elCircuito = document.getElementById('select-circuito-admin');
-    // Buscamos el ID nuevo o el antiguo (por si acaso)
+    // Obtenemos solo la escudería y la posición
     const elEscuderia = document.getElementById('select-escuderia-puntos') || document.getElementById('select-escuderia');
     const laPosicion = document.getElementById('input-posicion-escuderia');
 
-    // Validación: Si algún elemento no existe, te avisamos cuál es
-    if (!elCircuito) { alert("Error: No encuentro el select de circuito (id='select-circuito-admin')"); return; }
-    if (!elEscuderia) { alert("Error: No encuentro el select de escudería. Revisa el ID en el HTML."); return; }
-    if (!laPosicion) { alert("Error: No encuentro el input de posición (id='input-posicion-escuderia')"); return; }
+    // Validación mínima
+    if (!elEscuderia || !laPosicion) { 
+        alert("Error: Faltan elementos en el formulario."); 
+        return; 
+    }
 
-    const datos = {
-        circuito_id: elCircuito.value,
-        escuderia_id: elEscuderia.value,
-        posicion: parseInt(laPosicion.value),
-        piloto_id: null
-    };
-
-    if (!datos.circuito_id || !datos.escuderia_id || !datos.posicion) {
-        alert("Por favor, selecciona circuito, escudería y pon una posición.");
+    if (!elEscuderia.value || !laPosicion.value) {
+        alert("Por favor, selecciona una escudería y pon una posición.");
         return;
     }
 
+    // Datos simplificados para la nueva ruta
+    const datos = {
+        escuderia_id: elEscuderia.value,
+        posicion: parseInt(laPosicion.value)
+    };
+
     try {
-        const res = await fetch('/api/guardar-resultado', {
+        // IMPORTANTE: Cambiamos la ruta a '/api/guardar-puntos-escuderia'
+        const res = await fetch('/api/guardar-puntos-escuderia', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(datos)
         });
 
         if (res.ok) {
-            alert("Puntos sumados correctamente.");
+            alert("¡Puntos sumados a la escudería correctamente!");
+            // Refresca la tabla
             if (typeof cargarTodosLosDatos === 'function') cargarTodosLosDatos();
         } else {
-            alert("Error al guardar en el servidor.");
+            alert("Error al guardar en el servidor. Asegúrate de haber añadido la nueva ruta en server.js.");
         }
     } catch (err) {
         console.error("Error:", err);
