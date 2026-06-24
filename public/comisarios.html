@@ -1108,10 +1108,11 @@ window.onload = () => {
     irA(null, 'zona-noticias');
     
     // 2. Forzar que el botón de Noticias tenga la clase 'active'
-    const botonNoticias = document.querySelector('button[onclick*="zona-noticias"]');
-    if (botonNoticias) {
-        botonNoticias.classList.add('active');
-    }
+// Cambia 'zona-comisarios' por el valor real que pasas a tu función en el HTML
+const botonComisarios = document.querySelector('button[onclick*="admin"]'); 
+if (botonComisarios) {
+    botonComisarios.classList.add('active');
+}
 };
 
 
