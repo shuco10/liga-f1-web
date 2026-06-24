@@ -190,7 +190,7 @@
 
         // Cargar las noticias
       //  cargarNoticias();
-  //  });
+    //});
 
 // 1. Mostrar form si es admin
 //   if (typeof esAdmin === 'function' && esAdmin()) {
@@ -723,8 +723,7 @@ async function editarResultado(id) {
             alert("Error al guardar el resultado");
         }
     }
-</script>
-<script>
+
         function aplicarPermisos() {
             const esAdmin = (localStorage.getItem('rol') === 'admin');
             const botones = document.querySelectorAll('.admin-only');
