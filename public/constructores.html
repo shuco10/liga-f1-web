@@ -148,16 +148,15 @@ function renderizarConstructores(pilotos, escuderias) {
             pilotos: pilotosEscuderia,
             victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
             podios: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.podios) || 0), 0),
-            puntos: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0)
+            // CORRECCIÓN: Usamos el valor directo de la base de datos
+            puntos: Number(esc.puntos) || 0 
         };
     }).sort((a, b) => b.puntos - a.puntos);
 
     datosConstructores.forEach((c, index) => {
-        // Lógica de Podio: solo para los 3 primeros
         const esPodio = index < 3;
         const posClass = esPodio ? `pos-${index + 1}` : '';
         const numeroDisplay = index + 1;
-        
         const claseBanda = mapaColores[c.nombre] || "banda-default";
         
         const avatars = c.pilotos.map(p => {
