@@ -167,7 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
 <div class="navbar">
 
-    <button class="nav-btn" style="border-color: #e10600;" onclick="irA(event, 'panel-admin')"><span class="emoji-nav">🛠️</span> Comisarios</button>
+<button class="nav-btn oculto-siempre" style="border-color: #e10600;" onclick="irA(event, 'panel-admin')">
+    <span class="emoji-nav">🛠️</span> Comisarios
+</button>
 </div>
 
    
@@ -1049,7 +1051,7 @@ async function enviarContacto() {
         alert("Error al enviar el mensaje.");
     }
 }
-
+//----------------------CARGA DE LA PANTALLA  -----------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargamos datos iniciales
     await cargarTodosLosDatos();
