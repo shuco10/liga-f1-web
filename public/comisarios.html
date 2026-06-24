@@ -209,6 +209,8 @@
     </form>
 </div>
    </main>
+
+
     <script>
 
 
@@ -789,30 +791,6 @@ async function editarResultado(id) {
             location.reload();
         }
 
-async function verificarPassword() {
-    const password = document.getElementById('pass-comisario').value;
-    const errorDiv = document.getElementById('error-login');
-    
-    if (password === "admin123") { 
-        localStorage.setItem('rol', 'admin');
-        
-        // 1. Hacemos visible el panel inmediatamente
-        aplicarPermisos();
-        
-        // 2. Ejecución asíncrona controlada: 
-        // Esperamos a que los datos se descarguen y se pinten los selects
-        try {
-            await cargarDesplegablesAdmin();
-            alert("Acceso concedido");
-        } catch (error) {
-            console.error("Error al cargar los datos tras el login:", error);
-            errorDiv.textContent = "Error al cargar los datos del panel.";
-        }
-                
-    } else {
-        errorDiv.textContent = "Contraseña incorrecta";
-    }
-}
 
 
         // --- RESET DE PUNTOS Y BASE DE DATOS ---
@@ -958,7 +936,33 @@ async function enviarContacto() {
     </script>
 
 
-
+<script>
+async function verificarPassword() {
+    const password = document.getElementById('pass-comisario').value;
+    const errorDiv = document.getElementById('error-login');
+    
+    if (password === "admin123") { 
+        localStorage.setItem('rol', 'admin');
+        
+        // 1. Hacemos visible el panel inmediatamente
+        aplicarPermisos();
+        
+        // 2. Ejecución asíncrona controlada: 
+        // Esperamos a que los datos se descarguen y se pinten los selects
+        try {
+            await cargarDesplegablesAdmin();
+            alert("Acceso concedido");
+        } catch (error) {
+            console.error("Error al cargar los datos tras el login:", error);
+            errorDiv.textContent = "Error al cargar los datos del panel.";
+        }
+                
+    } else {
+        errorDiv.textContent = "Contraseña incorrecta";
+    }
+}
+</script>
+    
 
 
 <div id="zona-reset" class="admin-only" style="text-align: center; display: none; padding: 20px; background: #1a1a1a; border-radius: 8px; margin: 20px;">
