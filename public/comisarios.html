@@ -70,7 +70,14 @@
     <form id="form-piloto">
         <div class="form-group"><label>Gamertag:</label><input type="text" id="gamertag" class="form-control" required></div>
         <div class="form-group"><label>Dorsal:</label><input type="number" id="numero_piloto" class="form-control" min="1" max="99" required></div>
-        <div class="form-group"><label>Escudería:</label><select id="escuderia_id" class="form-control"></select></div>
+        <div class="form-group"><label>Escudería:</label>
+            <select id="escuderia_id" class="form-control">
+                <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+                <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
+                <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
+                <option value="10">Haas</option><option value="11">Cadillac</option>
+            </select>
+        </div>
         <button type="submit" class="boton-accion">Guardar Piloto</button>
         <div id="msg-piloto" class="mensaje"></div>
     </form>
@@ -81,7 +88,14 @@
     <form id="form-editar">
         <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-editar" class="form-control" onchange="autocompletarFormEdicion()"></select></div>
         <div class="form-group"><label>Nuevo Gamertag:</label><input type="text" id="edit-gamertag" class="form-control"></div>
-        <div class="form-group"><label>Nueva Escudería:</label><select id="edit-escuderia" class="form-control"></select></div>
+        <div class="form-group"><label>Nueva Escudería:</label>
+            <select id="escuderia_id" class="form-control">
+                <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+                <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
+                <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
+                <option value="10">Haas</option><option value="11">Cadillac</option>
+            </select>    
+        </div>
         <button type="submit" class="boton-accion">Actualizar Datos</button>
         <div id="msg-editar" class="mensaje"></div>
     </form>
