@@ -180,6 +180,36 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>    
 
 <div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">    
+<div id="admin-carreras">
+    <h3>🏁 - Cargar Resultados del Reserva - 🏁</h3>
+    
+    <div class="form-group">
+        <label>Circuito</label>
+        <select id="select-circuito-admin" class="form-control"></select>
+    </div>
+        <div class="form-group">
+        <label>Piloto</label>
+        <select id="select-piloto-admin" class="form-control"></select>
+    </div>
+        <div class="form-group">
+        <label>Posición</label>
+        <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
+    </div>
+    <div class="form-group">
+        <label>Escudería:</label>
+        <select id="escuderia_id" class="form-control">
+            <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+            <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
+            <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
+            <option value="10">Haas</option><option value="11">Cadillac</option>
+        </select>
+    </div>
+    <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-accion">GUARDAR RESULTADO</button>
+    </div>
+</div>   
+
+    
+<div class="admin-bloque" style="background-color: #1e1e1e; border: 1px solid #4a4a4a; padding: 25px; border-radius: 8px; margin-bottom: 20px;">    
 <div id="admin-noticias">
     <h3>📢 - Publicar Nueva Noticia - 📢</h3>
     
@@ -768,7 +798,8 @@ async function editarResultado(id) {
         const data = {
             circuito_id: document.getElementById('select-circuito-admin').value,
             piloto_id: document.getElementById('select-piloto-admin').value,
-            posicion: parseInt(document.getElementById('input-posicion').value)
+            posicion: parseInt(document.getElementById('input-posicion').value),
+            idEscuderia: document.getElementById('escuderia_id').value, // <--- AQUÍ LO TIENES
         };
         const res = await fetch('/api/guardar-resultado', {
             method: 'POST',
