@@ -13,6 +13,8 @@ function cerrarSesion() {
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
     if (modal) {
+        // Al cambiar a flex, el navegador activa el align-items y justify-content
+        // que definimos en el style del HTML
         modal.style.display = 'flex';
     } else {
         alert("El sistema de login no está cargado.");
