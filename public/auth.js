@@ -1,32 +1,47 @@
 // auth.js
+
 function esAdmin() {
     return localStorage.getItem('rol') === 'admin';
 }
 
-function verificarPass() {
-    const pass = document.getElementById('pass-admin').value;
-    if (usuario === "admin" && pass === "admin123") { // Cambia esto por tu pass real
-        localStorage.setItem('rol', 'admin');
-        location.reload();
-    } else {
-        alert("Contraseña incorrecta");
-    }
-}
-
 function cerrarSesion() {
     localStorage.removeItem('rol');
+    localStorage.removeItem('usuario_token'); // Limpiamos todo
     location.reload();
 }
-// /auth.js (Añade esto al final)
+
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
     if (modal) {
         modal.style.display = 'block';
     } else {
-        alert("El sistema de login aún se está cargando, espera un segundo.");
+        alert("El sistema de login no está cargado.");
     }
 }
 
+// Función corregida: usa los IDs correctos y verifica que existan
+function verificarPass() {
+    const userField = document.getElementById('admin-user');
+    const passField = document.getElementById('admin-pass');
+
+    // Validación de seguridad: si no existen los campos, salimos
+    if (!userField || !passField) {
+        alert("Error: El formulario de login no se encuentra en esta página.");
+        return;
+    }
+
+    const usuario = userField.value;
+    const pass = passField.value;
+
+    // Aquí validamos (luego esto se conectará al servidor)
+    if (usuario === "admin" && pass === "admin123") {
+        localStorage.setItem('rol', 'admin');
+        alert("Acceso concedido");
+        location.reload();
+    } else {
+        alert("Usuario o contraseña incorrectos");
+    }
+}
 // Editar resultados en circuitos
 function editarResultado(id) {
     if (!esAdmin()) return alert("No tienes permisos.");
