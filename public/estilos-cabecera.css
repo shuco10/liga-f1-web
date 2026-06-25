@@ -792,3 +792,30 @@ table tr td:nth-child(2) {
     font-weight: bold;
 }
 
+
+.header-fijo {
+    position: fixed; /* Esto es lo que lo deja fijo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Asegura que esté por encima de todo */
+    background: rgba(0, 0, 0, 0.6); /* Fondo semi-transparente */
+    backdrop-filter: blur(10px); /* Efecto vidrio borroso */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+    gap: 20px; /* Espacio entre logo y botones */
+    padding: 10px 0;
+}
+
+/* Ajuste del logo para que no sea gigante en la cabecera */
+.logo-main {
+    height: 50px; 
+    transition: transform 0.3s;
+}
+
+/* Importante: evitar que el contenido se solape */
+body {
+    padding-top: 80px; /* Asegura que el resto de tu web empiece debajo del header */
+}
+
