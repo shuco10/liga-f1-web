@@ -659,10 +659,18 @@ table tr td:nth-child(2) {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #121212; /* Ajusta este color al de tu fondo real */
+    
+    /* ELIMINAMOS EL BACKGROUND OPACO */
+    background-color: transparent; 
+    
+    /* AÑADIMOS EL EFECTO DE CRISTAL */
+    backdrop-filter: blur(10px); /* Ajusta el 10px para más o menos desenfoque */
+    -webkit-backdrop-filter: blur(10px); /* Para compatibilidad con Safari */
+    
     z-index: 1000;
-    padding-bottom: 10px; /* Un poco de aire abajo */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Una sombra suave para separar el header del contenido */
+    padding-bottom: 10px;
+    box-shadow: none; /* Quitamos la sombra para que se vea más limpio */
+    transition: backdrop-filter 0.3s ease;
 }
 
 body {
