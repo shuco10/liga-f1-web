@@ -654,36 +654,34 @@ table tr td:nth-child(2) {
     cursor: pointer;
 }
 
-/* Burbuja flotante para el logo */
+/* Burbuja flotante fija para el logo */
 .logo-blur-container {
-    position: sticky;
+    position: fixed; /* Cambiado a fixed */
     top: 10px;
+    left: 50%; /* Centrado absoluto */
+    transform: translateX(-50%); /* Ajuste fino para centrado perfecto */
     width: fit-content;
-    margin: 0 auto;
     padding: 10px;
     z-index: 1000;
     background-color: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
-    transition: all 0.3s ease;
 }
 
-/* Burbuja flotante para los botones */
+/* Burbuja flotante fija para los botones */
 .buttons-blur-container {
-    position: sticky;
-    top: 100px;
+    position: fixed; /* Cambiado a fixed */
+    top: 100px; /* Ajusta según el tamaño de tu logo */
+    left: 50%; /* Centrado absoluto */
+    transform: translateX(-50%); /* Ajuste fino para centrado perfecto */
     width: fit-content;
-    margin: 10px auto;
     padding: 10px;
     z-index: 1000;
     display: flex;
     gap: 10px;
     background-color: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
-    transition: all 0.3s ease;
 }
 
 /* BOTONES ESTÁNDAR (Claros) */
