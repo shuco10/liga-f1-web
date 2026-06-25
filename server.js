@@ -266,15 +266,24 @@ app.post('/api/guardar-resultado', async (req, res) => {
 
 app.post('/api/guardar-puntos-escuderia', async (req, res) => {
     const { escuderia_id, posicion } = req.body;
-    const puntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntosObtenidos = puntos[posicion] || 0;
+    const pos = parseInt(posicion);
+    let puntosParaSumar = 0;
+    let mensaje = "";
+
+    if (pos < 0) {
+        puntosParaSumar = pos;
+        mensaje = `Ajuste, puntos restados: ${pos} puntos.`;
+    } else {
+        const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+        puntosParaSumar = tablaPuntos[pos] || 0;
+        mensaje = `Puntos sumados correctamente (${puntosParaSumar} pts).`;
+    }
 
     try {
-        // CORREGIDO: Usamos "escuderias" en lugar de "constructores"
-        await pool.query('UPDATE escuderias SET puntos = puntos + $1 WHERE id = $2', [puntosObtenidos, escuderia_id]);
-        res.sendStatus(200);
+        await pool.query('UPDATE escuderias SET puntos = puntos + $1 WHERE id = $2', [puntosParaSumar, escuderia_id]);
+        // Devolvemos el mensaje en lugar de solo un código 200
+        res.send(mensaje);
     } catch (err) { 
-        console.error("Error al actualizar escudería:", err);
         res.status(500).send("Error al actualizar: " + err.message); 
     }
 });
