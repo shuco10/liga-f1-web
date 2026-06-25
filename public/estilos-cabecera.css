@@ -722,5 +722,47 @@ table tr td:nth-child(2) {
     transform: scale(1.1);
 }
 
+/* Contenedor padre del panel */
+#contenido-admin {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
 
+/* El bloque base profesional */
+.admin-bloque {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.admin-bloque h3 {
+    color: #fff;
+    margin-top: 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #333;
+    font-size: 1.2rem;
+}
+
+/* Botones profesionales */
+.btn-admin {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.btn-admin-primary { background: #e10600; color: white; }
+.btn-admin-success { background: #229971; color: white; }
+.btn-admin-warning { background: #d4a000; color: black; }
+.btn-admin-danger  { background: #a60000; color: white; }
+
+.btn-admin:hover { filter: brightness(1.2); transform: translateY(-2px); }
 
