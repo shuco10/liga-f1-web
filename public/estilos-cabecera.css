@@ -653,3 +653,19 @@ table tr td:nth-child(2) {
     color: white;
     cursor: pointer;
 }
+
+.header-sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #121212; /* Ajusta este color al de tu fondo real */
+    z-index: 1000;
+    padding-bottom: 10px; /* Un poco de aire abajo */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Una sombra suave para separar el header del contenido */
+}
+
+body {
+    padding-top: 220px; /* Ajusta este valor (prueba 200px o 250px) hasta que el contenido empiece justo debajo de tus botones */
+}
+
