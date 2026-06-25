@@ -1,51 +1,27 @@
-<!-- CABECERA FIJA -->    
-<div class="header-sticky">
-    <!-- CABECERA FIJA -->    
-<div class="logo-main-container">
+<div class="logo-blur-container">
     <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer">
         <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas" class="logo-main">
     </a>
 </div>
 
-<div id="auth-controls" class="contenedor-botones" style="display: flex; justify-content: center; gap: 10px; margin: 10px;">
-    
-    <a href="info.html" class="boton-accion">
-        <i class="fa-solid fa-building"></i>
-    </a>
-
-<button id="btn-login" class="boton-accion" onclick="seguridadAbrirModal()">
-    <i class="fa-solid fa-key"></i>
-</button>
-
-<button id="btn-logout" class="boton-accion" onclick="cerrarSesion()" style="display: none; background: #e74c3c;">
-    <i class="fa-solid fa-door-open"></i>
-</button>
-
-    <button class="boton-accion" onclick="document.getElementById('modal-contacto').style.display='block'">
-        <i class="fa-solid fa-envelope"></i>
-    </button>
-
+<div id="auth-controls" class="buttons-blur-container">
+    <a href="info.html" class="boton-header-blur"><i class="fa-solid fa-building"></i></a>
+    <button id="btn-login" class="boton-header-blur" onclick="seguridadAbrirModal()"><i class="fa-solid fa-key"></i></button>
+    <button id="btn-logout" class="boton-header-blur" onclick="cerrarSesion()" style="display: none; background: #e74c3c;"><i class="fa-solid fa-door-open"></i></button>
+    <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'"><i class="fa-solid fa-envelope"></i></button>
 </div>
 
 <div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
     <h3 style="margin-top: 0;">Formulario de Contacto</h3>
-    
     <input type="text" id="nombre-contacto" placeholder="Tu Nombre" style="display:block; margin-bottom:15px; width:100%; padding: 8px; box-sizing: border-box;">
     <input type="text" id="asunto-contacto" placeholder="Asunto" style="display:block; margin-bottom:15px; width:100%; padding: 8px; box-sizing: border-box;">
     <textarea id="mensaje-contacto" placeholder="Tu mensaje..." style="display:block; margin-bottom:15px; width:100%; height: 150px; padding: 8px; resize: vertical; box-sizing: border-box;"></textarea>
-    
     <div style="display: flex; gap: 10px; justify-content: flex-end;">
-        <button onclick="enviarContacto()" style="padding: 10px 20px; background-color: #e10600; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;">
-            Enviar Mensaje
-        </button>
-        <button onclick="document.getElementById('modal-contacto').style.display='none'" style="padding: 10px 20px; background-color: #444; color: white; border: none; cursor: pointer; border-radius: 5px;">
-            Cancelar
-        </button>
+        <button onclick="enviarContacto()" style="padding: 10px 20px; background-color: #e10600; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;">Enviar Mensaje</button>
+        <button onclick="document.getElementById('modal-contacto').style.display='none'" style="padding: 10px 20px; background-color: #444; color: white; border: none; cursor: pointer; border-radius: 5px;">Cancelar</button>
     </div>
 </div>
-<!-- CABECERA FIJA -->    
-</div>
-<!-- CABECERA FIJA -->    
+ 
 <!-- PATROCINADORES -->
 <div class="seccion-patrocinadores">
     <h2 class="titulo-partners">Nuestros Sponsors</h2>
