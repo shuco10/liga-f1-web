@@ -494,6 +494,35 @@ app.post('/api/guardar-resultado', async (req, res) => {
     }
 });
 
+// Añade esto a tu server.js
+app.post('/api/login', async (req, res) => {
+    const { usuario, pass } = req.body;
+    
+    try {
+        // Consulta real a tu base de datos (PostgreSQL)
+        const result = await pool.query(
+            'SELECT * FROM usuarios WHERE nombre_usuario = $1 AND password = $2', 
+            [usuario, pass]
+        );
+
+        if (result.rows.length > 0) {
+            // El usuario existe
+            const user = result.rows[0];
+            res.status(200).json({ 
+                rol: user.rol, // 'admin' o 'piloto'
+                token: 'token-unico-generado-o-id' 
+            });
+        } else {
+            // Usuario o contraseña incorrectos
+            res.status(401).send("Credenciales no válidas");
+        }
+    } catch (err) {
+        res.status(500).send("Error en el servidor");
+    }
+});
+
+
+
 
 
 app.listen(PORT, () => {
