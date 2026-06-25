@@ -654,12 +654,13 @@ table tr td:nth-child(2) {
     cursor: pointer;
 }
 
-/* Burbuja flotante para el logo */
+/* Burbuja fija para el logo */
 .logo-blur-container {
-    position: sticky;
+    position: fixed; /* Cambiado de sticky a fixed */
     top: 10px;
+    left: 50%;
+    transform: translateX(-50%); /* Centrado perfecto */
     width: fit-content;
-    margin: 0 auto;
     padding: 10px;
     z-index: 1000;
     background-color: rgba(0, 0, 0, 0.3);
@@ -669,12 +670,13 @@ table tr td:nth-child(2) {
     transition: all 0.3s ease;
 }
 
-/* Burbuja flotante para los botones */
+/* Burbuja fija para los botones */
 .buttons-blur-container {
-    position: sticky;
-    top: 100px;
+    position: fixed; /* Cambiado de sticky a fixed */
+    top: 130px; /* Ajusta según la altura de tu logo para que no se solapen */
+    left: 50%;
+    transform: translateX(-50%); /* Centrado perfecto */
     width: fit-content;
-    margin: 10px auto;
     padding: 10px;
     z-index: 1000;
     display: flex;
