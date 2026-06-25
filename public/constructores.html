@@ -162,11 +162,14 @@ function renderizarConstructores(pilotos, escuderias) {
         const numeroDisplay = index + 1;
         const claseBanda = mapaColores[c.nombre] || "banda-default";
         
-        const avatars = c.pilotos.map(p => {
+const avatars = c.pilotos.map(p => {
             const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
-            return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" onerror="this.src='/pilotos/R.png'">`;
+            // Aquí es donde añadimos el atributo title
+            return `<img src="/pilotos/${nombreArchivo}" 
+                         class="piloto-avatar-small" 
+                         title="${p.nombre}" 
+                         onerror="this.src='/pilotos/R.png'">`;
         }).join('');
-
         body.innerHTML += `
 <tr>
                 <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
