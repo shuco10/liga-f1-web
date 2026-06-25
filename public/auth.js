@@ -13,7 +13,7 @@ function cerrarSesion() {
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
     if (modal) {
-        modal.style.display = 'block';
+        modal.style.display = 'flex';
     } else {
         alert("El sistema de login no está cargado.");
     }
