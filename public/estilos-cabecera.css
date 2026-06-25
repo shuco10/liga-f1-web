@@ -722,47 +722,75 @@ table tr td:nth-child(2) {
     transform: scale(1.1);
 }
 
-/* Contenedor padre del panel */
-#contenido-admin {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 0 20px;
-}
-
-/* El bloque base profesional */
+/* --- Bloques/Tarjetas del Admin --- */
 .admin-bloque {
-    background-color: #1a1a1a;
-    border: 1px solid #333;
+    background-color: #1e1e1e;
+    border: 1px solid #4a4a4a;
     padding: 25px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.admin-bloque h3 {
-    color: #fff;
+.admin-bloque h3, .admin-bloque h4 {
+    color: #e5e5e5;
+    border-bottom: 2px solid #00d2be;
+    padding-bottom: 10px;
+    text-transform: uppercase;
     margin-top: 0;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #333;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
-/* Botones profesionales */
+/* --- Formularios --- */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #ccc;
+    font-weight: 600;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    background-color: #111;
+    border: 1px solid #4a4a4a;
+    color: white;
+    border-radius: 4px;
+    box-sizing: border-box; /* Importante para que el padding no rompa el ancho */
+}
+
+/* --- Botones del Admin --- */
 .btn-admin {
     width: 100%;
     padding: 12px;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     font-weight: bold;
     cursor: pointer;
     text-transform: uppercase;
     transition: all 0.2s ease;
+    margin-top: 10px;
 }
 
-.btn-admin-primary { background: #e10600; color: white; }
-.btn-admin-success { background: #229971; color: white; }
-.btn-admin-warning { background: #d4a000; color: black; }
-.btn-admin-danger  { background: #a60000; color: white; }
+.btn-admin:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+}
 
-.btn-admin:hover { filter: brightness(1.2); transform: translateY(-2px); }
+/* --- Variantes de color --- */
+.btn-admin-primary { background-color: #e10600; color: white; }
+.btn-admin-success { background-color: #229971; color: white; }
+.btn-admin-warning { background-color: #d4a000; color: black; }
+.btn-admin-danger  { background-color: #a60000; color: white; }
+.btn-admin-accent  { background-color: #CCFF00; color: black; }
+
+/* Mensajes de feedback */
+.mensaje {
+    margin-top: 10px;
+    font-weight: bold;
+}
 
