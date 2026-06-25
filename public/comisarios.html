@@ -784,44 +784,41 @@ async function editarResultado(id) {
         }
     }
 
+async function sumarPuntosManual() {
+        const elEscuderia = document.getElementById('select-escuderia-puntos') || document.getElementById('select-escuderia');
+        const laPosicion = document.getElementById('input-posicion-escuderia');
 
-app.post('/api/guardar-puntos-escuderia', async (req, res) => {
-    const { escuderia_id, posicion } = req.body;
-    const pos = parseInt(posicion);
-    
-    let puntosParaSumar = 0;
-    let mensajeConfirmacion = "";
-
-    // LÓGICA HÍBRIDA:
-    if (pos < 0) {
-        // Ajuste manual (resta o suma directa)
-        puntosParaSumar = pos;
-        mensajeConfirmacion = `Ajuste, resta completada: ${pos} puntos.`;
-    } else {
-        // Puntos de carrera estándar
-        const tablaPuntos = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-        puntosParaSumar = tablaPuntos[pos] || 0;
-        
-        if (puntosParaSumar === 0 && pos !== 0) {
-            return res.status(400).send("Posición no válida (fuera de puntos).");
+        if (!elEscuderia.value || !laPosicion.value) {
+            alert("Por favor, selecciona una escudería y pon una posición.");
+            return;
         }
-        mensajeConfirmacion = `¡Puntos sumados correctamente! (${puntosParaSumar} pts).`;
-    }
 
-    try {
-        await pool.query(
-            'UPDATE escuderias SET puntos = puntos + $1 WHERE id = $2', 
-            [puntosParaSumar, escuderia_id]
-        );
-        // Enviamos el mensaje de éxito para que tu "alert" lo muestre
-        res.status(200).send(mensajeConfirmacion);
-    } catch (err) { 
-        console.error("Error al actualizar escudería:", err);
-        // Enviamos el error para que tu "alert" lo muestre
-        res.status(500).send("Error interno: " + err.message); 
-    }
-});
+        const datos = {
+            escuderia_id: elEscuderia.value,
+            posicion: parseInt(laPosicion.value)
+        };
 
+        try {
+            const res = await fetch('/api/guardar-puntos-escuderia', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(datos)
+            });
+
+            // Capturamos el mensaje que viene del servidor (ya sea éxito o error)
+            const mensaje = await res.text();
+            
+            if (res.ok) {
+                alert(mensaje); // "¡Puntos sumados correctamente!" o "Ajuste, resta completada..."
+                if (typeof cargarTodosLosDatos === 'function') cargarTodosLosDatos();
+            } else {
+                alert("ERROR: " + mensaje); 
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            alert("Error de conexión al servidor.");
+        }
+    }
    async function guardarPuntosEscuderia() {
     const circuitoId = document.getElementById('select-circuito-admin')?.value;
     const escuderiaId = document.getElementById('select-escuderia-puntos').value;
