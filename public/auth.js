@@ -3,13 +3,24 @@ function esAdmin() {
     return localStorage.getItem('rol') === 'admin';
 }
 
-function verificarPass() {
+async function verificarPass() {
+    const user = document.getElementById('user-input').value; // Añade este input al HTML
     const pass = document.getElementById('pass-admin').value;
-    if (pass === "admin123") { // Cambia esto por tu pass real
-        localStorage.setItem('rol', 'admin');
+
+    const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario: user, pass: pass })
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('rol', data.rol);
+        localStorage.setItem('usuario_token', data.token);
+        alert("Acceso concedido");
         location.reload();
     } else {
-        alert("Contraseña incorrecta");
+        alert("Usuario o contraseña incorrectos");
     }
 }
 
@@ -158,3 +169,35 @@ async function guardarResolucion() {
         console.error("Error:", err);
     }
 }
+
+
+const authService = {
+    // Detecta si es admin O si es usuario logueado
+    esAdmin: () => localStorage.getItem('rol') === 'admin',
+    estaLogueado: () => !!localStorage.getItem('usuario_token') || !!localStorage.getItem('rol'),
+
+    actualizarHeader: () => {
+        const btn = document.getElementById('btn-auth');
+        if (!btn) return;
+        
+        if (authService.estaLogueado()) {
+            btn.innerText = "Cerrar Sesión";
+            btn.onclick = cerrarSesion;
+        } else {
+            btn.innerText = "Login / Registro";
+            btn.onclick = seguridadAbrirModal; 
+        }
+    },
+
+    protegerRuta: () => {
+        if (!authService.esAdmin()) {
+            alert("Acceso denegado. Solo administradores.");
+            window.location.href = "/index.html";
+        }
+    }
+};
+
+// Se ejecuta al cargar la página
+document.addEventListener('DOMContentLoaded', authService.actualizarHeader);
+
+
