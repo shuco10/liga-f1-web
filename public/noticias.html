@@ -153,24 +153,73 @@ async function publicarNoticia() {
         // Limpiamos los campos
         tituloInput.value = '';
         contenidoInput.value = '';
+
+            if (res.ok) {
+        // 1. Llamamos a la función de Discord antes de recargar la página
+        await notificarDiscord(titulo, contenido);
+        
+        // 2. Alert y recarga
+        alert("Noticia publicada correctamente y enviada a Discord");
+        location.reload(); 
+    }
         
         cargarNoticias(); 
         alert("Publicado"); 
     }
 }
 
-    async function eliminarNoticia(id) {
-        if (confirm("¿Borrar?")) { await fetch(`/api/noticias/${id}`, { method: 'DELETE' }); cargarNoticias(); }
+
+
+
+
+
+    
+
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    // Validación básica para no enviar noticias vacías
+    if (!tituloInput.value || !contenidoInput.value) {
+        alert("Por favor, rellena el título y el contenido.");
+        return;
     }
 
-    async function editarNoticia(id, t, c) {
-        const nt = prompt("Nuevo título:", t);
-        const nc = prompt("Nuevo contenido:", c);
-        if (nt && nc) {
-            await fetch(`/api/noticias/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ titulo: nt, contenido: nc }) });
-            cargarNoticias();
+    try {
+        const res = await fetch('/api/noticias', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                titulo: tituloInput.value, 
+                contenido: contenidoInput.value 
+            })
+        });
+        
+        if (res.ok) { 
+            // 1. Notificamos a Discord usando los valores de los inputs
+            await notificarDiscord(tituloInput.value, contenidoInput.value);
+            
+            // 2. Limpiamos los campos
+            tituloInput.value = '';
+            contenidoInput.value = '';
+
+            // 3. Feedback al usuario
+            alert("Noticia publicada correctamente y enviada a Discord.");
+            
+            // 4. Actualizamos la lista sin recargar toda la página (es más rápido)
+            if (typeof cargarNoticias === 'function') {
+                cargarNoticias();
+            } else {
+                location.reload(); // Si no existe la función, recargamos
+            }
+        } else {
+            alert("Error al publicar la noticia.");
         }
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Error de conexión al publicar.");
     }
+}
 
     document.addEventListener('DOMContentLoaded', cargarNoticias);
 
@@ -203,6 +252,52 @@ async function publicarNoticia() {
     }
 
 
+
+
+
+
+// --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
+
+async function notificarDiscord(titulo, descripcion, autor) {
+    const webhookUrl = 'https://discord.com/api/webhooks/1517900569891704893/RU_kzhQQ3L9f0i0R5ovCFAg4-t2755smAGS_Tfy9XUyql1FFnE-beqiB4XWMYiGNR0iD'; 
+    const webUrl = "https://cazadores-de-curvas.onrender.com/"; 
+
+    // Cambiamos el nombre de "mensaje" a "payload" para evitar el error de inicialización
+    const payload = {
+        content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
+        embeds: [{
+            title: titulo,
+            description: `${descripcion}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
+            color: 16711680,
+            author: {
+                name: autor || "**- Administración -**"
+            },
+            timestamp: new Date().toISOString()
+        }]
+    };
+
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload) // Usamos "payload" aquí
+        });
+
+        if (!response.ok) {
+            console.error('Error al enviar la notificación a Discord:', response.status);
+        } else {
+            console.log('Notificación enviada a Discord con éxito.');
+        }
+    } catch (error) {
+        console.error('Error de red al intentar notificar a Discord:', error);
+    }
+}
+
+
+
+
+
+    
         async function enviarContacto() {
         const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
         const nombre = document.getElementById('nombre-contacto').value;
