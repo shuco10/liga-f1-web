@@ -5,7 +5,18 @@
 body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 /* --- CONTENEDORES --- */
-.contenedor-jaula { width: 100%; max-width: 800px; height: 300px; margin: 0 auto; overflow: hidden; position: relative; }
+.contenedor-jaula { 
+    width: 100%; 
+    max-width: 800px; 
+    /* Cambia height por min-height y reduce el valor drásticamente */
+    min-height: 50px; 
+    margin: 0 auto; 
+    /* Elimina o reduce el margen si sigue habiendo espacio */
+    margin-top: 10px; 
+    margin-bottom: 10px; 
+    overflow: hidden; 
+    position: relative; 
+}
 .logo-main-container { text-align: center; margin: 30px 0; }
 .logo-main { max-width: 300px; height: auto; }
 
