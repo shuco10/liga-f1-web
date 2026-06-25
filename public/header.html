@@ -6,9 +6,15 @@
 
 <div id="auth-controls" class="buttons-blur-container">
     <a href="info.html" class="boton-header-blur"><i class="fa-solid fa-building"></i></a>
-    <button id="btn-login" class="boton-header-blur" onclick="seguridadAbrirModal()"><i class="fa-solid fa-key"></i></button>
-    <button id="btn-logout" class="boton-header-blur" onclick="cerrarSesion()" style="display: none; background: #e74c3c;"><i class="fa-solid fa-door-open"></i></button>
-    <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'"><i class="fa-solid fa-envelope"></i></button>
+    <button id="btn-login" class="boton-login-blur" onclick="seguridadAbrirModal()">
+        <i class="fa-solid fa-key"></i>
+    </button>
+    <button id="btn-logout" class="boton-login-blur" onclick="cerrarSesion()" style="display: none;">
+        <i class="fa-solid fa-door-open"></i>
+    </button>
+    <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
+        <i class="fa-solid fa-envelope"></i>
+    </button>
 </div>
 
 <div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
