@@ -36,7 +36,7 @@ function verificarPass() {
     // Aquí validamos (luego esto se conectará al servidor)
     if (usuario === "admin" && pass === "admin123") {
         localStorage.setItem('rol', 'admin');
-        alert("Acceso concedido");
+        alert("Bienvenido Administrador");
         location.reload();
     } else {
         alert("Usuario o contraseña incorrectos");
