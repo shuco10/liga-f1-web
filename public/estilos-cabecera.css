@@ -660,7 +660,7 @@ table tr td:nth-child(2) {
     top: 0;
     width: 100%;
     background-color: transparent; 
-    backdrop-filter: blur(10px);
+  /*  backdrop-filter: blur(10px);    ESTO ES EL FONDO BORROSO DEL HEAD FIJO  */
     -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     padding-bottom: 10px;
