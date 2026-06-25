@@ -655,25 +655,17 @@ table tr td:nth-child(2) {
 }
 
 .header-sticky {
-    position: fixed;
+    position: -webkit-sticky; /* Para compatibilidad con Safari */
+    position: sticky;
     top: 0;
-    left: 0;
     width: 100%;
-    
-    /* ELIMINAMOS EL BACKGROUND OPACO */
     background-color: transparent; 
-    
-    /* AÑADIMOS EL EFECTO DE CRISTAL */
-    backdrop-filter: blur(10px); /* Ajusta el 10px para más o menos desenfoque */
-    -webkit-backdrop-filter: blur(10px); /* Para compatibilidad con Safari */
-    
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     padding-bottom: 10px;
-    box-shadow: none; /* Quitamos la sombra para que se vea más limpio */
-    transition: backdrop-filter 0.3s ease;
+    transition: all 0.3s ease; /* Para que el cambio sea suave */
 }
 
-body {
-    padding-top: 220px; /* Ajusta este valor (prueba 200px o 250px) hasta que el contenido empiece justo debajo de tus botones */
-}
+
 
