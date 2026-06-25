@@ -163,11 +163,12 @@ function renderizarConstructores(pilotos, escuderias) {
         const claseBanda = mapaColores[c.nombre] || "banda-default";
         
 const avatars = c.pilotos.map(p => {
-            // Esto imprimirá en la consola de tu navegador toda la info del piloto
-            console.log("Objeto piloto recibido:", p); 
-            
             const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
-            return `<img src="/pilotos/${nombreArchivo}" class="piloto-avatar-small" title="${p.nombre}" onerror="this.src='/pilotos/R.png'">`;
+            // He cambiado p.nombre por p.gamertag
+            return `<img src="/pilotos/${nombreArchivo}" 
+                         class="piloto-avatar-small" 
+                         title="${p.gamertag}" 
+                         onerror="this.src='/pilotos/R.png'">`;
         }).join('');
         body.innerHTML += `
 <tr>
