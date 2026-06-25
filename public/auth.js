@@ -5,7 +5,7 @@ function esAdmin() {
 
 function verificarPass() {
     const pass = document.getElementById('pass-admin').value;
-    if (pass === "admin123") { // Cambia esto por tu pass real
+    if (usuario === "admin" && pass === "admin123") { // Cambia esto por tu pass real
         localStorage.setItem('rol', 'admin');
         location.reload();
     } else {
