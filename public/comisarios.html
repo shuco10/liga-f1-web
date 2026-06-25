@@ -584,19 +584,42 @@ if (res.ok) {
     }); // <--- Esta llave cierra el EventListener
 } // <--- Esta llave cierra el IF (formSancion)
 
-    document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const pilotoNombre = document.getElementById('select-piloto-eliminar').options[document.getElementById('select-piloto-eliminar').selectedIndex].text;
-        if(!confirm(`¿Seguro de eliminar a ${pilotoNombre}?`)) return;
-        const datos = { piloto_id: parseInt(document.getElementById('select-piloto-eliminar').value) };
-        const res = await fetch('/api/eliminar-piloto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-        if(res.ok) { 
-            document.getElementById('msg-eliminar').innerText = "Piloto eliminado."; 
+document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const select = document.getElementById('select-piloto-eliminar');
+    const pilotoNombre = select.options[select.selectedIndex].text;
+    const pilotoId = parseInt(select.value);
+
+    if(!confirm(`¿Seguro de eliminar a ${pilotoNombre}?`)) return;
+
+    const datos = { piloto_id: pilotoId };
+    
+    try {
+        const res = await fetch('/api/eliminar-piloto', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(datos) 
+        });
+
+        const msgElement = document.getElementById('msg-eliminar');
+
+        if (res.ok) { 
+            msgElement.style.color = "#229971"; // Verde éxito
+            msgElement.innerText = "Piloto eliminado."; 
             await cargarTodosLosDatos(); 
             await cargarDesplegablesAdmin(); 
+        } else {
+            // Capturamos el mensaje que enviamos desde el servidor (el del error 400)
+            const errorMsg = await res.text();
+            msgElement.style.color = "#ff4444"; // Rojo error
+            msgElement.innerText = errorMsg; 
         }
-    });
-
+    } catch (err) {
+        console.error("Error de conexión:", err);
+        document.getElementById('msg-eliminar').innerText = "Error al conectar con el servidor.";
+    }
+});
 //    window.addEventListener('DOMContentLoaded', () => {
   //      cargarTodosLosDatos();
     //    irA(null, 'mundial-pilotos');
