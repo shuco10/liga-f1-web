@@ -221,6 +221,32 @@ async function publicarNoticia() {
     }
 }
 
+
+
+// --- FUNCIÓN PARA ELIMINAR ---
+async function eliminarNoticia(id) {
+    if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+        const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+        if (res.ok) location.reload();
+    }
+}
+
+async function editarNoticia(id, tituloActual, contenidoActual) {
+    const nuevoTitulo = prompt("Edita el título:", tituloActual);
+    const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+    if (nuevoTitulo !== null && nuevoContenido !== null) {
+        const res = await fetch(`/api/noticias/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
+        });
+        if (res.ok) location.reload();
+        else alert("Error al actualizar la noticia.");
+    }
+}
+
+
+    
     document.addEventListener('DOMContentLoaded', cargarNoticias);
 
 
