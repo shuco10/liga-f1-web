@@ -221,7 +221,16 @@ app.post('/api/eliminar-piloto', async (req, res) => {
     try {
         await pool.query('DELETE FROM pilotos WHERE id = $1', [piloto_id]);
         res.sendStatus(200);
-    } catch (err) { console.error(err); res.sendStatus(500); }
+    } catch (err) { 
+        // El código '23503' es el error estándar de Postgres cuando existe una clave foránea (datos dependientes)
+        if (err.code === '23503') {
+            console.warn(`Intento de borrar piloto con ID ${piloto_id} bloqueado: tiene registros asociados.`);
+            return res.status(400).send("No se puede eliminar al piloto: ya tiene puntos o resultados registrados en el mundial.");
+        }
+        
+        console.error("Error inesperado al eliminar:", err); 
+        res.sendStatus(500); 
+    }
 });
 
 app.post('/api/reset-campeonato', async (req, res) => {
