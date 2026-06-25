@@ -168,16 +168,16 @@ function renderizarConstructores(pilotos, escuderias) {
         }).join('');
 
         body.innerHTML += `
-            <tr>
+<tr>
                 <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
                 <td style="text-align: left;">
                     <span class="color-banda ${claseBanda}"></span>
                     <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
                 </td>
-                <td>${avatars || '-'}</td>
-                <td>${c.victorias}</td>
-                <td>${c.podios}</td>
-                <td style="font-weight:bold">${c.puntos} pts</td>
+                <td style="text-align: center;">${avatars || '-'}</td>
+                <td style="text-align: center;">${c.victorias}</td>
+                <td style="text-align: center;">${c.podios}</td>
+                <td style="text-align: center; font-weight:bold;">${c.puntos} pts</td>
             </tr>
         `;
     });
