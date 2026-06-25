@@ -6,21 +6,16 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 /* --- CONTENEDORES --- */
 .contenedor-jaula { 
-    width: 90%;          /* Ocupa el 90% del ancho disponible */
-    max-width: 800px;    /* No crece más de 800px */
-    min-height: 50px;    /* Altura mínima */
-    
-    /* El truco del centrado horizontal */
-    margin-left: auto;
-    margin-right: auto;
-    
-    /* Espaciado superior e inferior */
-    margin-top: 20px;
-    margin-bottom: 20px;
-    
-    /* Posicionamiento */
-    position: relative;
-    overflow: hidden;
+    width: 100%; 
+    max-width: 800px; 
+    /* Cambia height por min-height y reduce el valor drásticamente */
+    min-height: 50px; 
+    margin: 0 auto; 
+    /* Elimina o reduce el margen si sigue habiendo espacio */
+    margin-top: 10px; 
+    margin-bottom: 10px; 
+    overflow: hidden; 
+    position: relative; 
 }
 .logo-main-container { text-align: center; margin: 30px 0; }
 .logo-main { max-width: 300px; height: auto; }
@@ -660,65 +655,35 @@ table tr td:nth-child(2) {
 }
 
 /* Burbuja flotante para el logo */
-
 .logo-blur-container {
-
     position: sticky;
-
     top: 10px;
-
     width: fit-content;
-
     margin: 0 auto;
-
     padding: 10px;
-
     z-index: 1000;
-
     background-color: rgba(0, 0, 0, 0.3);
-
     backdrop-filter: blur(10px);
-
     -webkit-backdrop-filter: blur(10px);
-
     border-radius: 20px;
-
     transition: all 0.3s ease;
-
 }
 
-
-
 /* Burbuja flotante para los botones */
-
 .buttons-blur-container {
-
     position: sticky;
-
     top: 100px;
-
     width: fit-content;
-
     margin: 10px auto;
-
     padding: 10px;
-
     z-index: 1000;
-
     display: flex;
-
     gap: 10px;
-
     background-color: rgba(0, 0, 0, 0.3);
-
     backdrop-filter: blur(10px);
-
     -webkit-backdrop-filter: blur(10px);
-
     border-radius: 20px;
-
     transition: all 0.3s ease;
-
 }
 
 /* BOTONES ESTÁNDAR (Claros) */
