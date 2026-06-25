@@ -672,7 +672,7 @@ table tr td:nth-child(2) {
 /* Burbuja flotante para los botones */
 .buttons-blur-container {
     position: sticky;
-    top: 100px; /* Ajusta según el tamaño de tu logo para que queden debajo */
+    top: 100px;
     width: fit-content;
     margin: 10px auto;
     padding: 10px;
@@ -686,14 +686,14 @@ table tr td:nth-child(2) {
     transition: all 0.3s ease;
 }
 
-/* Estilo de los botones */
+/* BOTONES ESTÁNDAR (Claros) */
 .boton-header-blur {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 40px; 
     height: 40px;
-    background-color: rgba(225, 6, 0, 0.7);
+    background-color: rgba(255, 60, 60, 0.7); /* Rojo más claro/vibrante */
     border: none;
     border-radius: 8px;
     color: white;
@@ -701,11 +701,26 @@ table tr td:nth-child(2) {
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.boton-header-blur:hover {
-    background-color: rgba(225, 6, 0, 0.9);
-    transform: scale(1.1);
+/* BOTONES LOGIN/LOGOUT (Oscuros) */
+.boton-login-blur {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; 
+    height: 40px;
+    background-color: rgba(140, 0, 0, 0.8); /* Rojo oscuro/profundo */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
+/* Efecto hover compartido */
+.boton-header-blur:hover, .boton-login-blur:hover {
+    filter: brightness(1.2);
+    transform: scale(1.1);
+}
 
 
 
