@@ -818,3 +818,46 @@ table tr td:nth-child(2) {
     font-weight: bold;
 }
 
+
+
+.twitch-container {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre el logo y el botón */
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px 20px;
+    border-radius: 12px;
+    width: fit-content;
+    margin: 20px auto;
+}
+
+.twitch-link img {
+    height: 40px; /* Ajusta al tamaño de tus otros iconos */
+    transition: transform 0.2s;
+}
+
+.twitch-link:hover img {
+    transform: scale(1.1);
+}
+
+.btn-sub {
+    background-color: #9146ff; /* Color oficial de Twitch */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-sub:hover {
+    background-color: #772ce8;
+    transform: scale(1.05);
+}
+
+
+
+
