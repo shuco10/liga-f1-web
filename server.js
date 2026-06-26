@@ -509,32 +509,27 @@ app.post('/api/guardar-resultado', async (req, res) => {
 
 
 app.post('/api/aplicar-avisos', async (req, res) => {
-    const { piloto_id } = req.body; // Recibimos el ID del piloto
+    const { piloto_id } = req.body;
+    console.log("DEBUG: Recibido ID de piloto:", piloto_id); // <--- CHIVATO 1
 
     try {
-        // 1. Guardamos el aviso nuevo en la tabla de registro
-        await pool.query('INSERT INTO registro_avisos (id_piloto) VALUES ($1)', [piloto_id]);
+        const insertRes = await pool.query('INSERT INTO registro_avisos (id_piloto) VALUES ($1)', [piloto_id]);
+        console.log("DEBUG: Fila insertada correctamente."); // <--- CHIVATO 2
 
-        // 2. Contamos cuántos avisos lleva ese piloto en total
         const countRes = await pool.query('SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = $1', [piloto_id]);
+        console.log("DEBUG: Conteo obtenido de la BD:", countRes.rows[0].count); // <--- CHIVATO 3
+        
         const totalAvisos = parseInt(countRes.rows[0].count);
-
-        // 3. Calculamos: 5 segundos por cada 3 avisos
         const segundosPenalizacion = Math.floor(totalAvisos / 3) * 5;
 
-        // 4. Actualizamos la columna de tiempo (sin tocar puntos_sancion)
         await pool.query('UPDATE pilotos SET penalizacion_tiempo = $1 WHERE id = $2', [segundosPenalizacion, piloto_id]);
 
-        res.status(200).json({ 
-            totalAvisos, 
-            segundosPenalizacion 
-        });
+        res.status(200).json({ totalAvisos, segundosPenalizacion });
     } catch (err) { 
-        console.error(err); 
-        res.status(500).send("Error al registrar aviso"); 
+        console.error("ERROR CRÍTICO:", err); 
+        res.status(500).send("Error"); 
     }
 });
-
 
 
 
