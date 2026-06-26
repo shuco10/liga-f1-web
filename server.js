@@ -47,6 +47,16 @@ await pool.query(`
     );
 `);
 
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS registro_avisos (
+        id SERIAL PRIMARY KEY,
+        id_piloto INTEGER REFERENCES pilotos(id),
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+`);
+// Y añadimos la columna para el tiempo (si no existe ya)
+await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS penalizacion_tiempo INT DEFAULT 0;`);
+        
 
        
 // Crear la tabla noticias si no existe
@@ -493,6 +503,36 @@ app.post('/api/guardar-resultado', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+
+app.post('/api/aplicar-avisos', async (req, res) => {
+    const { piloto_id } = req.body; // Recibimos el ID del piloto
+
+    try {
+        // 1. Guardamos el aviso nuevo en la tabla de registro
+        await pool.query('INSERT INTO registro_avisos (id_piloto) VALUES ($1)', [piloto_id]);
+
+        // 2. Contamos cuántos avisos lleva ese piloto en total
+        const countRes = await pool.query('SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = $1', [piloto_id]);
+        const totalAvisos = parseInt(countRes.rows[0].count);
+
+        // 3. Calculamos: 5 segundos por cada 3 avisos
+        const segundosPenalizacion = Math.floor(totalAvisos / 3) * 5;
+
+        // 4. Actualizamos la columna de tiempo (sin tocar puntos_sancion)
+        await pool.query('UPDATE pilotos SET penalizacion_tiempo = $1 WHERE id = $2', [segundosPenalizacion, piloto_id]);
+
+        res.status(200).json({ 
+            totalAvisos, 
+            segundosPenalizacion 
+        });
+    } catch (err) { 
+        console.error(err); 
+        res.status(500).send("Error al registrar aviso"); 
+    }
+});
+
+
 
 
 
