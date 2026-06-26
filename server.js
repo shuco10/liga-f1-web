@@ -542,7 +542,21 @@ app.post('/api/aplicar-avisos', async (req, res) => {
     }
 });
 
-
+app.get('/api/verificar-datos', async (req, res) => {
+    try {
+        // Miramos cuántos avisos hay en total en la tabla
+        const total = await pool.query('SELECT COUNT(*) FROM registro_avisos');
+        // Miramos los avisos del piloto 7 específicamente
+        const rayo = await pool.query('SELECT * FROM registro_avisos WHERE id_piloto = 7');
+        
+        res.json({
+            total_avisos_en_tabla: total.rows[0].count,
+            avisos_de_rayo_id_7: rayo.rows
+        });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
 
 
 app.listen(PORT, () => {
