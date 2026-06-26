@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
 
     // 3. Renderizar sanciones al cargar
-    renderizarSanciones();
+  //  renderizarSanciones();
 });
 
 // 1. Diccionarios de referencia (Igual que en pilotos.html)
@@ -103,14 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderizarSanciones(pilotos) {
     if (!pilotos || !Array.isArray(pilotos)) return;
 
-    const body = document.getElementById('tabla-body'); // Mantenemos tu ID
+    // Cambiado 'tabla-body' por 'tabla-sanciones' para coincidir con tu HTML
+    const body = document.getElementById('tabla-sanciones'); 
     if (!body) return;
     body.innerHTML = "";
 
     pilotos.forEach(p => {
         // CÁLCULOS
         const puntosSancion = p.puntos_sancion || 0;
-        const penalizacion = p.penalizacion_tiempo || 0; // NUEVO
+        const penalizacion = p.penalizacion_tiempo || 0; 
         const licenciaActual = 12 - puntosSancion;
         const porcentaje = (licenciaActual / 12) * 100;
 
@@ -128,7 +129,7 @@ function renderizarSanciones(pilotos) {
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
         const rutaAvatar = `/pilotos/${nombreArchivo}`;
 
-        // RENDERIZADO
+        // RENDERIZADO (Con las 6 columnas solicitadas)
         body.innerHTML += `
             <tr>
                 <td style="text-align: left; padding-left: 20px;">
@@ -139,7 +140,7 @@ function renderizarSanciones(pilotos) {
                     </div>
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
-                <td style="font-weight:bold;">${puntosSancion}</td>
+                <td>${puntosSancion}</td>
                 <td style="font-weight:bold; color: #ff3333;">${penalizacion > 0 ? '+' + penalizacion + 's' : '0s'}</td>
                 <td style="font-weight:bold; color:${color}">${estado}</td>
                 <td>
