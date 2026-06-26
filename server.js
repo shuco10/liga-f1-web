@@ -148,19 +148,19 @@ inicializarBaseDeDatos();
 app.get('/api/lista-de-pilotos', async (req, res) => {
     try {
         const querySQL = `
-            SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url, es_reserva,
-                   penalizacion_tiempo,
-                   CAST(COALESCE((SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = pilotos.id), 0) AS INTEGER) AS total_avisos,
-                   (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
-                   (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
-                   puntos_totales, victorias
-            FROM pilotos
-            ORDER BY es_reserva ASC, puntos_totales DESC, victorias DESC, podios DESC;
+            SELECT p.id, p.gamertag, p.plataforma, p.puntos_sancion, p.numero_piloto, p.podios, 
+                   p.escuderia_id, p.foto_url, p.es_reserva, p.penalizacion_tiempo, p.puntos_totales, p.victorias,
+                   (SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = p.id)::int AS total_avisos,
+                   e.nombre AS escuderia,
+                   e.color_hex
+            FROM pilotos p
+            LEFT JOIN escuderias e ON p.escuderia_id = e.id
+            ORDER BY p.es_reserva ASC, p.puntos_totales DESC, p.victorias DESC, p.podios DESC;
         `;
         const { rows } = await pool.query(querySQL);
         res.json(rows);
     } catch (err) {
-        console.error(err);
+        console.error("Error en lista-de-pilotos:", err);
         res.status(500).json({ error: 'Error al consultar clasificaciones' });
     }
 });
