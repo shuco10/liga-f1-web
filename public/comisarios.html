@@ -240,15 +240,21 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 
 
-        <div class="admin-bloque">
-        <h3>⚠️ 4. Aplicar Número de avisos </h3>
-        <form id="form-sancion">
-            <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-sancion" class="form-control" required></select></div>
-            <div class="form-group"><label>Avisos a registras</label><input type="number" id="puntos_restar" class="form-control" placeholder="Ej: Introduce el número de avisos" required></div> 
-            <button type="submit" class="btn-admin btn-admin-warning">Aplicar Avisos</button>
-            <div id="msg-sancion" style="margin-top: 10px; font-weight: bold;"></div>
-        </form>
-    </div>
+<div class="admin-bloque">
+    <h3>⚠️ 4. Aplicar Avisos y Penalización</h3>
+    <form id="form-avisos">
+        <div class="form-group">
+            <label>Seleccionar Piloto:</label>
+            <select id="select-piloto-avisos" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+            <label>Número de avisos:</label>
+            <input type="number" id="cantidad_avisos" class="form-control" placeholder="Ej: 1" required>
+        </div>
+        <button type="submit" class="btn-admin btn-admin-warning">Aplicar Avisos</button>
+        <div id="msg-avisos" style="margin-top: 10px; font-weight: bold;"></div>
+    </form>
+</div>
 
     <div class="admin-bloque">
         <h3>❌ 5. Eliminar Piloto de la Liga</h3>
@@ -446,7 +452,29 @@ if (tReservas) {
     } catch (e) {
         console.error("Error al cargar:", e);
     }
-}
+// 7. TABLA DE AVISOS Y PENALIZACIONES (DENTRO DEL TRY)
+        const tAvisos = document.getElementById('tabla-avisos');
+        if(tAvisos) {
+            tAvisos.innerHTML = '';
+            listaPilotosGlobal.forEach(p => {
+                const totalAvisos = p.puntos_sancion || 0;
+                const penalizacion = p.penalizacion_tiempo || 0;
+                
+                tAvisos.innerHTML += `
+                    <tr>
+                        <td><strong>${p.gamertag}</strong></td>
+                        <td style="text-align: center;">${totalAvisos}</td>
+                        <td style="text-align: center; color: #ff3333; font-weight: bold;">
+                            ${penalizacion > 0 ? '+' + penalizacion + 's' : '0s'}
+                        </td>
+                    </tr>`;
+            });
+        }
+
+    } catch (e) {
+        console.error("Error al cargar:", e);
+    }
+} // AQUI SI SE CIERRA LA FUNCIÓN
 
         // AQUI TERMINA EL CARGAR TODOS LOS DATOS
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
