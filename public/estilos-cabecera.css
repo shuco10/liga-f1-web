@@ -891,22 +891,57 @@ table tr td:nth-child(2) {
     flex-shrink: 0 !important;
 }
 
+/* Contenedor principal */
 .contenedor-sanciones-exclusivo {
-    width: 100%;
-    max-width: 1000px; /* O el ancho que prefieras */
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #2a2a2a; /* Fondo propio */
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    overflow-x: auto; /* El scroll solo aparecerá aquí si es necesario */
+    background: #1a1a1a;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #333;
+    margin: 20px 0;
 }
 
-#tabla-sanciones {
-    width: 100%;
-    table-layout: fixed; /* Fuerza a las columnas a respetar el ancho del cajón */
-    min-width: 600px;    /* Evita que se encoja demasiado y se vea mal */
+.section-title {
+    color: #ff4d4d;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    text-transform: uppercase;
 }
 
+/* Tabla con filas separadas */
+.table-standings-fix {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+}
 
+.table-standings-fix th {
+    color: #888;
+    padding: 10px;
+    font-size: 0.8rem;
+    text-align: left;
+}
 
+.table-standings-fix td {
+    background: #242424;
+    padding: 18px;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
+
+/* Bordes redondeados en las filas */
+.table-standings-fix tr td:first-child { 
+    border-left: 1px solid #333; 
+    border-radius: 10px 0 0 10px; 
+}
+.table-standings-fix tr td:last-child { 
+    border-right: 1px solid #333; 
+    border-radius: 0 10px 10px 0; 
+}
+
+/* Ajustes de columnas */
+.col-piloto { width: 25%; }
+.col-escuderia { width: 20%; }
+.col-avisos { width: 10%; }
+.col-penalizacion { width: 15%; }
+.col-apto { width: 10%; }
+.col-licencia { width: 20%; }
