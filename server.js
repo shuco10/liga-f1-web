@@ -148,11 +148,22 @@ inicializarBaseDeDatos();
 app.get('/api/lista-de-pilotos', async (req, res) => {
     try {
         const querySQL = `
-            SELECT p.id, p.gamertag, p.plataforma, p.puntos_sancion, p.numero_piloto, p.podios, 
-                   p.escuderia_id, p.foto_url, p.es_reserva, p.penalizacion_tiempo, p.puntos_totales, p.victorias,
-                   (SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = p.id)::int AS total_avisos,
-                   e.nombre AS escuderia,
-                   e.color_hex
+            SELECT 
+                p.id, 
+                p.gamertag, 
+                p.plataforma, 
+                p.puntos_sancion, 
+                p.numero_piloto, 
+                p.podios, 
+                p.escuderia_id, 
+                p.foto_url, 
+                p.es_reserva, 
+                p.penalizacion_tiempo, 
+                p.puntos_totales, 
+                p.victorias,
+                COALESCE((SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = p.id), 0)::int AS total_avisos,
+                e.nombre AS escuderia,
+                e.color_hex
             FROM pilotos p
             LEFT JOIN escuderias e ON p.escuderia_id = e.id
             ORDER BY p.es_reserva ASC, p.puntos_totales DESC, p.victorias DESC, p.podios DESC;
