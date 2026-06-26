@@ -822,10 +822,11 @@ table tr td:nth-child(2) {
 
 .twitch-container {
     display: flex;
-    align-items: center;
-    gap: 15px; /* Espacio entre el logo y el botón */
-    background: rgba(0, 0, 0, 0.4);
-    padding: 10px 20px;
+    flex-direction: column; /* Esto es lo que pone las cosas una debajo de otra */
+    align-items: center;    /* Centra los elementos horizontalmente */
+    gap: 15px;              /* Espacio entre la fila superior y el título */
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
     border-radius: 12px;
     width: fit-content;
     margin: 20px auto;
@@ -863,27 +864,20 @@ table tr td:nth-child(2) {
     transform: scale(1.05);
 }
 
+.twitch-header-row {
+    display: flex;          /* Mantiene el logo y el botón en una línea */
+    align-items: center;    /* Alineación vertical */
+    gap: 15px;              /* Espacio entre logo y botón */
+}
+
 .twitch-titulo-pequeno {
-    font-family: 'Rajdhani', sans-serif;
-    color: #ff3333;
-    font-weight: 700;
-    
-    /* Aquí controlas el tamaño: lo he bajado a 1.2rem */
-    font-size: 1.2rem; 
-    
-    letter-spacing: 1px;
     margin: 0;
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre los iconos y el texto */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    gap: 8px;
+    color: #ff3333;
+    font-size: 1rem;
 }
-
-/* Ajuste opcional: hacer los iconos un poco más pequeños que el texto */
-.twitch-titulo-pequeno i {
-    font-size: 0.9em;
-}
-
 
 
 
