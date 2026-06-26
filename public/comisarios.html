@@ -477,8 +477,7 @@ if (tReservas) {
 } // AQUI SI SE CIERRA LA FUNCIÓN
 
         // AQUI TERMINA EL CARGAR TODOS LOS DATOS
-//-----------------------------------------------------------------------------------------------------------------------------------------------------
-        async function cargarDesplegablesAdmin() {
+async function cargarDesplegablesAdmin() {
     // PROTECCIÓN: Si no eres admin, no permitimos que se carguen los datos
     if (localStorage.getItem('rol') !== 'admin') {
         console.warn("Acceso denegado: solo administradores pueden cargar los desplegables.");
@@ -493,7 +492,7 @@ if (tReservas) {
         if (selCircuito) {
             // Añadimos una opción por defecto vacía para forzar que el admin elija
             selCircuito.innerHTML = '<option value="">-- Selecciona circuito --</option>' + 
-                                     circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+                                    circuitos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
         }
 
         // 2. Cargar Pilotos
@@ -503,7 +502,15 @@ if (tReservas) {
         // Ordenamos los pilotos por número antes de pintar los desplegables
         pilotos.sort((a, b) => a.numero_piloto - b.numero_piloto);
 
-        const ids = ['select-piloto', 'select-piloto-sancion', 'select-piloto-eliminar', 'select-piloto-editar', 'select-piloto-admin'];
+        // Añadimos 'select-piloto-avisos' a la lista para que se rellene automáticamente
+        const ids = [
+            'select-piloto', 
+            'select-piloto-sancion', 
+            'select-piloto-eliminar', 
+            'select-piloto-editar', 
+            'select-piloto-admin',
+            'select-piloto-avisos'
+        ];
 
         ids.forEach(id => {
             const el = document.getElementById(id);
