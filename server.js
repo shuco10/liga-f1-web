@@ -150,7 +150,7 @@ app.get('/api/lista-de-pilotos', async (req, res) => {
         const querySQL = `
             SELECT id, gamertag, plataforma, puntos_sancion, numero_piloto, podios, escuderia_id, foto_url, es_reserva,
                    penalizacion_tiempo,
-                   (SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = pilotos.id) AS total_avisos,
+                   CAST(COALESCE((SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = pilotos.id), 0) AS INTEGER) AS total_avisos,
                    (SELECT nombre FROM escuderias WHERE id = escuderia_id) AS escuderia,
                    (SELECT color_hex FROM escuderias WHERE id = escuderia_id) AS color_hex,
                    puntos_totales, victorias
