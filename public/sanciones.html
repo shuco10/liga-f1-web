@@ -103,15 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderizarSanciones(pilotos) {
     if (!pilotos || !Array.isArray(pilotos)) return;
 
-    // Cambiado 'tabla-body' por 'tabla-sanciones' para coincidir con tu HTML
     const body = document.getElementById('tabla-sanciones'); 
     if (!body) return;
     body.innerHTML = "";
 
     pilotos.forEach(p => {
         // CÁLCULOS
-        const puntosSancion = p.puntos_sancion || 0;
+        const totalAvisos = p.total_avisos || 0; // NUEVO: Capturamos los avisos desde la API
         const penalizacion = p.penalizacion_tiempo || 0; 
+        
+        // Mantenemos puntos_sancion solo para calcular la licencia, no para mostrarlo como aviso
+        const puntosSancion = p.puntos_sancion || 0;
         const licenciaActual = 12 - puntosSancion;
         const porcentaje = (licenciaActual / 12) * 100;
 
@@ -129,7 +131,7 @@ function renderizarSanciones(pilotos) {
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
         const rutaAvatar = `/pilotos/${nombreArchivo}`;
 
-        // RENDERIZADO (Con las 6 columnas solicitadas)
+        // RENDERIZADO
         body.innerHTML += `
             <tr>
                 <td style="text-align: left; padding-left: 20px;">
@@ -140,7 +142,7 @@ function renderizarSanciones(pilotos) {
                     </div>
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
-                <td>${puntosSancion}</td>
+                <td>${totalAvisos}</td> <!-- AQUÍ AHORA SE VEN LOS AVISOS -->
                 <td style="font-weight:bold; color: #ff3333;">${penalizacion > 0 ? '+' + penalizacion + 's' : '0s'}</td>
                 <td style="font-weight:bold; color:${color}">${estado}</td>
                 <td>
