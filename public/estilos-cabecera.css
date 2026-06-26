@@ -688,22 +688,22 @@ table tr td:nth-child(2) {
     transition: all 0.3s ease;
 }
 
-/* Burbuja flotante para los botones */
 .buttons-blur-container {
     position: sticky;
     top: 100px;
-    width: fit-content;
+    width: auto !important; /* Cambiado */
+    white-space: nowrap !important; /* Obliga a que todo esté en una línea */
     margin: 10px auto;
     padding: 10px;
     z-index: 1000;
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: nowrap !important; /* Asegura que no haya saltos */
     gap: 10px;
     background-color: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
-    transition: all 0.3s ease;
 }
 
 /* BOTONES ESTÁNDAR (Claros) */
