@@ -1160,6 +1160,46 @@ async function enviarContacto() {
         alert("Error al enviar el mensaje.");
     }
 }
+
+
+
+
+
+document.getElementById('form-avisos').addEventListener('submit', async (e) => {
+    e.preventDefault(); // Evita que la página se recargue
+
+    const piloto_id = document.getElementById('select-piloto-avisos').value;
+    const cantidad = document.getElementById('cantidad_avisos').value;
+    const msgDiv = document.getElementById('msg-avisos');
+
+    if (!piloto_id) {
+        alert("Selecciona un piloto");
+        return;
+    }
+
+    try {
+        // Enviamos tantas veces como indique 'cantidad'
+        for (let i = 0; i < cantidad; i++) {
+            await fetch('/api/aplicar-avisos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ piloto_id: parseInt(piloto_id) })
+            });
+        }
+        
+        msgDiv.innerText = "✅ Avisos aplicados correctamente.";
+        msgDiv.style.color = "#2ecc71";
+    } catch (err) {
+        console.error(err);
+        msgDiv.innerText = "❌ Error al aplicar avisos.";
+        msgDiv.style.color = "#e74c3c";
+    }
+});
+
+
+
+
+    
 //----------------------CARGA DE LA PANTALLA  -----------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargamos datos iniciales
