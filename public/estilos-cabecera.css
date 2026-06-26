@@ -832,12 +832,17 @@ table tr td:nth-child(2) {
 }
 
 .twitch-link img {
-    height: 40px; /* Ajusta al tamaño de tus otros iconos */
+    /* Aumenta este valor para hacer el logo más grande */
+    height: 80px; 
+    
+    /* Asegura que la imagen mantenga su proporción original */
+    width: auto; 
+    
     transition: transform 0.2s;
 }
 
 .twitch-link:hover img {
-    transform: scale(1.1);
+    transform: scale(1.05); /* Un poco más sutil al pasar el ratón */
 }
 
 .btn-sub {
