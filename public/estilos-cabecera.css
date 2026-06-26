@@ -822,9 +822,10 @@ table tr td:nth-child(2) {
 
 .twitch-container {
     display: flex;
-    flex-direction: column; /* Esto es lo que pone las cosas una debajo de otra */
-    align-items: center;    /* Centra los elementos horizontalmente */
-    gap: 15px;              /* Espacio entre la fila superior y el título */
+    flex-wrap: wrap;       /* <-- ESTO ES CLAVE: permite que los elementos salten de línea */
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
     background: rgba(0, 0, 0, 0.3);
     padding: 20px;
     border-radius: 12px;
@@ -865,18 +866,22 @@ table tr td:nth-child(2) {
 }
 
 .twitch-header-row {
-    display: flex;          /* Mantiene el logo y el botón en una línea */
-    align-items: center;    /* Alineación vertical */
-    gap: 15px;              /* Espacio entre logo y botón */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 0 0 100%;        /* <-- Ocupa el 100% del ancho disponible */
+    justify-content: center; /* Centra el logo y el botón en esa fila */
 }
 
 .twitch-titulo-pequeno {
     margin: 0;
     display: flex;
     align-items: center;
+    justify-content: center; /* Centra el texto */
     gap: 8px;
-    color: #ff3333;
+    color: #ffffff;
     font-size: 1rem;
+    flex: 0 0 100%;        /* <-- OBLIGA a ocupar su propia línea al 100% */
 }
 
 .twitch-titulo-pequeno i {
