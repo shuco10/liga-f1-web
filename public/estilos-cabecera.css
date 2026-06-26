@@ -720,9 +720,8 @@ table tr td:nth-child(2) {
     cursor: pointer;
     vertical-align: middle;
     transition: transform 0.2s ease, background-color 0.2s ease;
-    background-color: #e10600 !important; /* Aquí aplicas tu rojo */
-    /* ESTO ES LO QUE SOLUCIONA EL SALTO DE LÍNEA */
-    flex-shrink: 0; 
+    background-color: #e10600 !important; 
+    flex-shrink: 0;
 }
 
 /* Efecto hover compartido */
@@ -878,12 +877,12 @@ table tr td:nth-child(2) {
 #auth-controls {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: nowrap !important; /* Evita saltos de línea */
+    flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 10px !important;
     width: auto !important;
-    margin: 0 auto !important;
+    background-color: transparent !important; /* Asegúrate de que esto sea transparente */
 }
 
 /* Aseguramos que los botones dentro nunca se encojan */
