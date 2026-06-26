@@ -1166,33 +1166,32 @@ async function enviarContacto() {
 
 
 document.getElementById('form-avisos').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evita que la página se recargue
+    e.preventDefault();
 
-    const piloto_id = document.getElementById('select-piloto-avisos').value;
+    const select = document.getElementById('select-piloto-avisos');
+    const piloto_id = select.value; // Capturamos el valor
     const cantidad = document.getElementById('cantidad_avisos').value;
-    const msgDiv = document.getElementById('msg-avisos');
 
-    if (!piloto_id) {
-        alert("Selecciona un piloto");
+    console.log("DEBUG FRONTEND: Enviando aviso para piloto ID:", piloto_id); // <--- ESTO ES CLAVE
+
+    if (!piloto_id || piloto_id === "") {
+        alert("Por favor, selecciona un piloto primero.");
         return;
     }
 
     try {
-        // Enviamos tantas veces como indique 'cantidad'
         for (let i = 0; i < cantidad; i++) {
-            await fetch('/api/aplicar-avisos', {
+            const respuesta = await fetch('/api/aplicar-avisos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ piloto_id: parseInt(piloto_id) })
             });
+            
+            if (!respuesta.ok) throw new Error("Error en la respuesta del servidor");
         }
-        
-        msgDiv.innerText = "✅ Avisos aplicados correctamente.";
-        msgDiv.style.color = "#2ecc71";
+        alert("Avisos aplicados.");
     } catch (err) {
-        console.error(err);
-        msgDiv.innerText = "❌ Error al aplicar avisos.";
-        msgDiv.style.color = "#e74c3c";
+        console.error("Error:", err);
     }
 });
 
