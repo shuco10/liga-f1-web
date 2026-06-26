@@ -891,7 +891,22 @@ table tr td:nth-child(2) {
     flex-shrink: 0 !important;
 }
 
+.contenedor-sanciones-exclusivo {
+    width: 100%;
+    max-width: 1000px; /* O el ancho que prefieras */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #2a2a2a; /* Fondo propio */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    overflow-x: auto; /* El scroll solo aparecerá aquí si es necesario */
+}
 
+#tabla-sanciones {
+    width: 100%;
+    table-layout: fixed; /* Fuerza a las columnas a respetar el ancho del cajón */
+    min-width: 600px;    /* Evita que se encoja demasiado y se vea mal */
+}
 
 
 
