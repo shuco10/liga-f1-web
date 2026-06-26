@@ -875,7 +875,22 @@ table tr td:nth-child(2) {
 
 
 
+#auth-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important; /* Evita saltos de línea */
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    width: auto !important;
+    margin: 0 auto !important;
+}
 
+/* Aseguramos que los botones dentro nunca se encojan */
+#auth-controls .boton-header-blur, 
+#auth-controls .boton-login-blur {
+    flex-shrink: 0 !important;
+}
 
 
 
