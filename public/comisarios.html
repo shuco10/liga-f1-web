@@ -234,8 +234,19 @@ document.addEventListener('DOMContentLoaded', () => {
         </form>
     </div>
 
+
+        <div class="admin-bloque">
+        <h3>⚠️ 4. Aplicar Número de avisos </h3>
+        <form id="form-sancion">
+            <div class="form-group"><label>Seleccionar Piloto:</label><select id="select-piloto-sancion" class="form-control" required></select></div>
+ 
+            <button type="submit" class="btn-admin btn-admin-warning">Aplicar Avisos</button>
+            <div id="msg-sancion" style="margin-top: 10px; font-weight: bold;"></div>
+        </form>
+    </div>
+
     <div class="admin-bloque">
-        <h3>❌ 4. Eliminar Piloto de la Liga</h3>
+        <h3>❌ 5. Eliminar Piloto de la Liga</h3>
         <form id="form-eliminar">
             <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" class="form-control" required></select></div>
             <button type="submit" class="btn-admin btn-admin-danger">Eliminar Permanentemente</button>
@@ -585,6 +596,15 @@ if (res.ok) {
         } // <--- Esta llave cierra el IF (res.ok)
     }); // <--- Esta llave cierra el EventListener
 } // <--- Esta llave cierra el IF (formSancion)
+
+// METER LOS AVISOS PARA LOS PILOTOS Y LLEVAR EL CONTROL
+
+
+
+
+
+// METER LOS AVISOS PARA LOS PILOTOS Y LLEVAR EL CONTROL
+        
 
 document.getElementById('form-eliminar').addEventListener('submit', async (e) => {
     e.preventDefault();
