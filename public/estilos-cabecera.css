@@ -731,11 +731,12 @@ table tr td:nth-child(2) {
     justify-content: center;
     width: 40px; 
     height: 40px;
-    background-color: rgba(140, 0, 0, 0.8); /* Rojo oscuro/profundo */
+    background-color: rgba(140, 0, 0, 0.8);
     border: none;
     border-radius: 8px;
     color: white;
     cursor: pointer;
+    vertical-align: middle; /* <-- Añade esto */
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
