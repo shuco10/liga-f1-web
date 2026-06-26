@@ -707,38 +707,22 @@ table tr td:nth-child(2) {
 }
 
 /* BOTONES ESTÁNDAR (Claros) */
-.boton-header-blur {
-    /* Mantenemos tus estilos actuales */
-    display: inline-flex;       /* CRUCIAL: Esto alinea el contenido y lo hace bloque */
-    align-items: center;        /* Centra el icono verticalmente */
-    justify-content: center;    /* Centra el icono horizontalmente */
-    width: 40px; 
-    height: 40px;
-    background-color: rgba(255, 60, 60, 0.7);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    text-decoration: none;      /* Quita el subrayado del enlace */
-    vertical-align: middle;     /* Asegura que se alinee con los otros botones */
-    transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
-
-/* BOTONES LOGIN/LOGOUT (Oscuros) */
-.boton-login-blur {
+/* Añade flex-shrink: 0 a ambos botones */
+.boton-header-blur, .boton-login-blur {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 40px; 
     height: 40px;
-    background-color: rgba(140, 0, 0, 0.8);
     border: none;
     border-radius: 8px;
     color: white;
     cursor: pointer;
-    vertical-align: middle; /* <-- Añade esto */
+    vertical-align: middle;
     transition: transform 0.2s ease, background-color 0.2s ease;
+    
+    /* ESTO ES LO QUE SOLUCIONA EL SALTO DE LÍNEA */
+    flex-shrink: 0; 
 }
 
 /* Efecto hover compartido */
