@@ -31,6 +31,11 @@
 
 <div class="contenedor-sanciones-exclusivo">
     <h2 class="section-title">Puntos de los Pilotos y Sanciones</h2>
+    <button id="btn-reset-sanciones" 
+        style="display:none; background: #e10600; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 10px auto; display: block;"
+        onclick="resetearSanciones()">
+    ⚠️ RESETEAR TODAS LAS SANCIONES Y AVISOS ⚠️
+    </button>
     <div class="table-wrapper">
         <table class="table-standings-fix">
             <thead>
@@ -193,6 +198,25 @@ async function enviarContacto() {
     if (res.ok) { alert("¡Mensaje enviado!"); document.getElementById('modal-contacto').style.display = 'none'; }
     else { alert("Error al enviar."); }
 }
+
+
+    // Función para el botón
+async function resetearSanciones() {
+    if (!confirm("¿ESTÁS SEGURO? Esto borrará todos los avisos y reseteará la superlicencia a 12 de todos los pilotos.")) return;
+
+    const res = await fetch('/api/reset-sanciones-totales', { method: 'POST' });
+    if (res.ok) {
+        alert("Sanciones reseteadas con éxito.");
+        location.reload(); // Recargamos para ver los cambios
+    } else {
+        alert("Error al resetear.");
+    }
+}
+
+
+
+
+    
 </script>
 </body>
 </html>
