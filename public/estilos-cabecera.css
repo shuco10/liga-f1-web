@@ -939,55 +939,48 @@ table tr td:nth-child(2) {
 .table-standings-fix tr td:last-child { 
     border-right: 1px solid #333; 
     border-radius: 0 10px 10px 0; 
+} 
+
 /* --- TABLA: PILOTOS TITULARES Y RESERVAS --- */
-/* (Aquí usamos el nuevo orden de columnas que diseñamos) */
-/* Ajuste de anchos para Pilotos */
 .pilotos-table { table-layout: fixed; width: 100%; }
 
-.pilotos-table .col-pos { width: 6%; }
-.pilotos-table .col-piloto { width: 22%; }
-.pilotos-table .col-escuderia { width: 30%; } /* Mucho más espacio para el nombre */
-.pilotos-table .col-vics { width: 8%; }
-.pilotos-table .col-podios { width: 8%; }
-.pilotos-table .col-puntos { width: 12%; }
-.pilotos-table .col-plataforma { width: 14%; }
+.pilotos-table .col-pos { width: 5%; }
+.pilotos-table .col-piloto { width: 20%; }
+.pilotos-table .col-escuderia { width: 44%; } 
+.pilotos-table .col-vics { width: 6%; }
+.pilotos-table .col-podios { width: 7%; }
+.pilotos-table .col-puntos { width: 10%; }
+.pilotos-table .col-plataforma { width: 8%; }
 
-/* Estilo para que el nombre se corte con estilo */
+/* Estilo para que el nombre de escudería se corte con estilo */
 .pilotos-table .col-escuderia {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding-right: 15px;
+    padding-left: 10px;
+    font-size: 0.9em;
 }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
-/* Ajuste de anchos para Escuderías */
 .constructores-table { table-layout: fixed; width: 100%; }
 
 .constructores-table .col-pos { width: 8%; }
-.constructores-table .col-escuderia { width: 40%; } /* Aquí los nombres son los protagonistas */
+.constructores-table .col-escuderia { width: 40%; } 
 .constructores-table .col-pilotos { width: 20%; }
 .constructores-table .col-vics { width: 10%; }
 .constructores-table .col-podios { width: 10%; }
 .constructores-table .col-puntos { width: 12%; }
 
-/* --- ESTILO COMÚN PARA EL NOMBRE DE ESCUDERÍA (ELIPSIS) --- */
-.col-escuderia {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 10px;
-}
-/* Centrar contenido en columnas numéricas y de plataforma */
+/* --- ALINEACIÓN GENERAL --- */
 .table-standings-fix th, 
 .table-standings-fix td {
-    text-align: center; /* Centra todo por defecto */
+    text-align: center;
 }
 
-/* Pero mantiene el nombre del piloto y escudería a la izquierda para leer mejor */
-.col-piloto, 
-.col-escuderia {
+/* Forzamos alineación a la izquierda donde es necesario */
+.pilotos-table .col-piloto, 
+.pilotos-table .col-escuderia,
+.constructores-table .col-escuderia {
     text-align: left !important;
 }
-
 
