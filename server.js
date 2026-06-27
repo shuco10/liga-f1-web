@@ -155,7 +155,6 @@ app.get('/api/lista-de-pilotos', async (req, res) => {
                 p.puntos_sancion, 
                 p.numero_piloto, 
                 p.podios, 
-                p.poles,
                 p.escuderia_id, 
                 p.foto_url, 
                 p.es_reserva, 
@@ -492,10 +491,9 @@ app.get('/api/escuderias', async (req, res) => {
 
 // --- RUTAS DE RESULTADOS ---
 app.post('/api/guardar-resultado', async (req, res) => {
-    // Extraemos es_pole también, asegurándonos de recibirlo desde el body
-    const { id_piloto, id_gp, posicion, escuderia_id, es_pole } = req.body;
+    const { id_piloto, id_gp, posicion, escuderia_id } = req.body;
     
-    // Tabla de puntos
+    // Tabla de puntos (igual que antes)
     const puntosPorPosicion = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     const puntos = puntosPorPosicion[posicion] || 0;
 
@@ -514,21 +512,8 @@ app.post('/api/guardar-resultado', async (req, res) => {
             await pool.query("UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, escuderia_id]);
         }
 
-        // 4. Lógica de la Pole (integrada y sin quitar nada)
-        // Convertimos el valor recibido a booleano real
-        const esPoleReal = (es_pole === true || es_pole === 'true' || es_pole === 'si');
-        
-        if (esPoleReal) {
-            await pool.query(
-                "UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", 
-                [id_piloto]
-            );
-            console.log("Pole sumada correctamente al piloto:", id_piloto);
-        }
-
         res.json({ success: true, puntos: puntos });
     } catch (err) {
-        console.error("Error en guardar-resultado:", err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -571,29 +556,6 @@ app.post('/api/reset-sanciones-totales', async (req, res) => {
     }
 });
 
-
-
-app.post('/api/actualizar-pole', async (req, res) => {
-    const { piloto_id } = req.body;
-    
-    console.log("RECIBIDA SOLICITUD DE POLE PARA ID:", piloto_id);
-
-    try {
-        const query = "UPDATE pilotos SET poles = poles + 1 WHERE id = $1 RETURNING poles";
-        const result = await pool.query(query, [piloto_id]);
-
-        if (result.rowCount > 0) {
-            console.log("POLE SUMADA CORRECTAMENTE. Nuevo valor:", result.rows[0].poles);
-            res.json({ success: true, nuevo_valor: result.rows[0].poles });
-        } else {
-            console.log("FALLO: Piloto no encontrado:", piloto_id);
-            res.status(404).json({ error: "Piloto no encontrado" });
-        }
-    } catch (err) {
-        console.error("ERROR EN API POLE:", err);
-        res.status(500).json({ error: err.message });
-    }
-});
 
 
 
