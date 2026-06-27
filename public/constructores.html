@@ -15,7 +15,7 @@
     
     <style>
         /* Estilo base para el fondo de esta página */
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+       /* body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; } */
     </style>
     <script src="/auth.js"></script>
 </head>
@@ -25,24 +25,23 @@
 
 
 <main class="contenedor-sanciones-exclusivo">
-    <div id="mundial-constructores" class="seccion"> 
+    <div class="seccion"> <h2 class="section-title">Clasificación de Escuderías</h2>
         
-        <h2 class="section-title">Clasificación de Escuderías</h2>
-        
-        <table class="table-standings-fix pilotos-table">
-            <thead>
-                <tr>
-                    <th class="col-pos">POS</th>
-                    <th class="col-escuderia">ESCUDERÍA</th>
-                    <th class="col-pilotos">PILOTOS</th>
-                    <th class="col-vics">VICS</th>
-                    <th class="col-podios">PODIOS</th>
-                    <th class="col-puntos">PUNTOS</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-body-constructores">
-            </tbody>
-        </table>
+        <div class="table-wrapper"> <table class="table-standings-fix pilotos-table">
+                <thead>
+                    <tr>
+                        <th class="col-pos">POS</th>
+                        <th class="col-escuderia">ESCUDERÍA</th>
+                        <th class="col-pilotos">PILOTOS</th>
+                        <th class="col-vics">VICS</th>
+                        <th class="col-podios">PODIOS</th>
+                        <th class="col-puntos">PUNTOS</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body-constructores">
+                </tbody>
+            </table>
+        </div>
         
     </div>
 </main>
