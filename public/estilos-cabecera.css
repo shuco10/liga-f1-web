@@ -946,17 +946,18 @@ table tr td:nth-child(2) {
     width: auto !important;
 }
 
-/* Aseguramos que la columna de Escudería sea la que más espacio tome */
+/* Aseguramos que la columna de Escudería sea flexible pero no invasiva */
 .pilotos-table .col-escuderia, 
 .constructores-table .col-escuderia {
-    width: 100% !important; /* Toma todo el espacio sobrante */
+    width: auto !important; /* Cambiado de 100% a auto para que sea elástica */
     min-width: 200px;
+    max-width: 400px;       /* El nombre no crecerá infinitamente */
     text-align: left !important;
 }
 
 /* --- CLAVE PARA EL NOMBRE DE ESCUDERÍA --- */
 .nombre-escuderia {
-    display: inline-block;
+    display: block !important; /* Block permite mejor gestión del espacio */
     max-width: 100%;
     overflow: visible !important;
     white-space: normal !important;
