@@ -941,44 +941,41 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- AJUSTE FINAL: ESTRUCTURA RÍGIDA, CONTENIDO FLEXIBLE --- */
+/* 1. Pasamos a auto para que la tabla respire según el contenido */
 .pilotos-table { 
-    table-layout: auto !important; /* Permitimos que el contenido dicte el ancho */
+    table-layout: auto !important; 
     width: 100%; 
+    border-collapse: collapse;
 }
 
-/* Anchos definidos */
-.pilotos-table .col-pos { width: 5% !important; }
-.pilotos-table .col-piloto { width: 14% !important; }
-.pilotos-table .col-plataforma { width: 7% !important; }
-.pilotos-table .col-vics { width: 5% !important; }
-.pilotos-table .col-podios { width: 5% !important; }
-.pilotos-table .col-puntos { width: 9% !important; }
-
-/* La escudería ahora obliga al contenido a adaptarse */
+/* 2. Damos espacio flexible a la escudería */
 .pilotos-table .col-escuderia { 
-    width: 55% !important; 
-    padding: 8px 5px !important;
+    width: 35% !important; /* Le damos un 35% de base, pero crecerá si lo necesita */
+    white-space: normal !important; /* Permite que salte de línea */
 }
 
-/* ESTO ES LO QUE HACE QUE EL NOMBRE NO SE CORTE */
-.nombre-escuderia {
-    display: block !important;
-    line-height: 1.1 !important;
-    font-size: 0.85rem !important;
-    
-    /* Permite que el nombre ocupe hasta 2 líneas sin cortarse */
-    white-space: normal !important; 
-    word-break: break-word !important; /* Rompe la palabra si es demasiado larga */
-    overflow: visible !important;
-}
-
-/* Opcional: Ajuste del contenedor interno para no forzar el corte */
+/* 3. Ajustamos el div interno para que no se comprima */
 .pilotos-table .col-escuderia div {
     display: flex !important;
     align-items: center;
     width: 100% !important;
-    overflow: visible !important; /* Cambiado de hidden a visible */
+    flex-wrap: wrap; /* ¡ESTO ES LA CLAVE! Permite que el texto baje si no cabe */
+}
+
+/* 4. Aseguramos que el nombre nunca se corte con puntos y ocupe su espacio */
+.nombre-escuderia {
+    display: block !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: 0.9em;
+    line-height: 1.1; /* Añadido para que si salta de línea se vea compacto */
+}
+
+/* 5. Aseguramos que el piloto no robe espacio innecesario */
+.pilotos-table .col-piloto {
+    white-space: normal !important;
+    min-width: 150px; /* Tamaño mínimo para que el piloto no se aplaste */
 }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
@@ -1004,10 +1001,3 @@ table tr td:nth-child(2) {
     text-align: left !important;
 }
 
-/* Forzar a que el texto de la escudería sea multilínea y no se corte nunca */
-.nombre-escuderia {
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    display: block !important; /* Asegura que tome el espacio necesario */
-}
