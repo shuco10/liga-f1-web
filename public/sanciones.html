@@ -115,11 +115,14 @@ function renderizarSanciones(pilotos) {
         // CÁLCULOS
         const totalAvisos = Number(p.total_avisos) || 0; 
         
-        // LÓGICA: Cada 3 avisos = 1 penalización visual
+        // 1. Penalizaciones automáticas: 3 avisos = 1 punto menos en la licencia
         const numPenalizaciones = Math.floor(totalAvisos / 3);
         
-        // Licencia: 12 iniciales - puntos manuales - puntos automáticos por penalización
+        // 2. Sanciones manuales del Admin
         const puntosSancionManuales = Number(p.puntos_sancion) || 0;
+        
+        // 3. Licencia: 12 iniciales - puntos manuales - puntos automáticos
+        // Esta es la lógica que resta ambos conceptos del total de 12
         const licenciaActual = Math.max(0, 12 - puntosSancionManuales - numPenalizaciones);
         
         const porcentaje = (licenciaActual / 12) * 100;
