@@ -941,26 +941,36 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- RECUPERAMOS TU ESTILO ORIGINAL --- */
+/* --- TABLA PILOTOS: Ajuste para igualar a Constructores --- */
 .pilotos-table { 
-    table-layout: fixed !important; 
+    table-layout: fixed; 
     width: 100%; 
 }
 
-/* Reducimos columnas laterales al mínimo absoluto para dar espacio a la escudería */
-.pilotos-table .col-pos { width: 4% !important; }
-.pilotos-table .col-piloto { width: 18% !important; }
-.pilotos-table .col-plataforma { width: 7% !important; }
-.pilotos-table .col-vics { width: 5% !important; }
-.pilotos-table .col-podios { width: 5% !important; }
-.pilotos-table .col-puntos { width: 8% !important; }
+/* Reducimos ligeramente las otras columnas para regalar espacio a la Escudería */
+.pilotos-table .col-pos { width: 5% !important; }
+.pilotos-table .col-piloto { width: 15% !important; }
+.pilotos-table .col-plataforma { width: 8% !important; } /* Columna extra que empuja */
+.pilotos-table .col-vics { width: 6% !important; }
+.pilotos-table .col-podios { width: 6% !important; }
+.pilotos-table .col-puntos { width: 10% !important; }
 
-/* La escudería se queda con todo el hueco restante (aprox 53%) */
+/* La Escudería obtiene el espacio necesario (50% en lugar de 40%) */
 .pilotos-table .col-escuderia { 
-    width: 53% !important; 
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    width: 50% !important; 
+    text-align: left !important; /* Mantenemos alineación izquierda */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- CLAVE PARA EVITAR EL CORTE --- */
+.nombre-escuderia {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ESTE ES EL TRUCO: Reducir el texto de la escudería solo cuando es larguísimo */
