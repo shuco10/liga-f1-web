@@ -783,7 +783,8 @@ async function editarResultado(id) {
         const data = {
             circuito_id: document.getElementById('select-circuito-admin').value,
             piloto_id: document.getElementById('select-piloto-admin').value,
-            posicion: parseInt(document.getElementById('input-posicion').value)
+            posicion: parseInt(document.getElementById('input-posicion').value),
+            es_pole: document.getElementById('es_pole').checked
         };
         const res = await fetch('/api/guardar-resultado', {
             method: 'POST',
