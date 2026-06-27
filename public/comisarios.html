@@ -781,41 +781,29 @@ async function editarResultado(id) {
         
 
 async function guardarResultado() {
-    // Obtenemos el valor del nuevo desplegable
-    const valorPole = document.getElementById('es_pole').value; // Ahora es "si" o "no"
+    const pilotoId = document.getElementById('select-piloto-admin').value;
+    const esPole = document.getElementById('es_pole').value === 'si';
 
-    const data = {
-        circuito_id: document.getElementById('select-circuito-admin').value,
-        piloto_id: document.getElementById('select-piloto-admin').value,
-        posicion: parseInt(document.getElementById('input-posicion').value),
-        // Convertimos el "si" a true para que el servidor lo procese como booleano
-        es_pole: valorPole === 'si' 
-    };
+    // 1. Guardamos carrera (lo que ya tienes)
+    // ... [código de tu fetch actual] ...
 
-    console.log("Datos enviados al servidor:", data); 
-    
-    const res = await fetch('/api/guardar-resultado', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
+    // 2. Si es pole, llamamos a la nueva API
+    if (esPole) {
+        const resPole = await fetch('/api/actualizar-pole', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ piloto_id: pilotoId })
+        });
 
-    if(res.ok) {
-        alert("Resultado guardado y puntos actualizados");
-        
-        // Limpieza de campos
-        if(document.getElementById('select-circuito-admin')) document.getElementById('select-circuito-admin').value = "";
-        if(document.getElementById('select-piloto-admin')) document.getElementById('select-piloto-admin').value = "";
-        if(document.getElementById('input-posicion')) document.getElementById('input-posicion').value = "";
-        
-        // Resetear el select a la opción por defecto ("no")
-        document.getElementById('es_pole').value = "no"; 
-
-        cargarTodosLosDatos(); 
-        cargarCircuitos(); 
-    } else {
-        alert("Error al guardar el resultado");
+        if (resPole.ok) {
+            console.log("Pole actualizada con éxito");
+        } else {
+            alert("Carrera guardada, pero hubo un error al sumar la pole");
+        }
     }
+    
+    // Recargamos todo
+    cargarTodosLosDatos();
 }
 
 async function sumarPuntosManual() {
