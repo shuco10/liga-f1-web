@@ -112,16 +112,21 @@ function renderizarSanciones(pilotos) {
     body.innerHTML = "";
 
     pilotos.forEach(p => {
-       // CÁLCULOS
+        // CÁLCULOS
         const totalAvisos = Number(p.total_avisos) || 0; 
         
-        // LÓGICA: Cada 3 avisos = 1 penalización visual (no afecta a la licencia)
-        const numPenalizaciones = Math.floor(totalAvisos / 3);
+        // 1. Penalizaciones automáticas (3 avisos = 1 penalización)
+        const numPenalizacionesAutomaticas = Math.floor(totalAvisos / 3);
         
-        // Licencia: 12 iniciales - puntos de sanción manuales (Admin)
-        // La penalización automática de avisos ya no resta puntos a la licencia
+        // 2. Sanciones manuales del Admin
         const puntosSancionManuales = Number(p.puntos_sancion) || 0;
-        const licenciaActual = Math.max(0, 12 - puntosSancionManuales);
+        
+        // 3. Suma total para la columna de penalización (Avisos + Manuales)
+        const totalSanciones = numPenalizacionesAutomaticas + puntosSancionManuales;
+        
+        // Licencia: 12 iniciales - total de sanciones (manuales + automáticas)
+        // He ajustado esto para que ambos tipos de sanciones resten puntos a la licencia
+        const licenciaActual = Math.max(0, 12 - totalSanciones);
         
         const porcentaje = (licenciaActual / 12) * 100;
 
@@ -151,7 +156,7 @@ function renderizarSanciones(pilotos) {
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
                 <td>${totalAvisos}</td> 
-                <td style="font-weight:bold; color: #ff3333;">${numPenalizaciones}</td> 
+                <td style="font-weight:bold; color: #ff3333;">${totalSanciones}</td> 
                 <td style="font-weight:bold; color:${color}">${estado}</td>
                 <td>
                     <span style="color:${color}">${licenciaActual} / 12</span>
