@@ -941,23 +941,25 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* 1. Forzamos el layout a fijo para controlar cada píxel */
+/* --- TABLA: PILOTOS (Prioridad Escudería) --- */
 .pilotos-table { 
     table-layout: fixed; 
     width: 100%; 
 }
 
-/* 2. Reducimos TODO lo que no sea Escudería al mínimo absoluto */
+/* 1. Estadísticas al mínimo absoluto (justo para que se vea el número) */
 .pilotos-table .col-pos { width: 4% !important; }
-.pilotos-table .col-piloto { width: 12% !important; }
-.pilotos-table .col-plataforma { width: 6% !important; } /* Esto es lo que más molesta */
 .pilotos-table .col-vics { width: 5% !important; }
 .pilotos-table .col-podios { width: 5% !important; }
-.pilotos-table .col-puntos { width: 8% !important; }
+.pilotos-table .col-puntos { width: 9% !important; } /* Un poco más de espacio aquí para que los "pts" no se corten */
+.pilotos-table .col-plataforma { width: 8% !important; }
 
-/* 3. Escudería se queda con TODO el espacio restante */
+/* 2. Piloto recupera su espacio cómodo (19%) */
+.pilotos-table .col-piloto { width: 19% !important; }
+
+/* 3. Escudería se queda con TODO el resto (50%) */
 .pilotos-table .col-escuderia { 
-    width: 60% !important; /* ¡Ahora es masiva! */
+    width: 50% !important; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
