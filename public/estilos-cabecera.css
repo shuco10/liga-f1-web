@@ -943,7 +943,7 @@ table tr td:nth-child(2) {
 
 /* --- AJUSTE FINAL: ESTRUCTURA RÍGIDA, CONTENIDO FLEXIBLE --- */
 .pilotos-table { 
-    table-layout: fixed; 
+    table-layout: auto !important; /* Permitimos que el contenido dicte el ancho */
     width: 100%; 
 }
 
