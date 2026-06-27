@@ -975,7 +975,7 @@ table tr td:nth-child(2) {
 
 /* ESTE ES EL TRUCO: Reducir el texto de la escudería solo cuando es larguísimo */
 .nombre-escuderia {
-    font-size: 0.85rem !important; /* Ligeramente más pequeño para que entre más texto */
+    font-size: 0.95rem !important; /* Ligeramente más pequeño para que entre más texto */
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
