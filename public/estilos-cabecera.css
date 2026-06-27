@@ -941,24 +941,26 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- TABLA: PILOTOS TITULARES Y RESERVAS --- */
+/* --- AJUSTE AGRESIVO PARA GANAR ESPACIO EN ESCUDERÍA --- */
 .pilotos-table { table-layout: fixed; width: 100%; }
 
+/* Columnas de estadísticas (muy compactas) */
 .pilotos-table .col-pos { width: 5%; }
-.pilotos-table .col-piloto { width: 20%; }
-.pilotos-table .col-escuderia { width: 44%; } 
 .pilotos-table .col-vics { width: 6%; }
-.pilotos-table .col-podios { width: 7%; }
-.pilotos-table .col-puntos { width: 10%; }
+.pilotos-table .col-podios { width: 6%; }
+.pilotos-table .col-puntos { width: 8%; }
 .pilotos-table .col-plataforma { width: 8%; }
 
-/* Estilo para que el nombre de escudería se corte con estilo */
+/* Columnas de contenido (ajustadas para maximizar espacio) */
+.pilotos-table .col-piloto { width: 15%; }    /* Reducimos para liberar espacio */
+.pilotos-table .col-escuderia { width: 52%; } /* ¡Casi toda la parte central para la escudería! */
+
+/* Aseguramos que el texto no se corte si el espacio es suficiente */
 .pilotos-table .col-escuderia {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding-left: 10px;
-    font-size: 0.9em;
 }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
