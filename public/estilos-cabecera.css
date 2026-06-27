@@ -909,10 +909,10 @@ table tr td:nth-child(2) {
 
 /* --- ESTILOS DE TABLAS (Unificado para Pilotos y Constructores) --- */
 .table-standings-fix {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 12px;
-    table-layout: auto !important; /* Permitimos que se ajuste al contenido */
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 12px !important; /* Espacio entre filas */
+    table-layout: auto !important;
 }
 
 .table-standings-fix th {
@@ -925,71 +925,48 @@ table tr td:nth-child(2) {
 .table-standings-fix td {
     background: #242424;
     padding: 18px;
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
+    border: none !important; /* Eliminamos bordes para que la fila sea un bloque sólido */
 }
 
-/* Bordes decorativos */
+/* Bordes decorativos y redondeo de esquinas */
 .table-standings-fix tr td:first-child { 
-    border-left: 5px solid #ff4d4d;
+    border-left: 5px solid #ff4d4d; /* Banda lateral izquierda */
     border-radius: 10px 0 0 10px; 
 }
 .table-standings-fix tr td:last-child { 
-    border-right: 1px solid #333; 
     border-radius: 0 10px 10px 0; 
 } 
 
 /* --- TABLAS: COLUMNAS FLUIDAS --- */
-/* Eliminamos anchos fijos, dejamos que el contenido dicte el ancho */
 .pilotos-table th, .pilotos-table td,
 .constructores-table th, .constructores-table td {
     width: auto !important;
 }
 
-/* Aseguramos que la columna de Escudería sea flexible pero no invasiva */
 .pilotos-table .col-escuderia, 
 .constructores-table .col-escuderia {
-    width: auto !important; /* Cambiado de 100% a auto para que sea elástica */
     min-width: 200px;
-    max-width: 400px;       /* El nombre no crecerá infinitamente */
+    max-width: 400px;
     text-align: left !important;
 }
 
-/* --- CLAVE PARA EL NOMBRE DE ESCUDERÍA --- */
-.nombre-escuderia {
-    display: block !important; /* Block permite mejor gestión del espacio */
-    max-width: 100%;
-    overflow: visible !important;
-    white-space: normal !important;
-    font-size: 0.95rem !important;
-    line-height: 1.2;
-}
-
-/* --- ALINEACIÓN GENERAL --- */
+/* --- ALINEACIÓN --- */
 .table-standings-fix th, 
 .table-standings-fix td {
     text-align: center;
 }
 
-/* Forzamos alineación a la izquierda donde es necesario */
 .pilotos-table .col-piloto, 
 .pilotos-table .col-escuderia,
 .constructores-table .col-escuderia {
     text-align: left !important;
 }
 
-
-/* Asegurar que la tabla de constructores se comporte como las demás */
-.constructores-table {
-    width: 100% !important;
-}
-
-/* Ajuste específico para la columna de pilotos en constructores */
+/* --- AJUSTES ESPECÍFICOS --- */
 .col-pilotos {
-    min-width: 120px; /* Para que los avatares no se amontonen */
+    min-width: 120px;
 }
 
-/* Estilo para los avatares dentro de la tabla */
 .piloto-avatar-small {
     width: 30px;
     height: 30px;
@@ -998,14 +975,19 @@ table tr td:nth-child(2) {
     object-fit: cover;
 }
 
-/* Estilo para las bandas de color (Asegúrate de que esto exista en tu CSS) */
 .color-banda {
     display: inline-block;
     width: 5px;
     height: 30px;
     margin-right: 10px;
+    border-radius: 2px;
     vertical-align: middle;
 }
 
-
+/* Nombre de escudería ajustado */
+.nombre-escuderia {
+    display: inline-block !important;
+    vertical-align: middle;
+    font-size: 0.95rem !important;
+}
 
