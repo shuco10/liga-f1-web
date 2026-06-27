@@ -112,26 +112,17 @@ function renderizarSanciones(pilotos) {
     body.innerHTML = "";
 
     pilotos.forEach(p => {
-        // --- DEPURACIÓN: Añade esta línea para ver qué recibe realmente el navegador ---
-       // console.log(`Piloto: ${p.gamertag} | BD_PuntosSancion: ${p.puntos_sancion} | BD_Avisos: ${p.total_avisos}`);
-        //
+        // CÁLCULOS
+        const totalAvisos = Number(p.total_avisos) || 0; 
         
-// CÁLCULOS
-// Forzamos explícitamente a ser números (0 si es null o undefined)
-const totalAvisos = parseInt(p.total_avisos) || 0;
-const puntosSancionManuales = parseInt(p.puntos_sancion) || 0;
-
-// 1. Penalizaciones automáticas: 3 avisos = 1 punto
-const numPenalizacionesAutomaticas = Math.floor(totalAvisos / 3);
-
-// 2. Suma TOTAL real
-// Usamos Number() para asegurar suma aritmética (1+1=2) y no concatenación (1+1=11)
-const totalSanciones = Number(numPenalizacionesAutomaticas) + Number(puntosSancionManuales);
-
-// 3. Licencia: 12 menos el total acumulado
-const licenciaActual = Math.max(0, 12 - totalSanciones);
-
-const porcentaje = (licenciaActual / 12) * 100;
+        // LÓGICA: Cada 3 avisos = 1 penalización visual
+        const numPenalizaciones = Math.floor(totalAvisos / 3);
+        
+        // Licencia: 12 iniciales - puntos manuales - puntos automáticos por penalización
+        const puntosSancionManuales = Number(p.puntos_sancion) || 0;
+        const licenciaActual = Math.max(0, 12 - puntosSancionManuales - numPenalizaciones);
+        
+        const porcentaje = (licenciaActual / 12) * 100;
 
         // ESTILOS
         let color = "#2ecc71";
@@ -159,7 +150,7 @@ const porcentaje = (licenciaActual / 12) * 100;
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
                 <td>${totalAvisos}</td> 
-                <td style="font-weight:bold; color: #ff3333;">${totalSanciones}</td> 
+                <td style="font-weight:bold; color: #ff3333;">${numPenalizaciones}</td> 
                 <td style="font-weight:bold; color:${color}">${estado}</td>
                 <td>
                     <span style="color:${color}">${licenciaActual} / 12</span>
