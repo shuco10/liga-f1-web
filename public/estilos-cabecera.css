@@ -205,7 +205,7 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 .plataforma { padding: 3px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; }
 .plataforma.PS5 { background-color: #0070d1; color: white; }
 .plataforma.PC { background-color: #ffffff; color: #000000; border: 1px solid #ccc; }
-.plataforma.Xbox { 
+.plataforma.XBOX { 
     background-color: #107c10; /* Color verde característico de Xbox */
     color: white; 
 }
