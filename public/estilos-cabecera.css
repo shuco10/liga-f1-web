@@ -1007,5 +1007,25 @@ table tr td:nth-child(2) {
     vertical-align: middle;
 }
 
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pone el texto a la izquierda y el check a la derecha */
+    padding: 10px 15px;
+    background-color: #f4f4f4; /* Un gris suave para diferenciar */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 10px 0;
+    cursor: pointer;
+}
 
+.checkbox-container label {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.checkbox-container input {
+    transform: scale(1.3); /* Hace el checkbox un poquito más grande y visible */
+    cursor: pointer;
+}
 
