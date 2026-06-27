@@ -36,6 +36,7 @@
                     <th class="col-escuderia">Escudería</th>
                     <th class="col-vics">Vic.</th>
                     <th class="col-podios">Podios</th>
+                    <th class="col-poles">Poles</th>
                     <th class="col-puntos">Puntos</th>
                 </tr>
             </thead>
@@ -53,6 +54,7 @@
                     <th class="col-escuderia">Escudería</th>
                     <th class="col-vics">Vic.</th>
                     <th class="col-podios">Podios</th>
+                    <th class="col-poles">Poles</th>
                     <th class="col-puntos">Puntos</th>
                 </tr>
             </thead>
@@ -185,6 +187,9 @@ return `<tr>
     <td class="col-escuderia">${escuderiaCol}</td>
     <td class="col-vics">${p.victorias}</td>
     <td class="col-podios">${p.podios || '0'}</td>
+    
+    <td class="col-poles">${p.poles || '0'}</td>
+    
     <td class="col-puntos"><strong>${p.puntos_totales} pts</strong></td>
 </tr>`;
     }).join('');
