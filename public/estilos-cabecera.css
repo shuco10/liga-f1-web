@@ -952,8 +952,8 @@ table tr td:nth-child(2) {
 .pilotos-table .col-plataforma { width: 8%; }
 
 /* Columnas de contenido (PILOTO REDUCIDO AL MÍNIMO, ESCUDERÍA AL MÁXIMO) */
-.pilotos-table .col-piloto { width: 15%; }    
-.pilotos-table .col-escuderia { width: 52%; } 
+.pilotos-table .col-piloto { width: 19%; }    
+.pilotos-table .col-escuderia { width: 48%; } 
 
 /* Aseguramos la alineación */
 .pilotos-table .col-escuderia {
