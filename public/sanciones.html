@@ -112,14 +112,14 @@ function renderizarSanciones(pilotos) {
     body.innerHTML = "";
 
     pilotos.forEach(p => {
-// CÁLCULOS
+        // CÁLCULOS
         const totalAvisos = Number(p.total_avisos) || 0; 
         const puntosSancionManuales = Number(p.puntos_sancion) || 0;
 
         // 1. Penalizaciones automáticas (3 avisos = 1 punto)
         const numPenalizaciones = Math.floor(totalAvisos / 3);
 
-        // 2. Sumamos todo lo que hay que restar
+        // 2. Sumamos todo lo que hay que restar (Manuales + Avisos)
         const totalRestar = puntosSancionManuales + numPenalizaciones;
 
         // 3. Cálculo único de licencia
@@ -154,7 +154,7 @@ function renderizarSanciones(pilotos) {
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
                 <td>${totalAvisos}</td> 
-                <td style="font-weight:bold; color: #ff3333;">${numPenalizaciones}</td> 
+                <td style="font-weight:bold; color: #ff3333;">${totalRestar}</td> 
                 <td style="font-weight:bold; color:${color}">${estado}</td>
                 <td>
                     <span style="color:${color}">${licenciaActual} / 12</span>
