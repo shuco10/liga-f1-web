@@ -517,10 +517,15 @@ app.post('/api/guardar-resultado', async (req, res) => {
 console.log("DEBUG: es_pole =", es_pole, "para el piloto ID =", piloto_id);
 
 if (es_pole) {
+    console.log("DEBUG: Intentando actualizar pole para el ID:", piloto_id);
     const result = await pool.query("UPDATE pilotos SET poles = poles + 1 WHERE id = $1", [piloto_id]);
-    console.log("DEBUG: Filas actualizadas en BD =", result.rowCount);
+    
+    if (result.rowCount === 0) {
+        console.log("DEBUG ERROR: No se encontró ningún piloto con ID", piloto_id);
+    } else {
+        console.log("DEBUG: ¡ÉXITO! Pole sumada al piloto", piloto_id);
+    }
 }
-
 
         
         res.json({ success: true, puntos: puntos });
