@@ -891,7 +891,7 @@ table tr td:nth-child(2) {
     flex-shrink: 0 !important;
 }
 
-/* Contenedor principal */
+/* --- CONTENEDOR PRINCIPAL --- */
 .contenedor-sanciones-exclusivo {
     background: #1a1a1a;
     padding: 25px;
@@ -907,21 +907,21 @@ table tr td:nth-child(2) {
     text-transform: uppercase;
 }
 
-/* Tabla con filas separadas */
+/* --- ESTILOS DE TABLAS (Unificado para Pilotos y Constructores) --- */
 .table-standings-fix {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0 12px;
+    table-layout: auto !important; /* Permitimos que se ajuste al contenido */
 }
 
 .table-standings-fix th {
     color: #888;
     padding: 10px;
     font-size: 0.8rem;
-    text-align: left;
+    text-align: center;
 }
 
-/* Estilo base de las celdas */
 .table-standings-fix td {
     background: #242424;
     padding: 18px;
@@ -929,67 +929,40 @@ table tr td:nth-child(2) {
     border-bottom: 1px solid #333;
 }
 
-/* Borde rojo a la izquierda de la primera celda (el cajón) */
+/* Bordes decorativos */
 .table-standings-fix tr td:first-child { 
-    border-left: 5px solid #ff4d4d; /* ¡Aquí está el borde rojo! */
+    border-left: 5px solid #ff4d4d;
     border-radius: 10px 0 0 10px; 
 }
-
-/* Borde derecho de la última celda */
 .table-standings-fix tr td:last-child { 
     border-right: 1px solid #333; 
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- TABLA PILOTOS: Ajuste para igualar a Constructores --- */
-.pilotos-table { 
-    table-layout: fixed; 
-    width: 100%; 
+/* --- TABLAS: COLUMNAS FLUIDAS --- */
+/* Eliminamos anchos fijos, dejamos que el contenido dicte el ancho */
+.pilotos-table th, .pilotos-table td,
+.constructores-table th, .constructores-table td {
+    width: auto !important;
 }
 
-/* Reducimos ligeramente las otras columnas para regalar espacio a la Escudería */
-.pilotos-table .col-pos { width: 5% !important; }
-.pilotos-table .col-piloto { width: 15% !important; }
-.pilotos-table .col-plataforma { width: 8% !important; } /* Columna extra que empuja */
-.pilotos-table .col-vics { width: 6% !important; }
-.pilotos-table .col-podios { width: 6% !important; }
-.pilotos-table .col-puntos { width: 10% !important; }
-
-/* La Escudería obtiene el espacio necesario (50% en lugar de 40%) */
-.pilotos-table .col-escuderia { 
-    width: 50% !important; 
-    text-align: left !important; /* Mantenemos alineación izquierda */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Aseguramos que la columna de Escudería sea la que más espacio tome */
+.pilotos-table .col-escuderia, 
+.constructores-table .col-escuderia {
+    width: 100% !important; /* Toma todo el espacio sobrante */
+    min-width: 200px;
+    text-align: left !important;
 }
 
-/* --- CLAVE PARA EVITAR EL CORTE --- */
+/* --- CLAVE PARA EL NOMBRE DE ESCUDERÍA --- */
 .nombre-escuderia {
     display: inline-block;
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow: visible !important;
+    white-space: normal !important;
+    font-size: 0.95rem !important;
+    line-height: 1.2;
 }
-
-/* ESTE ES EL TRUCO: Reducir el texto de la escudería solo cuando es larguísimo */
-.nombre-escuderia {
-    font-size: 0.95rem !important; /* Ligeramente más pequeño para que entre más texto */
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-}
-
-/* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
-.constructores-table { table-layout: fixed; width: 100%; }
-
-.constructores-table .col-pos { width: 8%; }
-.constructores-table .col-escuderia { width: 40%; } 
-.constructores-table .col-pilotos { width: 20%; }
-.constructores-table .col-vics { width: 10%; }
-.constructores-table .col-podios { width: 10%; }
-.constructores-table .col-puntos { width: 12%; }
 
 /* --- ALINEACIÓN GENERAL --- */
 .table-standings-fix th, 
@@ -1003,4 +976,3 @@ table tr td:nth-child(2) {
 .constructores-table .col-escuderia {
     text-align: left !important;
 }
-
