@@ -939,33 +939,31 @@ table tr td:nth-child(2) {
 .table-standings-fix tr td:last-child { 
     border-right: 1px solid #333; 
     border-radius: 0 10px 10px 0; 
+/* --- TABLA: PILOTOS TITULARES Y RESERVAS --- */
+/* (Aquí usamos el nuevo orden de columnas que diseñamos) */
+.pilotos-table .col-pos { width: 5%; }
+.pilotos-table .col-piloto { width: 20%; }
+.pilotos-table .col-escuderia { width: 35%; } 
+.pilotos-table .col-plataforma { width: 10%; }
+.pilotos-table .col-vics { width: 10%; }
+.pilotos-table .col-podios { width: 10%; }
+.pilotos-table .col-puntos { width: 10%; }
+
+/* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
+.constructores-table .col-pos { width: 10%; }
+.constructores-table .col-escuderia { width: 30%; }
+.constructores-table .col-pilotos { width: 20%; }
+.constructores-table .col-vics { width: 10%; }
+.constructores-table .col-podios { width: 10%; }
+.constructores-table .col-puntos { width: 20%; }
+
+/* --- ESTILO COMÚN PARA EL NOMBRE DE ESCUDERÍA (ELIPSIS) --- */
+.col-escuderia {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 10px;
 }
-/* Ajustes de columnas */
-.col-piloto { width: 25%; }
-.col-escuderia { width: 20%; }
-.col-avisos { width: 10%; }
-.col-penalizacion { width: 15%; }
-.col-apto { width: 10%; }
-.col-licencia { width: 20%; }
-
-
-
-/* Borde izquierdo distintivo para Escuderías (ejemplo: Dorado) 
-#tabla-body-constructores tr td:first-child { 
-    border-left: 5px solid #f1c40f;  ¡Toque dorado para equipos! 
-    border-radius: 10px 0 0 10px; 
-}
-*/
-/* Ajustes de ancho para que las 6 columnas quepan perfecto */
-.col-pos { width: 10%; }
-.col-escuderia { width: 30%; }
-.col-pilotos { width: 20%; }
-.col-vics { width: 10%; }
-.col-podios { width: 10%; }
-.col-puntos { width: 20%; }
-
-
-
 
 
 
