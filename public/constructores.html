@@ -129,28 +129,20 @@ function renderizarConstructores(pilotos, escuderias) {
     if (!body) return;
     body.innerHTML = "";
 
-    const mapaColores = {
-        "Audi": "banda-audi", "Cadillac": "banda-cadillac", "Red Bull Racing": "banda-redbull",
-        "Mercedes-AMG": "banda-mercedes", "Ferrari": "banda-ferrari", "Aston Martin": "banda-aston",
-        "Williams": "banda-williams", "Alpine": "banda-alpine", "Haas": "banda-haas",
-        "Visa Cash App RB": "banda-visa", "McLaren": "banda-mclaren"
-    };
-
     const datosConstructores = escuderias.map(esc => {
         const pilotosEscuderia = pilotos.filter(p => 
             String(p.escuderia_id) === String(esc.id) && String(p.es_reserva) === '0'
         );
         
-        // Calculamos los puntos de los pilotos de esta escudería
         const puntosPilotos = pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0);
         
         return {
-            nombre: (String(esc.id) === '9' ? 'Audi Revolut F1 Team' : esc.nombre),
+            nombre: esc.nombre, // Usamos el nombre tal cual viene de la base de datos
+            color: esc.color_hex || "#555555", // Usamos el color de la BD o un gris por defecto
             logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
             pilotos: pilotosEscuderia,
             victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
             podios: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.podios) || 0), 0),
-            // SISTEMA HÍBRIDO: Sumamos lo ganado en pista + el extra manual de la base de datos
             puntos: puntosPilotos + (Number(esc.puntos) || 0)
         };
     }).sort((a, b) => b.puntos - a.puntos);
@@ -159,21 +151,20 @@ function renderizarConstructores(pilotos, escuderias) {
         const esPodio = index < 3;
         const posClass = esPodio ? `pos-${index + 1}` : '';
         const numeroDisplay = index + 1;
-        const claseBanda = mapaColores[c.nombre] || "banda-default";
         
-const avatars = c.pilotos.map(p => {
+        const avatars = c.pilotos.map(p => {
             const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
-            // He cambiado p.nombre por p.gamertag
             return `<img src="/pilotos/${nombreArchivo}" 
                          class="piloto-avatar-small" 
                          title="${p.gamertag}" 
                          onerror="this.src='/pilotos/R.png'">`;
         }).join('');
+
         body.innerHTML += `
-<tr>
+            <tr>
                 <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
                 <td style="text-align: left;">
-                    <span class="color-banda ${claseBanda}"></span>
+                    <span class="color-banda" style="background-color: ${c.color};"></span>
                     <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
                 </td>
                 <td style="text-align: center;">${avatars || '-'}</td>
