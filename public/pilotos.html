@@ -32,8 +32,8 @@
                     <!-- Añadimos las clases a cada columna -->
                     <th class="col-pos">Pos</th>
                     <th class="col-piloto">Piloto</th>
+                    <th class="col-plataforma">Plataforma</th>                    
                     <th class="col-escuderia">Escudería</th>
-                    <th class="col-plataforma">Plataforma</th>
                     <th class="col-vics">Vic.</th>
                     <th class="col-podios">Podios</th>
                     <th class="col-puntos">Puntos</th>
@@ -49,8 +49,8 @@
                 <tr>
                     <th class="col-pos">Pos</th>
                     <th class="col-piloto">Piloto</th>
-                    <th class="col-escuderia">Escudería</th>
                     <th class="col-plataforma">Plataforma</th>
+                    <th class="col-escuderia">Escudería</th>
                     <th class="col-vics">Vic.</th>
                     <th class="col-podios">Podios</th>
                     <th class="col-puntos">Puntos</th>
@@ -180,8 +180,9 @@ return `<tr>
             <strong style="overflow: hidden; text-overflow: ellipsis;">${p.gamertag}</strong>
         </div>
     </td>
-    <td class="col-escuderia">${escuderiaCol}</td>
+
     <td class="col-plataforma"><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
+    <td class="col-escuderia">${escuderiaCol}</td>
     <td class="col-vics">${p.victorias}</td>
     <td class="col-podios">${p.podios || '0'}</td>
     <td class="col-puntos"><strong>${p.puntos_totales} pts</strong></td>
