@@ -99,6 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarSanciones(listaPilotos);
     });
 
+Aquí tienes la función completa con la nueva lógica aplicada: ahora el contador de penalización muestra el número de "bloques de 3 avisos" y la licencia se reduce automáticamente en función de esos mismos bloques.
+
+JavaScript
 function renderizarSanciones(pilotos) {
     if (!pilotos || !Array.isArray(pilotos)) return;
 
@@ -108,12 +111,14 @@ function renderizarSanciones(pilotos) {
 
     pilotos.forEach(p => {
         // CÁLCULOS
-        const totalAvisos = p.total_avisos || 0; // NUEVO: Capturamos los avisos desde la API
-        const penalizacion = p.penalizacion_tiempo || 0; 
+        const totalAvisos = p.total_avisos || 0; 
         
-        // Mantenemos puntos_sancion solo para calcular la licencia, no para mostrarlo como aviso
-        const puntosSancion = p.puntos_sancion || 0;
-        const licenciaActual = 12 - puntosSancion;
+        // LÓGICA NUEVA: Cada 3 avisos = 1 penalización
+        const numPenalizaciones = Math.floor(totalAvisos / 3);
+        
+        // Licencia: 12 iniciales - puntos manuales - puntos automáticos por penalización
+        const puntosSancionManuales = p.puntos_sancion || 0;
+        const licenciaActual = Math.max(0, 12 - puntosSancionManuales - numPenalizaciones);
         const porcentaje = (licenciaActual / 12) * 100;
 
         // ESTILOS
@@ -141,8 +146,8 @@ function renderizarSanciones(pilotos) {
                     </div>
                 </td>
                 <td>${logoEquipo} ${nombreEquipo}</td>
-                <td>${p.total_avisos || 0}</td> 
-                <td style="font-weight:bold; color: #ff3333;">${p.penalizacion_tiempo > 0 ? '+' + p.penalizacion_tiempo + 's' : '0s'}</td>
+                <td>${totalAvisos}</td> 
+                <td style="font-weight:bold; color: #ff3333;">${numPenalizaciones}</td> 
                 <td style="font-weight:bold; color:${color}">${estado}</td>
                 <td>
                     <span style="color:${color}">${licenciaActual} / 12</span>
