@@ -941,27 +941,27 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- AJUSTE MÁXIMO PARA ESCUDERÍA --- */
+/* --- AJUSTE DE ANCHOS PARA PILOTOS --- */
 .pilotos-table { table-layout: fixed; width: 100%; }
 
-/* Columnas de estadísticas */
-.pilotos-table .col-pos { width: 5%; }
-.pilotos-table .col-vics { width: 6%; }
-.pilotos-table .col-podios { width: 6%; }
-.pilotos-table .col-puntos { width: 8%; }
-.pilotos-table .col-plataforma { width: 8%; }
+/* Reducimos plataforma al mínimo posible (ya que solo dice PC/PS5) */
+.pilotos-table .col-plataforma { width: 6%; } 
 
-/* Columnas de contenido (PILOTO REDUCIDO AL MÍNIMO, ESCUDERÍA AL MÁXIMO) */
-.pilotos-table .col-piloto { width: 19%; }    
-.pilotos-table .col-escuderia { width: 48%; } 
-
-/* Aseguramos la alineación */
-.pilotos-table .col-escuderia {
+/* Le damos a la Escudería todo el espacio que hemos quitado a Plataforma */
+.pilotos-table .col-escuderia { 
+    width: 48%; /* Ampliado para que el nombre quepa mejor */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding-left: 10px;
 }
+
+/* El resto de columnas se mantienen para no descuadrar */
+.pilotos-table .col-pos { width: 5%; }
+.pilotos-table .col-piloto { width: 15%; }
+.pilotos-table .col-vics { width: 6%; }
+.pilotos-table .col-podios { width: 6%; }
+.pilotos-table .col-puntos { width: 10%; }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
 .constructores-table { table-layout: fixed; width: 100%; }
