@@ -947,29 +947,20 @@ table tr td:nth-child(2) {
     width: 100%; 
 }
 
-/* 1. Estadísticas al mínimo absoluto (justo para que se vea el número) */
-.pilotos-table .col-pos { width: 4% !important; }
-.pilotos-table .col-vics { width: 5% !important; }
-.pilotos-table .col-podios { width: 5% !important; }
-.pilotos-table .col-puntos { width: 9% !important; } /* Un poco más de espacio aquí para que los "pts" no se corten */
+/* Forzamos los anchos con !important para que nada más pueda con ellos */
+.pilotos-table .col-pos { width: 5% !important; }
+.pilotos-table .col-piloto { width: 15% !important; }
 .pilotos-table .col-plataforma { width: 8% !important; }
+.pilotos-table .col-vics { width: 6% !important; }
+.pilotos-table .col-podios { width: 6% !important; }
+.pilotos-table .col-puntos { width: 10% !important; }
 
-/* 2. Piloto recupera su espacio cómodo (19%) */
-.pilotos-table .col-piloto { width: 19% !important; }
-
-/* 3. Escudería se queda con TODO el resto (50%) */
+/* La escudería se lleva todo el resto */
 .pilotos-table .col-escuderia { 
     width: 50% !important; 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-left: 10px;
-}
-
-/* 4. IMPORTANTE: Asegúrate de que no haya otros estilos bloqueando */
-.pilotos-table td.col-escuderia {
-    display: table-cell;
-    max-width: 0; /* Esto permite que el texto sepa que debe respetar el ancho */
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
 }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
