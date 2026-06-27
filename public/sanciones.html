@@ -116,23 +116,22 @@ function renderizarSanciones(pilotos) {
         console.log(`Piloto: ${p.gamertag} | BD_PuntosSancion: ${p.puntos_sancion} | BD_Avisos: ${p.total_avisos}`);
         //
         
-        // CÁLCULOS
-        const totalAvisos = Number(p.total_avisos) || 0;
-        
-        // 1. Penalizaciones automáticas (3 avisos = 1 penalización)
-        const numPenalizacionesAutomaticas = Math.floor(totalAvisos / 3);
-        
-        // 2. Sanciones manuales del Admin
-        const puntosSancionManuales = Number(p.puntos_sancion) || 0;
-        
-        // 3. Suma total para la columna de penalización (Avisos + Manuales)
-        const totalSanciones = numPenalizacionesAutomaticas + puntosSancionManuales;
-        
-        // Licencia: 12 iniciales - total de sanciones (manuales + automáticas)
-        // He ajustado esto para que ambos tipos de sanciones resten puntos a la licencia
-        const licenciaActual = Math.max(0, 12 - totalSanciones);
-        
-        const porcentaje = (licenciaActual / 12) * 100;
+// CÁLCULOS
+// Forzamos explícitamente a ser números (0 si es null o undefined)
+const totalAvisos = parseInt(p.total_avisos) || 0;
+const puntosSancionManuales = parseInt(p.puntos_sancion) || 0;
+
+// 1. Penalizaciones automáticas: 3 avisos = 1 punto
+const numPenalizacionesAutomaticas = Math.floor(totalAvisos / 3);
+
+// 2. Suma TOTAL real
+// Usamos Number() para asegurar suma aritmética (1+1=2) y no concatenación (1+1=11)
+const totalSanciones = Number(numPenalizacionesAutomaticas) + Number(puntosSancionManuales);
+
+// 3. Licencia: 12 menos el total acumulado
+const licenciaActual = Math.max(0, 12 - totalSanciones);
+
+const porcentaje = (licenciaActual / 12) * 100;
 
         // ESTILOS
         let color = "#2ecc71";
