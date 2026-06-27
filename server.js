@@ -526,24 +526,14 @@ app.post('/api/aplicar-avisos', async (req, res) => {
         // 1. Insertar el aviso
         await pool.query('INSERT INTO registro_avisos (id_piloto) VALUES ($1)', [piloto_id]);
 
-        // 2. Contar cuántos avisos tiene ahora
+        // 2. Contar cuántos avisos tiene ahora para responder al frontend
         const countRes = await pool.query('SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = $1', [piloto_id]);
         const totalAvisos = parseInt(countRes.rows[0].count);
         
-        // 3. Calcular nivel de sanción (ej: 3 avisos = 1, 6 avisos = 2)
-        const nivelSancion = Math.floor(totalAvisos / 3);
-
-        // 4. Guardar nivel de sanción y RESTAR 1 punto de superlicencia por CADA sanción nueva.
-        // OJO: Si usas 'puntos_sancion' para restar puntos, haremos:
-        await pool.query(`
-            UPDATE pilotos 
-            SET penalizacion_tiempo = $1, 
-                puntos_sancion = $2 
-            WHERE id = $3`, 
-            [nivelSancion, nivelSancion, piloto_id]
-        );
-
-        res.status(200).json({ totalAvisos, nivelSancion });
+        // Ya no tocamos la tabla 'pilotos' aquí. 
+        // El cálculo de cuánto resta se hará en el FRONTEND (renderizarSanciones).
+        
+        res.status(200).json({ totalAvisos });
     } catch (err) { 
         console.error("ERROR AL APLICAR AVISO:", err); 
         res.status(500).send("Error"); 
