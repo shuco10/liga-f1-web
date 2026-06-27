@@ -977,3 +977,35 @@ table tr td:nth-child(2) {
 .constructores-table .col-escuderia {
     text-align: left !important;
 }
+
+
+/* Asegurar que la tabla de constructores se comporte como las demás */
+.constructores-table {
+    width: 100% !important;
+}
+
+/* Ajuste específico para la columna de pilotos en constructores */
+.col-pilotos {
+    min-width: 120px; /* Para que los avatares no se amontonen */
+}
+
+/* Estilo para los avatares dentro de la tabla */
+.piloto-avatar-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+    object-fit: cover;
+}
+
+/* Estilo para las bandas de color (Asegúrate de que esto exista en tu CSS) */
+.color-banda {
+    display: inline-block;
+    width: 5px;
+    height: 30px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+
+
