@@ -781,29 +781,35 @@ async function editarResultado(id) {
         
 
 async function guardarResultado() {
-    const pilotoId = document.getElementById('select-piloto-admin').value;
-    const esPole = document.getElementById('es_pole').value === 'si';
+    const data = {
+        id_gp: document.getElementById('select-circuito-admin').value,
+        id_piloto: document.getElementById('select-piloto-admin').value,
+        posicion: parseInt(document.getElementById('input-posicion').value),
+        es_pole: document.getElementById('es_pole').value === 'si'
+    };
 
-    // 1. Guardamos carrera (lo que ya tienes)
-    // ... [código de tu fetch actual] ...
-
-    // 2. Si es pole, llamamos a la nueva API
-    if (esPole) {
-        const resPole = await fetch('/api/actualizar-pole', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ piloto_id: pilotoId })
-        });
-
-        if (resPole.ok) {
-            console.log("Pole actualizada con éxito");
-        } else {
-            alert("Carrera guardada, pero hubo un error al sumar la pole");
-        }
-    }
+    console.log("Datos enviados al servidor:", data);
     
-    // Recargamos todo
-    cargarTodosLosDatos();
+    const res = await fetch('/api/guardar-resultado', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+        alert("Resultado guardado y puntos actualizados");
+        
+        // Limpieza de campos
+        document.getElementById('select-circuito-admin').value = "";
+        document.getElementById('select-piloto-admin').value = "";
+        document.getElementById('input-posicion').value = "";
+        document.getElementById('es_pole').value = "no";
+        
+        cargarTodosLosDatos(); 
+        cargarCircuitos(); 
+    } else {
+        alert("Error al guardar el resultado");
+    }
 }
 
 async function sumarPuntosManual() {
