@@ -518,7 +518,12 @@ console.log("DEBUG: es_pole =", es_pole, "para el piloto ID =", piloto_id);
 
 if (es_pole) {
     console.log("DEBUG: Intentando actualizar pole para el ID:", piloto_id);
-    const result = await pool.query("UPDATE pilotos SET poles = poles + 1 WHERE id = $1", [piloto_id]);
+    
+    // USAMOS COALESCE para tratar los valores NULL como 0 antes de sumar
+    const result = await pool.query(
+        "UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", 
+        [piloto_id]
+    );
     
     if (result.rowCount === 0) {
         console.log("DEBUG ERROR: No se encontró ningún piloto con ID", piloto_id);
