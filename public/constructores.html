@@ -145,7 +145,7 @@ function renderizarConstructores(pilotos, escuderias) {
         const puntosPilotos = pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0);
         
         return {
-            nombre: (String(esc.id) === '9' ? 'Audi' : esc.nombre),
+            nombre: (String(esc.id) === '9' ? 'Audi Revolut F1 Team' : esc.nombre),
             logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
             pilotos: pilotosEscuderia,
             victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
