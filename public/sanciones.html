@@ -99,9 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarSanciones(listaPilotos);
     });
 
-Aquí tienes la función completa con la nueva lógica aplicada: ahora el contador de penalización muestra el número de "bloques de 3 avisos" y la licencia se reduce automáticamente en función de esos mismos bloques.
-
-JavaScript
 function renderizarSanciones(pilotos) {
     if (!pilotos || !Array.isArray(pilotos)) return;
 
