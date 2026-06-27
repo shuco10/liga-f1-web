@@ -941,41 +941,34 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* 1. Pasamos a auto para que la tabla respire según el contenido */
+/* --- RECUPERAMOS TU ESTILO ORIGINAL --- */
 .pilotos-table { 
-    table-layout: auto !important; 
+    table-layout: fixed !important; 
     width: 100%; 
-    border-collapse: collapse;
 }
 
-/* 2. Damos espacio flexible a la escudería */
+/* Reducimos columnas laterales al mínimo absoluto para dar espacio a la escudería */
+.pilotos-table .col-pos { width: 4% !important; }
+.pilotos-table .col-piloto { width: 18% !important; }
+.pilotos-table .col-plataforma { width: 7% !important; }
+.pilotos-table .col-vics { width: 5% !important; }
+.pilotos-table .col-podios { width: 5% !important; }
+.pilotos-table .col-puntos { width: 8% !important; }
+
+/* La escudería se queda con todo el hueco restante (aprox 53%) */
 .pilotos-table .col-escuderia { 
-    width: 35% !important; /* Le damos un 35% de base, pero crecerá si lo necesita */
-    white-space: normal !important; /* Permite que salte de línea */
+    width: 53% !important; 
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
-/* 3. Ajustamos el div interno para que no se comprima */
-.pilotos-table .col-escuderia div {
-    display: flex !important;
-    align-items: center;
-    width: 100% !important;
-    flex-wrap: wrap; /* ¡ESTO ES LA CLAVE! Permite que el texto baje si no cabe */
-}
-
-/* 4. Aseguramos que el nombre nunca se corte con puntos y ocupe su espacio */
+/* ESTE ES EL TRUCO: Reducir el texto de la escudería solo cuando es larguísimo */
 .nombre-escuderia {
-    display: block !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    font-size: 0.9em;
-    line-height: 1.1; /* Añadido para que si salta de línea se vea compacto */
-}
-
-/* 5. Aseguramos que el piloto no robe espacio innecesario */
-.pilotos-table .col-piloto {
-    white-space: normal !important;
-    min-width: 150px; /* Tamaño mínimo para que el piloto no se aplaste */
+    font-size: 0.85rem !important; /* Ligeramente más pequeño para que entre más texto */
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
