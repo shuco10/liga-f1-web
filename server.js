@@ -557,6 +557,19 @@ app.post('/api/reset-sanciones-totales', async (req, res) => {
 });
 
 
+app.post('/api/actualizar-pole', async (req, res) => {
+    const { piloto_id } = req.body;
+    try {
+        await pool.query("UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", [piloto_id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al sumar pole:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+
 
 
 app.listen(PORT, () => {
