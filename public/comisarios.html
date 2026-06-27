@@ -1211,6 +1211,7 @@ document.getElementById('form-avisos').addEventListener('submit', async (e) => {
             if (!respuesta.ok) throw new Error("Error en la respuesta del servidor");
         }
         alert("Avisos aplicados.");
+        e.target.reset();
     } catch (err) {
         console.error("Error:", err);
     }
