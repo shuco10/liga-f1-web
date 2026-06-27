@@ -494,20 +494,20 @@ app.post('/api/guardar-resultado', async (req, res) => {
     // 1. Extraemos los datos
     const { circuito_id, piloto_id, posicion, escuderia_id, es_pole } = req.body;
     
-    // 2. Log de diagnóstico (esto debe aparecer en los logs de Render)
+    // 2. Log de diagnóstico mejorado
     console.log("--- DEBUG GUARDAR RESULTADO ---");
     console.log("Datos recibidos:", { piloto_id, es_pole, tipo_es_pole: typeof es_pole });
 
     try {
-        // --- AQUÍ IRÍAN TUS OTRAS QUERIES DE PUNTOS ---
+        // [Aquí irían tus queries de resultados, puntos_totales y escuderías...]
         
-        // 3. Verificación robusta del booleano (acepta true como booleano o como string)
-        const esPoleReal = es_pole === true || es_pole === 'true';
+        // 3. Verificación robusta que acepta: true, 'true', o 'si'
+        const esPoleReal = (es_pole === true || es_pole === 'true' || es_pole === 'si');
 
         if (esPoleReal) {
             console.log("PROCESANDO POLE PARA PILOTO ID:", piloto_id);
             
-            // Usamos COALESCE por seguridad, aunque ya hayamos puesto el DEFAULT 0
+            // Usamos COALESCE por seguridad total
             const result = await pool.query(
                 "UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", 
                 [piloto_id]
@@ -517,9 +517,11 @@ app.post('/api/guardar-resultado', async (req, res) => {
             
             if (result.rowCount === 0) {
                 console.log("AVISO: No se encontró el piloto en la base de datos.");
+            } else {
+                console.log("¡ÉXITO! Pole sumada correctamente al piloto ID:", piloto_id);
             }
         } else {
-            console.log("INFO: es_pole es false o no se marcó.");
+            console.log("INFO: es_pole es falso o no se seleccionó 'si'. Valor recibido:", es_pole);
         }
         
         res.json({ success: true });
