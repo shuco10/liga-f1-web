@@ -491,28 +491,40 @@ app.get('/api/escuderias', async (req, res) => {
 
 // --- RUTAS DE RESULTADOS ---
 app.post('/api/guardar-resultado', async (req, res) => {
+    // 1. Extraemos los datos
     const { circuito_id, piloto_id, posicion, escuderia_id, es_pole } = req.body;
     
-    // LOG inmediato: Si esto no sale en los logs de Render, no estamos llegando aquí.
-    console.log("RECIBIDO EN SERVIDOR:", { piloto_id, es_pole });
+    // 2. Log de diagnóstico (esto debe aparecer en los logs de Render)
+    console.log("--- DEBUG GUARDAR RESULTADO ---");
+    console.log("Datos recibidos:", { piloto_id, es_pole, tipo_es_pole: typeof es_pole });
 
     try {
-        // [Tus otras queries de resultados y puntos...]
+        // --- AQUÍ IRÍAN TUS OTRAS QUERIES DE PUNTOS ---
         
-        if (es_pole) {
-            console.log("PROCESANDO POLE PARA PILOTO:", piloto_id);
-            const result = await pool.query("UPDATE pilotos SET poles = poles + 1 WHERE id = $1", [piloto_id]);
+        // 3. Verificación robusta del booleano (acepta true como booleano o como string)
+        const esPoleReal = es_pole === true || es_pole === 'true';
+
+        if (esPoleReal) {
+            console.log("PROCESANDO POLE PARA PILOTO ID:", piloto_id);
+            
+            // Usamos COALESCE por seguridad, aunque ya hayamos puesto el DEFAULT 0
+            const result = await pool.query(
+                "UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", 
+                [piloto_id]
+            );
             
             console.log("FILAS AFECTADAS POR POLE:", result.rowCount);
             
             if (result.rowCount === 0) {
-                return res.status(400).json({ error: "No se encontró el piloto para la pole" });
+                console.log("AVISO: No se encontró el piloto en la base de datos.");
             }
+        } else {
+            console.log("INFO: es_pole es false o no se marcó.");
         }
         
         res.json({ success: true });
     } catch (err) {
-        console.error("ERROR DETECTADO:", err);
+        console.error("ERROR DETECTADO EN SERVIDOR:", err);
         res.status(500).json({ error: err.message });
     }
 });
