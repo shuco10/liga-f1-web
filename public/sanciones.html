@@ -112,8 +112,12 @@ function renderizarSanciones(pilotos) {
     body.innerHTML = "";
 
     pilotos.forEach(p => {
+        // --- DEPURACIÓN: Añade esta línea para ver qué recibe realmente el navegador ---
+        console.log(`Piloto: ${p.gamertag} | BD_PuntosSancion: ${p.puntos_sancion} | BD_Avisos: ${p.total_avisos}`);
+        //
+        
         // CÁLCULOS
-        const totalAvisos = Number(p.total_avisos) || 0; 
+        const totalAvisos = Number(p.total_avisos) || 0;
         
         // 1. Penalizaciones automáticas (3 avisos = 1 penalización)
         const numPenalizacionesAutomaticas = Math.floor(totalAvisos / 3);
