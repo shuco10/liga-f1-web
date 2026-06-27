@@ -781,13 +781,16 @@ async function editarResultado(id) {
         
 
 async function guardarResultado() {
+    const esPoleMarcada = document.getElementById('es_pole').checked; // Capturamos el estado
+    
     const data = {
-        id_gp: document.getElementById('select-circuito-admin').value,    // Antes era circuito_id
-        id_piloto: document.getElementById('select-piloto-admin').value, // Antes era piloto_id
+        id_piloto: document.getElementById('select-piloto-admin').value,
+        id_gp: document.getElementById('select-circuito-admin').value,
         posicion: parseInt(document.getElementById('input-posicion').value),
-        es_pole: document.getElementById('es_pole').checked,
-        // Si tu backend usa escuderia_id, asegúrate de añadirlo aquí si no lo enviabas
+        es_pole: esPoleMarcada // Enviamos el booleano
     };
+
+    console.log("Enviando al servidor:", data); // Mira esto en la consola F12
 
     const res = await fetch('/api/guardar-resultado', {
         method: 'POST',
