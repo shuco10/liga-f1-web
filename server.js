@@ -492,42 +492,43 @@ app.get('/api/escuderias', async (req, res) => {
 
 // --- RUTAS DE RESULTADOS ---
 app.post('/api/guardar-resultado', async (req, res) => {
-    // 1. Extraemos los datos
-    const { circuito_id, piloto_id, posicion, escuderia_id, es_pole } = req.body;
+    // Extraemos es_pole también, asegurándonos de recibirlo desde el body
+    const { id_piloto, id_gp, posicion, escuderia_id, es_pole } = req.body;
     
-    // 2. Log de diagnóstico mejorado
-    console.log("--- DEBUG GUARDAR RESULTADO ---");
-    console.log("Datos recibidos:", { piloto_id, es_pole, tipo_es_pole: typeof es_pole });
+    // Tabla de puntos
+    const puntosPorPosicion = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
+    const puntos = puntosPorPosicion[posicion] || 0;
 
     try {
-        // [Aquí irían tus queries de resultados, puntos_totales y escuderías...]
-        
-        // 3. Verificación robusta que acepta: true, 'true', o 'si'
-        const esPoleReal = (es_pole === true || es_pole === 'true' || es_pole === 'si');
+        // 1. Guardar el resultado en la tabla general
+        await pool.query(
+            "INSERT INTO resultados (id_piloto, id_gp, posicion, puntos, escuderia_puntos) VALUES ($1, $2, $3, $4, $5)",
+            [id_piloto, id_gp, posicion, puntos, escuderia_id]
+        );
 
-        if (esPoleReal) {
-            console.log("PROCESANDO POLE PARA PILOTO ID:", piloto_id);
-            
-            // Usamos COALESCE por seguridad total
-            const result = await pool.query(
-                "UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", 
-                [piloto_id]
-            );
-            
-            console.log("FILAS AFECTADAS POR POLE:", result.rowCount);
-            
-            if (result.rowCount === 0) {
-                console.log("AVISO: No se encontró el piloto en la base de datos.");
-            } else {
-                console.log("¡ÉXITO! Pole sumada correctamente al piloto ID:", piloto_id);
-            }
-        } else {
-            console.log("INFO: es_pole es falso o no se seleccionó 'si'. Valor recibido:", es_pole);
+        // 2. Sumar al Piloto
+        await pool.query("UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, id_piloto]);
+
+        // 3. Sumar a la Escudería (si tiene id)
+        if (escuderia_id) {
+            await pool.query("UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, escuderia_id]);
         }
+
+        // 4. Lógica de la Pole (integrada y sin quitar nada)
+        // Convertimos el valor recibido a booleano real
+        const esPoleReal = (es_pole === true || es_pole === 'true' || es_pole === 'si');
         
-        res.json({ success: true });
+        if (esPoleReal) {
+            await pool.query(
+                "UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", 
+                [id_piloto]
+            );
+            console.log("Pole sumada correctamente al piloto:", id_piloto);
+        }
+
+        res.json({ success: true, puntos: puntos });
     } catch (err) {
-        console.error("ERROR DETECTADO EN SERVIDOR:", err);
+        console.error("Error en guardar-resultado:", err);
         res.status(500).json({ error: err.message });
     }
 });
