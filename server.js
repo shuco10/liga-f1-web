@@ -551,6 +551,24 @@ app.post('/api/aplicar-avisos', async (req, res) => {
 });
 
 
+app.post('/api/reset-sanciones-totales', async (req, res) => {
+    try {
+        // 1. Borramos todos los avisos registrados
+        await pool.query("DELETE FROM registro_avisos");
+        // 2. Reseteamos puntos de sanción y penalizaciones en la tabla pilotos
+        await pool.query("UPDATE pilotos SET puntos_sancion = 0, penalizacion_tiempo = 0");
+        
+        console.log("Sistema de sanciones reseteado por el admin");
+        res.json({ success: true });
+    } catch (err) { 
+        console.error("Error al resetear sanciones:", err); 
+        res.status(500).json({ success: false }); 
+    }
+});
+
+
+
+
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
