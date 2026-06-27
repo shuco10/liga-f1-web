@@ -941,14 +941,13 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- TABLA: PILOTOS (Prioridad Escudería) --- */
-/* --- AJUSTE DEFINITIVO: Sin puntos suspensivos y con auto-ajuste --- */
+/* --- AJUSTE FINAL: ESTRUCTURA RÍGIDA, CONTENIDO FLEXIBLE --- */
 .pilotos-table { 
     table-layout: fixed; 
     width: 100%; 
 }
 
-/* Anchos ajustados para liberar espacio máximo a la escudería */
+/* Anchos definidos */
 .pilotos-table .col-pos { width: 5% !important; }
 .pilotos-table .col-piloto { width: 14% !important; }
 .pilotos-table .col-plataforma { width: 7% !important; }
@@ -956,18 +955,30 @@ table tr td:nth-child(2) {
 .pilotos-table .col-podios { width: 5% !important; }
 .pilotos-table .col-puntos { width: 9% !important; }
 
-/* La escudería con comportamiento flexible */
+/* La escudería ahora obliga al contenido a adaptarse */
 .pilotos-table .col-escuderia { 
     width: 55% !important; 
+    padding: 8px 5px !important;
+}
+
+/* ESTO ES LO QUE HACE QUE EL NOMBRE NO SE CORTE */
+.nombre-escuderia {
+    display: block !important;
+    line-height: 1.1 !important;
+    font-size: 0.85rem !important;
     
-    /* Cambios clave para que se vea el nombre completo */
-    white-space: normal !important; /* Permite que el texto salte de línea */
-    overflow: visible !important;   /* Asegura que no se oculte nada */
-    text-overflow: clip !important; /* Elimina los puntos suspensivos */
-    
-    line-height: 1.1;               /* Ajusta el interlineado para que sea compacto */
-    padding: 8px 5px !important;    /* Padding ajustado para ganar espacio */
-    font-size: 0.85rem;             /* Ligeramente más pequeño para mejor lectura */
+    /* Permite que el nombre ocupe hasta 2 líneas sin cortarse */
+    white-space: normal !important; 
+    word-break: break-word !important; /* Rompe la palabra si es demasiado larga */
+    overflow: visible !important;
+}
+
+/* Opcional: Ajuste del contenedor interno para no forzar el corte */
+.pilotos-table .col-escuderia div {
+    display: flex !important;
+    align-items: center;
+    width: 100% !important;
+    overflow: visible !important; /* Cambiado de hidden a visible */
 }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
