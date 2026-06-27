@@ -155,6 +155,7 @@ app.get('/api/lista-de-pilotos', async (req, res) => {
                 p.puntos_sancion, 
                 p.numero_piloto, 
                 p.podios, 
+                p.poles,
                 p.escuderia_id, 
                 p.foto_url, 
                 p.es_reserva, 
