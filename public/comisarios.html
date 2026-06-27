@@ -171,9 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="form-group"><label>Circuito</label><select id="select-circuito-admin" class="form-control"></select></div>
         <div class="form-group"><label>Piloto</label><select id="select-piloto-admin" class="form-control"></select></div>
         <div class="form-group"><label>Posición</label><input type="number" id="input-posicion" class="form-control" placeholder="Posición final"></div>
-        <label>
-        <input type="checkbox" id="es_pole"> ¿Es Pole Position?
-        </label>
+        <select id="es_pole">
+            <option value="no">No</option>
+            <option value="si">Sí</option>
+        </select>
         <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-admin btn-admin-primary">GUARDAR RESULTADO</button>
     </div>
 
@@ -779,33 +780,43 @@ async function editarResultado(id) {
 
         
 
-    async function guardarResultado() {
-        const data = {
-            circuito_id: document.getElementById('select-circuito-admin').value,
-            piloto_id: document.getElementById('select-piloto-admin').value,
-            posicion: parseInt(document.getElementById('input-posicion').value),
-            es_pole: document.getElementById('es_pole').checked
-        };
+async function guardarResultado() {
+    // Obtenemos el valor del nuevo desplegable
+    const valorPole = document.getElementById('es_pole').value; // Ahora es "si" o "no"
 
-        console.log("Datos enviados al servidor:", data);    // <-- MIRA LA CONSOLA DEL NAVEGADOR (F12)
+    const data = {
+        circuito_id: document.getElementById('select-circuito-admin').value,
+        piloto_id: document.getElementById('select-piloto-admin').value,
+        posicion: parseInt(document.getElementById('input-posicion').value),
+        // Convertimos el "si" a true para que el servidor lo procese como booleano
+        es_pole: valorPole === 'si' 
+    };
+
+    console.log("Datos enviados al servidor:", data); 
+    
+    const res = await fetch('/api/guardar-resultado', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    if(res.ok) {
+        alert("Resultado guardado y puntos actualizados");
         
-        const res = await fetch('/api/guardar-resultado', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
-        if(res.ok) {
-            alert("Resultado guardado y puntos actualizados");
-            if(document.getElementById('select-circuito-admin')) document.getElementById('select-circuito-admin').value = "";
-            if(document.getElementById('select-piloto-admin')) document.getElementById('select-piloto-admin').value = "";
-            if(document.getElementById('input-posicion')) document.getElementById('input-posicion').value = "";
-            document.getElementById('es_pole').checked = false;
-            cargarTodosLosDatos(); 
-            cargarCircuitos(); 
-        } else {
-            alert("Error al guardar el resultado");
-        }
+        // Limpieza de campos
+        if(document.getElementById('select-circuito-admin')) document.getElementById('select-circuito-admin').value = "";
+        if(document.getElementById('select-piloto-admin')) document.getElementById('select-piloto-admin').value = "";
+        if(document.getElementById('input-posicion')) document.getElementById('input-posicion').value = "";
+        
+        // Resetear el select a la opción por defecto ("no")
+        document.getElementById('es_pole').value = "no"; 
+
+        cargarTodosLosDatos(); 
+        cargarCircuitos(); 
+    } else {
+        alert("Error al guardar el resultado");
     }
+}
 
 async function sumarPuntosManual() {
         const elEscuderia = document.getElementById('select-escuderia-puntos') || document.getElementById('select-escuderia');
