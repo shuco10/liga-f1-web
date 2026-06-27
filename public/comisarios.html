@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="form-group"><label>Circuito</label><select id="select-circuito-admin" class="form-control"></select></div>
         <div class="form-group"><label>Piloto</label><select id="select-piloto-admin" class="form-control"></select></div>
         <div class="form-group"><label>Posición</label><input type="number" id="input-posicion" class="form-control" placeholder="Posición final"></div>
+        <input type="checkbox" id="es_pole">
         <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-admin btn-admin-primary">GUARDAR RESULTADO</button>
     </div>
 
@@ -776,28 +777,48 @@ async function editarResultado(id) {
 
         
 
-    async function guardarResultado() {
-        const data = {
-            circuito_id: document.getElementById('select-circuito-admin').value,
-            piloto_id: document.getElementById('select-piloto-admin').value,
-            posicion: parseInt(document.getElementById('input-posicion').value)
-        };
-        const res = await fetch('/api/guardar-resultado', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
-        });
-        if(res.ok) {
-            alert("Resultado guardado y puntos actualizados");
-            if(document.getElementById('select-circuito-admin')) document.getElementById('select-circuito-admin').value = "";
-            if(document.getElementById('select-piloto-admin')) document.getElementById('select-piloto-admin').value = "";
-            if(document.getElementById('input-posicion')) document.getElementById('input-posicion').value = "";
-            cargarTodosLosDatos(); 
-            cargarCircuitos(); 
-        } else {
-            alert("Error al guardar el resultado");
+async function guardarResultado() {
+    // 1. Datos para la carrera
+    const data = {
+        circuito_id: document.getElementById('select-circuito-admin').value,
+        piloto_id: document.getElementById('select-piloto-admin').value,
+        posicion: parseInt(document.getElementById('input-posicion').value)
+    };
+
+    // 2. Guardar resultado de la carrera
+    const res = await fetch('/api/guardar-resultado', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+        // 3. Si se guardó, verificamos si hay que sumar pole (usando el ID del checkbox)
+        const esPoleMarcado = document.getElementById('es_pole') ? document.getElementById('es_pole').checked : false;
+
+        if (esPoleMarcado) {
+            await fetch('/api/actualizar-pole', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ piloto_id: data.piloto_id })
+            });
+            console.log("Pole procesada");
         }
+
+        alert("Resultado guardado y puntos actualizados");
+        
+        // Limpieza de campos
+        if(document.getElementById('select-circuito-admin')) document.getElementById('select-circuito-admin').value = "";
+        if(document.getElementById('select-piloto-admin')) document.getElementById('select-piloto-admin').value = "";
+        if(document.getElementById('input-posicion')) document.getElementById('input-posicion').value = "";
+        if(document.getElementById('es_pole')) document.getElementById('es_pole').checked = false; // Desmarcamos el checkbox
+
+        cargarTodosLosDatos(); 
+        cargarCircuitos(); 
+    } else {
+        alert("Error al guardar el resultado");
     }
+}
 
 async function sumarPuntosManual() {
         const elEscuderia = document.getElementById('select-escuderia-puntos') || document.getElementById('select-escuderia');
