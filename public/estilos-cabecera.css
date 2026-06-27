@@ -942,25 +942,32 @@ table tr td:nth-child(2) {
 } 
 
 /* --- TABLA: PILOTOS (Prioridad Escudería) --- */
+/* --- AJUSTE DEFINITIVO: Sin puntos suspensivos y con auto-ajuste --- */
 .pilotos-table { 
     table-layout: fixed; 
     width: 100%; 
 }
 
-/* Forzamos los anchos con !important para que nada más pueda con ellos */
+/* Anchos ajustados para liberar espacio máximo a la escudería */
 .pilotos-table .col-pos { width: 5% !important; }
-.pilotos-table .col-piloto { width: 15% !important; }
-.pilotos-table .col-plataforma { width: 8% !important; }
-.pilotos-table .col-vics { width: 6% !important; }
-.pilotos-table .col-podios { width: 6% !important; }
-.pilotos-table .col-puntos { width: 10% !important; }
+.pilotos-table .col-piloto { width: 14% !important; }
+.pilotos-table .col-plataforma { width: 7% !important; }
+.pilotos-table .col-vics { width: 5% !important; }
+.pilotos-table .col-podios { width: 5% !important; }
+.pilotos-table .col-puntos { width: 9% !important; }
 
-/* La escudería se lleva todo el resto */
+/* La escudería con comportamiento flexible */
 .pilotos-table .col-escuderia { 
-    width: 50% !important; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    width: 55% !important; 
+    
+    /* Cambios clave para que se vea el nombre completo */
+    white-space: normal !important; /* Permite que el texto salte de línea */
+    overflow: visible !important;   /* Asegura que no se oculte nada */
+    text-overflow: clip !important; /* Elimina los puntos suspensivos */
+    
+    line-height: 1.1;               /* Ajusta el interlineado para que sea compacto */
+    padding: 8px 5px !important;    /* Padding ajustado para ganar espacio */
+    font-size: 0.85rem;             /* Ligeramente más pequeño para mejor lectura */
 }
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
@@ -986,3 +993,10 @@ table tr td:nth-child(2) {
     text-align: left !important;
 }
 
+/* Forzar a que el texto de la escudería sea multilínea y no se corte nunca */
+.nombre-escuderia {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    display: block !important; /* Asegura que tome el espacio necesario */
+}
