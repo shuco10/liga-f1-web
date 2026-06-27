@@ -941,27 +941,34 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- AJUSTE DE ANCHOS PARA PILOTOS --- */
-.pilotos-table { table-layout: fixed; width: 100%; }
+/* 1. Forzamos el layout a fijo para controlar cada píxel */
+.pilotos-table { 
+    table-layout: fixed; 
+    width: 100%; 
+}
 
-/* Reducimos plataforma al mínimo posible (ya que solo dice PC/PS5) */
-.pilotos-table .col-plataforma { width: 6%; } 
+/* 2. Reducimos TODO lo que no sea Escudería al mínimo absoluto */
+.pilotos-table .col-pos { width: 4% !important; }
+.pilotos-table .col-piloto { width: 12% !important; }
+.pilotos-table .col-plataforma { width: 6% !important; } /* Esto es lo que más molesta */
+.pilotos-table .col-vics { width: 5% !important; }
+.pilotos-table .col-podios { width: 5% !important; }
+.pilotos-table .col-puntos { width: 8% !important; }
 
-/* Le damos a la Escudería todo el espacio que hemos quitado a Plataforma */
+/* 3. Escudería se queda con TODO el espacio restante */
 .pilotos-table .col-escuderia { 
-    width: 48%; /* Ampliado para que el nombre quepa mejor */
+    width: 60% !important; /* ¡Ahora es masiva! */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding-left: 10px;
 }
 
-/* El resto de columnas se mantienen para no descuadrar */
-.pilotos-table .col-pos { width: 5%; }
-.pilotos-table .col-piloto { width: 15%; }
-.pilotos-table .col-vics { width: 6%; }
-.pilotos-table .col-podios { width: 6%; }
-.pilotos-table .col-puntos { width: 10%; }
+/* 4. IMPORTANTE: Asegúrate de que no haya otros estilos bloqueando */
+.pilotos-table td.col-escuderia {
+    display: table-cell;
+    max-width: 0; /* Esto permite que el texto sepa que debe respetar el ancho */
+}
 
 /* --- TABLA: ESCUDERÍAS (CONSTRUCTORES) --- */
 .constructores-table { table-layout: fixed; width: 100%; }
