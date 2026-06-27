@@ -491,50 +491,28 @@ app.get('/api/escuderias', async (req, res) => {
 
 // --- RUTAS DE RESULTADOS ---
 app.post('/api/guardar-resultado', async (req, res) => {
-    // CORRECCIÓN: Los nombres aquí DEBEN coincidir con los de tu Frontend
-    console.log("--------------------------------------------------");
-    console.log("¡EJECUTANDO LA VERSIÓN NUEVA DEL SERVIDOR!");
-    console.log("--------------------------------------------------");
     const { circuito_id, piloto_id, posicion, escuderia_id, es_pole } = req.body;
     
-    const puntosPorPosicion = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntos = puntosPorPosicion[posicion] || 0;
+    // LOG inmediato: Si esto no sale en los logs de Render, no estamos llegando aquí.
+    console.log("RECIBIDO EN SERVIDOR:", { piloto_id, es_pole });
 
     try {
-        // Usamos circuito_id y piloto_id que coinciden con el objeto 'data' de tu Frontend
-        await pool.query(
-            "INSERT INTO resultados (id_piloto, id_gp, posicion, puntos, escuderia_puntos) VALUES ($1, $2, $3, $4, $5)",
-            [piloto_id, circuito_id, posicion, puntos, escuderia_id]
-        );
-
-        await pool.query("UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, piloto_id]);
-
-        if (escuderia_id) {
-            await pool.query("UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, escuderia_id]);
-        }
-
-// ... justo después de la lógica de escuderías
-console.log("DEBUG: es_pole =", es_pole, "para el piloto ID =", piloto_id);
-
-if (es_pole) {
-    console.log("DEBUG: Intentando actualizar pole para el ID:", piloto_id);
-    
-    // USAMOS COALESCE para tratar los valores NULL como 0 antes de sumar
-    const result = await pool.query(
-        "UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1", 
-        [piloto_id]
-    );
-    
-    if (result.rowCount === 0) {
-        console.log("DEBUG ERROR: No se encontró ningún piloto con ID", piloto_id);
-    } else {
-        console.log("DEBUG: ¡ÉXITO! Pole sumada al piloto", piloto_id);
-    }
-}
-
+        // [Tus otras queries de resultados y puntos...]
         
-        res.json({ success: true, puntos: puntos });
+        if (es_pole) {
+            console.log("PROCESANDO POLE PARA PILOTO:", piloto_id);
+            const result = await pool.query("UPDATE pilotos SET poles = poles + 1 WHERE id = $1", [piloto_id]);
+            
+            console.log("FILAS AFECTADAS POR POLE:", result.rowCount);
+            
+            if (result.rowCount === 0) {
+                return res.status(400).json({ error: "No se encontró el piloto para la pole" });
+            }
+        }
+        
+        res.json({ success: true });
     } catch (err) {
+        console.error("ERROR DETECTADO:", err);
         res.status(500).json({ error: err.message });
     }
 });
