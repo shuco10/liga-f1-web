@@ -491,40 +491,29 @@ app.get('/api/escuderias', async (req, res) => {
 
 // --- RUTAS DE RESULTADOS ---
 app.post('/api/guardar-resultado', async (req, res) => {
-    // 1. Recibimos los datos y añadimos log para depurar
-    console.log("Datos recibidos en el servidor:", req.body);
+    const { id_piloto, id_gp, posicion, escuderia_id } = req.body;
     
-    // IMPORTANTE: Asegúrate de que los nombres coinciden con los que envías desde el frontend
-    const { id_piloto, id_gp, posicion, escuderia_id, es_pole } = req.body;
-    
+    // Tabla de puntos (igual que antes)
     const puntosPorPosicion = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntos = puntosPorPosicion[parseInt(posicion)] || 0;
+    const puntos = puntosPorPosicion[posicion] || 0;
 
     try {
-        // 2. Guardar el resultado en la tabla general
+        // 1. Guardar el resultado en la tabla general
         await pool.query(
             "INSERT INTO resultados (id_piloto, id_gp, posicion, puntos, escuderia_puntos) VALUES ($1, $2, $3, $4, $5)",
             [id_piloto, id_gp, posicion, puntos, escuderia_id]
         );
 
-        // 3. Sumar al Piloto (Puntos totales)
+        // 2. Sumar al Piloto
         await pool.query("UPDATE pilotos SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, id_piloto]);
 
-        // 4. LÓGICA DE LA POLE: Se asegura de que es_pole sea un booleano (true/false)
-        // Usamos !! para convertir cualquier valor recibido a un booleano real
-        if (!!es_pole === true) {
-            console.log("Sumando pole al piloto:", id_piloto);
-            await pool.query("UPDATE pilotos SET poles = poles + 1 WHERE id = $1", [id_piloto]);
-        }
-
-        // 5. Sumar a la Escudería (si tiene id)
+        // 3. Sumar a la Escudería (si tiene id)
         if (escuderia_id) {
             await pool.query("UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, escuderia_id]);
         }
 
         res.json({ success: true, puntos: puntos });
     } catch (err) {
-        console.error("Error en guardar-resultado:", err);
         res.status(500).json({ error: err.message });
     }
 });
