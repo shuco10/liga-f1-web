@@ -571,6 +571,29 @@ app.post('/api/reset-sanciones-totales', async (req, res) => {
 
 
 
+app.post('/api/actualizar-pole', async (req, res) => {
+    const { piloto_id } = req.body;
+    
+    console.log("RECIBIDA SOLICITUD DE POLE PARA ID:", piloto_id);
+
+    try {
+        const query = "UPDATE pilotos SET poles = poles + 1 WHERE id = $1 RETURNING poles";
+        const result = await pool.query(query, [piloto_id]);
+
+        if (result.rowCount > 0) {
+            console.log("POLE SUMADA CORRECTAMENTE. Nuevo valor:", result.rows[0].poles);
+            res.json({ success: true, nuevo_valor: result.rows[0].poles });
+        } else {
+            console.log("FALLO: Piloto no encontrado:", piloto_id);
+            res.status(404).json({ error: "Piloto no encontrado" });
+        }
+    } catch (err) {
+        console.error("ERROR EN API POLE:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
