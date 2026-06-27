@@ -492,6 +492,9 @@ app.get('/api/escuderias', async (req, res) => {
 // --- RUTAS DE RESULTADOS ---
 app.post('/api/guardar-resultado', async (req, res) => {
     // CORRECCIÓN: Los nombres aquí DEBEN coincidir con los de tu Frontend
+    console.log("--------------------------------------------------");
+    console.log("¡EJECUTANDO LA VERSIÓN NUEVA DEL SERVIDOR!");
+    console.log("--------------------------------------------------");
     const { circuito_id, piloto_id, posicion, escuderia_id, es_pole } = req.body;
     
     const puntosPorPosicion = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
