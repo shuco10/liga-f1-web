@@ -941,21 +941,21 @@ table tr td:nth-child(2) {
     border-radius: 0 10px 10px 0; 
 } 
 
-/* --- AJUSTE AGRESIVO PARA GANAR ESPACIO EN ESCUDERÍA --- */
+/* --- AJUSTE MÁXIMO PARA ESCUDERÍA --- */
 .pilotos-table { table-layout: fixed; width: 100%; }
 
-/* Columnas de estadísticas (muy compactas) */
+/* Columnas de estadísticas */
 .pilotos-table .col-pos { width: 5%; }
 .pilotos-table .col-vics { width: 6%; }
 .pilotos-table .col-podios { width: 6%; }
 .pilotos-table .col-puntos { width: 8%; }
 .pilotos-table .col-plataforma { width: 8%; }
 
-/* Columnas de contenido (ajustadas para maximizar espacio) */
-.pilotos-table .col-piloto { width: 15%; }    /* Reducimos para liberar espacio */
-.pilotos-table .col-escuderia { width: 52%; } /* ¡Casi toda la parte central para la escudería! */
+/* Columnas de contenido (PILOTO REDUCIDO AL MÍNIMO, ESCUDERÍA AL MÁXIMO) */
+.pilotos-table .col-piloto { width: 10%; }    
+.pilotos-table .col-escuderia { width: 57%; } 
 
-/* Aseguramos que el texto no se corte si el espacio es suficiente */
+/* Aseguramos la alineación */
 .pilotos-table .col-escuderia {
     white-space: nowrap;
     overflow: hidden;
