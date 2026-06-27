@@ -521,27 +521,34 @@ app.post('/api/guardar-resultado', async (req, res) => {
 
 app.post('/api/aplicar-avisos', async (req, res) => {
     const { piloto_id } = req.body;
-    console.log("DEBUG: Recibido ID de piloto:", piloto_id); // <--- CHIVATO 1
 
     try {
-        const insertRes = await pool.query('INSERT INTO registro_avisos (id_piloto) VALUES ($1)', [piloto_id]);
-        console.log("DEBUG: Fila insertada correctamente."); // <--- CHIVATO 2
+        // 1. Insertar el aviso
+        await pool.query('INSERT INTO registro_avisos (id_piloto) VALUES ($1)', [piloto_id]);
 
+        // 2. Contar cuántos avisos tiene ahora
         const countRes = await pool.query('SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = $1', [piloto_id]);
-        console.log("DEBUG: Conteo obtenido de la BD:", countRes.rows[0].count); // <--- CHIVATO 3
-        
         const totalAvisos = parseInt(countRes.rows[0].count);
-        const segundosPenalizacion = Math.floor(totalAvisos / 3) * 5;
+        
+        // 3. Calcular nivel de sanción (ej: 3 avisos = 1, 6 avisos = 2)
+        const nivelSancion = Math.floor(totalAvisos / 3);
 
-        await pool.query('UPDATE pilotos SET penalizacion_tiempo = $1 WHERE id = $2', [segundosPenalizacion, piloto_id]);
+        // 4. Guardar nivel de sanción y RESTAR 1 punto de superlicencia por CADA sanción nueva.
+        // OJO: Si usas 'puntos_sancion' para restar puntos, haremos:
+        await pool.query(`
+            UPDATE pilotos 
+            SET penalizacion_tiempo = $1, 
+                puntos_sancion = $2 
+            WHERE id = $3`, 
+            [nivelSancion, nivelSancion, piloto_id]
+        );
 
-        res.status(200).json({ totalAvisos, segundosPenalizacion });
+        res.status(200).json({ totalAvisos, nivelSancion });
     } catch (err) { 
-        console.error("ERROR CRÍTICO:", err); 
+        console.error("ERROR AL APLICAR AVISO:", err); 
         res.status(500).send("Error"); 
     }
 });
-
 
 
 app.listen(PORT, () => {
