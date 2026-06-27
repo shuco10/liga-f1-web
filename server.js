@@ -510,9 +510,12 @@ app.post('/api/guardar-resultado', async (req, res) => {
             await pool.query("UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2", [puntos, escuderia_id]);
         }
 
-        if (es_pole) {
-            await pool.query("UPDATE pilotos SET poles = poles + 1 WHERE id = $1", [piloto_id]);
-        }
+console.log("DEBUG: es_pole =", es_pole, "para el piloto ID =", piloto_id);
+
+if (es_pole) {
+    const result = await pool.query("UPDATE pilotos SET poles = poles + 1 WHERE id = $1", [piloto_id]);
+    console.log("DEBUG: Filas actualizadas en BD =", result.rowCount);
+}
         
         res.json({ success: true, puntos: puntos });
     } catch (err) {
