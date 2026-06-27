@@ -113,24 +113,20 @@ function renderizarSanciones(pilotos) {
 
     pilotos.forEach(p => {
 // CÁLCULOS
-// CÁLCULOS
-const totalAvisos = Number(p.total_avisos) || 0; 
-const puntosSancionManuales = Number(p.puntos_sancion) || 0;
+        const totalAvisos = Number(p.total_avisos) || 0; 
+        const puntosSancionManuales = Number(p.puntos_sancion) || 0;
 
-// 1. Penalizaciones automáticas (3 avisos = 1 punto)
-const numPenalizaciones = Math.floor(totalAvisos / 3);
+        // 1. Penalizaciones automáticas (3 avisos = 1 punto)
+        const numPenalizaciones = Math.floor(totalAvisos / 3);
 
-// 2. Licencia: 12 - (Manuales + Automáticos)
-// Forzamos los tipos a Number para evitar errores de texto
-const totalPenalizaciones = Number(puntosSancionManuales) + Number(numPenalizaciones);
-const licenciaActual = Math.max(0, 12 - totalPenalizaciones);
+        // 2. Sumamos todo lo que hay que restar
+        const totalRestar = puntosSancionManuales + numPenalizaciones;
 
-// 3. LICENCIA ACTUAL
-// Para que Jacinto pase de 6 a 5 puntos al meterle 3 avisos, 
-// la resta debe ser: 12 - (6 manuales + 1 automático) = 5
-const licenciaActual = Math.max(0, 12 - (puntosSancionManuales + numPenalizaciones));
-
-const porcentaje = (licenciaActual / 12) * 100;
+        // 3. Cálculo único de licencia
+        const licenciaActual = Math.max(0, 12 - totalRestar);
+        
+        const porcentaje = (licenciaActual / 12) * 100;
+        // FIN DE CÁLCULOS
 
         // ESTILOS
         let color = "#2ecc71";
