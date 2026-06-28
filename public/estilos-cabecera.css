@@ -1080,27 +1080,35 @@ table tr td:nth-child(2) {
 .area-sancion    { grid-area: sancion; }
 .area-avisos     { grid-area: avisos; }
 
+/* 1. Este es el contenedor que agrupa cada FILA */
 .fila-cajones {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px; /* Reduce esto si quieres los bloques más juntos */
-    padding: 10px 20px; /* Reduce el padding superior/inferior para compactar */
+    justify-content: center; /* Centra los bloques horizontalmente */
+    flex-wrap: wrap;         /* Permite que bajen si no caben */
+    gap: 20px;
+    padding: 10px 0;         /* Espacio mínimo arriba y abajo para que no se peguen */
     width: 100%;
 }
 
+/* 2. Este es el estilo de cada tarjeta */
 .admin-bloque {
-    width: 350px;
+    width: 350px;           /* Ancho fijo para que sean uniformes */
     background-color: #2b2b2b;
     padding: 20px;
     border-radius: 8px;
     border: 1px solid #444;
-    height: auto; /* IMPORTANTE: Esto hace que el bloque mida solo lo que necesite su contenido */
     display: flex;
     flex-direction: column;
+    /* Esto es lo que hace que no se estiren innecesariamente hacia abajo */
+    height: fit-content;    
 }
 
-
+/* 3. Para móviles */
+@media (max-width: 900px) {
+    .admin-bloque {
+        width: 95%; /* Que ocupen casi todo el ancho en móvil */
+    }
+}
 
 
 
