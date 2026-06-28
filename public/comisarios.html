@@ -1242,16 +1242,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
+<!-- BOTON DEL PANICO RESET!!!!!!!!-->
 
-
-        <div id="zona-reset" class="admin-only" style="text-align: center; display: none; padding: 20px; background: #1a1a1a; border-radius: 8px; margin: 20px;">
-            <h3 style="color: #ff4444;">Zona de Peligro</h3>
-            <button onclick="confirmarReset()" style="background-color: #7a0000; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">
-                Limpiar Base de Datos
-            </button>
-        </div>
+<section class="caja-zona-peligro">
+    <h4>⚠️ Zona de Peligro</h4>
+    <p class="texto-advertencia">
+        Esta acción borrará permanentemente toda la base de datos de la temporada. 
+        No hay vuelta atrás. ¿Estás seguro de lo que estás haciendo?
+    </p>
     
-
+    <button class="btn-peligro" onclick="confirmarReset()">
+        Limpiar Base de Datos
+    </button>
+</section>
+    
+<!-- BOTON DEL PANICO RESET!!!!!!!!-->
 
 </div> 
     </div> 
