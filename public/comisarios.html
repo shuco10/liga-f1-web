@@ -1279,36 +1279,29 @@ async function asignarMundialEscuderia(escuderiaId) {
 
 <!-- BOTON MUNDIALES!!!!!!!!-->
 <div class="caja-mundiales-admin">
-<div class="caja-logros">
-    <h2 class="titulo-caja">🏆 Asignar Mundial a Piloto</h2>
+    <h2 class="titulo-caja-admin">🏆 Asignar Mundial a Piloto</h2>
     <div class="admin-bloque">
-        <label for="piloto">Seleccionar Piloto:</label>
-        <select id="select-piloto" name="piloto_id" class="input-select">
-            <option value="">-- Selecciona el Piloto --</option>
+        <label>Seleccionar Piloto:</label>
+        <select id="select-piloto" class="input-select-admin">
+            <option value="">-- Selecciona un piloto --</option>
         </select>
-        <button class="btn-oro btn-piloto" 
-                onclick="asignarMundialPiloto(document.getElementById('select-piloto').value)">
+        <button class="btn-piloto" onclick="asignarMundialPiloto(document.getElementById('select-piloto').value)">
             🏅 SUMAR MUNDIAL PILOTO
         </button>
     </div>
 </div>
-</div>
 
-<div class="caja-mundiales-admin">   
-<div class="caja-mundiales">
-    <h2 class="titulo-caja">🏎️ Gestión de Títulos (Constructores)</h2>
-    
+<div class="caja-mundiales-admin">
+    <h2 class="titulo-caja-admin">🏎️ Gestión de Títulos (Constructores)</h2>
     <div class="admin-bloque">
-        <label for="escuderia">Seleccionar Escudería:</label>
-        <select id="escuderia" name="escuderia_id" class="input-select">
+        <label>Seleccionar Escudería:</label>
+        <select id="select-escuderia" class="input-select-admin">
             <option value="">-- Elige Escudería --</option>
         </select>
-        <button class="btn-oro btn-escuderia" 
-                onclick="asignarMundialEscuderia(document.getElementById('escuderia').value)">
+        <button class="btn-escuderia" onclick="asignarMundialEscuderia(document.getElementById('select-escuderia').value)">
             🏆 SUMAR MUNDIAL CONSTRUCTOR
         </button>
     </div>
-</div>
 </div>
 
 
