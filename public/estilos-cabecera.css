@@ -1089,12 +1089,11 @@ table tr td:nth-child(2) {
 .area-avisos     { grid-area: avisos; }
 
 .fila-cajones {
-    display: flex;
-    justify-content: center; /* Esto centra los cajones, ¡aquí está el secreto! */
-    flex-wrap: wrap;        /* Si no caben en pantallas pequeñas, saltan de línea */
-    gap: 20px;
-    padding: 20px;
-    margin-bottom: 20px;    /* Espacio entre filas */
+    display: flex !important; /* El !important fuerza que se aplique sí o sí */
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+    border: 3px solid red !important; /* Si ves un borde rojo alrededor de cada grupo, sabrás que el CSS está funcionando */
 }
 
 .admin-bloque {
