@@ -1163,3 +1163,26 @@ table tr td:nth-child(2) {
     justify-content: center;
     gap: 20px;
 }
+
+.titulo-caja {
+    width: 100%;             /* IMPORTANTE: Esto crea el "intro" o salto de línea */
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 25px;     /* Este es el espacio entre el título y tus bloques */
+    font-size: 1.5rem;
+    border-bottom: 2px solid #444; 
+    padding-bottom: 10px;
+    display: block;          /* Asegura que ocupe todo el ancho */
+}
+
+
+
+
+
+
+
+
+
+
+
+
