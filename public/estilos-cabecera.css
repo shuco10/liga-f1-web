@@ -1060,7 +1060,24 @@ table tr td:nth-child(2) {
     }
 }
 
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    grid-template-areas: 
+        "resultados puntos ."          /* Fila 1: Resultado, Puntos, y el 3er hueco vacío (.) */
+        "inscribir editar eliminar"    /* Fila 2: Los tres bloques de pilotos */
+        "sancion avisos .";            /* Fila 3: Sanción, Avisos, y el 3er hueco vacío (.) */
+    gap: 20px;
+}
 
+/* Ahora asignamos cada clase a su "zona" definida arriba */
+.area-resultados { grid-area: resultados; }
+.area-puntos     { grid-area: puntos; }
+.area-inscribir  { grid-area: inscribir; }
+.area-editar     { grid-area: editar; }
+.area-eliminar   { grid-area: eliminar; }
+.area-sancion    { grid-area: sancion; }
+.area-avisos     { grid-area: avisos; }
 
 
 
