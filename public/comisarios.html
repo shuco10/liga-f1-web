@@ -180,10 +180,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h4>🏎️ - Registro de Puntos a Escudería - 🏎️ </h4>
                 <select id="select-escuderia" class="form-control">
                     <option value="">Selecciona Escudería...</option>
-                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
+                    <option value="1">Oracle Red Bull Racing</option>
+                    <option value="2">Scuderia Ferrari HP</option>
+                    <option value="3">Mercedes-AMG PETRONAS Formula One Team</option>
+                    <option value="4">McLaren Mastercard F1 Team</option>
+                    <option value="5">Aston Martin Aramco Formula One Team</option>
+                    <option value="6">BWT Alpine Formula One Team</option>
+                    <option value="7">Atlassian Williams F1 Team</option>
+                    <option value="8">Visa Cash App Racing Bulls Formula One Team</option>
+                    <option value="9">Audi Revolut F1 Team</option>
+                    <option value="10">TGR Haas F1 Team</option>
+                    <option value="11">Cadillac Formula 1 Team</option>
                 </select>
                 <input type="number" id="input-posicion-escuderia" class="form-control" placeholder="Posición final o puntos a restar">
                 <button onclick="sumarPuntosManual()" class="btn-admin btn-admin-accent" style="margin-top: 10px;">SUMAR / RESTAR PUNTOS A ESCUDERIA</button>
@@ -200,7 +207,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="form-group"><label>Enlace de Foto (Discord URL):</label><input type="text" id="foto_url" class="form-control"></div>
                     <div class="form-group"><label>Plataforma:</label><select id="plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option><option value="Xbox">XBOX</option></select></div>
                     <div class="form-group"><label>Escudería:</label><select id="escuderia_id" class="form-control">
-                        <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option><option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option><option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option><option value="10">Haas</option><option value="11">Cadillac</option>
+                    <option value="">Selecciona Escudería...</option>
+                    <option value="1">Oracle Red Bull Racing</option>
+                    <option value="2">Scuderia Ferrari HP</option>
+                    <option value="3">Mercedes-AMG PETRONAS Formula One Team</option>
+                    <option value="4">McLaren Mastercard F1 Team</option>
+                    <option value="5">Aston Martin Aramco Formula One Team</option>
+                    <option value="6">BWT Alpine Formula One Team</option>
+                    <option value="7">Atlassian Williams F1 Team</option>
+                    <option value="8">Visa Cash App Racing Bulls Formula One Team</option>
+                    <option value="9">Audi Revolut F1 Team</option>
+                    <option value="10">TGR Haas F1 Team</option>
+                    <option value="11">Cadillac Formula 1 Team</option>
                     </select></div>
                     <div class="form-group"><label>Rol del Piloto:</label><select id="es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
                     <button type="submit" class="btn-admin btn-admin-primary">Guardar Piloto</button>
@@ -217,7 +235,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="form-group"><label>Nuevo Enlace de Foto:</label><input type="text" id="edit-foto" class="form-control"></div>
                     <div class="form-group"><label>Nueva Plataforma:</label><select id="edit-plataforma" class="form-control"><option value="PC">PC</option><option value="PS5">PS5</option><option value="Xbox">XBOX</option></select></div>
                     <div class="form-group"><label>Nueva Escudería:</label><select id="edit-escuderia" class="form-control">
-                        <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option><option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option><option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option><option value="10">Haas</option><option value="11">Cadillac</option>
+                    <option value="">Selecciona Escudería...</option>
+                    <option value="1">Oracle Red Bull Racing</option>
+                    <option value="2">Scuderia Ferrari HP</option>
+                    <option value="3">Mercedes-AMG PETRONAS Formula One Team</option>
+                    <option value="4">McLaren Mastercard F1 Team</option>
+                    <option value="5">Aston Martin Aramco Formula One Team</option>
+                    <option value="6">BWT Alpine Formula One Team</option>
+                    <option value="7">Atlassian Williams F1 Team</option>
+                    <option value="8">Visa Cash App Racing Bulls Formula One Team</option>
+                    <option value="9">Audi Revolut F1 Team</option>
+                    <option value="10">TGR Haas F1 Team</option>
+                    <option value="11">Cadillac Formula 1 Team</option>
                     </select></div>
                     <div class="form-group"><label>Nuevo Rol:</label><select id="edit-es_reserva" class="form-control"><option value="0">Titular</option><option value="1">Reserva</option></select></div>
                     <button type="submit" class="btn-admin btn-admin-success">Actualizar Datos</button>
@@ -1294,19 +1323,19 @@ async function asignarMundialEscuderia(escuderiaId) {
 <div class="caja-mundiales-admin">
     <h2 class="titulo-caja-admin">🏎️ GESTIÓN DE TÍTULOS (CONSTRUCTORES)</h2>
     
-    <select id="select-escuderia" class="input-select-admin" style="margin-bottom: 20px;">
+<select id="select-escuderia" class="input-select-admin" style="margin-bottom: 20px;">
         <option value="">Selecciona Escudería...</option>
-        <option value="1">Red Bull Racing</option>
-        <option value="2">Ferrari</option>
-        <option value="3">Mercedes-AMG</option>
-        <option value="4">McLaren</option>
-        <option value="5">Aston Martin</option>
-        <option value="6">Alpine</option>
-        <option value="7">Williams</option>
-        <option value="8">Visa Cash App RB</option>
-        <option value="9">Audi</option>
-        <option value="10">Haas</option>
-        <option value="11">Cadillac</option>
+        <option value="1">Oracle Red Bull Racing</option>
+        <option value="2">Scuderia Ferrari HP</option>
+        <option value="3">Mercedes-AMG PETRONAS Formula One Team</option>
+        <option value="4">McLaren Mastercard F1 Team</option>
+        <option value="5">Aston Martin Aramco Formula One Team</option>
+        <option value="6">BWT Alpine Formula One Team</option>
+        <option value="7">Atlassian Williams F1 Team</option>
+        <option value="8">Visa Cash App Racing Bulls Formula One Team</option>
+        <option value="9">Audi Revolut F1 Team</option>
+        <option value="10">TGR Haas F1 Team</option>
+        <option value="11">Cadillac Formula 1 Team</option>
     </select>
     
     <button class="btn-escuderia" onclick="asignarMundialEscuderia(document.getElementById('select-escuderia').value)">
