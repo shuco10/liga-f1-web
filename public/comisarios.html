@@ -164,20 +164,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="caja-resultados">
             <h2 class="titulo-caja">📊 Gestión de Resultados 📊</h2>
-            <div class="admin-bloque">
-                <h3>🏁 - Cargar Resultados de carrera - 🏁</h3>
-                <div class="form-group"><label>Circuito</label><select id="select-circuito-admin" class="form-control"></select></div>
-                <div class="form-group"><label>Piloto</label><select id="select-piloto-admin" class="form-control"></select></div>
-                <div class="form-group"><label>Posición</label><input type="number" id="input-posicion" class="form-control" placeholder="Posición final"></div>
-                <div class="pole-box">
-                    <label for="es_pole">¿Es Pole Position?</label>
-                    <input type="checkbox" id="es_pole">
-                </div>
-                <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-admin btn-admin-primary">GUARDAR RESULTADO</button>
-            </div>
+<div class="admin-bloque">
+        <h3>🏁 - Cargar Resultados de carrera - 🏁</h3>
+        <div class="form-group">
+            <label>Circuito</label>
+            <select id="select-circuito-admin" class="form-control"></select>
+        </div>
+        <div class="form-group">
+            <label>Piloto</label>
+            <select id="select-piloto-admin" class="form-control"></select>
+        </div>
+        <div class="form-group">
+            <label>Posición</label>
+            <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
+        </div>
+        <div class="form-group pole-box">
+            <label for="es_pole">¿Es Pole Position?</label>
+            <input type="checkbox" id="es_pole">
+        </div>
+        <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-admin btn-admin-primary">GUARDAR RESULTADO</button>
+    </div>
 
             <div class="admin-bloque">
-                <h4>🏎️ - Registro de Puntos a Escudería - 🏎️ </h4>
+                <h4>🏎️ - Puntos a Escudería - 🏎️ </h4>
                 <select id="select-escuderia" class="form-control">
                     <option value="">Selecciona Escudería...</option>
                     <option value="1">Oracle Red Bull Racing</option>
