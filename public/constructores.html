@@ -146,9 +146,9 @@ function renderizarConstructores(pilotos, escuderias) {
         const puntosPilotos = pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0);
         
         return {
-            nombre: esc.nombre, // Usamos el nombre tal cual viene de la base de datos
+            nombre: esc.nombre,
             mundiales: esc.mundiales || 0,
-            color: esc.color_hex || "#555555", // Usamos el color de la BD o un gris por defecto
+            color: esc.color_hex || "#555555",
             logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
             pilotos: pilotosEscuderia,
             victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
@@ -162,26 +162,35 @@ function renderizarConstructores(pilotos, escuderias) {
         const posClass = esPodio ? `pos-${index + 1}` : '';
         const numeroDisplay = index + 1;
         
+        // Lógica de las estrellas aquí:
         const avatars = c.pilotos.map(p => {
             const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
-            return `<img src="/pilotos/${nombreArchivo}" 
+            // Si el piloto tiene mundiales, generamos las estrellas, si no, cadena vacía
+            const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'⭐'.repeat(p.mundiales)}</div>` : '';
+            
+            return `
+                <div class="contenedor-avatar" style="position: relative; display: inline-block; margin: 0 5px;">
+                    ${estrellas}
+                    <img src="/pilotos/${nombreArchivo}" 
                          class="avatar-constructor-grande" 
                          title="${p.gamertag}" 
-                         onerror="this.src='/pilotos/R.png'">`;
+                         onerror="this.src='/pilotos/R.png'">
+                </div>`;
         }).join('');
 
         body.innerHTML += `
-<tr>
-        <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
-        <td style="text-align: center; font-weight:bold; color: #ffcc00;">${c.mundiales}</td> <td style="text-align: left;">
-            <span class="color-banda" style="background-color: ${c.color};"></span>
-            <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
-        </td>
-        <td style="text-align: center;">${avatars || '-'}</td>
-        <td style="text-align: center;">${c.victorias}</td>
-        <td style="text-align: center;">${c.podios}</td>
-        <td style="text-align: center; font-weight:bold;">${c.puntos} pts</td>
-    </tr>
+            <tr>
+                <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
+                <td style="text-align: center; font-weight:bold; color: #ffcc00;">${c.mundiales}</td> 
+                <td style="text-align: left;">
+                    <span class="color-banda" style="background-color: ${c.color};"></span>
+                    <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
+                </td>
+                <td style="text-align: center;">${avatars || '-'}</td>
+                <td style="text-align: center;">${c.victorias}</td>
+                <td style="text-align: center;">${c.podios}</td>
+                <td style="text-align: center; font-weight:bold;">${c.puntos} pts</td>
+            </tr>
         `;
     });
 }
