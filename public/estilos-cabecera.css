@@ -1181,30 +1181,21 @@ table tr td:nth-child(2) {
 }
 
 
-.btn-oro {
-    background-color: #f1c40f; /* Color oro */
+/* Color Oro para Pilotos */
+.btn-piloto {
+    background-color: #f1c40f; 
     color: #000;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
 }
 
-.btn-oro:hover {
-    background-color: #d4ac0d;
-    box-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+/* Color Plata/Gris elegante para Escuderías (Para no confundir) */
+.btn-escuderia {
+    background-color: #95a5a6; 
+    color: #fff;
 }
 
-.caja-mundiales {
-    border-top: 4px solid #f1c40f; /* Borde dorado que resalta la categoría */
-    padding: 20px;
-    background-color: #252525; /* Un tono un poco más oscuro o igual al resto */
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
-
+/* Hover compartido para ambos */
+.btn-piloto:hover { background-color: #d4ac0d; }
+.btn-escuderia:hover { background-color: #7f8c8d; }
 
 
 
