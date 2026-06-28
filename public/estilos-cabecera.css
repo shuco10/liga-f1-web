@@ -1007,6 +1007,7 @@ table tr td:nth-child(2) {
 .pole-box {
     display: inline-flex; /* Se ajusta solo al ancho del texto */
     align-items: center;
+    justify-content: center;
     gap: 12px;
     padding: 10px 16px;
     background-color: #2d1b3e; /* Fondo morado oscuro muy suave */
