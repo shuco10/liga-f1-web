@@ -1281,6 +1281,20 @@ table tr td:nth-child(2) {
     text-align: center;
 }
 
+.contenedor-avatar {
+    position: relative;
+    display: inline-block;
+}
 
+.contenedor-estrellas {
+    position: absolute;
+    top: -5px; /* Ajusta según el tamaño de tu avatar */
+    left: 0;
+    width: 100%;
+    text-align: center;
+    pointer-events: none; /* Para que no bloquee el clic */
+    font-size: 12px; /* Tamaño de la estrella */
+    text-shadow: 0 0 2px #000; /* Borde para que se vea sobre cualquier fondo */
+}
 
 
