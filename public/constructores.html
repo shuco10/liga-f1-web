@@ -170,7 +170,7 @@ function renderizarConstructores(pilotos, escuderias) {
 const avatars = c.pilotos.map(p => {
     const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
     // Generamos las estrellas solo si tiene más de 0 mundiales
-    const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'⭐'.repeat(p.mundiales)}</div>` : '';
+    const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'🌟'.repeat(p.mundiales)}</div>` : '';
     
     return `
         <div class="contenedor-avatar">
