@@ -1181,23 +1181,63 @@ table tr td:nth-child(2) {
 }
 
 
-/* Color Oro para Pilotos */
+/* Estilo base para ambos botones */
+.btn-oro, .btn-piloto, .btn-escuderia {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Botón Piloto: Oro Vibrante */
 .btn-piloto {
-    background-color: #f1c40f; 
-    color: #000;
+    background: linear-gradient(135deg, #f7d44c, #e67e22);
+    color: #332000;
+    border: 1px solid #f1c40f;
 }
 
-/* Color Plata/Gris elegante para Escuderías (Para no confundir) */
+/* Botón Escudería: Plata Industrial */
 .btn-escuderia {
-    background-color: #95a5a6; 
-    color: #fff;
+    background: linear-gradient(135deg, #e0eafc, #a8c0ff);
+    color: #2c3e50;
+    border: 1px solid #bdc3c7;
 }
 
-/* Hover compartido para ambos */
-.btn-piloto:hover { background-color: #d4ac0d; }
-.btn-escuderia:hover { background-color: #7f8c8d; }
+/* EFECTO BRILLANTE AL PASAR EL RATÓN */
+.btn-piloto:hover, .btn-escuderia:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    filter: brightness(1.2);
+}
 
+/* Brillo "Flash" al hacer clic */
+.btn-piloto:active, .btn-escuderia:active {
+    transform: translateY(1px) scale(0.98);
+}
 
+/* Añadir un pequeño reflejo de luz (Pseudo-elemento) */
+.btn-piloto::after, .btn-escuderia::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.btn-piloto:hover::after, .btn-escuderia:hover::after {
+    opacity: 1;
+}
 
 
 
