@@ -1286,18 +1286,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 }
 
 async function asignarMundialEscuderia(escuderiaId) {
-    // Usamos el mensaje de confirmación específico que definimos antes
+    // 1. VALIDACIÓN: Comprobamos si el campo está vacío
+    if (!escuderiaId || escuderiaId === "") {
+        alert("¡Por favor, selecciona una escudería primero!");
+        return; // Salimos de la función sin hacer el fetch
+    }
+
+    // 2. CONFIRMACIÓN: Luego preguntamos
     if (!confirm('¿Confirmar MUNDIAL DE CONSTRUCTORES para esta escudería?')) return;
 
+    // 3. PETICIÓN: Solo si pasó las validaciones anteriores
     const response = await fetch('/api/sumar-mundial-escuderia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ escuderia_id: escuderiaId }) // Asegúrate de enviar escuderia_id
+        body: JSON.stringify({ escuderia_id: escuderiaId })
     });
 
     if (response.ok) {
         alert("¡Mundial de Constructores asignado con éxito!");
-        location.reload(); // Recarga para actualizar la tabla
+        location.reload(); 
     } else {
         alert("Hubo un error al asignar el mundial.");
     }
