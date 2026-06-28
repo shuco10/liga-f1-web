@@ -1045,14 +1045,6 @@ table tr td:nth-child(2) {
     margin: 0 auto; /* Centra el tablero en la pantalla */
 }
 
-/* Opcional: Que los bloques tengan un estilo uniforme */
-.admin-bloque {
-    background-color: #2b2b2b; /* Fondo oscuro acorde a tu web */
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #444;
-}
-
 /* Adaptación a móviles (si la pantalla es pequeña, se pone en una sola columna) */
 @media (max-width: 900px) {
     .dashboard-grid {
@@ -1089,19 +1081,23 @@ table tr td:nth-child(2) {
 .area-avisos     { grid-area: avisos; }
 
 .fila-cajones {
-    display: flex !important; /* El !important fuerza que se aplique sí o sí */
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-    gap: 20px !important;
-   /* border: 3px solid red !important;  Si ves un borde rojo alrededor de cada grupo, sabrás que el CSS está funcionando */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px; /* Reduce esto si quieres los bloques más juntos */
+    padding: 10px 20px; /* Reduce el padding superior/inferior para compactar */
+    width: 100%;
 }
 
 .admin-bloque {
-    width: 350px;           /* Ancho fijo para que todos sean iguales */
+    width: 350px;
     background-color: #2b2b2b;
     padding: 20px;
     border-radius: 8px;
     border: 1px solid #444;
+    height: auto; /* IMPORTANTE: Esto hace que el bloque mida solo lo que necesite su contenido */
+    display: flex;
+    flex-direction: column;
 }
 
 
