@@ -1297,7 +1297,13 @@ async function asignarMundialEscuderia(escuderiaId) {
 
 
         <select id="select-escuderia" class="input-select-admin">
-            <option value="">-- Elige Escudería --</option>
+                <select id="select-escuderia" class="form-control">
+                    <option value="">Selecciona Escudería...</option>
+                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
+                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
+                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
+                    <option value="10">Haas</option><option value="11">Cadillac</option>
+                </select>
         </select>
         <button class="btn-escuderia" onclick="asignarMundialEscuderia(document.getElementById('select-escuderia').value)">
             🏆 SUMAR MUNDIAL CONSTRUCTOR
