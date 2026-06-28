@@ -1116,7 +1116,7 @@ table tr td:nth-child(2) {
     padding: 30px;
     background: #1a1a1a;
     border-radius: 12px;
-    border-left: 6px solid #ff4444;
+    border-left: 6px solid #229971;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     color: #ffffff;
     line-height: 1.6;
@@ -1130,18 +1130,36 @@ table tr td:nth-child(2) {
 
 /* La nueva caja ancha (para 3 bloques) */
 .caja-pilotos {
-    max-width: 1200px; /* Aquí le damos los 300px extra que necesitan los 3 bloques */
+    max-width: 1300px; /* Aumentamos para asegurar que caben los 3 bloques holgadamente */
     margin: 30px auto;
     padding: 30px;
     background: #1a1a1a;
     border-radius: 12px;
-    border-left: 6px solid #3498db; /* Cambié el color a azul para distinguir la sección */
+    border-left: 6px solid #3498db;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     color: #ffffff;
+    
+    /* Configuración de Flexbox */
+    display: flex;
+    flex-wrap: wrap; /* Permitimos que baje solo si realmente la pantalla es pequeña */
+    justify-content: center;
+    gap: 30px; /* Aumentamos un poco el espacio para que se vea más profesional */
+}
+
+.caja-sancion {
+    max-width: 900px; /* Ajustado para que quepan 2 o 3 bloques cómodamente */
+    margin: 30px auto;
+    padding: 30px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border-left: 6px solid #ffcc00;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    color: #ffffff;
+    line-height: 1.6;
+    
+    /* Esto es lo nuevo para que los bloques de dentro se ordenen bien */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
 }
-
-
