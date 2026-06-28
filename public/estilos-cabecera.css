@@ -1303,23 +1303,26 @@ table tr td:nth-child(2) {
 
 
 /* Este tamaño será el estándar para tus avatares grandes */
+/* Avatar grande */
 .avatar-grande {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover; /* Esto evita que la foto se deforme */
-    border: 2px solid #555;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
 }
 
 /* El contenedor que mantiene las estrellas encima */
 .contenedor-avatar-grande {
-    position: relative;
-    display: inline-flex;
-    justify-content: center;
-    padding-top: 20px; /* Espacio para que la estrella no tape la cabeza */
-    margin: 0 10px;
+    position: relative !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding-top: 20px !important; /* Espacio superior para la estrella */
+    margin: 0 10px !important;
+    width: 60px !important;
+    height: 60px !important;
 }
-
 
 
 
