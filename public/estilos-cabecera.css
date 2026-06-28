@@ -1301,3 +1301,26 @@ table tr td:nth-child(2) {
     pointer-events: none; /* Asegura que no interfiera con el clic */
 }
 
+
+/* Este tamaño será el estándar para tus avatares grandes */
+.avatar-grande {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover; /* Esto evita que la foto se deforme */
+    border: 2px solid #555;
+}
+
+/* El contenedor que mantiene las estrellas encima */
+.contenedor-avatar-grande {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    padding-top: 20px; /* Espacio para que la estrella no tape la cabeza */
+    margin: 0 10px;
+}
+
+
+
+
+
