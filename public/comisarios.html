@@ -1285,13 +1285,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 }
 
-async function asignarMundialEscuderia(btnElemento) {
-    // Buscamos el 'select' dentro del mismo contenedor donde está el botón
-    const contenedor = btnElemento.closest('.contenedor-escuderia');
-    const select = contenedor.querySelector('select');
+async function asignarMundialEscuderia(btn) {
+    // ESTO ES LO QUE CAMBIA: buscamos el elemento justo antes del botón
+    const select = btn.previousElementSibling;
+    
+    // Si por alguna razón no encuentra el select, lanzamos un aviso
+    if (!select) {
+        alert("Error: No se encontró el desplegable.");
+        return;
+    }
+
     const escuderiaId = select.value;
 
-    console.log("ID detectado:", escuderiaId); // Míralo en F12 -> Console
+    console.log("ID detectado:", escuderiaId); 
 
     if (!escuderiaId || escuderiaId === "") {
         alert("¡Por favor, selecciona una escudería primero!");
@@ -1300,17 +1306,22 @@ async function asignarMundialEscuderia(btnElemento) {
 
     if (!confirm('¿Confirmar MUNDIAL DE CONSTRUCTORES para esta escudería?')) return;
 
-    const response = await fetch('/api/sumar-mundial-escuderia', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ escuderia_id: escuderiaId })
-    });
+    try {
+        const response = await fetch('/api/sumar-mundial-escuderia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ escuderia_id: escuderiaId })
+        });
 
-    if (response.ok) {
-        alert("¡Mundial de Constructores asignado con éxito!");
-        location.reload();
-    } else {
-        alert("Hubo un error al asignar el mundial.");
+        if (response.ok) {
+            alert("¡Mundial de Constructores asignado con éxito!");
+            location.reload();
+        } else {
+            alert("Hubo un error al asignar el mundial.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error de conexión con el servidor.");
     }
 }
     
@@ -1334,7 +1345,7 @@ async function asignarMundialEscuderia(btnElemento) {
 <div class="caja-mundiales-admin">
     <h2 class="titulo-caja-admin">🏎️ GESTIÓN DE TÍTULOS (CONSTRUCTORES)</h2>
     
-<select class="input-select-admin" style="margin-bottom: 20px;">
+    <select class="input-select-admin" style="margin-bottom: 20px;">
         <option value="">Selecciona Escudería...</option>
         <option value="1">Oracle Red Bull Racing</option>
         <option value="2">Scuderia Ferrari HP</option>
