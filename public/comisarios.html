@@ -1281,34 +1281,37 @@ async function asignarMundialEscuderia(escuderiaId) {
     
 <div class="caja-mundiales-admin">
     <h2 class="titulo-caja-admin">🏆 ASIGNAR MUNDIAL A PILOTO</h2>
-
-
-        <select id="select-piloto" class="input-select-admin">
-            <option value="">-- Selecciona un piloto --</option>
-        </select>
-        <button class="btn-piloto" onclick="asignarMundialPiloto(document.getElementById('select-piloto').value)">
-            🏅 SUMAR MUNDIAL PILOTO
-        </button>
-
+    
+    <select id="select-piloto" class="input-select-admin" style="margin-bottom: 20px;">
+        <option value="">-- Selecciona un piloto --</option>
+    </select>
+    
+    <button class="btn-piloto" onclick="asignarMundialPiloto(document.getElementById('select-piloto').value)">
+        🏅 SUMAR MUNDIAL PILOTO
+    </button>
 </div>
 
 <div class="caja-mundiales-admin">
     <h2 class="titulo-caja-admin">🏎️ GESTIÓN DE TÍTULOS (CONSTRUCTORES)</h2>
-
-
-        <select id="select-escuderia" class="input-select-admin">
-                <select id="select-escuderia" class="form-control">
-                    <option value="">Selecciona Escudería...</option>
-                    <option value="1">Red Bull Racing</option><option value="2">Ferrari</option><option value="3">Mercedes-AMG</option>
-                    <option value="4">McLaren</option><option value="5">Aston Martin</option><option value="6">Alpine</option>
-                    <option value="7">Williams</option><option value="8">Visa Cash App RB</option><option value="9">Audi</option>
-                    <option value="10">Haas</option><option value="11">Cadillac</option>
-                </select>
-        </select>
-        <button class="btn-escuderia" onclick="asignarMundialEscuderia(document.getElementById('select-escuderia').value)">
-            🏆 SUMAR MUNDIAL CONSTRUCTOR
-        </button>
-
+    
+    <select id="select-escuderia" class="input-select-admin" style="margin-bottom: 20px;">
+        <option value="">Selecciona Escudería...</option>
+        <option value="1">Red Bull Racing</option>
+        <option value="2">Ferrari</option>
+        <option value="3">Mercedes-AMG</option>
+        <option value="4">McLaren</option>
+        <option value="5">Aston Martin</option>
+        <option value="6">Alpine</option>
+        <option value="7">Williams</option>
+        <option value="8">Visa Cash App RB</option>
+        <option value="9">Audi</option>
+        <option value="10">Haas</option>
+        <option value="11">Cadillac</option>
+    </select>
+    
+    <button class="btn-escuderia" onclick="asignarMundialEscuderia(document.getElementById('select-escuderia').value)">
+        🏆 SUMAR MUNDIAL CONSTRUCTOR
+    </button>
 </div>
 
 
