@@ -1062,12 +1062,21 @@ table tr td:nth-child(2) {
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    /* Usamos 'fit-content' o un tamaño fijo para que no se estiren al 100% */
+    grid-template-columns: repeat(3, 350px); 
     grid-template-areas: 
         "resultados puntos ."          /* Fila 1: Resultado, Puntos, y el 3er hueco vacío (.) */
         "inscribir editar eliminar"    /* Fila 2: Los tres bloques de pilotos */
         "sancion avisos .";            /* Fila 3: Sanción, Avisos, y el 3er hueco vacío (.) */
     gap: 20px;
+    padding: 20px;
+    /* ESTO CENTRA TODO EL GRID EN LA PANTALLA */
+    justify-content: center; 
+}
+
+.admin-bloque {
+    flex: 0 1 350px; /* Esto les da un ancho base de 350px, pero les permite crecer/encogerse */
+    max-width: 100%;
 }
 
 /* Ahora asignamos cada clase a su "zona" definida arriba */
