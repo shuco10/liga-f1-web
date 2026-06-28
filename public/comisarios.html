@@ -105,12 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
 
-<div style="display: none; justify-content: center; align-items: center; margin-bottom: 20px; max-width: 1000px; margin-left: auto; margin-right: auto; position: relative;">
+<div style="display: none; justify-content: center; align-items: center; margin-bottom: 20px; max-width: 1000px; margin-left: auto; margin-right: auto; position: relative;"></div>
     
-
-    
-
-</div>
 <div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px;">
     <h3 style="margin-top: 0;">Formulario de Contacto</h3>
     
@@ -165,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
     <div id="contenido-admin" style="display: none;">
         
-<main class="caja-contenido">
+<div class="dashboard-grid">
 <div class="admin-bloque">
         <h3>🏁 - Cargar Resultados de carrera - 🏁</h3>
         <div class="form-group"><label>Circuito</label><select id="select-circuito-admin" class="form-control"></select></div>
@@ -234,6 +230,14 @@ document.addEventListener('DOMContentLoaded', () => {
         </form>
     </div>
     </div>
+            <div class="admin-bloque">
+        <h3>❌ 5. Eliminar Piloto de la Liga</h3>
+        <form id="form-eliminar">
+            <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" class="form-control" required></select></div>
+            <button type="submit" class="btn-admin btn-admin-danger">Eliminar Permanentemente</button>
+            <div id="msg-eliminar" style="margin-top: 10px; font-weight: bold;"></div>
+        </form>
+    </div>
 
     <div class="admin-bloque">
         <h3>🚨 3. Aplicar Penalización de Licencia</h3>
@@ -261,15 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div id="msg-avisos" style="margin-top: 10px; font-weight: bold;"></div>
     </form>
     </div>
-
-    <div class="admin-bloque">
-        <h3>❌ 5. Eliminar Piloto de la Liga</h3>
-        <form id="form-eliminar">
-            <div class="form-group"><label>Seleccionar Piloto a dar de Baja:</label><select id="select-piloto-eliminar" class="form-control" required></select></div>
-            <button type="submit" class="btn-admin btn-admin-danger">Eliminar Permanentemente</button>
-            <div id="msg-eliminar" style="margin-top: 10px; font-weight: bold;"></div>
-        </form>
-    </div>
+  </div>
 </main>
 
         
