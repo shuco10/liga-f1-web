@@ -1088,7 +1088,22 @@ table tr td:nth-child(2) {
 .area-sancion    { grid-area: sancion; }
 .area-avisos     { grid-area: avisos; }
 
+.fila-cajones {
+    display: flex;
+    justify-content: center; /* Esto centra los cajones, ¡aquí está el secreto! */
+    flex-wrap: wrap;        /* Si no caben en pantallas pequeñas, saltan de línea */
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 20px;    /* Espacio entre filas */
+}
 
+.admin-bloque {
+    width: 350px;           /* Ancho fijo para que todos sean iguales */
+    background-color: #2b2b2b;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
 
 
 
