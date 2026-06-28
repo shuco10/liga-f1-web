@@ -158,6 +158,9 @@ function renderizarTabla(id, data, esReserva) {
         const nombreArchivo = (p.foto_url || 'R.png').replace('pilotos/', '');
         const avatarUrl = `/pilotos/${nombreArchivo}`;
         
+        // --- LÓGICA DE LAS ESTRELLAS ---
+        const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'🌟'.repeat(p.mundiales)}</div>` : '';
+        
         // Lógica Podio (solo para titulares)
         const posClass = (!esReserva && index < 3) ? `pos-${index + 1}` : '';
         const posicionDisplay = esReserva ? 'S/C' : (index + 1);
@@ -166,32 +169,33 @@ function renderizarTabla(id, data, esReserva) {
         const logoUrl = (!esReserva && LOGOS_ESCUDERIAS[p.escuderia_id]) ? LOGOS_ESCUDERIAS[p.escuderia_id] : null;
         const logoHtml = logoUrl ? `<img src="${logoUrl}" style="width: 25px; height: 25px; object-fit: contain; margin-right: 8px; vertical-align: middle;">` : '';
         
-const escuderiaCol = esReserva 
-    ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
-    : `<div style="display: flex; align-items: center; gap: 8px;">
-        ${logoHtml}
-        <span class="nombre-escuderia">${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</span>
-       </div>`;
+        const escuderiaCol = esReserva 
+            ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
+            : `<div style="display: flex; align-items: center; gap: 8px;">
+                ${logoHtml}
+                <span class="nombre-escuderia">${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</span>
+               </div>`;
 
-return `<tr>
-    <td class="col-pos"><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
-    <td class="col-piloto" style="text-align: left;">
-        <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
-            <img src="${avatarUrl}" class="piloto-avatar" style="flex-shrink: 0;" onerror="this.src='/pilotos/R.png'">
-            <span class="numero-piloto">${p.numero_piloto || '00'}</span>
-            <strong style="overflow: hidden; text-overflow: ellipsis;">${p.gamertag}</strong>
-        </div>
-    </td>
+        return `<tr>
+            <td class="col-pos"><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
+            <td class="col-piloto" style="text-align: left;">
+                <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
+                    <div class="contenedor-avatar">
+                        ${estrellas}
+                        <img src="${avatarUrl}" class="piloto-avatar" style="flex-shrink: 0;" onerror="this.src='/pilotos/R.png'">
+                    </div>
+                    <span class="numero-piloto">${p.numero_piloto || '00'}</span>
+                    <strong style="overflow: hidden; text-overflow: ellipsis;">${p.gamertag}</strong>
+                </div>
+            </td>
 
-    <td class="col-plataforma"><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
-    <td class="col-escuderia">${escuderiaCol}</td>
-    <td class="col-vics">${p.victorias}</td>
-    <td class="col-podios">${p.podios || '0'}</td>
-    
-    <td class="col-poles">${p.poles || '0'}</td>
-    
-    <td class="col-puntos"><strong>${p.puntos_totales} pts</strong></td>
-</tr>`;
+            <td class="col-plataforma"><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
+            <td class="col-escuderia">${escuderiaCol}</td>
+            <td class="col-vics">${p.victorias}</td>
+            <td class="col-podios">${p.podios || '0'}</td>
+            <td class="col-poles">${p.poles || '0'}</td>
+            <td class="col-puntos"><strong>${p.puntos_totales} pts</strong></td>
+        </tr>`;
     }).join('');
 }
 
