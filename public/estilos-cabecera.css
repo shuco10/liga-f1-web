@@ -1185,24 +1185,32 @@ table tr td:nth-child(2) {
 .caja-mundiales-admin {
     background-color: #2b2b2b;
     border: 1px solid #444;
-    
-    /* Efecto bandera a cuadros en el borde izquierdo */
-    border-left: 10px solid transparent; /* Espacio para el borde */
-    border-image: repeating-linear-gradient(
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 500px;
+    text-align: center;
+    padding: 25px;
+    padding-left: 35px; /* Damos espacio para el borde */
+    position: relative;
+    overflow: hidden; /* Esto hace que el patrón se recorte con la forma redondeada */
+}
+
+/* Creamos el borde con un pseudo-elemento para tener control total */
+.caja-mundiales-admin::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px; /* Ancho de la bandera */
+    height: 100%;
+    background-image: repeating-linear-gradient(
         to bottom,
         #ffffff 0px, 
         #ffffff 10px, 
         #000000 10px, 
         #000000 20px
-    ) 10 0 0 10; /* Aplica el patrón solo al borde izquierdo */
-    
-    padding: 25px;
-    border-radius: 8px;
-    margin: 20px auto;
-    max-width: 500px;
-    text-align: center;
+    );
 }
-
 /* --- Títulos --- */
 .titulo-caja-admin {
     color: #fff;
