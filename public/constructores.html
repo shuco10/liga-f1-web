@@ -37,6 +37,7 @@
                 <thead>
                     <tr>
                         <th class="col-pos">POS</th>
+                        <th class="col-mundiales">MUNDIALES</th>
                         <th class="col-escuderia">ESCUDERÍA</th>
                         <th class="col-pilotos">PILOTOS</th>
                         <th class="col-vics">VICS</th>
@@ -146,6 +147,7 @@ function renderizarConstructores(pilotos, escuderias) {
         
         return {
             nombre: esc.nombre, // Usamos el nombre tal cual viene de la base de datos
+            mundiales: esc.mundiales || 0,
             color: esc.color_hex || "#555555", // Usamos el color de la BD o un gris por defecto
             logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
             pilotos: pilotosEscuderia,
@@ -169,17 +171,17 @@ function renderizarConstructores(pilotos, escuderias) {
         }).join('');
 
         body.innerHTML += `
-            <tr>
-                <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
-                <td style="text-align: left;">
-                    <span class="color-banda" style="background-color: ${c.color};"></span>
-                    <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
-                </td>
-                <td style="text-align: center;">${avatars || '-'}</td>
-                <td style="text-align: center;">${c.victorias}</td>
-                <td style="text-align: center;">${c.podios}</td>
-                <td style="text-align: center; font-weight:bold;">${c.puntos} pts</td>
-            </tr>
+<tr>
+        <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
+        <td style="text-align: center; font-weight:bold; color: #ffcc00;">${c.mundiales}</td> <td style="text-align: left;">
+            <span class="color-banda" style="background-color: ${c.color};"></span>
+            <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
+        </td>
+        <td style="text-align: center;">${avatars || '-'}</td>
+        <td style="text-align: center;">${c.victorias}</td>
+        <td style="text-align: center;">${c.podios}</td>
+        <td style="text-align: center; font-weight:bold;">${c.puntos} pts</td>
+    </tr>
         `;
     });
 }
