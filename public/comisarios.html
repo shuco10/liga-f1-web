@@ -1238,19 +1238,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         panelAdmin.style.display = 'none';     // Ocultas el panel
     }
 });
+
+//ASIGNACION DE MUNDIALES A PILOTOS Y ESCUDERIAS
+
+    async function asignarMundialPiloto(pilotoId) {
+    if (!confirm('¿Confirmar MUNDIAL DE PILOTO?')) return;
+
+    const response = await fetch('/api/sumar-mundial-piloto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ piloto_id: pilotoId })
+    });
+
+    if (response.ok) {
+        alert("¡Mundial de Piloto asignado!");
+        location.reload(); // Recarga para ver cambios
+    }
+}
+
+async function asignarMundialEscuderia(escuderiaId) {
+    // Usamos el mensaje de confirmación específico que definimos antes
+    if (!confirm('¿Confirmar MUNDIAL DE CONSTRUCTORES para esta escudería?')) return;
+
+    const response = await fetch('/api/sumar-mundial-escuderia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ escuderia_id: escuderiaId }) // Asegúrate de enviar escuderia_id
+    });
+
+    if (response.ok) {
+        alert("¡Mundial de Constructores asignado con éxito!");
+        location.reload(); // Recarga para actualizar la tabla
+    } else {
+        alert("Hubo un error al asignar el mundial.");
+    }
+}
+    
 </script>
 
 
 <!-- BOTON MUNDIALES!!!!!!!!-->
 
-    <div class="caja-logros">
+<div class="caja-logros">
     <h2 class="titulo-caja">🏆 Asignar Mundial a Piloto</h2>
     <div class="admin-bloque">
         <label for="piloto">Seleccionar Piloto:</label>
-        <select name="piloto_id" class="input-select">
+        <select id="select-piloto" name="piloto_id" class="input-select">
             <option value="">-- Selecciona el Piloto --</option>
-            </select>
-        <button class="btn-oro btn-piloto" onclick="return confirm('¿Confirmar MUNDIAL DE PILOTO para este usuario?')">
+        </select>
+        <button class="btn-oro btn-piloto" 
+                onclick="asignarMundialPiloto(document.getElementById('select-piloto').value)">
             🏅 SUMAR MUNDIAL PILOTO
         </button>
     </div>
@@ -1261,13 +1298,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     <div class="admin-bloque">
         <label for="escuderia">Seleccionar Escudería:</label>
-        <select name="escuderia_id" id="escuderia" class="input-select">
+        <select id="escuderia" name="escuderia_id" class="input-select">
             <option value="">-- Elige Escudería --</option>
-            </select>
-        <button class="btn-oro btn-escuderia" onclick="return confirm('¿Confirmar MUNDIAL DE CONSTRUCTORES para esta escudería?')">
+        </select>
+        <button class="btn-oro btn-escuderia" 
+                onclick="asignarMundialEscuderia(document.getElementById('escuderia').value)">
             🏆 SUMAR MUNDIAL CONSTRUCTOR
         </button>
-
     </div>
 </div>
 
