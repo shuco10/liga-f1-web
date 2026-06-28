@@ -162,6 +162,7 @@ app.get('/api/lista-de-pilotos', async (req, res) => {
                 p.penalizacion_tiempo, 
                 p.puntos_totales, 
                 p.victorias,
+                p.mundiales,
                 COALESCE((SELECT COUNT(*) FROM registro_avisos WHERE id_piloto = p.id), 0)::int AS total_avisos,
                 e.nombre AS escuderia,
                 e.color_hex
