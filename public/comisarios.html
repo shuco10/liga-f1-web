@@ -1330,7 +1330,7 @@ async function asignarMundialEscuderia(escuderiaId) {
 <div class="caja-mundiales-admin">
     <h2 class="titulo-caja-admin">🏎️ GESTIÓN DE TÍTULOS (CONSTRUCTORES)</h2>
     
-<select id="select-escuderia" class="input-select-admin" style="margin-bottom: 20px;">
+<select class="input-select-admin" style="margin-bottom: 20px;">
         <option value="">Selecciona Escudería...</option>
         <option value="1">Oracle Red Bull Racing</option>
         <option value="2">Scuderia Ferrari HP</option>
@@ -1345,7 +1345,7 @@ async function asignarMundialEscuderia(escuderiaId) {
         <option value="11">Cadillac Formula 1 Team</option>
     </select>
     
-    <button class="btn-escuderia" onclick="asignarMundialEscuderia(document.getElementById('select-escuderia').value)">
+    <button class="btn-escuderia" onclick="asignarMundialEscuderia(this)">
         🏆 SUMAR MUNDIAL CONSTRUCTOR
     </button>
 </div>
