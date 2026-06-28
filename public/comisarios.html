@@ -164,26 +164,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="caja-resultados">
             <h2 class="titulo-caja">📊 Gestión de Resultados 📊</h2>
-<div class="admin-bloque">
-        <h3>🏁 - Cargar Resultados de carrera - 🏁</h3>
-        <div class="form-group">
-            <label>Circuito</label>
-            <select id="select-circuito-admin" class="form-control"></select>
-        </div>
-        <div class="form-group">
-            <label>Piloto</label>
-            <select id="select-piloto-admin" class="form-control"></select>
-        </div>
-        <div class="form-group">
-            <label>Posición</label>
-            <input type="number" id="input-posicion" class="form-control" placeholder="Posición final">
-        </div>
-        <div class="form-group pole-box">
-            <label for="es_pole">¿Es Pole Position?</label>
-            <input type="checkbox" id="es_pole">
-        </div>
-        <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-admin btn-admin-primary">GUARDAR RESULTADO</button>
+<div class="admin-bloque" style="width: 100%; box-sizing: border-box;">
+    <h3>🏁 - Cargar Resultados - 🏁</h3>
+    
+    <div class="form-group" style="width: 100%; margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;">Circuito</label>
+        <select id="select-circuito-admin" class="form-control" style="width: 100%; box-sizing: border-box;"></select>
     </div>
+    
+    <div class="form-group" style="width: 100%; margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;">Piloto</label>
+        <select id="select-piloto-admin" class="form-control" style="width: 100%; box-sizing: border-box;"></select>
+    </div>
+    
+    <div class="form-group" style="width: 100%; margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px;">Posición</label>
+        <input type="number" id="input-posicion" class="form-control" placeholder="Posición final" style="width: 100%; box-sizing: border-box;">
+    </div>
+    
+    <div class="form-group pole-box" style="margin-bottom: 15px;">
+        <label for="es_pole">¿Es Pole Position?</label>
+        <input type="checkbox" id="es_pole">
+    </div>
+    
+    <button onclick="guardarResultado()" id="btn-plata-resultado" class="btn-admin btn-admin-primary" style="width: 100%;">
+        GUARDAR RESULTADO
+    </button>
+</div>
 
             <div class="admin-bloque">
                 <h4>🏎️ - Puntos a Escudería - 🏎️ </h4>
