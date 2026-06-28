@@ -1276,3 +1276,11 @@ table tr td:nth-child(2) {
     filter: brightness(1.15);
 }
 
+.col-mundiales {
+    width: 60px; /* Ajusta según cómo se vea en pantalla */
+    text-align: center;
+}
+
+
+
+
