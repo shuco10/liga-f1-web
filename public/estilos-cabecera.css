@@ -1093,7 +1093,7 @@ table tr td:nth-child(2) {
     justify-content: center !important;
     flex-wrap: wrap !important;
     gap: 20px !important;
-    border: 3px solid red !important; /* Si ves un borde rojo alrededor de cada grupo, sabrás que el CSS está funcionando */
+   /* border: 3px solid red !important;  Si ves un borde rojo alrededor de cada grupo, sabrás que el CSS está funcionando */
 }
 
 .admin-bloque {
