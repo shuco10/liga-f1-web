@@ -167,20 +167,20 @@ function renderizarConstructores(pilotos, escuderias) {
         const numeroDisplay = index + 1;
         
         // Lógica de las estrellas aquí:
-        const avatars = c.pilotos.map(p => {
-            const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
-            // Si el piloto tiene mundiales, generamos las estrellas, si no, cadena vacía
-            const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'⭐'.repeat(p.mundiales)}</div>` : '';
-            
-            return `
-                <div class="contenedor-avatar" style="position: relative; display: inline-block; margin: 0 5px;">
-                    ${estrellas}
-                    <img src="/pilotos/${nombreArchivo}" 
-                         class="avatar-constructor-grande" 
-                         title="${p.gamertag}" 
-                         onerror="this.src='/pilotos/R.png'">
-                </div>`;
-        }).join('');
+const avatars = c.pilotos.map(p => {
+    const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
+    // Generamos las estrellas solo si tiene más de 0 mundiales
+    const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'⭐'.repeat(p.mundiales)}</div>` : '';
+    
+    return `
+        <div class="contenedor-avatar">
+            ${estrellas}
+            <img src="/pilotos/${nombreArchivo}" 
+                 class="avatar-constructor-grande" 
+                 title="${p.gamertag}" 
+                 onerror="this.src='/pilotos/R.png'">
+        </div>`;
+}).join('');
 
         body.innerHTML += `
             <tr>
