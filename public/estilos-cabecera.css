@@ -598,39 +598,32 @@ table tr td:nth-child(2) {
 
 
 /* Botón de acción destructiva base */
-.btn-peligro {
-    background-color: #7a0000;
-    color: #ffffff;
-    border: 2px solid #7a0000;
-    padding: 12px 25px;
-    font-family: 'Rajdhani', sans-serif;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s ease; /* Efecto suave */
-    border-radius: 5px;
-}
-
-/* Efecto al pasar el ratón (Hover) */
-.btn-peligro:hover {
-    background-color: #ff0000; /* Se vuelve un rojo más vivo */
-    border-color: #ff4444;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); /* Un suave resplandor rojo */
-    transform: scale(1.02); /* Crece ligeramente */
-}
-
-/* Estilo específico para la "Zona de peligro" */
-.zona-peligro {
+/* Contenedor tipo "Caja de Seguridad" */
+.caja-zona-peligro {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 30px;
+    background: linear-gradient(145deg, #1a0000, #121212); /* Fondo oscuro con matiz rojizo */
+    border: 2px dashed #7a0000; /* Borde discontinuo para indicar precaución */
+    border-radius: 15px;
     text-align: center;
-    margin-top: 40px;
-    padding: 20px;
-    border-top: 1px solid #333;
+    box-shadow: 0 0 20px rgba(122, 0, 0, 0.2);
 }
 
 .zona-peligro h4 {
     color: #ff4444;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+}
+
+.texto-advertencia {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    font-style: italic;
 }
 
 /* Asegura que el título también tenga un pequeño margen en móviles */
