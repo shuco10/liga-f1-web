@@ -134,6 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 1. La lógica de renderizado
 function renderizarConstructores(pilotos, escuderias) {
+    console.log("Datos recibidos:", { 
+        cantidadPilotos: pilotos.length, 
+        ejemploPiloto: pilotos[0] 
+    });
     const body = document.getElementById('tabla-body-constructores');
     if (!body) return;
     body.innerHTML = "";
