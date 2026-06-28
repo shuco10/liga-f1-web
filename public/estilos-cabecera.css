@@ -1005,28 +1005,39 @@ table tr td:nth-child(2) {
 }
 
 .pole-box {
-    display: inline-flex; /* Esto hace que la caja no ocupe todo el ancho */
+    display: inline-flex; /* Se ajusta solo al ancho del texto */
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background-color: #eef6ff; /* Azul muy clarito */
-    border: 1px solid #b3d7ff; /* Borde azul suave */
-    border-radius: 6px;
+    gap: 12px;
+    padding: 10px 16px;
+    background-color: #2d1b3e; /* Fondo morado oscuro muy suave */
+    border: 1px solid #8e44ad; /* Borde morado vibrante */
+    border-radius: 8px;
     margin: 10px 0;
     cursor: pointer;
-    font-size: 0.9em; /* Tamaño de letra más pequeño */
+    font-size: 0.95em;
+    transition: all 0.3s ease; /* Para que el cambio sea suave */
+}
+
+/* Efecto brillante al pasar el ratón */
+.pole-box:hover {
+    background-color: #3d2454;
+    border-color: #d1a8e0;
+    box-shadow: 0 0 10px rgba(142, 68, 173, 0.4);
 }
 
 .pole-box label {
-    color: #0056b3; /* Texto azul oscuro */
+    color: #ffffff; /* Letra blanca como pediste */
     font-weight: 600;
     cursor: pointer;
+    text-transform: uppercase; /* Le da un toque más pro */
+    letter-spacing: 0.5px;
 }
 
 .pole-box input {
     cursor: pointer;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+    accent-color: #8e44ad; /* Hace que el tick del checkbox sea morado */
 }
 
 .dashboard-grid {
