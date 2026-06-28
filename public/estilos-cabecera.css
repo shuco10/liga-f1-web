@@ -1128,4 +1128,20 @@ table tr td:nth-child(2) {
     gap: 20px;
 }
 
+/* La nueva caja ancha (para 3 bloques) */
+.caja-pilotos {
+    max-width: 1200px; /* Aquí le damos los 300px extra que necesitan los 3 bloques */
+    margin: 30px auto;
+    padding: 30px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border-left: 6px solid #3498db; /* Cambié el color a azul para distinguir la sección */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    color: #ffffff;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
 
