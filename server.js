@@ -571,6 +571,33 @@ app.post('/api/actualizar-pole', async (req, res) => {
 
 
 
+// RUTA: Sumar Mundial a PILOTO
+app.post('/api/sumar-mundial-piloto', async (req, res) => {
+    const { piloto_id } = req.body;
+    try {
+        await pool.query("UPDATE pilotos SET mundiales = mundiales + 1 WHERE id = $1", [piloto_id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al sumar mundial piloto:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// RUTA: Sumar Mundial a ESCUDERÍA
+app.post('/api/sumar-mundial-escuderia', async (req, res) => {
+    const { escuderia_id } = req.body;
+    try {
+        await pool.query("UPDATE escuderias SET mundiales = mundiales + 1 WHERE id = $1", [escuderia_id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al sumar mundial escuderia:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+
+
 
 
 app.listen(PORT, () => {
