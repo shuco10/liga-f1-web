@@ -1035,3 +1035,37 @@ table tr td:nth-child(2) {
     width: 16px;
     height: 16px;
 }
+
+.dashboard-grid {
+    display: grid;
+    /* Esto crea 3 columnas automáticas que se reparten el espacio */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px; /* Espacio entre los bloques */
+    max-width: 1200px; /* Opcional: limita el ancho para que no se estire demasiado */
+    margin: 0 auto; /* Centra el tablero en la pantalla */
+}
+
+/* Opcional: Que los bloques tengan un estilo uniforme */
+.admin-bloque {
+    background-color: #2b2b2b; /* Fondo oscuro acorde a tu web */
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+/* Adaptación a móviles (si la pantalla es pequeña, se pone en una sola columna) */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+
+
+
+
+
+
