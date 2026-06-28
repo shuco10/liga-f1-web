@@ -1239,6 +1239,37 @@ table tr td:nth-child(2) {
     opacity: 1;
 }
 
+/* Contenedor principal para que las cajas tengan el mismo look que las de arriba */
+.caja-mundiales-admin {
+    background-color: #2b2b2b; /* El gris oscuro que ya usas arriba */
+    border: 1px solid #444;
+    border-left: 5px solid #00f2ff; /* El color cian de tus otras secciones */
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 600px; /* Centrado y con ancho contenido */
+}
 
+/* Estilo para los títulos de cada sección */
+.titulo-caja-admin {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+/* Estilo para los desplegables (selects) */
+.input-select-admin {
+    width: 100%;
+    padding: 10px;
+    background-color: #1a1a1a; /* Negro de tus selectores actuales */
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    display: block;
+}
 
 
