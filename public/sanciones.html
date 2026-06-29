@@ -224,7 +224,20 @@ async function resetearSanciones() {
     }
 }
 
-
+// Añadimos esta pequeña "escucha" que se sincroniza con tu lógica actual
+document.addEventListener("DOMContentLoaded", function() {
+    const observer = setInterval(() => {
+        // Buscamos tu función esAdmin()
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        const zonaReset = document.getElementById('zona-reset');
+        
+        if (zonaReset) {
+            zonaReset.style.display = adminStatus ? 'block' : 'none';
+            // Una vez detectado y aplicado, podemos parar el intervalo
+            clearInterval(observer);
+        }
+    }, 500); // Revisa cada medio segundo hasta que el elemento exista
+});
 
 
     
