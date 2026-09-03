@@ -2,9 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información | Cazadores de Curvas</title>
+    <title>Draft Temporada 4 | Cazadores de Curvas</title>
+    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,6 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
+        /* Estilo base para el fondo de esta página */
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
         .modal-estrellas { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-contenido-estrellas { background: #21252b; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; }
@@ -19,121 +23,83 @@
     <script src="/auth.js"></script>
 </head>
 <body>
+    <div id="header-placeholder"></div>
 
-    <!-- CABECERA CENTRADA Y ASEGURADA -->
-    <header style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px 20px 10px 20px; width: 100%; box-sizing: border-box;">
-        <div style="margin-bottom: 20px; display: flex; justify-content: center; width: 100%;">
-            <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas Logo" style="max-width: 220px; height: auto; display: block;">
-        </div>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 20px; width: 100%;">
-            <a href="index.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-building"></i></a>
-            <a href="normativas.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-gavel"></i></a>
-            <a href="contacto.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-envelope"></i></a>
-        </div>
-    </header>
-
-    <!-- SECCIÓN DE SPONSORS Y STREAMING (EXACTA A TU REFERENCIA) -->
-    <section style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 0 20px; box-sizing: border-box; margin-bottom: 30px;">
-        <!-- Caja de Sponsors -->
-        <div style="background: #21252b; border-left: 4px solid #e10600; padding: 20px; border-radius: 8px; width: 100%; max-width: 650px; text-align: center; box-sizing: border-box; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-            <h3 style="color: #e10600; font-size: 14px; font-weight: bold; letter-spacing: 1px; margin-top: 0; margin-bottom: 15px;">NUESTROS SPONSORS</h3>
-            <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;">
-                <!-- Reemplaza los src con las rutas de tus logos de sponsors si difieren -->
-                <img src="/webimagenes/sponsor1.png" alt="Sponsor 1" style="max-height: 35px; width: auto; object-fit: contain;">
-                <img src="/webimagenes/taxibus.png" alt="Taxibus" style="max-height: 35px; width: auto; object-fit: contain;">
-                <img src="/webimagenes/sponsor3.png" alt="Sponsor 3" style="max-height: 35px; width: auto; object-fit: contain;">
-            </div>
-        </div>
-
-        <!-- Canal de Retransmisión Twitch -->
-        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; background: #21252b; padding: 6px 12px; border-radius: 6px; gap: 8px; border: 1px solid #333;">
-                <img src="/webimagenes/avatar-twitch.png" alt="Avatar Twitch" style="width: 24px; height: 24px; border-radius: 50%;">
-                <a href="https://twitch.tv" target="_blank" style="background: #9146FF; color: white; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold;"><i class="fa-solid fa-star"></i> Suscribirse</a>
-            </div>
-            <div style="color: #c084fc; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                <i class="fa-brands fa-twitch"></i> CANAL DE RETRANSMISIÓN OFICIAL <i class="fa-brands fa-twitch"></i>
-            </div>
-        </div>
-
-        <!-- Banner Publicitario Inferior (Ej: Instant Gaming / Onimusha) -->
-        <div style="background: radial-gradient(circle, #333 0%, #111 100%); border: 1px solid #333; border-radius: 30px; padding: 15px 30px; width: 100%; max-width: 650px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap; gap: 15px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="/webimagenes/instant-gaming.png" alt="Instant Gaming" style="height: 30px; width: auto; object-fit: contain;">
-            </div>
-            <div style="text-align: center; color: #ccc; font-size: 12px;">
-                Todos tus videojuegos más baratos
-            </div>
-            <div>
-                <a href="#" target="_blank" style="background: #e67e22; color: white; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block;">Descúbrelos</a>
-            </div>
-        </div>
-    </section>
-
-<main style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; width: 100%; box-sizing: border-box;">
-    <div style="width: 100%; max-width: 650px;">
-        <h1 style="font-size: 22px; color: #fff; margin-bottom: 5px;">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
-        <h3 style="font-size: 14px; color: #aaa; margin-top: 0; margin-bottom: 20px;">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
+<main class="caja-contenido" style="padding: 20px; box-sizing: border-box; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
+    
+    <!-- Botones de Acción -->
+    <div class="contenedor-botones" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <a href="normativas.html" class="boton-accion" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 15px;">
+            <i class="fa-solid fa-book"></i> Normativa
+        </a>
+        <a href="resoluciones-fia.html" class="boton-accion" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 15px;">
+            <i class="fa-solid fa-gavel"></i> Resoluciones FIA
+        </a>
     </div>
+
+    <h1 class="titulo-principal" style="font-size: 22px; color: #fff; margin-bottom: 5px; text-align: center;">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
+    <h3 class="subtitulo-principal" style="font-size: 14px; color: #aaa; margin-top: 0; margin-bottom: 25px; text-align: center;">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
+
+    <!-- Selector de Parejas Admin y Controles -->
+    <div class="selector-parejas" style="width: 100%; max-width: 650px; margin: 0 auto 30px auto; padding: 20px; background: #21252b; border-radius: 8px; box-sizing: border-box;">
+        <h2 style="margin-top: 0; font-size: 18px;">🤝 CREAR NUEVA PAREJA</h2>
+        
+        <!-- Controles de Admin -->
+        <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+            <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 130px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+                <i class="fa-solid fa-plus"></i> Guardar Pareja
+            </button>
+            <button id="btn-ordenar-parejas" style="flex: 2; min-width: 140px; padding: 12px; background: #e67e22; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+                <i class="fa-solid fa-sort-numeric-down"></i> Ordenar ⭐
+            </button>
+            <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 130px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+                <i class="fa-solid fa-star"></i> Config. Estrellas
+            </button>
+            <button id="btn-reset-draft" style="flex: 1; min-width: 80px; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+                <i class="fa-solid fa-trash-can"></i> Reset
+            </button>
+        </div>
+
+        <!-- Desplegables de pilotos -->
+        <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+                    <option value="">Seleccionar Piloto 1</option>
+                </select>
+                <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+                    <option value="">Seleccionar Piloto 2</option>
+                </select>
+            </div>
+            
+            <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
+                Suma de estrellas de los pilotos: <span id="span-total-vivo">0</span> ⭐
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px; font-size: 16px;">📋 Parejas y Escuderías Asignadas</h3>
+            <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                <!-- Listado generado dinámicamente -->
+            </div>
+
+            <!-- LISTA RESUMEN DE ESCUDERÍAS ASIGNADAS -->
+            <div style="margin-top: 25px; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #444;">
+                <h4 style="margin-top: 0; color: #82d39d; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 15px;">
+                    <i class="fa-solid fa-list-check"></i> Resumen: Escuderías Asignadas por Pareja
+                </h4>
+                <div id="resumen-parejas-escuderias" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Se rellenará automáticamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
 </main>
 
-<div class="selector-parejas" style="max-width: 650px; margin: 0 auto 30px auto; padding: 20px; background: #21252b; border-radius: 8px; box-sizing: border-box;">
-    <h2 style="margin-top: 0; font-size: 18px;">🤝 CREAR NUEVA PAREJA</h2>
-    
-    <!-- Controles de Admin -->
-    <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-        <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 130px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-            <i class="fa-solid fa-plus"></i> Guardar Pareja
-        </button>
-        <button id="btn-ordenar-parejas" style="flex: 2; min-width: 140px; padding: 12px; background: #e67e22; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-            <i class="fa-solid fa-sort-numeric-down"></i> Ordenar ⭐
-        </button>
-        <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 130px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-            <i class="fa-solid fa-star"></i> Config. Estrellas
-        </button>
-        <button id="btn-reset-draft" style="flex: 1; min-width: 80px; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-            <i class="fa-solid fa-trash-can"></i> Reset
-        </button>
-    </div>
-
-    <!-- Desplegables de pilotos -->
-    <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
-                <option value="">Seleccionar Piloto 1</option>
-            </select>
-            <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
-                <option value="">Seleccionar Piloto 2</option>
-            </select>
-        </div>
-        
-        <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
-            Suma de estrellas de los pilotos: <span id="span-total-vivo">0</span> ⭐
-        </div>
-    </div>
-
-    <div style="margin-top: 30px;">
-        <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px; font-size: 16px;">📋 Parejas y Escuderías Asignadas</h3>
-        <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
-            <!-- Listado generado dinámicamente -->
-        </div>
-
-        <!-- LISTA RESUMEN DE ESCUDERÍAS ASIGNADAS -->
-        <div style="margin-top: 25px; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #444;">
-            <h4 style="margin-top: 0; color: #82d39d; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 15px;">
-                <i class="fa-solid fa-list-check"></i> Resumen: Escuderías Asignadas por Pareja
-            </h4>
-            <div id="resumen-parejas-escuderias" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-                <!-- Se rellenará automáticamente -->
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- PARRILLA VISUAL DE ESCUDERÍAS -->
-<div class="max-w-7xl mx-auto px-4 mt-12 mb-12">
-    <h3 class="text-2xl font-bold text-white mb-6 text-center">Parrilla Oficial de Escuderías</h3>
-    <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<div class="max-w-7xl mx-auto px-4 mt-12 mb-12" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    <h3 class="text-2xl font-bold text-white mb-6 text-center" style="font-size: 20px; margin-bottom: 20px; text-align: center;">Parrilla Oficial de Escuderías</h3>
+    <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">
         <!-- Las tarjetas se pintarán solas aquí mediante JavaScript -->
     </div>
 </div>
@@ -157,20 +123,54 @@
 <div id="footer-placeholder"></div>
 
 <script>
+    // 1. Cargar todo en orden
     document.addEventListener('DOMContentLoaded', () => {
+        // Carga el Header (una sola vez)
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                
+                // Configurar el Banner de Instant Gaming
+                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+
+                // Verificamos sesión y cargamos datos del draft al tener el header listo
+                verificarSesion();
+                cargarDatosDraft();
+                configurarModalEventos();
+            });
+
+        // Cargar Footer y Modal
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-        
-        cargarDatosDraft();
-        configurarModalEventos();
-        verificarSesion();
     });
 
+    let listaPilotosGlobal = [];
+    let listaEscuderiasGlobal = [];
+    let parejasGuardadas = [];
+
+    // 2. Lógica de Sesión
     function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const formAdmin = document.getElementById('form-admin');
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        }
+        
+        if (formAdmin) {
+            formAdmin.style.display = adminStatus ? 'block' : 'none';
+        }
+
         const controlesAdminDraft = document.getElementById('controles-admin-draft');
         const desplegablesAdminDraft = document.getElementById('desplegables-admin-draft');
-        
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
 
         if (controlesAdminDraft) controlesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
         if (desplegablesAdminDraft) desplegablesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
@@ -179,10 +179,10 @@
         renderizarParrillaEscuderias();
     }
 
-    let listaPilotosGlobal = [];
-    let listaEscuderiasGlobal = [];
-    let parejasGuardadas = [];
-    let ordenAscendenteEstrellas = false;
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
+    }
 
     async function cargarDatosDraft() {
         try {
@@ -532,6 +532,7 @@
         } catch (err) { console.error(err); }
     }
 
+    // Eventos adicionales de controles
     document.addEventListener('DOMContentLoaded', () => {
         const sel1 = document.getElementById('piloto-uno');
         const sel2 = document.getElementById('piloto-dos');
@@ -545,6 +546,49 @@
         if(btnReset) btnReset.addEventListener('click', resetearDraft);
         if(btnOrdenar) btnOrdenar.addEventListener('click', ordenarParejasPorEstrellas);
     });
+
+    // Función de contacto por si se requiere en el footer/modal global
+    async function enviarContacto() {
+        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+        const nombre = document.getElementById('nombre-contacto')?.value;
+        const asunto = document.getElementById('asunto-contacto')?.value;
+        const mensaje = document.getElementById('mensaje-contacto')?.value;
+
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
+            return;
+        }
+
+        const payload = {
+            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+            embeds: [{
+                title: "📩 Nuevo mensaje de contacto",
+                color: 3447003,
+                fields: [
+                    { name: "Nombre", value: nombre, inline: true },
+                    { name: "Asunto", value: asunto, inline: true },
+                    { name: "Mensaje", value: mensaje }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("¡Mensaje enviado correctamente!");
+            document.getElementById('modal-contacto').style.display = 'none';
+            document.getElementById('nombre-contacto').value = '';
+            document.getElementById('asunto-contacto').value = '';
+            document.getElementById('mensaje-contacto').value = '';
+        } else {
+            alert("Error al enviar el mensaje.");
+        }
+    }
 </script>
 </body>
 </html>
