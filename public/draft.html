@@ -269,41 +269,43 @@ let listaPilotosGlobal = [];
     }
 
     // Función auxiliar para obtener la ruta del logo de forma segura
-    function obtenerRutaLogo(escuderia) {
-        if (escuderia.logo) return escuderia.logo;
-        // Si no viene en la BD, normalizamos el nombre para buscarlo en /logos/nombre.png
-        const nombreLimpio = escuderia.nombre.toLowerCase().replace(/\s+/g, '').replace('redbull', 'redbull');
-        return `/logos/${nombreLimpio}.png`;
+// Función auxiliar para obtener la ruta del logo de forma segura mapeando nombres largos a cortos
+function obtenerRutaLogo(escuderia) {
+    if (escuderia.logo) return escuderia.logo;
+    
+    // Pasamos el nombre a minúsculas y sin espacios para compararlo fácil
+    const nombre = escuderia.nombre.toLowerCase().replace(/[^a-z0-9]/g, '');
+    let archivoCorto = 'default';
+
+    if (nombre.includes('redbull') || nombre.includes('oracle')) {
+        archivoCorto = 'redbull';
+    } else if (nombre.includes('ferrari')) {
+        archivoCorto = 'ferrari';
+    } else if (nombre.includes('mclaren')) {
+        archivoCorto = 'mclaren';
+    } else if (nombre.includes('mercedes')) {
+        archivoCorto = 'mercedes';
+    } else if (nombre.includes('aston') || nombre.includes('martin')) {
+        archivoCorto = 'aston';
+    } else if (nombre.includes('alpine') || nombre.includes('bwt')) {
+        archivoCorto = 'alpine';
+    } else if (nombre.includes('williams') || nombre.includes('atlassian')) {
+        archivoCorto = 'williams';
+    } else if (nombre.includes('rb') || nombre.includes('visa') || nombre.includes('cashapp') || nombre.includes('racingbulls')) {
+        archivoCorto = 'rb';
+    } else if (nombre.includes('haas') || nombre.includes('tgr')) {
+        archivoCorto = 'hass'; // Respetando el nombre de tu archivo hass.png
+    } else if (nombre.includes('audi')) {
+        archivoCorto = 'audi';
+    } else if (nombre.includes('cadillac')) {
+        archivoCorto = 'cadillac';
+    } else {
+        // Por si hay alguno más, intentamos limpiar el nombre genérico
+        archivoCorto = nombre;
     }
 
-    function actualizarSelects() {
-        const select1 = document.getElementById('piloto-uno');
-        const select2 = document.getElementById('piloto-dos');
-        if (!select1 || !select2) return;
-
-        const valorActual1 = select1.value;
-        const valorActual2 = select2.value;
-
-        const idsEmparejados = parejasGuardadas.reduce((acc, p) => {
-            acc.push(p.id_piloto1.toString(), p.id_piloto2.toString());
-            return acc;
-        }, []);
-
-        const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
-        const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
-
-        select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
-            disponibles1.map(p => {
-                const est = Number(p.estrellas) || 0;
-                return `<option value="${p.id}" ${valorActual1 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
-            }).join('');
-
-        select2.innerHTML = '<option value="">Seleccionar Piloto 2</option>' + 
-            disponibles2.map(p => {
-                const est = Number(p.estrellas) || 0;
-                return `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
-            }).join('');
-    }
+    return `/logos/${archivoCorto}.png`;
+}
 
     function calcularEstrellasEnVivo() {
         const id1 = document.getElementById('piloto-uno').value;
