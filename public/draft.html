@@ -79,7 +79,7 @@
     </div>
 </div>
 
-<!-- PARRILLA VISUAL DE ESCUDERÍAS FUERA DEL CONTENEDOR ESTRECHO PARA QUE RESPIRE BIEN -->
+<!-- PARRILLA VISUAL DE ESCUDERÍAS -->
 <div class="max-w-7xl mx-auto px-4 mt-12 mb-12">
     <h3 class="text-2xl font-bold text-white mb-6 text-center">Parrilla Oficial de Escuderías</h3>
     <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -103,8 +103,8 @@
     </div>
 </div>
 
-<!-- CONTENEDOR PARA CENTRAR EL FOOTER (SOLUCIÓN AL LOGO A LA IZQUIERDA) -->
-<div id="footer-placeholder" style="display: flex; justify-content: center; align-items: center; width: 100%;"></div>
+<!-- FOOTER CARGADO ORIGINALMENTE SIN CONTENEDORES FORZADOS -->
+<div id="footer-placeholder"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -287,6 +287,7 @@
                 body: JSON.stringify({ id_escuderia: idEscuderia ? parseInt(idEscuderia) : null })
             });
             if (res.ok) {
+                // Actualizamos los datos del servidor para que la parrilla y la lista reflejen el cambio de inmediato
                 await cargarDatosDraft();
             } else {
                 alert("Error al asignar la escudería.");
@@ -391,14 +392,13 @@
         contenedor.innerHTML = '';
 
         listaEscuderiasGlobal.forEach(escuderia => {
-            // Se usa Number en ambos lados para asegurar que coincidan correctamente los tipos de datos (string vs int)
-            const parejaAsignada = parejasGuardadas.find(p => p.id_escuderia && Number(p.id_escuderia) === Number(escuderia.id));
+            // Buscamos la pareja que tiene asignada esta escudería comparando correctamente los IDs
+            const parejaAsignada = parejasGuardadas.find(p => p.id_escuderia !== null && p.id_escuderia !== undefined && Number(p.id_escuderia) === Number(escuderia.id));
 
             const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
             const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
 
             const tarjeta = document.createElement('div');
-            // Se añade h-full y flex para que todas las tarjetas midan lo mismo y tengan un aspecto limpio
             tarjeta.className = "bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg flex flex-col justify-between h-full relative overflow-hidden";
             
             tarjeta.innerHTML = `
@@ -406,7 +406,6 @@
                     <div class="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
                         <div class="flex items-center space-x-2 overflow-hidden">
                             ${escuderia.logo ? `<img src="${escuderia.logo}" class="w-6 h-6 object-contain flex-shrink-0">` : ''}
-                            <!-- Se usa whitespace-nowrap y text-ellipsis para que los nombres largos de escuderías salgan en una línea limpia -->
                             <span class="font-bold text-white text-sm tracking-wider whitespace-nowrap overflow-hidden text-ellipsis" title="${escuderia.nombre}">${escuderia.nombre}</span>
                         </div>
                         <span class="text-yellow-400 font-semibold text-sm flex-shrink-0 ml-2">${Number(escuderia.estrellas) || 0} ⭐</span>
