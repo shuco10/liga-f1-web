@@ -461,6 +461,50 @@ app.post('/api/reset-campeonato', async (req, res) => {
     } catch (err) { res.sendStatus(500); }
 });
 
+
+// ==========================================
+// RUTA DE CLASIFICACIÓN DE CONSTRUCTORES
+// ==========================================
+app.get('/api/clasificacion-constructores', async (req, res) => {
+    try {
+        const querySQL = `
+            SELECT 
+                e.id, 
+                e.nombre, 
+                e.color_hex, 
+                e.estrellas,
+                e.mundiales,
+                COALESCE(SUM(p.puntos_totales), 0)::int AS puntos_totales,
+                COALESCE(SUM(p.victorias), 0)::int AS victorias,
+                COALESCE(SUM(p.podios), 0)::int AS podios
+            FROM escuderias e
+            LEFT JOIN pilotos p ON p.escuderia_id = e.id
+            GROUP BY e.id, e.nombre, e.color_hex, e.estrellas, e.mundiales
+            ORDER BY puntos_totales DESC, victorias DESC, podios DESC;
+        `;
+        const { rows } = await pool.query(querySQL);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener la clasificación de constructores:", err);
+        res.status(500).json({ error: 'Error al consultar constructores' });
+    }
+});
+
+// ==========================================
+// RUTA DE PILOTOS PARA DESPLEGABLES (ADMIN / GESTIÓN)
+// ==========================================
+app.get('/api/pilotos', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT id, gamertag, numero_piloto, escuderia_id, estrellas, es_reserva FROM pilotos ORDER BY gamertag ASC;');
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener pilotos para desplegables:", err);
+        res.status(500).json({ error: 'Error al obtener lista de pilotos' });
+    }
+});
+
+
+
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
