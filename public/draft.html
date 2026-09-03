@@ -19,25 +19,28 @@
     <script src="/auth.js"></script>
 </head>
 <body>
-    <div id="header-placeholder"></div>
 
-<main class="caja-contenido">
-    <div class="contenedor-botones">
-        <a href="normativas.html" class="boton-accion">
-            <i class="fa-solid fa-book"></i> Normativa
-        </a>
-        <a href="resoluciones-fia.html" class="boton-accion">
-            <i class="fa-solid fa-gavel"></i> Resoluciones FIA
-        </a>
-    </div>
+    <!-- CABECERA FIJA ORIGINAL (Tal cual tu segunda foto) -->
+    <header style="text-align: center; padding: 30px 20px 10px 20px;">
+        <div style="margin-bottom: 20px;">
+            <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas Logo" style="max-width: 220px; height: auto;">
+        </div>
+        <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px;">
+            <a href="index.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-building"></i></a>
+            <a href="normativas.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-gavel"></i></a>
+            <a href="contacto.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+    </header>
+
+<main class="caja-contenido" style="text-align: center; padding: 0 20px;">
     <div class="header-principal">
-        <h1 class="titulo-principal">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
-        <h3 class="subtitulo-principal">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
+        <h1 class="titulo-principal" style="font-size: 24px; color: #fff; margin-bottom: 5px;">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
+        <h3 class="subtitulo-principal" style="font-size: 15px; color: #aaa; margin-top: 0;">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
     </div>
 </main>
 
 <div class="selector-parejas" style="max-width: 650px; margin: 20px auto; padding: 20px; background: #21252b; border-radius: 8px;">
-    <h2 style="margin-top: 0;">🤝 CREAR NUEVA PAREJA</h2>
+    <h2 style="margin-top: 0; font-size: 18px;">🤝 CREAR NUEVA PAREJA</h2>
     
     <!-- Controles de Admin -->
     <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
@@ -72,7 +75,7 @@
     </div>
 
     <div style="margin-top: 30px;">
-        <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px;">📋 Parejas y Escuderías Asignadas</h3>
+        <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px; font-size: 16px;">📋 Parejas y Escuderías Asignadas</h3>
         <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
             <!-- Listado generado dinámicamente -->
         </div>
@@ -117,41 +120,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        fetch('/header.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
-                const script = document.createElement('script');
-                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-                script.defer = true;
-                document.body.appendChild(script);
-                verificarSesion();
-            });
-
+        // Cargar footer y login modal
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
         
         cargarDatosDraft();
         configurarModalEventos();
+        verificarSesion();
     });
 
     function verificarSesion() {
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const formAdmin = document.getElementById('form-admin');
         const controlesAdminDraft = document.getElementById('controles-admin-draft');
         const desplegablesAdminDraft = document.getElementById('desplegables-admin-draft');
         
         const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-        
-        if (btnLogin && btnLogout) {
-            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-        }
-        if (formAdmin) {
-            formAdmin.style.display = adminStatus ? 'block' : 'none';
-        }
 
         if (controlesAdminDraft) controlesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
         if (desplegablesAdminDraft) desplegablesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
@@ -220,6 +202,7 @@
         const id1 = document.getElementById('piloto-uno').value;
         const id2 = document.getElementById('piloto-dos').value;
         const spanTotal = document.getElementById('span-total-vivo');
+        if (!spanTotal) return;
 
         let totalPilotos = 0;
         if (id1) {
