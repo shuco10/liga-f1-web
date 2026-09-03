@@ -11,7 +11,6 @@
     
     <style>
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
-        /* Estilos básicos para la modal de estrellas */
         .modal-estrellas { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-contenido-estrellas { background: #21252b; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; }
     </style>
@@ -31,17 +30,17 @@
     </div>
     <div class="header-principal">
         <h1 class="titulo-principal">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
-        <h3 class="subtitulo-principal">👥 Nuevas parejas de pilotos y escuderias para la temporada. (Límite: 14 ⭐) 👥</h3>
+        <h3 class="subtitulo-principal">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
     </div>
 </main>
 
 <div class="selector-parejas" style="max-width: 650px; margin: 20px auto; padding: 20px; background: #21252b; border-radius: 8px;">
-    <h2 style="margin-top: 0;">🤝 SELECCIÓN DE PAREJAS</h2>
+    <h2 style="margin-top: 0;">🤝 CREAR NUEVA PAREJA</h2>
     
-    <!-- Controles de Admin (Crear, Reset y Configurar Estrellas) -->
+    <!-- Controles de Admin -->
     <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
         <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 140px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-            <i class="fa-solid fa-plus"></i> Crear Pareja
+            <i class="fa-solid fa-plus"></i> Guardar Pareja
         </button>
         <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 140px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
             <i class="fa-solid fa-star"></i> Config. Estrellas
@@ -51,7 +50,7 @@
         </button>
     </div>
 
-    <!-- Desplegables de pilotos y contador de estrellas en tiempo real -->
+    <!-- Desplegables de pilotos y contador exclusivo de pilotos en vivo -->
     <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
         <div style="display: flex; gap: 10px;">
             <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
@@ -63,12 +62,15 @@
         </div>
         
         <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
-            Estrellas de la pareja: <span id="span-total-vivo">0</span> / 14 ⭐
+            Suma de estrellas de los pilotos: <span id="span-total-vivo">0</span> ⭐
         </div>
     </div>
 
-    <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 20px;">
-        <!-- Parejas guardadas -->
+    <div style="margin-top: 30px;">
+        <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px;">📋 Parejas y Escuderías Asignadas</h3>
+        <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px;">
+            <!-- Listado generado dinámicamente -->
+        </div>
     </div>
 </div>
 
@@ -81,14 +83,10 @@
         </div>
 
         <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Escuderías</h4>
-        <div id="lista-escuderias-modal" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
-            <!-- Se cargan por JS -->
-        </div>
+        <div id="lista-escuderias-modal" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
 
         <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Pilotos</h4>
-        <div id="lista-pilotos-modal" style="display: flex; flex-direction: column; gap: 8px;">
-            <!-- Se cargan por JS -->
-        </div>
+        <div id="lista-pilotos-modal" style="display: flex; flex-direction: column; gap: 8px;"></div>
     </div>
 </div>
 
@@ -186,39 +184,22 @@
             disponibles2.map(p => `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${p.estrellas} ⭐)</option>`).join('');
     }
 
+    // Calcula solo la suma de los dos pilotos seleccionados para crear la pareja
     function calcularEstrellasEnVivo() {
         const id1 = document.getElementById('piloto-uno').value;
         const id2 = document.getElementById('piloto-dos').value;
         const spanTotal = document.getElementById('span-total-vivo');
-        const contenedorVivo = document.getElementById('contador-estrellas-vivo');
 
-        let total = 0;
-        let escuderiaEstrellas = 0;
-
+        let totalPilotos = 0;
         if (id1) {
             const p1 = listaPilotosGlobal.find(p => p.id.toString() === id1);
-            if (p1) {
-                total += (p1.estrellas || 0);
-                escuderiaEstrellas = (p1.escuderia_estrellas || 0);
-                total += escuderiaEstrellas;
-            }
+            if (p1) totalPilotos += (p1.estrellas || 0);
         }
-
         if (id2) {
             const p2 = listaPilotosGlobal.find(p => p.id.toString() === id2);
-            if (p2) {
-                total += (p2.estrellas || 0);
-            }
+            if (p2) totalPilotos += (p2.estrellas || 0);
         }
-
-        spanTotal.textContent = total;
-        if (total > 14) {
-            contenedorVivo.style.color = '#e10600';
-            contenedorVivo.style.borderColor = '#e10600';
-        } else {
-            contenedorVivo.style.color = '#82d39d';
-            contenedorVivo.style.borderColor = '#444';
-        }
+        spanTotal.textContent = totalPilotos;
     }
 
     async function crearPareja() {
@@ -231,15 +212,6 @@
         }
         if (id1 === id2) {
             alert("Un piloto no puede hacer pareja consigo mismo.");
-            return;
-        }
-
-        const p1 = listaPilotosGlobal.find(p => p.id.toString() === id1);
-        const p2 = listaPilotosGlobal.find(p => p.id.toString() === id2);
-        const totalEstrellas = (p1.estrellas || 0) + (p2.estrellas || 0) + (p1.escuderia_estrellas || 0);
-
-        if (totalEstrellas > 14) {
-            alert(`¡Supera el límite de estrellas! Esta pareja suma ${totalEstrellas} ⭐ y el máximo permitido es 14.`);
             return;
         }
 
@@ -261,6 +233,35 @@
         } catch (err) {
             console.error("Error de red:", err);
             alert("Error de conexión al guardar la pareja.");
+        }
+    }
+
+    // Asignar escudería a una pareja ya creada y validar límite de 14 estrellas en total
+    async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
+        if (idEscuderia) {
+            const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
+            const totalFinal = estrellasPilotos + (esc ? esc.estrellas : 0);
+
+            if (totalFinal > 14) {
+                alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
+                renderizarParejas(); // Resetea el desplegable visualmente
+                return;
+            }
+        }
+
+        try {
+            const res = await fetch(`/api/draft-parejas/${idPareja}/escuderia`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_escuderia: idEscuderia || null })
+            });
+            if (res.ok) {
+                await cargarDatosDraft();
+            } else {
+                alert("Error al asignar la escudería.");
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
 
@@ -302,34 +303,50 @@
         contenedor.innerHTML = parejasGuardadas.map((p, index) => {
             const est1 = p.estrellas1 || 0;
             const est2 = p.estrellas2 || 0;
-            const estEsc = p.estrellas_escuderia1 || 0;
-            const totalPareja = est1 + est2 + estEsc;
+            const sumaPilotos = est1 + est2;
+            const estEsc = p.estrellas_escuderia || 0;
+            const totalFinal = p.id_escuderia ? (sumaPilotos + estEsc) : sumaPilotos;
+
+            // Escuderías ya seleccionadas en otras parejas para evitar duplicados si lo deseas
+            const escuderiasOcupadas = parejasGuardadas.filter(item => item.id !== p.id).map(item => item.id_escuderia);
 
             return `
-                <div class="fila-pareja" style="background: #252c35; padding: 12px 15px; margin-top: 8px; border-radius: 4px; border-left: 4px solid ${totalPareja > 14 ? '#e10600' : '#82d39d'}; display: flex; justify-content: space-between; color: #fff; align-items: center;">
-                    <div>
-                        <span style="font-weight: bold; color: #82d39d; margin-right: 8px;">Pareja ${index + 1}:</span>
-                        <span style="font-weight: 500;">${p.nombre1} + ${p.nombre2}</span>
-                        <div style="font-size: 12px; color: #aaa; margin-top: 4px;">
-                            Escudería (${p.escuderia1 || 'Sin escudería'}): ${estEsc}⭐ | P1: ${est1}⭐ | P2: ${est2}⭐
+                <div class="fila-pareja" style="background: #252c35; padding: 15px; margin-top: 10px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-weight: bold; color: #82d39d;">Pareja ${index + 1}: ${p.nombre1} (${est1}⭐) + ${p.nombre2} (${est2}⭐)</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #1a1a1a; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 14px;">
+                                Total: ${totalFinal} / 14 ⭐
+                            </span>
+                            ${adminStatus ? `
+                                <button onclick="eliminarPareja(${p.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            ` : ''}
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span style="background: #1a1a1a; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: ${totalPareja > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444;">
-                            ${totalPareja} / 14 ⭐
-                        </span>
+
+                    <!-- Selector de Escudería para esta pareja -->
+                    <div style="display: flex; align-items: center; gap: 10px; background: #1a1a1a; padding: 8px; border-radius: 4px;">
+                        <span style="font-size: 13px; color: #aaa;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
                         ${adminStatus ? `
-                            <button onclick="eliminarPareja(${p.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        ` : ''}
+                            <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
+                                <option value="">-- Sin escudería asignada --</option>
+                                ${listaEscuderiasGlobal.map(e => `
+                                    <option value="${e.id}" ${p.id_escuderia == e.id ? 'selected' : ''}>
+                                        ${e.nombre} (${e.estrellas} ⭐)
+                                    </option>
+                                `).join('')}
+                            </select>
+                        ` : `
+                            <span style="font-weight: 500; color: #fff;">${p.escuderia_nombre || 'Sin escudería'} (${estEsc} ⭐)</span>
+                        `}
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    // GESTIÓN DE LA MODAL Y ACTUALIZACIÓN DE ESTRELLAS
     function configurarModalEventos() {
         const modal = document.getElementById('modal-estrellas');
         const btnAbrir = document.getElementById('btn-abrir-modal-estrellas');
@@ -356,7 +373,7 @@
         if (contenedorPil) {
             contenedorPil.innerHTML = listaPilotosGlobal.map(p => `
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
-                    <span>${p.gamertag} <small style="color:#888;">(${p.escuderia || 'Sin escudería'})</small></span>
+                    <span>${p.gamertag}</span>
                     <input type="number" min="0" max="14" value="${p.estrellas}" onchange="actualizarEstrellasPiloto(${p.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
                 </div>
             `).join('');
@@ -371,18 +388,9 @@
                 body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
             });
             if (res.ok) {
-                // Recargamos los datos silenciosamente para reflejar los cambios al instante
-                const resPilotos = await fetch('/api/lista-de-pilotos');
-                if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
-                actualizarSelects();
-                calcularEstrellasEnVivo();
-                renderizarParejas();
-            } else {
-                alert("Error al actualizar las estrellas del piloto.");
+                await cargarDatosDraft();
             }
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     }
 
     async function actualizarEstrellasEscuderia(idEscuderia, nuevasEstrellas) {
@@ -393,18 +401,9 @@
                 body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
             });
             if (res.ok) {
-                const resEscuderias = await fetch('/api/lista-de-escuderias');
-                const resPilotos = await fetch('/api/lista-de-pilotos');
-                if (resEscuderias.ok) listaEscuderiasGlobal = await resEscuderias.json();
-                if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
-                calcularEstrellasEnVivo();
-                renderizarParejas();
-            } else {
-                alert("Error al actualizar las estrellas de la escudería.");
+                await cargarDatosDraft();
             }
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -413,8 +412,8 @@
         const btnPareja = document.getElementById('btn-crear-pareja');
         const btnReset = document.getElementById('btn-reset-draft');
 
-        if(sel1) sel1.addEventListener('change', () => { actualizarSelects(); calcularEstrellasEnVivo(); });
-        if(sel2) sel2.addEventListener('change', () => { actualizarSelects(); calcularEstrellasEnVivo(); });
+        if(sel1) sel1.addEventListener('change', calcularEstrellasEnVivo);
+        if(sel2) sel2.addEventListener('change', calcularEstrellasEnVivo);
         if(btnPareja) btnPareja.addEventListener('click', crearPareja);
         if(btnReset) btnReset.addEventListener('click', resetearDraft);
     });
