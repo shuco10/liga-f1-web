@@ -2,62 +2,371 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pilotos - Cazadores de Curvas</title>
-    <link rel="stylesheet" href="style.css"> 
-    <script src="https://kit.fontawesome.com/tu-codigo-fontawesome.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noticias | Cazadores de Curvas</title>
+    <script src="/auth.js"></script>
+    <link rel="stylesheet" href="/estilos-cabecera.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        #lista-noticias { padding: 20px; max-width: 800px; margin: auto; }
+    </style>
+    <script src="/auth.js"></script>
 </head>
 <body>
 
     <div id="header-placeholder"></div>
+    <div id="modal-container"></div>
+    
+    <div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
 
-    <main class="caja-contenido">
-        <h1>Nuestros Pilotos</h1>
-        <p>Aquí irá el contenido de tu página...</p>
+<div id="form-noticia-admin" class="form-noticia" style="display: none; border: 1px solid #444; padding: 20px; margin: 20px auto; background: #222; max-width: 500px; border-radius: 10px;">
+    <h3 style="margin-top: 0; text-align: center;">Publicar Nueva Noticia</h3>
+    <input type="text" id="nueva-noticia-titulo" placeholder="Título" style="width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;">
+    <textarea id="nueva-noticia-cuerpo" placeholder="Cuerpo de la noticia..." rows="4" style="width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;"></textarea>
+    <button onclick="publicarNoticia()" style="background: #ff3333; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; width: 100%;">Publicar</button>
+</div>
+
+<script>
+    // Mostrar el formulario solo si es admin
+    if (typeof esAdmin === 'function' && esAdmin()) {
+        document.getElementById('form-noticia-admin').style.display = 'block';
+    }
+</script>
+
+<main class="caja-contenido" id="lista-noticias">
     </main>
 
     <div id="footer-placeholder"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Carga modular (Header, Footer, Modal)
-            fetch('/header.html').then(res => res.text()).then(data => {
+<script>
+    // 1. Cargar Header, Footer y Modal de forma ordenada
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Cargar Header
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
-                // Inicializar banner después de cargar el header
-                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+                
+                // Verificación de sesión tras cargar el header
+                if (typeof verificarSesion === 'function') {
+                    verificarSesion();
+                }
+
+                // Configuración Banner
+                window.igBannerConfig = {
+                    lang: 'es',
+                    igr: 'gamer-97d22e',
+                    banners: ['my-banner']
+                };
                 const script = document.createElement('script');
                 script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
                 script.defer = true;
                 document.body.appendChild(script);
-                verificarSesion(); // Ajusta botones tras cargar header
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
+
+        // Cargar Footer
+        fetch('/footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
+            .catch(error => console.error('Error al cargar el footer:', error));
+
+        // Cargar Modal de Login (Para evitar el error de null)
+        fetch('/login-modal.html')
+            .then(res => res.text())
+            .then(data => {
+                document.body.insertAdjacentHTML('beforeend', data);
             });
 
-            fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
-            fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+        // Cargar las noticias
+        cargarNoticias();
+    });
+
+// 1. Mostrar form si es admin
+    if (typeof esAdmin === 'function' && esAdmin()) {
+        document.getElementById('form-noticia-admin').style.display = 'block';
+    }
+
+    // 2. Cargar Noticias
+async function cargarNoticias() {
+    const contenedor = document.getElementById('lista-noticias');
+    if (!contenedor) return; // Protección por si no existe en esta página
+
+    try {
+        const respuesta = await fetch('/api/noticias');
+        const noticias = await respuesta.json();
+        
+        contenedor.innerHTML = ''; 
+        
+        if (noticias.length === 0) {
+            contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+            return;
+        }
+
+        noticias.forEach(noticia => {
+            const div = document.createElement('div');
+            div.className = 'noticia-item noticia-destacada-amarilla'; 
+            div.style.marginBottom = "20px";
+            
+            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                            style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                    <button onclick="eliminarNoticia(${noticia.id})" 
+                            style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                </div>
+            ` : '';
+
+            const fechaObj = new Date(noticia.fecha);
+            div.innerHTML = `
+                <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
+                <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                ${botonesAdmin}
+            `;
+            contenedor.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Error cargando noticias:", error);
+        contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
+    }
+}
+
+    // 3. Acciones Admin
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    const res = await fetch('/api/noticias', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ titulo: tituloInput.value, contenido: contenidoInput.value })
+    });
+    
+    if (res.ok) { 
+        // Limpiamos los campos
+        tituloInput.value = '';
+        contenidoInput.value = '';
+
+            if (res.ok) {
+        // 1. Llamamos a la función de Discord antes de recargar la página
+        await notificarDiscord(titulo, contenido);
+        
+        // 2. Alert y recarga
+        alert("Noticia publicada correctamente y enviada a Discord");
+        location.reload(); 
+    }
+        
+        cargarNoticias(); 
+        alert("Publicado"); 
+    }
+}
+
+
+
+
+
+
+    
+
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    // Validación básica para no enviar noticias vacías
+    if (!tituloInput.value || !contenidoInput.value) {
+        alert("Por favor, rellena el título y el contenido.");
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/noticias', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                titulo: tituloInput.value, 
+                contenido: contenidoInput.value 
+            })
+        });
+        
+        if (res.ok) { 
+            // 1. Notificamos a Discord usando los valores de los inputs
+            await notificarDiscord(tituloInput.value, contenidoInput.value);
+            
+            // 2. Limpiamos los campos
+            tituloInput.value = '';
+            contenidoInput.value = '';
+
+            // 3. Feedback al usuario
+            alert("Noticia publicada correctamente y enviada a Discord.");
+            
+            // 4. Actualizamos la lista sin recargar toda la página (es más rápido)
+            if (typeof cargarNoticias === 'function') {
+                cargarNoticias();
+            } else {
+                location.reload(); // Si no existe la función, recargamos
+            }
+        } else {
+            alert("Error al publicar la noticia.");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Error de conexión al publicar.");
+    }
+}
+
+
+
+// --- FUNCIÓN PARA ELIMINAR ---
+async function eliminarNoticia(id) {
+    if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+        const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+        if (res.ok) location.reload();
+    }
+}
+
+async function editarNoticia(id, tituloActual, contenidoActual) {
+    const nuevoTitulo = prompt("Edita el título:", tituloActual);
+    const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+    if (nuevoTitulo !== null && nuevoContenido !== null) {
+        const res = await fetch(`/api/noticias/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
+        });
+        if (res.ok) location.reload();
+        else alert("Error al actualizar la noticia.");
+    }
+}
+
+
+    
+    document.addEventListener('DOMContentLoaded', cargarNoticias);
+
+
+    // Esta función vivirá ahora permanentemente en noticias.html
+    function verificarSesion() {
+        console.log("DEBUG: Ejecutando verificación...");
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        
+        if (btnLogin && btnLogout) {
+            if (adminStatus === true) {
+                btnLogin.style.display = 'none';
+                btnLogout.style.display = 'inline-block';
+            } else {
+                btnLogin.style.display = 'inline-block';
+                btnLogout.style.display = 'none';
+            }
+        } else {
+            console.warn("DEBUG: Botones no encontrados todavía.");
+        }
+    }
+
+    // Esta función también la movemos aquí para que sea 100% accesible
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
+    }
+
+
+
+
+
+
+// --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
+
+async function notificarDiscord(titulo, descripcion, autor) {
+    const webhookUrl = 'https://discord.com/api/webhooks/1517917019813449829/bngxTpKb_bo1EARKD_tNv1uztT95BCQQFqIVH6Wb-8veI8PxGNuiSnYf-SLcAApD61vn'; 
+    const webUrl = "https://cazadores-de-curvas.onrender.com/"; 
+
+    // Cambiamos el nombre de "mensaje" a "payload" para evitar el error de inicialización
+    const payload = {
+        content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
+        embeds: [{
+            title: titulo,
+            description: `${descripcion}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
+            color: 16711680,
+            author: {
+                name: autor || "**- Administración -**"
+            },
+            timestamp: new Date().toISOString()
+        }]
+    };
+
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload) // Usamos "payload" aquí
         });
 
-        // 2. Funciones globales de sesión (copia esto a todas las páginas)
-        function verificarSesion() {
-            const btnLogin = document.getElementById('btn-login');
-            const btnLogout = document.getElementById('btn-logout');
-            const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-            
-            if (btnLogin && btnLogout) {
-                btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-                btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-            } else {
-                setTimeout(verificarSesion, 100);
-            }
+        if (!response.ok) {
+            console.error('Error al enviar la notificación a Discord:', response.status);
+        } else {
+            console.log('Notificación enviada a Discord con éxito.');
+        }
+    } catch (error) {
+        console.error('Error de red al intentar notificar a Discord:', error);
+    }
+}
+
+
+
+
+
+    
+        async function enviarContacto() {
+        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+        const nombre = document.getElementById('nombre-contacto').value;
+        const asunto = document.getElementById('asunto-contacto').value;
+        const mensaje = document.getElementById('mensaje-contacto').value;
+
+        // Validacion simple
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
+            return;
         }
 
-        function seguridadAbrirModal() {
-            const modal = document.getElementById('login-modal');
-            if (modal) modal.style.display = 'block';
-        }
+        const payload = {
+            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+            embeds: [{
+                title: "📩 Nuevo mensaje de contacto",
+                color: 3447003,
+                fields: [
+                    { name: "Nombre", value: nombre, inline: true },
+                    { name: "Asunto", value: asunto, inline: true },
+                    { name: "Mensaje", value: mensaje }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
 
-        function cerrarSesion() {
-            localStorage.removeItem('rol');
-            location.reload();
+        const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("¡Mensaje enviado correctamente!");
+            document.getElementById('modal-contacto').style.display = 'none';
+            document.getElementById('nombre-contacto').value = '';
+            document.getElementById('asunto-contacto').value = '';
+            document.getElementById('mensaje-contacto').value = '';
+        } else {
+            alert("Error al enviar el mensaje.");
         }
-    </script>
-</body>
-</html>
+    }
+
+    
+    
+</script>
