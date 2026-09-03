@@ -2,17 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información | Cazadores de Curvas</title>
-    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* Estilo base para el fondo de esta página */
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
     </style>
     <script src="/auth.js"></script>
@@ -21,7 +18,6 @@
     <div id="header-placeholder"></div>
 
 <main class="caja-contenido">
-    <!-- Botones de Acción -->
     <div class="contenedor-botones">
         <a href="normativas.html" class="boton-accion">
             <i class="fa-solid fa-book"></i> Normativa
@@ -36,53 +32,52 @@
     </div>
 </main>
 
-<div class="selector-parejas" style="max-width: 600px; margin: 20px auto; padding: 20px;">
-    <h2>🤝 SELECCIÓN DE PAREJAS</h2>
+<div class="selector-parejas" style="max-width: 600px; margin: 20px auto; padding: 20px; background: #21252b; border-radius: 8px;">
+    <h2 style="margin-top: 0;">🤝 SELECCIÓN DE PAREJAS</h2>
     
-    <div class="controles-pareja" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <select id="piloto-uno" class="select-piloto" style="flex: 1; padding: 8px;">
+    <!-- Botón colocado arriba y con diseño limpio -->
+    <div style="margin-bottom: 15px;">
+        <button id="btn-crear-pareja" class="btn-crear" style="width: 100%; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 16px;">Crear Pareja</button>
+    </div>
+
+    <!-- Desplegables en columna para que no choquen -->
+    <div class="controles-pareja" style="display: flex; flex-direction: column; gap: 10px;">
+        <select id="piloto-uno" class="select-piloto" style="padding: 10px; width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
             <option value="">Seleccionar Piloto 1</option>
         </select>
 
-        <select id="piloto-dos" class="select-piloto" style="flex: 1; padding: 8px;">
+        <select id="piloto-dos" class="select-piloto" style="padding: 10px; width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
             <option value="">Seleccionar Piloto 2</option>
         </select>
-
-        <button id="btn-crear-pareja" class="btn-crear" style="padding: 8px 15px; background: #82d39d; border: none; font-weight: bold; cursor: pointer;">Crear Pareja</button>
     </div>
 
     <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 20px;">
-        <!-- Las parejas aparecerán aquí en orden -->
+        <!-- Las parejas guardadas aparecerán aquí -->
     </div>
 </div>
 
 <div id="footer-placeholder"></div>
 
 <script>
-    // 1. Cargar Header, Footer y Modal al iniciar
     document.addEventListener('DOMContentLoaded', () => {
         fetch('/header.html')
             .then(res => res.text())
             .then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
-                
                 window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
                 const script = document.createElement('script');
                 script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
                 script.defer = true;
                 document.body.appendChild(script);
-
                 verificarSesion();
             });
 
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
         
-        // Cargar los pilotos desde la base de datos para el Draft
-        cargarPilotosParaDraft();
+        cargarDatosDraft();
     });
 
-    // 2. Lógica de Sesión
     function verificarSesion() {
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
@@ -93,73 +88,29 @@
             btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
             btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
         }
-        
         if (formAdmin) {
             formAdmin.style.display = adminStatus ? 'block' : 'none';
         }
     }
 
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) modal.style.display = 'block';
-    }
-
-    // 3. Webhook de Contacto
-    async function enviarContacto() {
-        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
-        const nombre = document.getElementById('nombre-contacto').value;
-        const asunto = document.getElementById('asunto-contacto').value;
-        const mensaje = document.getElementById('mensaje-contacto').value;
-
-        if(!nombre || !asunto || !mensaje) {
-            alert("Por favor, rellena todos los campos.");
-            return;
-        }
-
-        const payload = {
-            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-            embeds: [{
-                title: "📩 Nuevo mensaje de contacto",
-                color: 3447003,
-                fields: [
-                    { name: "Nombre", value: nombre, inline: true },
-                    { name: "Asunto", value: asunto, inline: true },
-                    { name: "Mensaje", value: mensaje }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
-
-        const res = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-            alert("¡Mensaje enviado correctamente!");
-            document.getElementById('modal-contacto').style.display = 'none';
-            document.getElementById('nombre-contacto').value = '';
-            document.getElementById('asunto-contacto').value = '';
-            document.getElementById('mensaje-contacto').value = '';
-        } else {
-            alert("Error al enviar el mensaje.");
-        }
-    }
-
-    // 4. Lógica del Draft de Parejas
     let listaPilotosGlobal = [];
     let parejasGuardadas = [];
 
-    async function cargarPilotosParaDraft() {
+    async function cargarDatosDraft() {
         try {
-            const response = await fetch('/api/lista-de-pilotos');
-            if (!response.ok) throw new Error("Error al obtener los pilotos");
-            
-            listaPilotosGlobal = await response.json();
+            // Cargar pilotos y parejas guardadas en paralelo desde la base de datos
+            const [resPilotos, resParejas] = await Promise.all([
+                fetch('/api/lista-de-pilotos'),
+                fetch('/api/draft-parejas')
+            ]);
+
+            if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
+            if (resParejas.ok) parejasGuardadas = await resParejas.json();
+
             actualizarSelects();
+            renderizarParejas();
         } catch (err) {
-            console.error("No se pudieron cargar los pilotos:", err);
+            console.error("Error al cargar los datos del draft:", err);
         }
     }
 
@@ -170,8 +121,9 @@
         const valorActual1 = select1.value;
         const valorActual2 = select2.value;
 
+        // Obtener IDs de pilotos que ya forman parte de una pareja guardada en BD
         const idsEmparejados = parejasGuardadas.reduce((acc, p) => {
-            acc.push(p.id1, p.id2);
+            acc.push(p.id_piloto1.toString(), p.id_piloto2.toString());
             return acc;
         }, []);
 
@@ -185,14 +137,12 @@
             disponibles2.map(p => `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} ${p.escuderia ? '(' + p.escuderia + ')' : ''}</option>`).join('');
     }
 
-    function crearPareja() {
+    async function crearPareja() {
         const select1 = document.getElementById('piloto-uno');
         const select2 = document.getElementById('piloto-dos');
         
         const id1 = select1.value;
         const id2 = select2.value;
-        const nombre1 = select1.options[select1.selectedIndex]?.text;
-        const nombre2 = select2.options[select2.selectedIndex]?.text;
 
         if (!id1 || !id2) {
             alert("Debes seleccionar ambos pilotos.");
@@ -203,24 +153,45 @@
             return;
         }
 
-        parejasGuardadas.push({ id1, id2, nombre1, nombre2 });
+        try {
+            // Guardar en la base de datos mediante la API
+            const response = await fetch('/api/draft-parejas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id1, id2 })
+            });
 
-        renderizarParejas();
-        actualizarSelects();
+            if (response.ok) {
+                // Recargar todo desde la base de datos para sincronizar
+                await cargarDatosDraft();
+                select1.value = "";
+                select2.value = "";
+            } else {
+                alert("Error al guardar la pareja en el servidor.");
+            }
+        } catch (err) {
+            console.error("Error de red:", err);
+            alert("Error de conexión al guardar la pareja.");
+        }
     }
 
     function renderizarParejas() {
         const contenedor = document.getElementById('resultado-parejas');
         
+        if (parejasGuardadas.length === 0) {
+            contenedor.innerHTML = '<p style="color: #888; text-align: center;">No hay parejas creadas todavía.</p>';
+            return;
+        }
+
         contenedor.innerHTML = parejasGuardadas.map((pareja, index) => `
-            <div class="fila-pareja" style="background: #252c35; padding: 10px 15px; margin-top: 8px; border-radius: 4px; border-left: 4px solid #82d39d; display: flex; justify-content: space-between; color: #fff;">
+            <div class="fila-pareja" style="background: #252c35; padding: 10px 15px; margin-top: 8px; border-radius: 4px; border-left: 4px solid #82d39d; display: flex; justify-content: space-between; color: #fff; align-items: center;">
                 <span class="etiqueta-pareja" style="font-weight: bold; color: #82d39d;">Pareja ${index + 1}:</span>
                 <span class="nombres-pareja">${pareja.nombre1} + ${pareja.nombre2}</span>
             </div>
         `).join('');
     }
 
-    // Eventos de escucha para los selectores y el botón del draft
+    // Eventos
     document.addEventListener('DOMContentLoaded', () => {
         const sel1 = document.getElementById('piloto-uno');
         const sel2 = document.getElementById('piloto-dos');
