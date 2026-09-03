@@ -39,9 +39,33 @@
 </div>
 
 
-
 </main>
 
+
+<div class="selector-parejas">
+    <h2>🤝 SELECCIÓN DE PAREJAS</h2>
+    
+    <div class="controles-pareja">
+        <select id="piloto-uno" class="select-piloto">
+            <option value="">Seleccionar Piloto 1</option>
+            <!-- Aquí se cargarán dinámicamente tus pilotos -->
+        </select>
+
+        <select id="piloto-dos" class="select-piloto">
+            <option value="">Seleccionar Piloto 2</option>
+            <!-- Aquí se cargarán dinámicamente tus pilotos -->
+        </select>
+
+        <button id="btn-crear-pareja" class="btn-crear">Crear Pareja</button>
+    </div>
+
+    <div id="resultado-parejas" class="resultado-parejas">
+        <!-- Las parejas aparecerán aquí en orden -->
+    </div>
+</div>
+
+
+    
 
 
     <div id="footer-placeholder"></div>
@@ -137,7 +161,50 @@
             alert("Error al enviar el mensaje.");
         }
     }
+let parejasGuardadas = [];
 
+function crearPareja() {
+    const select1 = document.getElementById('piloto-uno');
+    const select2 = document.getElementById('piloto-dos');
+    
+    const id1 = select1.value;
+    const id2 = select2.value;
+    const nombre1 = select1.options[select1.selectedIndex]?.text;
+    const nombre2 = select2.options[select2.selectedIndex]?.text;
+
+    // Validaciones básicas
+    if (!id1 || !id2) {
+        alert("Debes seleccionar ambos pilotos.");
+        return;
+    }
+    if (id1 === id2) {
+        alert("Un piloto no puede hacer pareja consigo mismo.");
+        return;
+    }
+
+    // Añadir a la lista de parejas
+    parejasGuardadas.push({ nombre1, nombre2 });
+
+    // Actualizar la vista de la lista
+    renderizarParejas();
+
+    // Resetear los desplegables
+    select1.value = "";
+    select2.value = "";
+}
+
+function renderizarParejas() {
+    const contenedor = document.getElementById('resultado-parejas');
+    
+    contenedor.innerHTML = parejasGuardadas.map((pareja, index) => `
+        <div class="fila-pareja">
+            <span class="etiqueta-pareja">Pareja ${index + 1}:</span>
+            <span class="nombres-pareja">${pareja.nombre1} + ${pareja.nombre2}</span>
+        </div>
+    `).join('');
+}
+
+document.getElementById('btn-crear-pareja').addEventListener('click', crearPareja);
     
 </script>
 </body>
