@@ -510,13 +510,13 @@ function renderizarParrillaEscuderias() {
     listaEscuderiasGlobal.forEach(escuderia => {
         const idEscuderiaActual = Number(escuderia.id);
         
-        // Buscamos si alguna pareja tiene asignada esta escudería
+        // Buscamos si alguna pareja tiene guardada esta escudería
         const parejaAsignada = parejasGuardadas.find(p => {
             if (p.id_escuderia === null || p.id_escuderia === undefined || p.id_escuderia === "") return false;
             return Number(p.id_escuderia) === idEscuderiaActual;
         });
 
-        // Como la consulta ya trae los nombres directamente, los leemos de forma limpia
+        // Extraemos los nombres que ahora sí vienen del backend
         const piloto1 = parejaAsignada ? (parejaAsignada.nombre1 || 'Piloto 1') : 'LIBRE';
         const piloto2 = parejaAsignada ? (parejaAsignada.nombre2 || 'Piloto 2') : 'LIBRE';
 
