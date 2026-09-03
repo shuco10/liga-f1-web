@@ -558,9 +558,7 @@ app.post(['/api/reset', '/api/reset-campeonato'], async (req, res) => {
         res.sendStatus(500);
     }
 });
-```[cite: 7]
 
-Pégalo, guarda, reinicia el servidor y prueba a pulsar el botón de reset de nuevo. ¡Con esto debería limpiar los marcadores de los pilotos al instante[cite: 7]!
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
