@@ -759,7 +759,7 @@ app.get('/api/draft-parejas', async (req, res) => {
     }
 });
 
-// CREAR PAREJA (SOLO LOS DOS PILOTOS INICIALMENTE)
+// CREAR PAREJA
 app.post('/api/draft-parejas', async (req, res) => {
     const { id1, id2 } = req.body;
     try {
@@ -774,7 +774,7 @@ app.post('/api/draft-parejas', async (req, res) => {
     }
 });
 
-// ASIGNAR O CAMBIAR ESCUDERÍA A UNA PAREJA EXISTENTE
+// ASIGNAR O CAMBIAR ESCUDERÍA A UNA PAREJA
 app.put('/api/draft-parejas/:id/escuderia', async (req, res) => {
     const { id_escuderia } = req.body;
     try {
@@ -789,7 +789,7 @@ app.put('/api/draft-parejas/:id/escuderia', async (req, res) => {
     }
 });
 
-// ELIMINAR UNA PAREJA ESPECÍFICA
+// ELIMINAR UNA PAREJA ESPECÍFICA (¡Ojo al orden req, res!)
 app.delete('/api/draft-parejas/:id', async (req, res) => {
     try {
         await pool.query('DELETE FROM draft_parejas WHERE id = $1', [req.params.id]);
