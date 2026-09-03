@@ -11,6 +11,9 @@
     
     <style>
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        /* Estilos básicos para la modal de estrellas */
+        .modal-estrellas { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        .modal-contenido-estrellas { background: #21252b; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; }
     </style>
     <script src="/auth.js"></script>
 </head>
@@ -35,12 +38,15 @@
 <div class="selector-parejas" style="max-width: 650px; margin: 20px auto; padding: 20px; background: #21252b; border-radius: 8px;">
     <h2 style="margin-top: 0;">🤝 SELECCIÓN DE PAREJAS</h2>
     
-    <!-- Panel de control de Admin: Crear y Reset -->
-    <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px;">
-        <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 16px;">
+    <!-- Controles de Admin (Crear, Reset y Configurar Estrellas) -->
+    <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+        <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 140px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
             <i class="fa-solid fa-plus"></i> Crear Pareja
         </button>
-        <button id="btn-reset-draft" style="flex: 1; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 16px;">
+        <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 140px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+            <i class="fa-solid fa-star"></i> Config. Estrellas
+        </button>
+        <button id="btn-reset-draft" style="flex: 1; min-width: 90px; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
             <i class="fa-solid fa-trash-can"></i> Reset
         </button>
     </div>
@@ -56,14 +62,33 @@
             </select>
         </div>
         
-        <!-- Indicador de estrellas en tiempo real -->
         <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
             Estrellas de la pareja: <span id="span-total-vivo">0</span> / 14 ⭐
         </div>
     </div>
 
     <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 20px;">
-        <!-- Las parejas guardadas aparecerán aquí con sus estrellas -->
+        <!-- Parejas guardadas -->
+    </div>
+</div>
+
+<!-- MODAL DE CONFIGURACIÓN DE ESTRELLAS -->
+<div id="modal-estrellas" class="modal-estrellas">
+    <div class="modal-contenido-estrellas">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> Configurar Estrellas</h3>
+            <button id="btn-cerrar-modal" style="background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Escuderías</h4>
+        <div id="lista-escuderias-modal" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+            <!-- Se cargan por JS -->
+        </div>
+
+        <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Pilotos</h4>
+        <div id="lista-pilotos-modal" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Se cargan por JS -->
+        </div>
     </div>
 </div>
 
@@ -87,6 +112,7 @@
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
         
         cargarDatosDraft();
+        configurarModalEventos();
     });
 
     function verificarSesion() {
@@ -113,21 +139,25 @@
     }
 
     let listaPilotosGlobal = [];
+    let listaEscuderiasGlobal = [];
     let parejasGuardadas = [];
 
     async function cargarDatosDraft() {
         try {
-            const [resPilotos, resParejas] = await Promise.all([
+            const [resPilotos, resEscuderias, resParejas] = await Promise.all([
                 fetch('/api/lista-de-pilotos'),
+                fetch('/api/lista-de-escuderias'),
                 fetch('/api/draft-parejas')
             ]);
 
             if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
+            if (resEscuderias.ok) listaEscuderiasGlobal = await resEscuderias.json();
             if (resParejas.ok) parejasGuardadas = await resParejas.json();
 
             actualizarSelects();
             calcularEstrellasEnVivo();
             renderizarParejas();
+            llenarModalEstrellas();
         } catch (err) {
             console.error("Error al cargar los datos del draft:", err);
         }
@@ -170,7 +200,7 @@
             if (p1) {
                 total += (p1.estrellas || 0);
                 escuderiaEstrellas = (p1.escuderia_estrellas || 0);
-                total += escuderiaEstrellas; // Sumamos la escudería del piloto 1
+                total += escuderiaEstrellas;
             }
         }
 
@@ -299,18 +329,92 @@
         }).join('');
     }
 
+    // GESTIÓN DE LA MODAL Y ACTUALIZACIÓN DE ESTRELLAS
+    function configurarModalEventos() {
+        const modal = document.getElementById('modal-estrellas');
+        const btnAbrir = document.getElementById('btn-abrir-modal-estrellas');
+        const btnCerrar = document.getElementById('btn-cerrar-modal');
+
+        if (btnAbrir) btnAbrir.addEventListener('click', () => modal.style.display = 'flex');
+        if (btnCerrar) btnCerrar.addEventListener('click', () => modal.style.display = 'none');
+        window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    }
+
+    function llenarModalEstrellas() {
+        const contenedorEsc = document.getElementById('lista-escuderias-modal');
+        const contenedorPil = document.getElementById('lista-pilotos-modal');
+
+        if (contenedorEsc) {
+            contenedorEsc.innerHTML = listaEscuderiasGlobal.map(esc => `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
+                    <span>${esc.nombre}</span>
+                    <input type="number" min="0" max="14" value="${esc.estrellas}" onchange="actualizarEstrellasEscuderia(${esc.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
+                </div>
+            `).join('');
+        }
+
+        if (contenedorPil) {
+            contenedorPil.innerHTML = listaPilotosGlobal.map(p => `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
+                    <span>${p.gamertag} <small style="color:#888;">(${p.escuderia || 'Sin escudería'})</small></span>
+                    <input type="number" min="0" max="14" value="${p.estrellas}" onchange="actualizarEstrellasPiloto(${p.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
+                </div>
+            `).join('');
+        }
+    }
+
+    async function actualizarEstrellasPiloto(idPiloto, nuevasEstrellas) {
+        try {
+            const res = await fetch(`/api/pilotos/${idPiloto}/estrellas`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
+            });
+            if (res.ok) {
+                // Recargamos los datos silenciosamente para reflejar los cambios al instante
+                const resPilotos = await fetch('/api/lista-de-pilotos');
+                if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
+                actualizarSelects();
+                calcularEstrellasEnVivo();
+                renderizarParejas();
+            } else {
+                alert("Error al actualizar las estrellas del piloto.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function actualizarEstrellasEscuderia(idEscuderia, nuevasEstrellas) {
+        try {
+            const res = await fetch(`/api/escuderias/${idEscuderia}/estrellas`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
+            });
+            if (res.ok) {
+                const resEscuderias = await fetch('/api/lista-de-escuderias');
+                const resPilotos = await fetch('/api/lista-de-pilotos');
+                if (resEscuderias.ok) listaEscuderiasGlobal = await resEscuderias.json();
+                if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
+                calcularEstrellasEnVivo();
+                renderizarParejas();
+            } else {
+                alert("Error al actualizar las estrellas de la escudería.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const sel1 = document.getElementById('piloto-uno');
         const sel2 = document.getElementById('piloto-dos');
         const btnPareja = document.getElementById('btn-crear-pareja');
         const btnReset = document.getElementById('btn-reset-draft');
 
-        if(sel1) {
-            sel1.addEventListener('change', () => { actualizarSelects(); calcularEstrellasEnVivo(); });
-        }
-        if(sel2) {
-            sel2.addEventListener('change', () => { actualizarSelects(); calcularEstrellasEnVivo(); });
-        }
+        if(sel1) sel1.addEventListener('change', () => { actualizarSelects(); calcularEstrellasEnVivo(); });
+        if(sel2) sel2.addEventListener('change', () => { actualizarSelects(); calcularEstrellasEnVivo(); });
         if(btnPareja) btnPareja.addEventListener('click', crearPareja);
         if(btnReset) btnReset.addEventListener('click', resetearDraft);
     });
