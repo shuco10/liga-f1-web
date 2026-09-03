@@ -256,33 +256,33 @@
         renderizarParejas();
     }
 
-    async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
-        if (idEscuderia) {
-            const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
-            const totalFinal = estrellasPilotos + (esc ? Number(esc.estrellas) || 0 : 0);
+async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
+    if (idEscuderia) {
+        const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
+        const totalFinal = estrellasPilotos + (esc ? Number(esc.estrellas) || 0 : 0);
 
-            if (totalFinal > 14) {
-                alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
-                renderizarParejas();
-                return;
-            }
-        }
-
-        try {
-            const res = await fetch(`/api/draft-parejas/${idPareja}/escuderia`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_escuderia: idEscuderia || null })
-            });
-            if (res.ok) {
-                await cargarDatosDraft();
-            } else {
-                alert("Error al asignar la escudería.");
-            }
-        } catch (err) {
-            console.error(err);
+        if (totalFinal > 14) {
+            alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
+            renderizarParejas();
+            return;
         }
     }
+
+    try {
+        const res = await fetch(`/api/draft-parejas/${idPareja}/escuderia`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_escuderia: idEscuderia ? parseInt(idEscuderia) : null })
+        });
+        if (res.ok) {
+            await cargarDatosDraft();
+        } else {
+            alert("Error al asignar la escudería.");
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
 
     async function eliminarPareja(id) {
         if (!confirm("¿Seguro que quieres eliminar esta pareja?")) return;
