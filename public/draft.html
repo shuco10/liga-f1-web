@@ -39,13 +39,16 @@
     
     <!-- Controles de Admin -->
     <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-        <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 140px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+        <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 130px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
             <i class="fa-solid fa-plus"></i> Guardar Pareja
         </button>
-        <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 140px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+        <button id="btn-ordenar-parejas" style="flex: 2; min-width: 140px; padding: 12px; background: #e67e22; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+            <i class="fa-solid fa-sort-numeric-down"></i> Ordenar ⭐
+        </button>
+        <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 130px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
             <i class="fa-solid fa-star"></i> Config. Estrellas
         </button>
-        <button id="btn-reset-draft" style="flex: 1; min-width: 90px; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+        <button id="btn-reset-draft" style="flex: 1; min-width: 80px; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
             <i class="fa-solid fa-trash-can"></i> Reset
         </button>
     </div>
@@ -139,6 +142,7 @@
     let listaPilotosGlobal = [];
     let listaEscuderiasGlobal = [];
     let parejasGuardadas = [];
+    let ordenAscendenteEstrellas = false; // Estado para alternar o mantener orden
 
     async function cargarDatosDraft() {
         try {
@@ -177,11 +181,18 @@
         const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
         const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
 
+        // Se usa parseInt o Number para asegurar que lee bien las estrellas y evitar 'undefined'
         select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
-            disponibles1.map(p => `<option value="${p.id}" ${valorActual1 == p.id ? 'selected' : ''}>${p.gamertag} (${p.estrellas} ⭐)</option>`).join('');
+            disponibles1.map(p => {
+                const est = Number(p.estrellas) || 0;
+                return `<option value="${p.id}" ${valorActual1 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
+            }).join('');
 
         select2.innerHTML = '<option value="">Seleccionar Piloto 2</option>' + 
-            disponibles2.map(p => `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${p.estrellas} ⭐)</option>`).join('');
+            disponibles2.map(p => {
+                const est = Number(p.estrellas) || 0;
+                return `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
+            }).join('');
     }
 
     function calcularEstrellasEnVivo() {
@@ -192,11 +203,11 @@
         let totalPilotos = 0;
         if (id1) {
             const p1 = listaPilotosGlobal.find(p => p.id.toString() === id1);
-            if (p1) totalPilotos += (p1.estrellas || 0);
+            if (p1) totalPilotos += (Number(p1.estrellas) || 0);
         }
         if (id2) {
             const p2 = listaPilotosGlobal.find(p => p.id.toString() === id2);
-            if (p2) totalPilotos += (p2.estrellas || 0);
+            if (p2) totalPilotos += (Number(p2.estrellas) || 0);
         }
         spanTotal.textContent = totalPilotos;
     }
@@ -235,10 +246,20 @@
         }
     }
 
+    // Función para reordenar las parejas guardadas según las estrellas de los dos pilotos (menor a mayor)
+    function ordenarParejasPorEstrellas() {
+        parejasGuardadas.sort((a, b) => {
+            const sumaA = (Number(a.estrellas1) || 0) + (Number(a.estrellas2) || 0);
+            const sumaB = (Number(b.estrellas1) || 0) + (Number(b.estrellas2) || 0);
+            return sumaA - sumaB; // Menor a mayor
+        });
+        renderizarParejas();
+    }
+
     async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
         if (idEscuderia) {
             const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
-            const totalFinal = estrellasPilotos + (esc ? esc.estrellas : 0);
+            const totalFinal = estrellasPilotos + (esc ? Number(esc.estrellas) || 0 : 0);
 
             if (totalFinal > 14) {
                 alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
@@ -299,10 +320,10 @@
         }
 
         contenedor.innerHTML = parejasGuardadas.map((p, index) => {
-            const est1 = p.estrellas1 || 0;
-            const est2 = p.estrellas2 || 0;
+            const est1 = Number(p.estrellas1) || 0;
+            const est2 = Number(p.estrellas2) || 0;
             const sumaPilotos = est1 + est2;
-            const estEsc = p.estrellas_escuderia || 0;
+            const estEsc = Number(p.estrellas_escuderia) || 0;
             const totalFinal = p.id_escuderia ? (sumaPilotos + estEsc) : sumaPilotos;
 
             return `
@@ -313,7 +334,7 @@
                         <span style="font-weight: bold; color: #82d39d; font-size: 15px;">Pareja ${index + 1}</span>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="background: #1a1a1a; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 13px;">
-                                Total: ${totalFinal} / 14 ⭐
+                                Total Pilotos: ${sumaPilotos} ⭐ ${p.id_escuderia ? `| Con Escudería: ${totalFinal}/14` : ''}
                             </span>
                             ${adminStatus ? `
                                 <button onclick="eliminarPareja(${p.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
@@ -337,7 +358,7 @@
                                 <option value="">-- Sin escudería asignada --</option>
                                 ${listaEscuderiasGlobal.map(e => `
                                     <option value="${e.id}" ${p.id_escuderia == e.id ? 'selected' : ''}>
-                                        ${e.nombre} (${e.estrellas} ⭐)
+                                        ${e.nombre} (${Number(e.estrellas) || 0} ⭐)
                                     </option>
                                 `).join('')}
                             </select>
@@ -369,7 +390,7 @@
             contenedorEsc.innerHTML = listaEscuderiasGlobal.map(esc => `
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
                     <span>${esc.nombre}</span>
-                    <input type="number" min="0" max="14" value="${esc.estrellas}" onchange="actualizarEstrellasEscuderia(${esc.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
+                    <input type="number" min="0" max="14" value="${Number(esc.estrellas) || 0}" onchange="actualizarEstrellasEscuderia(${esc.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
                 </div>
             `).join('');
         }
@@ -378,7 +399,7 @@
             contenedorPil.innerHTML = listaPilotosGlobal.map(p => `
                 <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
                     <span>${p.gamertag}</span>
-                    <input type="number" min="0" max="14" value="${p.estrellas}" onchange="actualizarEstrellasPiloto(${p.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
+                    <input type="number" min="0" max="14" value="${Number(p.estrellas) || 0}" onchange="actualizarEstrellasPiloto(${p.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
                 </div>
             `).join('');
         }
@@ -411,11 +432,13 @@
         const sel2 = document.getElementById('piloto-dos');
         const btnPareja = document.getElementById('btn-crear-pareja');
         const btnReset = document.getElementById('btn-reset-draft');
+        const btnOrdenar = document.getElementById('btn-ordenar-parejas');
 
         if(sel1) sel1.addEventListener('change', calcularEstrellasEnVivo);
         if(sel2) sel2.addEventListener('change', calcularEstrellasEnVivo);
         if(btnPareja) btnPareja.addEventListener('click', crearPareja);
         if(btnReset) btnReset.addEventListener('click', resetearDraft);
+        if(btnOrdenar) btnOrdenar.addEventListener('click', ordenarParejasPorEstrellas);
     });
 </script>
 </body>
