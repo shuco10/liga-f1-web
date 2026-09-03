@@ -2,577 +2,173 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Draft Temporada 4 | Cazadores de Curvas</title>
+    <title>Información | Cazadores de Curvas</title>
+    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    
     
     <style>
+        /* Estilo base para el fondo de esta página */
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
-        .modal-estrellas { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-contenido-estrellas { background: #21252b; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; }
     </style>
     <script src="/auth.js"></script>
 </head>
 <body>
-
-    <!-- Header externo sin modificaciones forzadas -->
     <div id="header-placeholder"></div>
 
-    <main class="caja-contenido" style="padding: 20px; box-sizing: border-box; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
-        
-        <!-- Botones de Acción -->
-        <div class="contenedor-botones" style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <a href="normativas.html" class="boton-accion" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 15px;">
-                <i class="fa-solid fa-book"></i> Normativa
-            </a>
-            <a href="resoluciones-fia.html" class="boton-accion" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 15px;">
-                <i class="fa-solid fa-gavel"></i> Resoluciones FIA
-            </a>
-        </div>
 
-        <h1 class="titulo-principal" style="font-size: 22px; color: #fff; margin-bottom: 5px; text-align: center;">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
-        <h3 class="subtitulo-principal" style="font-size: 14px; color: #aaa; margin-top: 0; margin-bottom: 25px; text-align: center;">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
+<main class="caja-contenido">
+            <!-- Botones de Acción -->
+<div class="contenedor-botones">
+    <a href="normativas.html" class="boton-accion">
+        <i class="fa-solid fa-book"></i> Normativa
+    </a>
+    <a href="resoluciones-fia.html" class="boton-accion">
+        <i class="fa-solid fa-gavel"></i> Resoluciones FIA
+    </a>
+</div>
+    <h1 class="titulo-principal">🏁 Sistema de Gestión: Cazadores de Curvas</h1>
+    <h3 class="subtitulo-principal">La plataforma integral para el seguimiento técnico, administrativo y comunitario de nuestra liga.</h3>
 
-        <!-- Selector de Parejas Admin y Controles -->
-        <div class="selector-parejas" style="width: 100%; max-width: 650px; margin: 0 auto 30px auto; padding: 20px; background: #21252b; border-radius: 8px; box-sizing: border-box;">
-            <h2 style="margin-top: 0; font-size: 18px;">🤝 CREAR NUEVA PAREJA</h2>
-            
-            <!-- Controles de Admin -->
-            <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 130px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-                    <i class="fa-solid fa-plus"></i> Guardar Pareja
-                </button>
-                <button id="btn-ordenar-parejas" style="flex: 2; min-width: 140px; padding: 12px; background: #e67e22; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-                    <i class="fa-solid fa-sort-numeric-down"></i> Ordenar ⭐
-                </button>
-                <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 130px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-                    <i class="fa-solid fa-star"></i> Config. Estrellas
-                </button>
-                <button id="btn-reset-draft" style="flex: 1; min-width: 80px; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
-                    <i class="fa-solid fa-trash-can"></i> Reset
-                </button>
-            </div>
+    <div class="bloques-info">
+        <section>
+            <h4>1. Área Deportiva y de Pilotos</h4>
+            <p>Seguimiento exhaustivo del rendimiento y evolución técnica:</p>
+            <ul>
+                <li><strong>- Gestión de Roster:</strong> Fichas detalladas con historial de carreras, palmarés y números oficiales.</li>
+                <li><strong>- Estadísticas Avanzadas:</strong> Análisis de tiempos de vuelta, consistencia en carrera y progreso individual.</li>
+                <li><strong>- Constructores:</strong> Seguimiento del campeonato de escuderías, desarrollo técnico y gestión de alianzas.</li>
+                <li><strong>- Banco de Circuitos:</strong> Circuitos del calendario 2026 y resultados de los pilotos en cada uno de ellos.</li>
+            </ul>
+        </section>
 
-            <!-- Desplegables de pilotos -->
-            <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
-                        <option value="">Seleccionar Piloto 1</option>
-                    </select>
-                    <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
-                        <option value="">Seleccionar Piloto 2</option>
-                    </select>
-                </div>
-                
-                <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
-                    Suma de estrellas de los pilotos: <span id="span-total-vivo">0</span> ⭐
-                </div>
-            </div>
+        <section>
+            <h4>2. Administración, Disciplina y Comisariato</h4>
+            <p>Garantizando el juego limpio y la integridad del campeonato:</p>
+            <ul>
+                <li><strong>- Registro de Sanciones:</strong> Historial público y transparente de todas las penalizaciones aplicadas.</li>
+                <li><strong>- Gestión de Incidentes:</strong> Flujo de trabajo para la recepción, análisis y resolución de reclamaciones mediante el estudio de telemetría y vídeos.</li>
+                <li><strong>- Normativa Deportiva:</strong> Acceso centralizado al reglamento oficial, actualizado para cada temporada.</li>
+            </ul>
+        </section>
 
-            <div style="margin-top: 30px;">
-                <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px; font-size: 16px;">📋 Parejas y Escuderías Asignadas</h3>
-                <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
-
-                <!-- Resumen de Escuderías Asignadas -->
-                <div style="margin-top: 25px; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #444;">
-                    <h4 style="margin-top: 0; color: #82d39d; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 15px;">
-                        <i class="fa-solid fa-list-check"></i> Resumen: Escuderías Asignadas por Pareja
-                    </h4>
-                    <div id="resumen-parejas-escuderias" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Parrilla Visual de Escuderías -->
-    <div class="max-w-7xl mx-auto px-4 mt-12 mb-12" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
-        <h3 class="text-2xl font-bold text-white mb-6 text-center" style="font-size: 20px; margin-bottom: 20px; text-align: center;">Parrilla Oficial de Escuderías</h3>
-        <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;"></div>
+        <section>
+            <h4>3. Ecosistema Digital y Discord</h4>
+            <p>Conectando la pista con nuestra comunidad en tiempo real:</p>
+            <ul>
+                <li><strong>- Alertas del Sistema:</strong> Notificaciones automáticas sobre aperturas de inscripciones, cambios de calendario y anuncios de última hora.</li>
+                <li><strong>- Foros de Debate:</strong> Canales dedicados a la mejora del reglamento, configuración de coches y setup.</li>
+                <li><strong>- Soporte Técnico:</strong> Canal de asistencia directa para problemas de acceso, bugs o consultas administrativas.</li>
+                <li><strong>- Integración de Roles:</strong> Sincronización de estados de piloto para acceso a canales privados de estrategia y telemetría.</li>
+            </ul>
+        </section>
     </div>
 
-    <!-- Modal de Configuración de Estrellas -->
-    <div id="modal-estrellas" class="modal-estrellas">
-        <div class="modal-contenido-estrellas">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0;"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> Configurar Estrellas</h3>
-                <button id="btn-cerrar-modal" style="background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
-            </div>
+</main>
 
-            <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Escuderías</h4>
-            <div id="lista-escuderias-modal" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
 
-            <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Pilotos</h4>
-            <div id="lista-pilotos-modal" style="display: flex; flex-direction: column; gap: 8px;"></div>
-        </div>
-    </div>
 
-    <!-- Footer externo sin modificaciones forzadas -->
     <div id="footer-placeholder"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch('/header.html')
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById('header-placeholder').innerHTML = data;
-                    
-                    window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
-                    const script = document.createElement('script');
-                    script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-                    script.defer = true;
-                    document.body.appendChild(script);
-
-                    verificarSesion();
-                    cargarDatosDraft();
-                    configurarModalEventos();
-                });
-
-            fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
-            fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-        });
-
-        let listaPilotosGlobal = [];
-        let listaEscuderiasGlobal = [];
-        let parejasGuardadas = [];
-
-        function verificarSesion() {
-            const btnLogin = document.getElementById('btn-login');
-            const btnLogout = document.getElementById('btn-logout');
-            const formAdmin = document.getElementById('form-admin');
-            const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-            
-            if (btnLogin && btnLogout) {
-                btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-                btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-            }
-            
-            if (formAdmin) {
-                formAdmin.style.display = adminStatus ? 'block' : 'none';
-            }
-
-            const controlesAdminDraft = document.getElementById('controles-admin-draft');
-            const desplegablesAdminDraft = document.getElementById('desplegables-admin-draft');
-
-            if (controlesAdminDraft) controlesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
-            if (desplegablesAdminDraft) desplegablesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
-
-            renderizarParejas();
-            renderizarParrillaEscuderias();
-        }
-
-        function seguridadAbrirModal() {
-            const modal = document.getElementById('login-modal');
-            if (modal) modal.style.display = 'block';
-        }
-
-        async function cargarDatosDraft() {
-            try {
-                const [resPilotos, resEscuderias, resParejas] = await Promise.all([
-                    fetch('/api/lista-de-pilotos'),
-                    fetch('/api/lista-de-escuderias'),
-                    fetch('/api/draft-parejas')
-                ]);
-
-                if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
-                if (resEscuderias.ok) listaEscuderiasGlobal = await resEscuderias.json();
-                if (resParejas.ok) parejasGuardadas = await resParejas.json();
-
-                actualizarSelects();
-                calcularEstrellasEnVivo();
-                renderizarParejas();
-                renderizarParrillaEscuderias();
-                llenarModalEstrellas();
-            } catch (err) {
-                console.error("Error al cargar los datos del draft:", err);
-            }
-        }
-
-        function actualizarSelects() {
-            const select1 = document.getElementById('piloto-uno');
-            const select2 = document.getElementById('piloto-dos');
-            if (!select1 || !select2) return;
-
-            const valorActual1 = select1.value;
-            const valorActual2 = select2.value;
-
-            const idsEmparejados = parejasGuardadas.reduce((acc, p) => {
-                acc.push(p.id_piloto1.toString(), p.id_piloto2.toString());
-                return acc;
-            }, []);
-
-            const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
-            const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
-
-            select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
-                disponibles1.map(p => {
-                    const est = Number(p.estrellas) || 0;
-                    return `<option value="${p.id}" ${valorActual1 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
-                }).join('');
-
-            select2.innerHTML = '<option value="">Seleccionar Piloto 2</option>' + 
-                disponibles2.map(p => {
-                    const est = Number(p.estrellas) || 0;
-                    return `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
-                }).join('');
-        }
-
-        function calcularEstrellasEnVivo() {
-            const id1 = document.getElementById('piloto-uno').value;
-            const id2 = document.getElementById('piloto-dos').value;
-            const spanTotal = document.getElementById('span-total-vivo');
-            if (!spanTotal) return;
-
-            let totalPilotos = 0;
-            if (id1) {
-                const p1 = listaPilotosGlobal.find(p => p.id.toString() === id1);
-                if (p1) totalPilotos += (Number(p1.estrellas) || 0);
-            }
-            if (id2) {
-                const p2 = listaPilotosGlobal.find(p => p.id.toString() === id2);
-                if (p2) totalPilotos += (Number(p2.estrellas) || 0);
-            }
-            spanTotal.textContent = totalPilotos;
-        }
-
-        async function crearPareja() {
-            const id1 = document.getElementById('piloto-uno').value;
-            const id2 = document.getElementById('piloto-dos').value;
-            
-            if (!id1 || !id2) {
-                alert("Debes seleccionar ambos pilotos.");
-                return;
-            }
-            if (id1 === id2) {
-                alert("Un piloto no puede hacer pareja consigo mismo.");
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/draft-parejas', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id1, id2 })
-                });
-
-                if (response.ok) {
-                    await cargarDatosDraft();
-                    document.getElementById('piloto-uno').value = "";
-                    document.getElementById('piloto-dos').value = "";
-                    calcularEstrellasEnVivo();
-                } else {
-                    alert("Error al guardar la pareja en el servidor.");
-                }
-            } catch (err) {
-                console.error("Error de red:", err);
-                alert("Error de conexión al guardar la pareja.");
-            }
-        }
-
-        function ordenarParejasPorEstrellas() {
-            parejasGuardadas.sort((a, b) => {
-                const sumaA = (Number(a.estrellas1) || 0) + (Number(a.estrellas2) || 0);
-                const sumaB = (Number(b.estrellas1) || 0) + (Number(b.estrellas2) || 0);
-                return sumaA - sumaB;
-            });
-            renderizarParejas();
-            renderizarParrillaEscuderias();
-        }
-
-        async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
-            if (idEscuderia) {
-                const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
-                const totalFinal = estrellasPilotos + (esc ? Number(esc.estrellas) || 0 : 0);
-
-                if (totalFinal > 14) {
-                    alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
-                    renderizarParejas();
-                    return;
-                }
-            }
-
-            try {
-                const res = await fetch(`/api/draft-parejas/${idPareja}/escuderia`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id_escuderia: idEscuderia ? parseInt(idEscuderia) : null })
-                });
-                if (res.ok) {
-                    await cargarDatosDraft();
-                } else {
-                    alert("Error al asignar la escudería.");
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        async function eliminarPareja(id) {
-            if (!confirm("¿Seguro que quieres eliminar esta pareja?")) return;
-
-            try {
-                const response = await fetch(`/api/draft-parejas/${id}`, { method: 'DELETE' });
-                if (response.ok) await cargarDatosDraft();
-                else alert("Error al eliminar la pareja.");
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        async function resetearDraft() {
-            if (!confirm("¿Seguro que quieres borrar todas las parejas del draft?")) return;
-
-            try {
-                const response = await fetch('/api/draft-parejas', { method: 'DELETE' });
-                if (response.ok) await cargarDatosDraft();
-                else alert("Error al resetear el draft.");
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        function renderizarParejas() {
-            const contenedor = document.getElementById('resultado-parejas');
-            const contenedorResumen = document.getElementById('resumen-parejas-escuderias');
-            if (!contenedor) return;
-            
-            const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-
-            if (parejasGuardadas.length === 0) {
-                contenedor.innerHTML = '<p style="color: #888; text-align: center;">No hay parejas creadas todavía.</p>';
-                if (contenedorResumen) {
-                    contenedorResumen.innerHTML = '<p style="color: #888; text-align: center; font-size: 13px;">No hay asignaciones todavía.</p>';
-                }
-                return;
-            }
-
-            contenedor.innerHTML = parejasGuardadas.map((p, index) => {
-                const est1 = Number(p.estrellas1) || 0;
-                const est2 = Number(p.estrellas2) || 0;
-                const sumaPilotos = est1 + est2;
+<script>
+    // 1. Cargar todo en orden
+    document.addEventListener('DOMContentLoaded', () => {
+        // Carga el Header (una sola vez)
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
                 
-                const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
-                const estEsc = escuderiaAsignada ? (Number(escuderiaAsignada.estrellas) || 0) : 0;
-                const totalFinal = p.id_escuderia !== null && p.id_escuderia !== undefined ? (sumaPilotos + estEsc) : sumaPilotos;
+                // Configurar el Banner de Instant Gaming
+                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
 
-                return `
-                    <div class="fila-pareja" style="background: #252c35; padding: 15px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
-                        
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                            <span style="font-weight: bold; color: #82d39d; font-size: 15px;">Pareja ${index + 1}</span>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="background: #1a1a1a; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 13px;">
-                                    Total: ${totalFinal}/14 ⭐
-                                </span>
-                                ${adminStatus ? `
-                                    <button onclick="eliminarPareja(${p.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                ` : ''}
-                            </div>
-                        </div>
-
-                        <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-size: 14px; border: 1px solid #444; display: flex; flex-direction: column; gap: 4px;">
-                            <div>🧑‍✈️ <b>${p.nombre1}</b> <span style="color: #f1c40f;">(${est1} ⭐)</span></div>
-                            <div>🧑‍✈️ <b>${p.nombre2}</b> <span style="color: #f1c40f;">(${est2} ⭐)</span></div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; gap: 8px; background: #1a1a1a; padding: 8px 10px; border-radius: 4px; border: 1px solid #444; flex-wrap: wrap;">
-                            <span style="font-size: 13px; color: #aaa; white-space: nowrap;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
-                            ${adminStatus ? `
-                                <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; min-width: 200px; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
-                                    <option value="">-- Sin escudería asignada --</option>
-                                    ${listaEscuderiasGlobal.map(e => {
-                                        const ocupadaPorOtra = parejasGuardadas.some(other => Number(other.id_escuderia) === Number(e.id) && other.id !== p.id);
-                                        if (ocupadaPorOtra) return '';
-                                        return `
-                                            <option value="${e.id}" ${Number(p.id_escuderia) === Number(e.id) ? 'selected' : ''}>
-                                                ${e.nombre} (${Number(e.estrellas) || 0} ⭐)
-                                            </option>
-                                        `;
-                                    }).join('')}
-                                </select>
-                            ` : `
-                                <span style="font-weight: 500; color: #fff;">${escuderiaAsignada ? escuderiaAsignada.nombre : 'Sin escudería'} (${estEsc} ⭐)</span>
-                            `}
-                        </div>
-
-                    </div>
-                `;
-            }).join('');
-
-            if (contenedorResumen) {
-                contenedorResumen.innerHTML = parejasGuardadas.map((p, index) => {
-                    const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
-                    const nombreEscuderia = escuderiaAsignada ? escuderiaAsignada.nombre : '<span style="color: #e10600; font-style: italic;">Sin escudería asignada</span>';
-                    const logoEscuderia = escuderiaAsignada && escuderiaAsignada.logo ? `<img src="${escuderiaAsignada.logo}" style="width: 18px; height: 18px; object-fit: contain; display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
-
-                    return `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #21252b; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #333;">
-                            <div>
-                                <strong style="color: #82d39d;">Pareja ${index + 1}:</strong> 
-                                <span style="color: #ccc; margin-left: 5px;">${p.nombre1} & ${p.nombre2}</span>
-                            </div>
-                            <div style="display: flex; align-items: center; font-weight: bold; color: #fff;">
-                                ${logoEscuderia} ${nombreEscuderia}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-        }
-
-        function renderizarParrillaEscuderias() {
-            const contenedor = document.getElementById('grid-escuderias');
-            if (!contenedor) return;
-            contenedor.innerHTML = '';
-
-            listaEscuderiasGlobal.forEach(escuderia => {
-                const parejaAsignada = parejasGuardadas.find(p => p.id_escuderia !== null && p.id_escuderia !== undefined && Number(p.id_escuderia) === Number(escuderia.id));
-
-                const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
-                const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
-
-                const tarjeta = document.createElement('div');
-                tarjeta.className = "bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg flex flex-col justify-between h-full relative overflow-hidden";
-                
-                tarjeta.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
-                            <div class="flex items-center space-x-2 overflow-hidden">
-                                ${escuderia.logo ? `<img src="${escuderia.logo}" class="w-6 h-6 object-contain flex-shrink-0">` : ''}
-                                <span class="font-bold text-white text-sm tracking-wider whitespace-nowrap overflow-hidden text-ellipsis" title="${escuderia.nombre}">${escuderia.nombre}</span>
-                            </div>
-                            <span class="text-yellow-400 font-semibold text-sm flex-shrink-0 ml-2">${Number(escuderia.estrellas) || 0} ⭐</span>
-                        </div>
-                    </div>
-                    <div class="space-y-2 mt-2">
-                        <div class="bg-gray-800/80 rounded p-2 text-xs text-gray-200 border-l-4 border-red-500 truncate" title="${piloto1}">
-                            🧑‍✈️ ${piloto1}
-                        </div>
-                        <div class="bg-gray-800/80 rounded p-2 text-xs text-gray-200 border-l-4 border-red-500 truncate" title="${piloto2}">
-                            🧑‍✈️ ${piloto2}
-                        </div>
-                    </div>
-                `;
-                contenedor.appendChild(tarjeta);
+                // AHORA QUE EL HEADER ESTÁ CARGADO, VERIFICAMOS SESIÓN
+                verificarSesion();
             });
+
+        // Cargar Footer y Modal
+        fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
+        fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+    }); // <--- AQUÍ SE CIERRA EL EVENT LISTENER CORRECTAMENTE
+
+    // 2. Lógica de Sesión (FUERA del DOMContentLoaded)
+    function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const formAdmin = document.getElementById('form-admin');
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
         }
-
-        function configurarModalEventos() {
-            const modal = document.getElementById('modal-estrellas');
-            const btnAbrir = document.getElementById('btn-abrir-modal-estrellas');
-            const btnCerrar = document.getElementById('btn-cerrar-modal');
-
-            if (btnAbrir) btnAbrir.addEventListener('click', () => modal.style.display = 'flex');
-            if (btnCerrar) btnCerrar.addEventListener('click', () => modal.style.display = 'none');
-            window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+        
+        if (formAdmin) {
+            formAdmin.style.display = adminStatus ? 'block' : 'none';
         }
+    }
 
-        function llenarModalEstrellas() {
-            const contenedorEsc = document.getElementById('lista-escuderias-modal');
-            const contenedorPil = document.getElementById('lista-pilotos-modal');
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
+    }
 
-            if (contenedorEsc) {
-                contenedorEsc.innerHTML = listaEscuderiasGlobal.map(esc => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
-                        <span>${esc.nombre}</span>
-                        <input type="number" min="0" max="14" value="${Number(esc.estrellas) || 0}" onchange="actualizarEstrellasEscuderia(${esc.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
-                    </div>
-                `).join('');
-            }
 
-            if (contenedorPil) {
-                contenedorPil.innerHTML = listaPilotosGlobal.map(p => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
-                        <span>${p.gamertag}</span>
-                        <input type="number" min="0" max="14" value="${Number(p.estrellas) || 0}" onchange="actualizarEstrellasPiloto(${p.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
-                    </div>
-                `).join('');
-            }
-        }
-
-        async function actualizarEstrellasPiloto(idPiloto, nuevasEstrellas) {
-            try {
-                const res = await fetch(`/api/pilotos/${idPiloto}/estrellas`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
-                });
-                if (res.ok) await cargarDatosDraft();
-            } catch (err) { console.error(err); }
-        }
-
-        async function actualizarEstrellasEscuderia(idEscuderia, nuevasEstrellas) {
-            try {
-                const res = await fetch(`/api/escuderias/${idEscuderia}/estrellas`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
-                });
-                if (res.ok) await cargarDatosDraft();
-            } catch (err) { console.error(err); }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const sel1 = document.getElementById('piloto-uno');
-            const sel2 = document.getElementById('piloto-dos');
-            const btnPareja = document.getElementById('btn-crear-pareja');
-            const btnReset = document.getElementById('btn-reset-draft');
-            const btnOrdenar = document.getElementById('btn-ordenar-parejas');
-
-            if(sel1) sel1.addEventListener('change', calcularEstrellasEnVivo);
-            if(sel2) sel2.addEventListener('change', calcularEstrellasEnVivo);
-            if(btnPareja) btnPareja.addEventListener('click', crearPareja);
-            if(btnReset) btnReset.addEventListener('click', resetearDraft);
-            if(btnOrdenar) btnOrdenar.addEventListener('click', ordenarParejasPorEstrellas);
-        });
 
         async function enviarContacto() {
-            const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
-            const nombre = document.getElementById('nombre-contacto')?.value;
-            const asunto = document.getElementById('asunto-contacto')?.value;
-            const mensaje = document.getElementById('mensaje-contacto')?.value;
+        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+        const nombre = document.getElementById('nombre-contacto').value;
+        const asunto = document.getElementById('asunto-contacto').value;
+        const mensaje = document.getElementById('mensaje-contacto').value;
 
-            if(!nombre || !asunto || !mensaje) {
-                alert("Por favor, rellena todos los campos.");
-                return;
-            }
-
-            const payload = {
-                content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-                embeds: [{
-                    title: "📩 Nuevo mensaje de contacto",
-                    color: 3447003,
-                    fields: [
-                        { name: "Nombre", value: nombre, inline: true },
-                        { name: "Asunto", value: asunto, inline: true },
-                        { name: "Mensaje", value: mensaje }
-                    ],
-                    timestamp: new Date().toISOString()
-                }]
-            };
-
-            const res = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                alert("¡Mensaje enviado correctamente!");
-                document.getElementById('modal-contacto').style.display = 'none';
-                document.getElementById('nombre-contacto').value = '';
-                document.getElementById('asunto-contacto').value = '';
-                document.getElementById('mensaje-contacto').value = '';
-            } else {
-                alert("Error al enviar el mensaje.");
-            }
+        // Validacion simple
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
+            return;
         }
-    </script>
+
+        const payload = {
+            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+            embeds: [{
+                title: "📩 Nuevo mensaje de contacto",
+                color: 3447003,
+                fields: [
+                    { name: "Nombre", value: nombre, inline: true },
+                    { name: "Asunto", value: asunto, inline: true },
+                    { name: "Mensaje", value: mensaje }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("¡Mensaje enviado correctamente!");
+            document.getElementById('modal-contacto').style.display = 'none';
+            document.getElementById('nombre-contacto').value = '';
+            document.getElementById('asunto-contacto').value = '';
+            document.getElementById('mensaje-contacto').value = '';
+        } else {
+            alert("Error al enviar el mensaje.");
+        }
+    }
+
+    
+</script>
 </body>
 </html>
