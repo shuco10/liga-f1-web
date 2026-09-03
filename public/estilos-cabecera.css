@@ -1324,6 +1324,8 @@ table tr td:nth-child(2) {
     height: 45px !important;
 }
 
-
+.header-principal {
+    text-align: center;
+}
 
 
