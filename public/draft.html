@@ -268,7 +268,7 @@
         }
     }
 
-    function actualizarSelects() {
+function actualizarSelects() {
         const select1 = document.getElementById('piloto-uno');
         const select2 = document.getElementById('piloto-dos');
         if (!select1 || !select2) return;
@@ -283,6 +283,12 @@
 
         const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
         const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
+
+        // Ordenar Piloto 1: Menor a mayor estrella (Ascendente)
+        disponibles1.sort((a, b) => (Number(a.estrellas) || 0) - (Number(b.estrellas) || 0));
+
+        // Ordenar Piloto 2: Mayor a menor estrella (Descendente)
+        disponibles2.sort((a, b) => (Number(b.estrellas) || 0) - (Number(a.estrellas) || 0));
 
         select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
             disponibles1.map(p => {
