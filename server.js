@@ -733,24 +733,23 @@ app.get('/api/lista-de-escuderias', async (req, res) => {
 // OBTENER PAREJAS Y SU ESCUDERÍA ASIGNADA
 app.get('/api/draft-parejas', async (req, res) => {
     try {
-        const query = `
-            SELECT 
-                dp.id,
-                dp.id_piloto1,
-                dp.id_piloto2,
-                dp.id_escuderia,
-                p1.gamertag AS nombre1,
-                p1.estrellas AS estrellas1,
-                p2.gamertag AS nombre2,
-                p2.estrellas AS estrellas2,
-                e.nombre AS escuderia_nombre,
-                e.estrellas AS estrellas_escuderia
-            FROM draft_parejas dp
-            JOIN pilotos p1 ON dp.id_piloto1 = p1.id
-            JOIN pilotos p2 ON dp.id_piloto2 = p2.id
-            LEFT JOIN escuderias e ON dp.id_escuderia = e.id
-            ORDER BY dp.id ASC;
-        `;
+const query = `
+    SELECT 
+        dp.id, 
+        dp.id_piloto1, 
+        p1.gamertag AS nombre1, 
+        p1.estrellas AS estrellas1,
+        dp.id_piloto2, 
+        p2.gamertag AS nombre2, 
+        p2.estrellas AS estrellas2,
+        dp.id_escuderia, 
+        e.nombre AS nombre_escuderia,
+        e.estrellas AS estrellas_escuderia
+    FROM draft_parejas dp
+    LEFT JOIN pilotos p1 ON dp.id_piloto1 = p1.id
+    LEFT JOIN pilotos p2 ON dp.id_piloto2 = p2.id
+    LEFT JOIN escuderias e ON dp.id_escuderia = e.id;
+`;
         const { rows } = await pool.query(query);
         res.json(rows);
     } catch (err) {
