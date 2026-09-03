@@ -502,7 +502,7 @@
         }
     }
 
-// 1. Añade esta función en cualquier parte global de tu script de JS
+// Etiquetas de pilotos y escuderias
 function obtenerLogoEscuderia(nombre) {
     if (!nombre) return 'mercedes.png';
     const n = nombre.toLowerCase();
@@ -520,7 +520,6 @@ function obtenerLogoEscuderia(nombre) {
     return 'mercedes.png';
 }
 
-// Función auxiliar para dar transparencia al color de la escudería
 function hexToRgba(hex, alpha) {
     let c = hex.replace('#', '');
     if (c.length === 3) c = c.split('').map(x => x + x).join('');
@@ -528,13 +527,11 @@ function hexToRgba(hex, alpha) {
     return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
 }
 
-// 2. Reemplaza tu antigua función renderizarParrillaEscuderias por esta completa:
 function renderizarParrillaEscuderias() {
     const contenedor = document.getElementById('grid-escuderias');
     if (!contenedor) return;
     contenedor.innerHTML = '';
 
-    // Ordenamos las escuderías de mayor a menor cantidad de estrellas
     const escuderiasOrdenadas = [...listaEscuderiasGlobal].sort((a, b) => {
         const estrellasA = Number(a.estrellas) || 0;
         const estrellasB = Number(b.estrellas) || 0;
@@ -544,27 +541,19 @@ function renderizarParrillaEscuderias() {
     escuderiasOrdenadas.forEach(escuderia => {
         const idEscuderiaActual = Number(escuderia.id);
         
-        // Buscamos si alguna pareja tiene asignada esta escudería
         const parejaAsignada = parejasGuardadas.find(p => {
             if (p.id_escuderia === null || p.id_escuderia === undefined || p.id_escuderia === "") return false;
             return Number(p.id_escuderia) === idEscuderiaActual;
         });
 
-        // Nombres de los pilotos
         const piloto1 = parejaAsignada ? (parejaAsignada.nombre1 || 'Piloto 1') : 'LIBRE';
         const piloto2 = parejaAsignada ? (parejaAsignada.nombre2 || 'Piloto 2') : 'LIBRE';
 
-        // Estrellas de la escudería
         const estrellasEscuderia = Number(escuderia.estrellas) || 0;
-
-        // Estrellas individuales de los pilotos
         const estrellasP1 = (parejaAsignada && parejaAsignada.estrellas1 !== undefined) ? Number(parejaAsignada.estrellas1) : 0;
         const estrellasP2 = (parejaAsignada && parejaAsignada.estrellas2 !== undefined) ? Number(parejaAsignada.estrellas2) : 0;
-
-        // Suma total actual de la pareja + escudería
         const sumaActualEstrellas = parejaAsignada ? (estrellasP1 + estrellasP2 + estrellasEscuderia) : estrellasEscuderia;
 
-        // Color oficial y archivo de logo de la escudería
         const colorEscuderia = escuderia.color_hex || '#374151';
         const nombreLogo = obtenerLogoEscuderia(escuderia.nombre);
         const fondoTarjeta = hexToRgba(colorEscuderia, 0.08);
@@ -575,11 +564,12 @@ function renderizarParrillaEscuderias() {
         
         tarjeta.innerHTML = `
             <div>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-                    <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em;" title="${escuderia.nombre}">${escuderia.nombre}</span>
+                <!-- Cabecera con altura fija para garantizar que todas midan exactamente lo mismo -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; height: 42px;">
+                    <span style="font-weight: bold; color: white; font-size: 13px; letter-spacing: 0.03em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2;" title="${escuderia.nombre}">${escuderia.nombre}</span>
                     <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${estrellasEscuderia} ⭐</span>
                 </div>
-                <!-- Logo a la izquierda y Total de estrellas a la derecha en la misma línea -->
+                <!-- Logo y Total alineados simétricamente -->
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; height: 24px;">
                     <img src="/logos/${nombreLogo}" alt="${escuderia.nombre}" style="height: 22px; width: auto; object-fit: contain;" onerror="this.style.display='none'">
                     <div style="background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #93c5fd; font-weight: 600;">
