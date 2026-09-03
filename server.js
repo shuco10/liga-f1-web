@@ -503,7 +503,46 @@ app.get('/api/pilotos', async (req, res) => {
     }
 });
 
+// ==========================================
+// RUTA DE TODOS LOS RESULTADOS (Faltante en pilotos.html / comisarios.html)
+// ==========================================
+app.get('/api/todos-los-resultados', async (req, res) => {
+    try {
+        const querySQL = `
+            SELECT 
+                r.id,
+                r.id_piloto,
+                r.id_gp,
+                r.posicion,
+                r.puntos,
+                r.escuderia_puntos,
+                p.gamertag,
+                c.nombre AS circuito_nombre
+            FROM resultados r
+            LEFT JOIN pilotos p ON r.id_piloto = p.id
+            LEFT JOIN circuitos c ON r.id_gp = c.id
+            ORDER BY r.id_gp DESC, r.posicion ASC;
+        `;
+        const { rows } = await pool.query(querySQL);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener todos los resultados:", err);
+        res.status(500).json({ error: 'Error al consultar todos los resultados' });
+    }
+});
 
+// ==========================================
+// RUTA DE CIRCUITOS (Faltante en comisarios.html)
+// ==========================================
+app.get('/api/circuitos', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT id, nombre FROM circuitos ORDER BY id ASC;');
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener circuitos:", err);
+        res.status(500).json({ error: 'Error al consultar circuitos' });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
