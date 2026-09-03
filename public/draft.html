@@ -502,6 +502,14 @@
         }
     }
 
+// Función auxiliar para dar transparencia al color de la escudería
+function hexToRgba(hex, alpha) {
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const num = parseInt(c, 16);
+    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+}
+
 function renderizarParrillaEscuderias() {
     const contenedor = document.getElementById('grid-escuderias');
     if (!contenedor) return;
@@ -520,21 +528,28 @@ function renderizarParrillaEscuderias() {
         const piloto1 = parejaAsignada ? (parejaAsignada.nombre1 || 'Piloto 1') : 'LIBRE';
         const piloto2 = parejaAsignada ? (parejaAsignada.nombre2 || 'Piloto 2') : 'LIBRE';
 
+        // Color oficial de la escudería
+        const colorEscuderia = escuderia.color_hex || '#374151';
+
+        // Fondo y borde sutiles para la tarjeta entera basados en el color de la escudería
+        const fondoTarjeta = hexToRgba(colorEscuderia, 0.08);
+        const bordeTarjeta = hexToRgba(colorEscuderia, 0.35);
+
         const tarjeta = document.createElement('div');
-        tarjeta.style.cssText = "background: #111827; border: 1px solid #374151; border-radius: 8px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; height: 100%; box-sizing: border-box;";
+        tarjeta.style.cssText = `background: linear-gradient(135deg, #111827 0%, ${fondoTarjeta} 100%); border: 1px solid ${bordeTarjeta}; border-top: 4px solid ${colorEscuderia}; border-radius: 8px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; height: 100%; box-sizing: border-box;`;
         
         tarjeta.innerHTML = `
             <div>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #1f2937; padding-bottom: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
                     <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em;" title="${escuderia.nombre}">${escuderia.nombre}</span>
                     <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${Number(escuderia.estrellas) || 0} ⭐</span>
                 </div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
-                <div style="background: rgba(31, 41, 55, 0.8); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid ${piloto1 === 'LIBRE' ? '#6b7280' : '#ef4444'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto1}">
+                <div style="background: rgba(17, 24, 39, 0.7); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid ${piloto1 === 'LIBRE' ? '#6b7280' : colorEscuderia}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto1}">
                     🧑‍✈️ ${piloto1}
                 </div>
-                <div style="background: rgba(31, 41, 55, 0.8); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid ${piloto2 === 'LIBRE' ? '#6b7280' : '#ef4444'}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto2}">
+                <div style="background: rgba(17, 24, 39, 0.7); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid ${piloto2 === 'LIBRE' ? '#6b7280' : colorEscuderia}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto2}">
                     🧑‍✈️ ${piloto2}
                 </div>
             </div>
