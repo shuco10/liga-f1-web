@@ -212,7 +212,7 @@
 
 // MECANICA DRAFT
 
-let listaPilotosGlobal = [];
+    let listaPilotosGlobal = [];
     let listaEscuderiasGlobal = [];
     let parejasGuardadas = [];
 
@@ -268,44 +268,34 @@ let listaPilotosGlobal = [];
         }
     }
 
-    // Función auxiliar para obtener la ruta del logo de forma segura
-// Función auxiliar para obtener la ruta del logo de forma segura mapeando nombres largos a cortos
-function obtenerRutaLogo(escuderia) {
-    if (escuderia.logo) return escuderia.logo;
-    
-    // Pasamos el nombre a minúsculas y sin espacios para compararlo fácil
-    const nombre = escuderia.nombre.toLowerCase().replace(/[^a-z0-9]/g, '');
-    let archivoCorto = 'default';
+    function actualizarSelects() {
+        const select1 = document.getElementById('piloto-uno');
+        const select2 = document.getElementById('piloto-dos');
+        if (!select1 || !select2) return;
 
-    if (nombre.includes('redbull') || nombre.includes('oracle')) {
-        archivoCorto = 'redbull';
-    } else if (nombre.includes('ferrari')) {
-        archivoCorto = 'ferrari';
-    } else if (nombre.includes('mclaren')) {
-        archivoCorto = 'mclaren';
-    } else if (nombre.includes('mercedes')) {
-        archivoCorto = 'mercedes';
-    } else if (nombre.includes('aston') || nombre.includes('martin')) {
-        archivoCorto = 'aston';
-    } else if (nombre.includes('alpine') || nombre.includes('bwt')) {
-        archivoCorto = 'alpine';
-    } else if (nombre.includes('williams') || nombre.includes('atlassian')) {
-        archivoCorto = 'williams';
-    } else if (nombre.includes('rb') || nombre.includes('visa') || nombre.includes('cashapp') || nombre.includes('racingbulls')) {
-        archivoCorto = 'rb';
-    } else if (nombre.includes('haas') || nombre.includes('tgr')) {
-        archivoCorto = 'hass'; // Respetando el nombre de tu archivo hass.png
-    } else if (nombre.includes('audi')) {
-        archivoCorto = 'audi';
-    } else if (nombre.includes('cadillac')) {
-        archivoCorto = 'cadillac';
-    } else {
-        // Por si hay alguno más, intentamos limpiar el nombre genérico
-        archivoCorto = nombre;
+        const valorActual1 = select1.value;
+        const valorActual2 = select2.value;
+
+        const idsEmparejados = parejasGuardadas.reduce((acc, p) => {
+            acc.push(p.id_piloto1.toString(), p.id_piloto2.toString());
+            return acc;
+        }, []);
+
+        const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
+        const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
+
+        select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
+            disponibles1.map(p => {
+                const est = Number(p.estrellas) || 0;
+                return `<option value="${p.id}" ${valorActual1 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
+            }).join('');
+
+        select2.innerHTML = '<option value="">Seleccionar Piloto 2</option>' + 
+            disponibles2.map(p => {
+                const est = Number(p.estrellas) || 0;
+                return `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
+            }).join('');
     }
-
-    return `/logos/${archivoCorto}.png`;
-}
 
     function calcularEstrellasEnVivo() {
         const id1 = document.getElementById('piloto-uno').value;
@@ -495,8 +485,7 @@ function obtenerRutaLogo(escuderia) {
             contenedorResumen.innerHTML = parejasGuardadas.map((p, index) => {
                 const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
                 const nombreEscuderia = escuderiaAsignada ? escuderiaAsignada.nombre : '<span style="color: #e10600; font-style: italic;">Sin escudería asignada</span>';
-                const rutaLogo = escuderiaAsignada ? obtenerRutaLogo(escuderiaAsignada) : '';
-                const logoEscuderia = escuderiaAsignada ? `<img src="${rutaLogo}" style="width: 18px; height: 18px; object-fit: contain; display: inline-block; vertical-align: middle; margin-right: 6px;" onerror="this.style.display='none'">` : '';
+                const logoEscuderia = escuderiaAsignada && escuderiaAsignada.logo ? `<img src="${escuderiaAsignada.logo}" style="width: 18px; height: 18px; object-fit: contain; display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
 
                 return `
                     <div style="display: flex; justify-content: space-between; align-items: center; background: #21252b; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #333;">
@@ -523,7 +512,6 @@ function obtenerRutaLogo(escuderia) {
 
             const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
             const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
-            const rutaLogo = obtenerRutaLogo(escuderia);
 
             const tarjeta = document.createElement('div');
             tarjeta.style.cssText = "background: #111827; border: 1px solid #374151; border-radius: 8px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; height: 100%; box-sizing: border-box;";
@@ -532,7 +520,7 @@ function obtenerRutaLogo(escuderia) {
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #1f2937; padding-bottom: 8px;">
                         <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-                            <img src="${rutaLogo}" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">
+                            ${escuderia.logo ? `<img src="${escuderia.logo}" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;">` : ''}
                             <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escuderia.nombre}">${escuderia.nombre}</span>
                         </div>
                         <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${Number(escuderia.estrellas) || 0} ⭐</span>
