@@ -210,6 +210,391 @@
         }
     }
 
+// MECANICA DRAFT
+<script>
+    let listaPilotosGlobal = [];
+    let listaEscuderiasGlobal = [];
+    let parejasGuardadas = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        verificarSesionDraft();
+        cargarDatosDraft();
+        configurarModalEventos();
+
+        const sel1 = document.getElementById('piloto-uno');
+        const sel2 = document.getElementById('piloto-dos');
+        const btnPareja = document.getElementById('btn-crear-pareja');
+        const btnReset = document.getElementById('btn-reset-draft');
+        const btnOrdenar = document.getElementById('btn-ordenar-parejas');
+
+        if(sel1) sel1.addEventListener('change', calcularEstrellasEnVivo);
+        if(sel2) sel2.addEventListener('change', calcularEstrellasEnVivo);
+        if(btnPareja) btnPareja.addEventListener('click', crearPareja);
+        if(btnReset) btnReset.addEventListener('click', resetearDraft);
+        if(btnOrdenar) btnOrdenar.addEventListener('click', ordenarParejasPorEstrellas);
+    });
+
+    function verificarSesionDraft() {
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        const controlesAdminDraft = document.getElementById('controles-admin-draft');
+        const desplegablesAdminDraft = document.getElementById('desplegables-admin-draft');
+
+        if (controlesAdminDraft) controlesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
+        if (desplegablesAdminDraft) desplegablesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
+
+        renderizarParejas();
+        renderizarParrillaEscuderias();
+    }
+
+    async function cargarDatosDraft() {
+        try {
+            const [resPilotos, resEscuderias, resParejas] = await Promise.all([
+                fetch('/api/lista-de-pilotos'),
+                fetch('/api/lista-de-escuderias'),
+                fetch('/api/draft-parejas')
+            ]);
+
+            if (resPilotos.ok) listaPilotosGlobal = await resPilotos.json();
+            if (resEscuderias.ok) listaEscuderiasGlobal = await resEscuderias.json();
+            if (resParejas.ok) parejasGuardadas = await resParejas.json();
+
+            actualizarSelects();
+            calcularEstrellasEnVivo();
+            renderizarParejas();
+            renderizarParrillaEscuderias();
+            llenarModalEstrellas();
+        } catch (err) {
+            console.error("Error al cargar los datos del draft:", err);
+        }
+    }
+
+    function actualizarSelects() {
+        const select1 = document.getElementById('piloto-uno');
+        const select2 = document.getElementById('piloto-dos');
+        if (!select1 || !select2) return;
+
+        const valorActual1 = select1.value;
+        const valorActual2 = select2.value;
+
+        const idsEmparejados = parejasGuardadas.reduce((acc, p) => {
+            acc.push(p.id_piloto1.toString(), p.id_piloto2.toString());
+            return acc;
+        }, []);
+
+        const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
+        const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
+
+        select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
+            disponibles1.map(p => {
+                const est = Number(p.estrellas) || 0;
+                return `<option value="${p.id}" ${valorActual1 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
+            }).join('');
+
+        select2.innerHTML = '<option value="">Seleccionar Piloto 2</option>' + 
+            disponibles2.map(p => {
+                const est = Number(p.estrellas) || 0;
+                return `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${est} ⭐)</option>`;
+            }).join('');
+    }
+
+    function calcularEstrellasEnVivo() {
+        const id1 = document.getElementById('piloto-uno').value;
+        const id2 = document.getElementById('piloto-dos').value;
+        const spanTotal = document.getElementById('span-total-vivo');
+        if (!spanTotal) return;
+
+        let totalPilotos = 0;
+        if (id1) {
+            const p1 = listaPilotosGlobal.find(p => p.id.toString() === id1);
+            if (p1) totalPilotos += (Number(p1.estrellas) || 0);
+        }
+        if (id2) {
+            const p2 = listaPilotosGlobal.find(p => p.id.toString() === id2);
+            if (p2) totalPilotos += (Number(p2.estrellas) || 0);
+        }
+        spanTotal.textContent = totalPilotos;
+    }
+
+    async function crearPareja() {
+        const id1 = document.getElementById('piloto-uno').value;
+        const id2 = document.getElementById('piloto-dos').value;
+        
+        if (!id1 || !id2) {
+            alert("Debes seleccionar ambos pilotos.");
+            return;
+        }
+        if (id1 === id2) {
+            alert("Un piloto no puede hacer pareja consigo mismo.");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/draft-parejas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id1, id2 })
+            });
+
+            if (response.ok) {
+                await cargarDatosDraft();
+                document.getElementById('piloto-uno').value = "";
+                document.getElementById('piloto-dos').value = "";
+                calcularEstrellasEnVivo();
+            } else {
+                alert("Error al guardar la pareja en el servidor.");
+            }
+        } catch (err) {
+            console.error("Error de red:", err);
+            alert("Error de conexión al guardar la pareja.");
+        }
+    }
+
+    function ordenarParejasPorEstrellas() {
+        parejasGuardadas.sort((a, b) => {
+            const sumaA = (Number(a.estrellas1) || 0) + (Number(a.estrellas2) || 0);
+            const sumaB = (Number(b.estrellas1) || 0) + (Number(b.estrellas2) || 0);
+            return sumaA - sumaB;
+        });
+        renderizarParejas();
+        renderizarParrillaEscuderias();
+    }
+
+    async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
+        if (idEscuderia) {
+            const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
+            const totalFinal = estrellasPilotos + (esc ? Number(esc.estrellas) || 0 : 0);
+
+            if (totalFinal > 14) {
+                alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
+                renderizarParejas();
+                return;
+            }
+        }
+
+        try {
+            const res = await fetch(`/api/draft-parejas/${idPareja}/escuderia`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_escuderia: idEscuderia ? parseInt(idEscuderia) : null })
+            });
+            if (res.ok) {
+                await cargarDatosDraft();
+            } else {
+                alert("Error al asignar la escudería.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function eliminarPareja(id) {
+        if (!confirm("¿Seguro que quieres eliminar esta pareja?")) return;
+
+        try {
+            const response = await fetch(`/api/draft-parejas/${id}`, { method: 'DELETE' });
+            if (response.ok) await cargarDatosDraft();
+            else alert("Error al eliminar la pareja.");
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function resetearDraft() {
+        if (!confirm("¿Seguro que quieres borrar todas las parejas del draft?")) return;
+
+        try {
+            const response = await fetch('/api/draft-parejas', { method: 'DELETE' });
+            if (response.ok) await cargarDatosDraft();
+            else alert("Error al resetear el draft.");
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function renderizarParejas() {
+        const contenedor = document.getElementById('resultado-parejas');
+        const contenedorResumen = document.getElementById('resumen-parejas-escuderias');
+        if (!contenedor) return;
+        
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+
+        if (parejasGuardadas.length === 0) {
+            contenedor.innerHTML = '<p style="color: #888; text-align: center;">No hay parejas creadas todavía.</p>';
+            if (contenedorResumen) {
+                contenedorResumen.innerHTML = '<p style="color: #888; text-align: center; font-size: 13px;">No hay asignaciones todavía.</p>';
+            }
+            return;
+        }
+
+        contenedor.innerHTML = parejasGuardadas.map((p, index) => {
+            const est1 = Number(p.estrellas1) || 0;
+            const est2 = Number(p.estrellas2) || 0;
+            const sumaPilotos = est1 + est2;
+            
+            const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
+            const estEsc = escuderiaAsignada ? (Number(escuderiaAsignada.estrellas) || 0) : 0;
+            const totalFinal = p.id_escuderia !== null && p.id_escuderia !== undefined ? (sumaPilotos + estEsc) : sumaPilotos;
+
+            return `
+                <div style="background: #252c35; padding: 15px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <span style="font-weight: bold; color: #82d39d; font-size: 15px;">Pareja ${index + 1}</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #1a1a1a; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 13px;">
+                                Total: ${totalFinal}/14 ⭐
+                            </span>
+                            ${adminStatus ? `
+                                <button onclick="eliminarPareja(${p.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-size: 14px; border: 1px solid #444; display: flex; flex-direction: column; gap: 4px;">
+                        <div>🧑‍✈️ <b>${p.nombre1}</b> <span style="color: #f1c40f;">(${est1} ⭐)</span></div>
+                        <div>🧑‍✈️ <b>${p.nombre2}</b> <span style="color: #f1c40f;">(${est2} ⭐)</span></div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 8px; background: #1a1a1a; padding: 8px 10px; border-radius: 4px; border: 1px solid #444; flex-wrap: wrap;">
+                        <span style="font-size: 13px; color: #aaa; white-space: nowrap;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
+                        ${adminStatus ? `
+                            <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; min-width: 200px; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
+                                <option value="">-- Sin escudería asignada --</option>
+                                ${listaEscuderiasGlobal.map(e => {
+                                    const ocupadaPorOtra = parejasGuardadas.some(other => Number(other.id_escuderia) === Number(e.id) && other.id !== p.id);
+                                    if (ocupadaPorOtra) return '';
+                                    return `
+                                        <option value="${e.id}" ${Number(p.id_escuderia) === Number(e.id) ? 'selected' : ''}>
+                                            ${e.nombre} (${Number(e.estrellas) || 0} ⭐)
+                                        </option>
+                                    `;
+                                }).join('')}
+                            </select>
+                        ` : `
+                            <span style="font-weight: 500; color: #fff;">${escuderiaAsignada ? escuderiaAsignada.nombre : 'Sin escudería'} (${estEsc} ⭐)</span>
+                        `}
+                    </div>
+
+                </div>
+            `;
+        }).join('');
+
+        if (contenedorResumen) {
+            contenedorResumen.innerHTML = parejasGuardadas.map((p, index) => {
+                const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
+                const nombreEscuderia = escuderiaAsignada ? escuderiaAsignada.nombre : '<span style="color: #e10600; font-style: italic;">Sin escudería asignada</span>';
+                const logoEscuderia = escuderiaAsignada && escuderiaAsignada.logo ? `<img src="${escuderiaAsignada.logo}" style="width: 18px; height: 18px; object-fit: contain; display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
+
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #21252b; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #333;">
+                        <div>
+                            <strong style="color: #82d39d;">Pareja ${index + 1}:</strong> 
+                            <span style="color: #ccc; margin-left: 5px;">${p.nombre1} & ${p.nombre2}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; font-weight: bold; color: #fff;">
+                            ${logoEscuderia} ${nombreEscuderia}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    function renderizarParrillaEscuderias() {
+        const contenedor = document.getElementById('grid-escuderias');
+        if (!contenedor) return;
+        contenedor.innerHTML = '';
+
+        listaEscuderiasGlobal.forEach(escuderia => {
+            const parejaAsignada = parejasGuardadas.find(p => p.id_escuderia !== null && p.id_escuderia !== undefined && Number(p.id_escuderia) === Number(escuderia.id));
+
+            const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
+            const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
+
+            const tarjeta = document.createElement('div');
+            tarjeta.style.cssText = "background: #111827; border: 1px solid #374151; border-radius: 8px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; height: 100%; box-sizing: border-box;";
+            
+            tarjeta.innerHTML = `
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #1f2937; padding-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                            ${escuderia.logo ? `<img src="${escuderia.logo}" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;">` : ''}
+                            <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escuderia.nombre}">${escuderia.nombre}</span>
+                        </div>
+                        <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${Number(escuderia.estrellas) || 0} ⭐</span>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                    <div style="background: rgba(31, 41, 55, 0.8); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid #ef4444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto1}">
+                        🧑‍✈️ ${piloto1}
+                    </div>
+                    <div style="background: rgba(31, 41, 55, 0.8); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid #ef4444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto2}">
+                        🧑‍✈️ ${piloto2}
+                    </div>
+                </div>
+            `;
+            contenedor.appendChild(tarjeta);
+        });
+    }
+
+    function configurarModalEventos() {
+        const modal = document.getElementById('modal-estrellas');
+        const btnAbrir = document.getElementById('btn-abrir-modal-estrellas');
+        const btnCerrar = document.getElementById('btn-cerrar-modal');
+
+        if (btnAbrir) btnAbrir.addEventListener('click', () => modal.style.display = 'flex');
+        if (btnCerrar) btnCerrar.addEventListener('click', () => modal.style.display = 'none');
+        window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    }
+
+    function llenarModalEstrellas() {
+        const contenedorEsc = document.getElementById('lista-escuderias-modal');
+        const contenedorPil = document.getElementById('lista-pilotos-modal');
+
+        if (contenedorEsc) {
+            contenedorEsc.innerHTML = listaEscuderiasGlobal.map(esc => `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
+                    <span>${esc.nombre}</span>
+                    <input type="number" min="0" max="14" value="${Number(esc.estrellas) || 0}" onchange="actualizarEstrellasEscuderia(${esc.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
+                </div>
+            `).join('');
+        }
+
+        if (contenedorPil) {
+            contenedorPil.innerHTML = listaPilotosGlobal.map(p => `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 4px;">
+                    <span>${p.gamertag}</span>
+                    <input type="number" min="0" max="14" value="${Number(p.estrellas) || 0}" onchange="actualizarEstrellasPiloto(${p.id}, this.value)" style="width: 60px; padding: 5px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px; text-align: center;">
+                </div>
+            `).join('');
+        }
+    }
+
+    async function actualizarEstrellasPiloto(idPiloto, nuevasEstrellas) {
+        try {
+            const res = await fetch(`/api/pilotos/${idPiloto}/estrellas`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
+            });
+            if (res.ok) await cargarDatosDraft();
+        } catch (err) { console.error(err); }
+    }
+
+    async function actualizarEstrellasEscuderia(idEscuderia, nuevasEstrellas) {
+        try {
+            const res = await fetch(`/api/escuderias/${idEscuderia}/estrellas`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
+            });
+            if (res.ok) await cargarDatosDraft();
+        } catch (err) { console.error(err); }
+    }
+
+    // MECANICA DRAFT
     
 </script>
 </body>
