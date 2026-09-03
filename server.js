@@ -775,16 +775,22 @@ app.post('/api/draft-parejas', async (req, res) => {
 });
 
 // ASIGNAR O CAMBIAR ESCUDERÍA A UNA PAREJA
+// ASIGNAR O CAMBIAR ESCUDERÍA A UNA PAREJA
 app.put('/api/draft-parejas/:id/escuderia', async (req, res) => {
+    console.log("DATOS RECIBIDOS - ID Pareja:", req.params.id, "Body:", req.body); // <-- Añade esto
     const { id_escuderia } = req.body;
     try {
+        const valorEscuderia = (id_escuderia !== undefined && id_escuderia !== null && id_escuderia !== '') 
+            ? parseInt(id_escuderia, 10) 
+            : null;
+
         await pool.query(
             'UPDATE draft_parejas SET id_escuderia = $1 WHERE id = $2',
-            [id_escuderia || null, req.params.id]
+            [valorEscuderia, req.params.id]
         );
         res.json({ success: true });
     } catch (err) {
-        console.error("Error al asignar escudería a la pareja:", err);
+        console.error("Error detallado al asignar escudería:", err); // <-- Modificado para ver más detalle
         res.status(500).json({ error: "Error al asignar escudería" });
     }
 });
