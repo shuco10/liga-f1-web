@@ -20,26 +20,26 @@
 </head>
 <body>
 
-    <!-- CABECERA FIJA ORIGINAL (Tal cual tu segunda foto) -->
-    <header style="text-align: center; padding: 30px 20px 10px 20px;">
-        <div style="margin-bottom: 20px;">
-            <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas Logo" style="max-width: 220px; height: auto;">
+    <!-- CABECERA CENTRADA Y ASEGURADA -->
+    <header style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px 20px 10px 20px; width: 100%; box-sizing: border-box;">
+        <div style="margin-bottom: 20px; display: flex; justify-content: center; width: 100%;">
+            <img src="/webimagenes/cazadoresdecurvas .png" alt="Cazadores de Curvas Logo" style="max-width: 220px; height: auto; display: block;">
         </div>
-        <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 20px; width: 100%;">
             <a href="index.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-building"></i></a>
             <a href="normativas.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-gavel"></i></a>
             <a href="contacto.html" style="background: #e10600; color: white; padding: 10px 14px; border-radius: 4px; text-decoration: none; font-size: 16px;"><i class="fa-solid fa-envelope"></i></a>
         </div>
     </header>
 
-<main class="caja-contenido" style="text-align: center; padding: 0 20px;">
-    <div class="header-principal">
-        <h1 class="titulo-principal" style="font-size: 24px; color: #fff; margin-bottom: 5px;">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
-        <h3 class="subtitulo-principal" style="font-size: 15px; color: #aaa; margin-top: 0;">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
+<main style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; width: 100%; box-sizing: border-box;">
+    <div style="width: 100%; max-width: 650px;">
+        <h1 style="font-size: 22px; color: #fff; margin-bottom: 5px;">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
+        <h3 style="font-size: 14px; color: #aaa; margin-top: 0; margin-bottom: 20px;">👥 Selección de parejas y asignación de escuderías (Límite total: 14 ⭐) 👥</h3>
     </div>
 </main>
 
-<div class="selector-parejas" style="max-width: 650px; margin: 20px auto; padding: 20px; background: #21252b; border-radius: 8px;">
+<div class="selector-parejas" style="max-width: 650px; margin: 0 auto 30px auto; padding: 20px; background: #21252b; border-radius: 8px; box-sizing: border-box;">
     <h2 style="margin-top: 0; font-size: 18px;">🤝 CREAR NUEVA PAREJA</h2>
     
     <!-- Controles de Admin -->
@@ -120,7 +120,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Cargar footer y login modal
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
         
