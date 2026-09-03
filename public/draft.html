@@ -515,7 +515,14 @@ function renderizarParrillaEscuderias() {
     if (!contenedor) return;
     contenedor.innerHTML = '';
 
-    listaEscuderiasGlobal.forEach(escuderia => {
+    // Ordenamos las escuderías de mayor a menor cantidad de estrellas
+    const escuderiasOrdenadas = [...listaEscuderiasGlobal].sort((a, b) => {
+        const estrellasA = Number(a.estrellas) || 0;
+        const estrellasB = Number(b.estrellas) || 0;
+        return estrellasB - estrellasA; // De mayor a menor (6 -> 4 -> 2)
+    });
+
+    escuderiasOrdenadas.forEach(escuderia => {
         const idEscuderiaActual = Number(escuderia.id);
         
         // Buscamos si alguna pareja tiene asignada esta escudería comparando los IDs
