@@ -50,13 +50,13 @@
         </button>
     </div>
 
-    <!-- Desplegables de pilotos y contador exclusivo de pilotos en vivo -->
+    <!-- Desplegables de pilotos -->
     <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
-        <div style="display: flex; gap: 10px;">
-            <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
                 <option value="">Seleccionar Piloto 1</option>
             </select>
-            <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+            <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
                 <option value="">Seleccionar Piloto 2</option>
             </select>
         </div>
@@ -68,7 +68,7 @@
 
     <div style="margin-top: 30px;">
         <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px;">📋 Parejas y Escuderías Asignadas</h3>
-        <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px;">
+        <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
             <!-- Listado generado dinámicamente -->
         </div>
     </div>
@@ -184,7 +184,6 @@
             disponibles2.map(p => `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} (${p.estrellas} ⭐)</option>`).join('');
     }
 
-    // Calcula solo la suma de los dos pilotos seleccionados para crear la pareja
     function calcularEstrellasEnVivo() {
         const id1 = document.getElementById('piloto-uno').value;
         const id2 = document.getElementById('piloto-dos').value;
@@ -236,7 +235,6 @@
         }
     }
 
-    // Asignar escudería a una pareja ya creada y validar límite de 14 estrellas en total
     async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
         if (idEscuderia) {
             const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
@@ -244,7 +242,7 @@
 
             if (totalFinal > 14) {
                 alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
-                renderizarParejas(); // Resetea el desplegable visualmente
+                renderizarParejas();
                 return;
             }
         }
@@ -307,15 +305,14 @@
             const estEsc = p.estrellas_escuderia || 0;
             const totalFinal = p.id_escuderia ? (sumaPilotos + estEsc) : sumaPilotos;
 
-            // Escuderías ya seleccionadas en otras parejas para evitar duplicados si lo deseas
-            const escuderiasOcupadas = parejasGuardadas.filter(item => item.id !== p.id).map(item => item.id_escuderia);
-
             return `
-                <div class="fila-pareja" style="background: #252c35; padding: 15px; margin-top: 10px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span style="font-weight: bold; color: #82d39d;">Pareja ${index + 1}: ${p.nombre1} (${est1}⭐) + ${p.nombre2} (${est2}⭐)</span>
+                <div class="fila-pareja" style="background: #252c35; padding: 15px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
+                    
+                    <!-- Cabecera de la tarjeta: Título y Total de Estrellas / Botón Borrar -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <span style="font-weight: bold; color: #82d39d; font-size: 15px;">Pareja ${index + 1}</span>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="background: #1a1a1a; padding: 4px 8px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 14px;">
+                            <span style="background: #1a1a1a; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 13px;">
                                 Total: ${totalFinal} / 14 ⭐
                             </span>
                             ${adminStatus ? `
@@ -326,11 +323,17 @@
                         </div>
                     </div>
 
-                    <!-- Selector de Escudería para esta pareja -->
-                    <div style="display: flex; align-items: center; gap: 10px; background: #1a1a1a; padding: 8px; border-radius: 4px;">
-                        <span style="font-size: 13px; color: #aaa;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
+                    <!-- Nombres de los pilotos claramente detallados -->
+                    <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-size: 14px; border: 1px solid #444; display: flex; flex-direction: column; gap: 4px;">
+                        <div>🧑‍✈️ <b>${p.nombre1}</b> <span style="color: #f1c40f;">(${est1} ⭐)</span></div>
+                        <div>🧑‍✈️ <b>${p.nombre2}</b> <span style="color: #f1c40f;">(${est2} ⭐)</span></div>
+                    </div>
+
+                    <!-- Selector de Escudería adaptado y limpio -->
+                    <div style="display: flex; align-items: center; gap: 8px; background: #1a1a1a; padding: 8px 10px; border-radius: 4px; border: 1px solid #444; flex-wrap: wrap;">
+                        <span style="font-size: 13px; color: #aaa; white-space: nowrap;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
                         ${adminStatus ? `
-                            <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
+                            <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; min-width: 200px; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
                                 <option value="">-- Sin escudería asignada --</option>
                                 ${listaEscuderiasGlobal.map(e => `
                                     <option value="${e.id}" ${p.id_escuderia == e.id ? 'selected' : ''}>
@@ -342,6 +345,7 @@
                             <span style="font-weight: 500; color: #fff;">${p.escuderia_nombre || 'Sin escudería'} (${estEsc} ⭐)</span>
                         `}
                     </div>
+
                 </div>
             `;
         }).join('');
@@ -387,9 +391,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
             });
-            if (res.ok) {
-                await cargarDatosDraft();
-            }
+            if (res.ok) await cargarDatosDraft();
         } catch (err) { console.error(err); }
     }
 
@@ -400,9 +402,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ estrellas: parseInt(nuevasEstrellas) })
             });
-            if (res.ok) {
-                await cargarDatosDraft();
-            }
+            if (res.ok) await cargarDatosDraft();
         } catch (err) { console.error(err); }
     }
 
