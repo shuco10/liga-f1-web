@@ -519,26 +519,34 @@ function renderizarParrillaEscuderias() {
     const escuderiasOrdenadas = [...listaEscuderiasGlobal].sort((a, b) => {
         const estrellasA = Number(a.estrellas) || 0;
         const estrellasB = Number(b.estrellas) || 0;
-        return estrellasB - estrellasA; // De mayor a menor (6 -> 4 -> 2)
+        return estrellasB - estrellasA; 
     });
 
     escuderiasOrdenadas.forEach(escuderia => {
         const idEscuderiaActual = Number(escuderia.id);
         
-        // Buscamos si alguna pareja tiene asignada esta escudería comparando los IDs
+        // Buscamos si alguna pareja tiene asignada esta escudería
         const parejaAsignada = parejasGuardadas.find(p => {
             if (p.id_escuderia === null || p.id_escuderia === undefined || p.id_escuderia === "") return false;
             return Number(p.id_escuderia) === idEscuderiaActual;
         });
 
-        // Leemos los nombres directamente del JSON que nos manda el servidor
+        // Nombres de los pilotos
         const piloto1 = parejaAsignada ? (parejaAsignada.nombre1 || 'Piloto 1') : 'LIBRE';
         const piloto2 = parejaAsignada ? (parejaAsignada.nombre2 || 'Piloto 2') : 'LIBRE';
 
+        // Estrellas de la escudería
+        const estrellasEscuderia = Number(escuderia.estrellas) || 0;
+
+        // Estrellas individuales de los pilotos (si están asignados, cogemos sus estrellas; si es LIBRE, suman 0)
+        const estrellasP1 = (parejaAsignada && parejaAsignada.estrellas1 !== undefined) ? Number(parejaAsignada.estrellas1) : 0;
+        const estrellasP2 = (parejaAsignada && parejaAsignada.estrellas2 !== undefined) ? Number(parejaAsignada.estrellas2) : 0;
+
+        // Suma total actual de la pareja + escudería
+        const sumaActualEstrellas = parejaAsignada ? (estrellasP1 + estrellasP2 + estrellasEscuderia) : estrellasEscuderia;
+
         // Color oficial de la escudería
         const colorEscuderia = escuderia.color_hex || '#374151';
-
-        // Fondo y borde sutiles para la tarjeta entera basados en el color de la escudería
         const fondoTarjeta = hexToRgba(colorEscuderia, 0.08);
         const bordeTarjeta = hexToRgba(colorEscuderia, 0.35);
 
@@ -547,17 +555,23 @@ function renderizarParrillaEscuderias() {
         
         tarjeta.innerHTML = `
             <div>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
                     <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em;" title="${escuderia.nombre}">${escuderia.nombre}</span>
-                    <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${Number(escuderia.estrellas) || 0} ⭐</span>
+                    <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${estrellasEscuderia} ⭐</span>
+                </div>
+                <!-- Indicador de total de estrellas en la zona que querías -->
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+                    <div style="background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #93c5fd; font-weight: 600;">
+                        Total: <span style="color: #facc15;">${sumaActualEstrellas}</span> ⭐
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
                 <div style="background: rgba(17, 24, 39, 0.7); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid ${piloto1 === 'LIBRE' ? '#6b7280' : colorEscuderia}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto1}">
-                    🧑‍✈️ ${piloto1}
+                    🧑‍✈️ ${piloto1} ${parejaAsignada ? `(${estrellasP1}⭐)` : ''}
                 </div>
                 <div style="background: rgba(17, 24, 39, 0.7); border-radius: 4px; padding: 8px; font-size: 12px; color: #e5e7eb; border-left: 4px solid ${piloto2 === 'LIBRE' ? '#6b7280' : colorEscuderia}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${piloto2}">
-                    🧑‍✈️ ${piloto2}
+                    🧑‍✈️ ${piloto2} ${parejaAsignada ? `(${estrellasP2}⭐)` : ''}
                 </div>
             </div>
         `;
