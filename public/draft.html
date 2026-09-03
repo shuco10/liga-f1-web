@@ -37,7 +37,7 @@
 </main>
 
 <div class="selector-parejas" style="max-width: 650px; margin: 20px auto; padding: 20px; background: #21252b; border-radius: 8px;">
-    <h2 style="margin-top: 0;">🤝 ASIGNACIÓN DE PAREJAS - DRAFT 🤝</h2>
+    <h2 style="margin-top: 0;">🤝 CREAR NUEVA PAREJA</h2>
     
     <!-- Controles de Admin -->
     <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
@@ -55,7 +55,7 @@
         </button>
     </div>
 
-<!-- Desplegables de pilotos -->
+    <!-- Desplegables de pilotos -->
     <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
@@ -71,14 +71,13 @@
         </div>
     </div>
 
-    <!-- Bloque de Parejas y Resumen -->
     <div style="margin-top: 30px;">
         <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px;">📋 Parejas y Escuderías Asignadas</h3>
         <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
             <!-- Listado generado dinámicamente -->
         </div>
 
-        <!-- LISTA RESUMEN DE ESCUDERÍAS ASIGNADAS (NUEVO) -->
+        <!-- LISTA RESUMEN DE ESCUDERÍAS ASIGNADAS -->
         <div style="margin-top: 25px; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #444;">
             <h4 style="margin-top: 0; color: #82d39d; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 15px;">
                 <i class="fa-solid fa-list-check"></i> Resumen: Escuderías Asignadas por Pareja
@@ -90,7 +89,13 @@
     </div>
 </div>
 
-
+<!-- PARRILLA VISUAL DE ESCUDERÍAS -->
+<div class="max-w-7xl mx-auto px-4 mt-12 mb-12">
+    <h3 class="text-2xl font-bold text-white mb-6 text-center">Parrilla Oficial de Escuderías</h3>
+    <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- Las tarjetas se pintarán solas aquí mediante JavaScript -->
+    </div>
+</div>
 
 <!-- MODAL DE CONFIGURACIÓN DE ESTRELLAS -->
 <div id="modal-estrellas" class="modal-estrellas">
@@ -108,7 +113,6 @@
     </div>
 </div>
 
-<!-- FOOTER CARGADO ORIGINALMENTE SIN CONTENEDORES FORZADOS -->
 <div id="footer-placeholder"></div>
 
 <script>
@@ -292,7 +296,6 @@
                 body: JSON.stringify({ id_escuderia: idEscuderia ? parseInt(idEscuderia) : null })
             });
             if (res.ok) {
-                // Actualizamos los datos del servidor para que la parrilla y la lista reflejen el cambio de inmediato
                 await cargarDatosDraft();
             } else {
                 alert("Error al asignar la escudería.");
@@ -326,99 +329,98 @@
         }
     }
 
-   function renderizarParejas() {
-    const contenedor = document.getElementById('resultado-parejas');
-    const contenedorResumen = document.getElementById('resumen-parejas-escuderias');
-    if (!contenedor) return;
-    
-    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-
-    if (parejasGuardadas.length === 0) {
-        contenedor.innerHTML = '<p style="color: #888; text-align: center;">No hay parejas creadas todavía.</p>';
-        if (contenedorResumen) {
-            contenedorResumen.innerHTML = '<p style="color: #888; text-align: center; font-size: 13px;">No hay asignaciones todavía.</p>';
-        }
-        return;
-    }
-
-    // 1. Renderizamos las tarjetas principales de gestión de parejas
-    contenedor.innerHTML = parejasGuardadas.map((p, index) => {
-        const est1 = Number(p.estrellas1) || 0;
-        const est2 = Number(p.estrellas2) || 0;
-        const sumaPilotos = est1 + est2;
+    function renderizarParejas() {
+        const contenedor = document.getElementById('resultado-parejas');
+        const contenedorResumen = document.getElementById('resumen-parejas-escuderias');
+        if (!contenedor) return;
         
-        // Cruzamos el id_escuderia de la tabla con el array global de escuderías
-        const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
-        const estEsc = escuderiaAsignada ? (Number(escuderiaAsignada.estrellas) || 0) : 0;
-        const totalFinal = p.id_escuderia !== null && p.id_escuderia !== undefined ? (sumaPilotos + estEsc) : sumaPilotos;
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
 
-        return `
-            <div class="fila-pareja" style="background: #252c35; padding: 15px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <span style="font-weight: bold; color: #82d39d; font-size: 15px;">Pareja ${index + 1}</span>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="background: #1a1a1a; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 13px;">
-                            Total: ${totalFinal}/14 ⭐
-                        </span>
-                        ${adminStatus ? `
-                            <button onclick="eliminarPareja(${p.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
+        if (parejasGuardadas.length === 0) {
+            contenedor.innerHTML = '<p style="color: #888; text-align: center;">No hay parejas creadas todavía.</p>';
+            if (contenedorResumen) {
+                contenedorResumen.innerHTML = '<p style="color: #888; text-align: center; font-size: 13px;">No hay asignaciones todavía.</p>';
+            }
+            return;
+        }
 
-                <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-size: 14px; border: 1px solid #444; display: flex; flex-direction: column; gap: 4px;">
-                    <div>🧑‍✈️ <b>${p.nombre1}</b> <span style="color: #f1c40f;">(${est1} ⭐)</span></div>
-                    <div>🧑‍✈️ <b>${p.nombre2}</b> <span style="color: #f1c40f;">(${est2} ⭐)</span></div>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 8px; background: #1a1a1a; padding: 8px 10px; border-radius: 4px; border: 1px solid #444; flex-wrap: wrap;">
-                    <span style="font-size: 13px; color: #aaa; white-space: nowrap;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
-                    ${adminStatus ? `
-                        <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; min-width: 200px; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
-                            <option value="">-- Sin escudería asignada --</option>
-                            ${listaEscuderiasGlobal.map(e => {
-                                const ocupadaPorOtra = parejasGuardadas.some(other => Number(other.id_escuderia) === Number(e.id) && other.id !== p.id);
-                                if (ocupadaPorOtra) return '';
-                                return `
-                                    <option value="${e.id}" ${Number(p.id_escuderia) === Number(e.id) ? 'selected' : ''}>
-                                        ${e.nombre} (${Number(e.estrellas) || 0} ⭐)
-                                    </option>
-                                `;
-                            }).join('')}
-                        </select>
-                    ` : `
-                        <span style="font-weight: 500; color: #fff;">${escuderiaAsignada ? escuderiaAsignada.nombre : 'Sin escudería'} (${estEsc} ⭐)</span>
-                    `}
-                </div>
-
-            </div>
-        `;
-    }).join('');
-
-    // 2. Renderizamos la lista resumen justo debajo con el nombre de la escudería asignada
-    if (contenedorResumen) {
-        contenedorResumen.innerHTML = parejasGuardadas.map((p, index) => {
+        // 1. Tarjetas principales de gestión de parejas
+        contenedor.innerHTML = parejasGuardadas.map((p, index) => {
+            const est1 = Number(p.estrellas1) || 0;
+            const est2 = Number(p.estrellas2) || 0;
+            const sumaPilotos = est1 + est2;
+            
             const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
-            const nombreEscuderia = escuderiaAsignada ? escuderiaAsignada.nombre : '<span style="color: #e10600; font-style: italic;">Sin escudería asignada</span>';
-            const logoEscuderia = escuderiaAsignada && escuderiaAsignada.logo ? `<img src="${escuderiaAsignada.logo}" style="width: 18px; height: 18px; object-fit: contain; display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
+            const estEsc = escuderiaAsignada ? (Number(escuderiaAsignada.estrellas) || 0) : 0;
+            const totalFinal = p.id_escuderia !== null && p.id_escuderia !== undefined ? (sumaPilotos + estEsc) : sumaPilotos;
 
             return `
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #21252b; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #333;">
-                    <div>
-                        <strong style="color: #82d39d;">Pareja ${index + 1}:</strong> 
-                        <span style="color: #ccc; margin-left: 5px;">${p.nombre1} & ${p.nombre2}</span>
+                <div class="fila-pareja" style="background: #252c35; padding: 15px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <span style="font-weight: bold; color: #82d39d; font-size: 15px;">Pareja ${index + 1}</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #1a1a1a; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: ${totalFinal > 14 ? '#e10600' : '#82d39d'}; border: 1px solid #444; font-size: 13px;">
+                                Total: ${totalFinal}/14 ⭐
+                            </span>
+                            ${adminStatus ? `
+                                <button onclick="eliminarPareja(${p.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
-                    <div style="display: flex; align-items: center; font-weight: bold; color: #fff;">
-                        ${logoEscuderia} ${nombreEscuderia}
+
+                    <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-size: 14px; border: 1px solid #444; display: flex; flex-direction: column; gap: 4px;">
+                        <div>🧑‍✈️ <b>${p.nombre1}</b> <span style="color: #f1c40f;">(${est1} ⭐)</span></div>
+                        <div>🧑‍✈️ <b>${p.nombre2}</b> <span style="color: #f1c40f;">(${est2} ⭐)</span></div>
                     </div>
+
+                    <div style="display: flex; align-items: center; gap: 8px; background: #1a1a1a; padding: 8px 10px; border-radius: 4px; border: 1px solid #444; flex-wrap: wrap;">
+                        <span style="font-size: 13px; color: #aaa; white-space: nowrap;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
+                        ${adminStatus ? `
+                            <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; min-width: 200px; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
+                                <option value="">-- Sin escudería asignada --</option>
+                                ${listaEscuderiasGlobal.map(e => {
+                                    const ocupadaPorOtra = parejasGuardadas.some(other => Number(other.id_escuderia) === Number(e.id) && other.id !== p.id);
+                                    if (ocupadaPorOtra) return '';
+                                    return `
+                                        <option value="${e.id}" ${Number(p.id_escuderia) === Number(e.id) ? 'selected' : ''}>
+                                            ${e.nombre} (${Number(e.estrellas) || 0} ⭐)
+                                        </option>
+                                    `;
+                                }).join('')}
+                            </select>
+                        ` : `
+                            <span style="font-weight: 500; color: #fff;">${escuderiaAsignada ? escuderiaAsignada.nombre : 'Sin escudería'} (${estEsc} ⭐)</span>
+                        `}
+                    </div>
+
                 </div>
             `;
         }).join('');
+
+        // 2. Lista resumen justo debajo
+        if (contenedorResumen) {
+            contenedorResumen.innerHTML = parejasGuardadas.map((p, index) => {
+                const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
+                const nombreEscuderia = escuderiaAsignada ? escuderiaAsignada.nombre : '<span style="color: #e10600; font-style: italic;">Sin escudería asignada</span>';
+                const logoEscuderia = escuderiaAsignada && escuderiaAsignada.logo ? `<img src="${escuderiaAsignada.logo}" style="width: 18px; height: 18px; object-fit: contain; display: inline-block; vertical-align: middle; margin-right: 6px;">` : '';
+
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #21252b; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #333;">
+                        <div>
+                            <strong style="color: #82d39d;">Pareja ${index + 1}:</strong> 
+                            <span style="color: #ccc; margin-left: 5px;">${p.nombre1} & ${p.nombre2}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; font-weight: bold; color: #fff;">
+                            ${logoEscuderia} ${nombreEscuderia}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     }
-}
 
     function renderizarParrillaEscuderias() {
         const contenedor = document.getElementById('grid-escuderias');
@@ -426,7 +428,6 @@
         contenedor.innerHTML = '';
 
         listaEscuderiasGlobal.forEach(escuderia => {
-            // Buscamos la pareja que tiene asignada esta escudería comparando correctamente los IDs
             const parejaAsignada = parejasGuardadas.find(p => p.id_escuderia !== null && p.id_escuderia !== undefined && Number(p.id_escuderia) === Number(escuderia.id));
 
             const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
