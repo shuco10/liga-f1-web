@@ -544,6 +544,24 @@ app.get('/api/circuitos', async (req, res) => {
     }
 });
 
+
+
+// ==========================================
+// RUTA DE RESETEO DE CAMPEONATO (Soporte para /api/reset y /api/reset-campeonato)
+// ==========================================
+app.post(['/api/reset', '/api/reset-campeonato'], async (req, res) => {
+    try {
+        await pool.query("UPDATE pilotos SET puntos_totales = 0, victorias = 0, podios = 0, puntos_sancion = 0, poles = 0");
+        res.sendStatus(200);
+    } catch (err) {
+        console.error("Error al resetear el campeonato:", err);
+        res.sendStatus(500);
+    }
+});
+```[cite: 7]
+
+Pégalo, guarda, reinicia el servidor y prueba a pulsar el botón de reset de nuevo. ¡Con esto debería limpiar los marcadores de los pilotos al instante[cite: 7]!
+
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
