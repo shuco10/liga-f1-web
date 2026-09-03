@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Tailwind CSS CDN para que las clases de la parrilla funcionen a la perfección -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -77,13 +77,13 @@
             <!-- Listado generado dinámicamente -->
         </div>
     </div>
+</div>
 
-    <!-- PARRILLA VISUAL DE ESCUDERÍAS -->
-    <div class="mt-8">
-        <h3 class="text-xl font-bold text-white mb-4">Parrilla Oficial de Escuderías</h3>
-        <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            <!-- Las tarjetas se pintarán solas aquí mediante JavaScript -->
-        </div>
+<!-- PARRILLA VISUAL DE ESCUDERÍAS FUERA DEL CONTENEDOR ESTRECHO PARA QUE RESPIRE BIEN -->
+<div class="max-w-7xl mx-auto px-4 mt-12 mb-12">
+    <h3 class="text-2xl font-bold text-white mb-6 text-center">Parrilla Oficial de Escuderías</h3>
+    <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- Las tarjetas se pintarán solas aquí mediante JavaScript -->
     </div>
 </div>
 
@@ -103,7 +103,8 @@
     </div>
 </div>
 
-<div id="footer-placeholder"></div>
+<!-- CONTENEDOR PARA CENTRAR EL FOOTER (SOLUCIÓN AL LOGO A LA IZQUIERDA) -->
+<div id="footer-placeholder" style="display: flex; justify-content: center; align-items: center; width: 100%;"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -365,7 +366,6 @@
                             <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; min-width: 200px; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
                                 <option value="">-- Sin escudería asignada --</option>
                                 ${listaEscuderiasGlobal.map(e => {
-                                    // Filtramos para que no se muestre si otra pareja ya la tiene (excepto la propia pareja)
                                     const ocupadaPorOtra = parejasGuardadas.some(other => Number(other.id_escuderia) === Number(e.id) && other.id !== p.id);
                                     if (ocupadaPorOtra) return '';
                                     return `
@@ -391,27 +391,32 @@
         contenedor.innerHTML = '';
 
         listaEscuderiasGlobal.forEach(escuderia => {
-            const parejaAsignada = parejasGuardadas.find(p => Number(p.id_escuderia) === Number(escuderia.id));
+            // Se usa Number en ambos lados para asegurar que coincidan correctamente los tipos de datos (string vs int)
+            const parejaAsignada = parejasGuardadas.find(p => p.id_escuderia && Number(p.id_escuderia) === Number(escuderia.id));
 
             const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
             const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
 
             const tarjeta = document.createElement('div');
-            tarjeta.className = "bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg flex flex-col justify-between relative overflow-hidden";
+            // Se añade h-full y flex para que todas las tarjetas midan lo mismo y tengan un aspecto limpio
+            tarjeta.className = "bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg flex flex-col justify-between h-full relative overflow-hidden";
             
             tarjeta.innerHTML = `
-                <div class="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
-                    <div class="flex items-center space-x-2">
-                        ${escuderia.logo ? `<img src="${escuderia.logo}" class="w-6 h-6 object-contain">` : ''}
-                        <span class="font-bold text-white tracking-wider">${escuderia.nombre}</span>
+                <div>
+                    <div class="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
+                        <div class="flex items-center space-x-2 overflow-hidden">
+                            ${escuderia.logo ? `<img src="${escuderia.logo}" class="w-6 h-6 object-contain flex-shrink-0">` : ''}
+                            <!-- Se usa whitespace-nowrap y text-ellipsis para que los nombres largos de escuderías salgan en una línea limpia -->
+                            <span class="font-bold text-white text-sm tracking-wider whitespace-nowrap overflow-hidden text-ellipsis" title="${escuderia.nombre}">${escuderia.nombre}</span>
+                        </div>
+                        <span class="text-yellow-400 font-semibold text-sm flex-shrink-0 ml-2">${Number(escuderia.estrellas) || 0} ⭐</span>
                     </div>
-                    <span class="text-yellow-400 font-semibold text-sm">${Number(escuderia.estrellas) || 0} ⭐</span>
                 </div>
-                <div class="space-y-2">
-                    <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
+                <div class="space-y-2 mt-2">
+                    <div class="bg-gray-800/80 rounded p-2 text-xs text-gray-200 border-l-4 border-red-500 truncate" title="${piloto1}">
                         🧑‍✈️ ${piloto1}
                     </div>
-                    <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
+                    <div class="bg-gray-800/80 rounded p-2 text-xs text-gray-200 border-l-4 border-red-500 truncate" title="${piloto2}">
                         🧑‍✈️ ${piloto2}
                     </div>
                 </div>
