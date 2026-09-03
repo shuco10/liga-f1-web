@@ -1,1070 +1,372 @@
-<!doctype html>
-<html lang="es"><head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260903-03-1632ed8","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YAHO2-t-jNE,0","Arial":"YAGyDvJ_4Ts,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Canva Sans":"YAFLd8sKbwc,2","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAHO2VMiyZo,0","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAEul-FRQw4,0","Georgia":"YAGzXkO0pEM,0","Helvetica Neue":"YAFcf6CtJfI,0","Impact":"YAFcfnjI7Vk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YAHO2a5g66Q,0","JetBrains Mono":"YAFdJksXcAk,0","Libre Baskerville":"YACgEUFdPdA,0","Manrope":"YAHO2b2feC4,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YADLjI9qxTA,0","Nunito":"YACgEX8C5Gg,0","Oleo Script":"YACgEQQ14jI,0","Phantom Sans":"YAHO2E8Pb88,0","Playfair Display":"YACgEYmuCJE,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YADWjpfPmdk,0","Raleway":"YACgEVg3xZg,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Spectral":"YAHO2rVUHIM,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Ubuntu":"YACgERDU--Q,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YADlN8CFZ8Q,0","ui-sans-serif":"YACkoN-xg4g,0"}}');</script><script src="/_sdk/9e99ecf74af2a081.telemetry_sdk.js" integrity="sha512-tZ7fmfTx2KpCLjXQnEuL9azQ4A5+7+xumsx6r/WYVD0zCP/8LP8hDeCypMQesmP+WyAew4g7l5Ah23Bjd6yoVg=="></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cazadores de Curvas — Draft 2026</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/fbe2ebfd64647c54.data_sdk.js" integrity="sha512-vkTX6CfvpHc3WbjK+tFJCaDuw4ERA4aEV/e5/7+MMJPMTF4RJYCI6CAwJBT/gtDW+dba4uLSsPUgDjVDHWtgUQ=="></script>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --ink: #0b0d10;
-      --graphite: #15191f;
-      --steel: #252c35;
-      --line: #39424d;
-      --soft: #f3f5f6;
-      --muted: #9da8b5;
-      --red: #e32028;
-      --green: #82d39d;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noticias | Cazadores de Curvas</title>
+    <script src="/auth.js"></script>
+    <link rel="stylesheet" href="/estilos-cabecera.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        #lista-noticias { padding: 20px; max-width: 800px; margin: auto; }
+    </style>
+    <script src="/auth.js"></script>
+</head>
+<body>
+
+    <div id="header-placeholder"></div>
+    <div id="modal-container"></div>
+    
+    <div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
+
+<div id="form-noticia-admin" class="form-noticia" style="display: none; border: 1px solid #444; padding: 20px; margin: 20px auto; background: #222; max-width: 500px; border-radius: 10px;">
+    <h3 style="margin-top: 0; text-align: center;">Publicar Nueva Noticia</h3>
+    <input type="text" id="nueva-noticia-titulo" placeholder="Título" style="width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;">
+    <textarea id="nueva-noticia-cuerpo" placeholder="Cuerpo de la noticia..." rows="4" style="width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;"></textarea>
+    <button onclick="publicarNoticia()" style="background: #ff3333; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; width: 100%;">Publicar</button>
+</div>
+
+<script>
+    // Mostrar el formulario solo si es admin
+    if (typeof esAdmin === 'function' && esAdmin()) {
+        document.getElementById('form-noticia-admin').style.display = 'block';
+    }
+</script>
+
+<main class="caja-contenido" id="lista-noticias">
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+<script>
+    // 1. Cargar Header, Footer y Modal de forma ordenada
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Cargar Header
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                
+                // Verificación de sesión tras cargar el header
+                if (typeof verificarSesion === 'function') {
+                    verificarSesion();
+                }
+
+                // Configuración Banner
+                window.igBannerConfig = {
+                    lang: 'es',
+                    igr: 'gamer-97d22e',
+                    banners: ['my-banner']
+                };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
+
+        // Cargar Footer
+        fetch('/footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data)
+            .catch(error => console.error('Error al cargar el footer:', error));
+
+        // Cargar Modal de Login (Para evitar el error de null)
+        fetch('/login-modal.html')
+            .then(res => res.text())
+            .then(data => {
+                document.body.insertAdjacentHTML('beforeend', data);
+            });
+
+        // Cargar las noticias
+        cargarNoticias();
+    });
+
+// 1. Mostrar form si es admin
+    if (typeof esAdmin === 'function' && esAdmin()) {
+        document.getElementById('form-noticia-admin').style.display = 'block';
     }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      width: 100%;
-      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
-      font-family: "Work Sans", sans-serif;
-      color: var(--soft);
-      overflow-x: hidden;
-      background: var(--ink);
-    }
+    // 2. Cargar Noticias
+async function cargarNoticias() {
+    const contenedor = document.getElementById('lista-noticias');
+    if (!contenedor) return; // Protección por si no existe en esta página
 
-    .broadcast-shell {
-      width: 100%;
-      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
-      position: relative;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% -10%, rgba(227, 32, 40, .16), transparent 30%),
-        linear-gradient(145deg, #0c0f13 0%, #11161c 52%, #090b0e 100%);
-    }
-    .broadcast-shell::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: .24;
-      background-image:
-        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(to bottom, black, transparent 80%);
-    }
-
-    .race-watermark {
-      position: absolute;
-      z-index: 0;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      opacity: .13;
-      pointer-events: none;
-      filter: saturate(.85) contrast(1.08);
-    }
-    .race-watermark::after { content: ""; }
-    .title-lockup {
-      display: flex;
-      align-items: center;
-      gap: clamp(8px, 1vw, 16px);
-    }
-    .helmet-logo {
-      width: clamp(72px, 8.5vw, 148px);
-      height: clamp(72px, 8.5vw, 148px);
-      flex: 0 0 auto;
-      object-fit: contain;
-      object-position: center;
-    }
-    .app-stage {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
-      padding: clamp(16px, 2vw, 34px);
-      display: flex;
-      flex-direction: column;
-      gap: clamp(12px, 1.45vw, 22px);
-    }
-
-    .condensed { font-family: "Barlow Condensed", sans-serif; }
-    .top-rule {
-      height: 3px;
-      width: 76px;
-      background: var(--red);
-      box-shadow: 0 0 16px rgba(227,32,40,.65);
-    }
-
-    .header-strip {
-      border-bottom: 1px solid rgba(157,168,181,.26);
-      padding-bottom: clamp(10px, 1vw, 15px);
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .brand-title {
-      letter-spacing: .05em;
-      line-height: .82;
-      font-size: clamp(42px, 5.3vw, 94px);
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .draft-year {
-      margin-top: 5px;
-      font-size: clamp(17px, 1.5vw, 27px);
-      letter-spacing: .34em;
-      color: #d9dde2;
-      text-transform: uppercase;
-    }
-    .season-meta {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 15px;
-      color: var(--muted);
-      font-size: clamp(10px, .78vw, 14px);
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      text-align: right;
-    }
-    .live-pulse {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      color: #f6c7ca;
-    }
-    .live-pulse::before {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--red);
-      box-shadow: 0 0 0 0 rgba(227,32,40,.75);
-      animation: pulse 1.7s infinite;
-    }
-    @keyframes pulse {
-      70% { box-shadow: 0 0 0 7px rgba(227,32,40,0); }
-      100% { box-shadow: 0 0 0 0 rgba(227,32,40,0); }
-    }
-
-    .editor-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      min-height: 38px;
-    }
-    .toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-    .control-btn {
-      border: 1px solid rgba(157,168,181,.35);
-      border-radius: 5px;
-      padding: 7px 11px;
-      background: rgba(37,44,53,.8);
-      color: #e6e9ec;
-      font-size: 11px;
-      font-family: "Work Sans", sans-serif;
-      font-weight: 700;
-      letter-spacing: .08em;
-      line-height: 1;
-      text-transform: uppercase;
-      transition: .18s ease;
-      cursor: pointer;
-    }
-    .control-btn:hover, .control-btn:focus-visible {
-      background: #343d48;
-      border-color: #cbd2d9;
-      outline: 2px solid transparent;
-    }
-    .control-btn.primary {
-      background: var(--red);
-      border-color: var(--red);
-      color: #fff;
-    }
-    .control-btn.primary:hover, .control-btn.primary:focus-visible { background: #fb3139; }
-    .control-btn.subtle { background: transparent; color: var(--muted); }
-    .status-line {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: .05em;
-      text-align: right;
-    }
-    .status-line.is-error { color: #ff9a9f; }
-    .status-line.is-ok { color: var(--green); }
-
-    .draft-area { order: 3; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
-    .available-panel { order: 2; }
-    .pair-selector { order: 1; }
-    .broadcast-footer { order: 4; }
-    .team-card:nth-child(1) { order: 1; }
-    .team-card:nth-child(3) { order: 2; }
-    .team-card:nth-child(4) { order: 3; }
-    .team-card:nth-child(2) { order: 4; }
-    .team-card:nth-child(6) { order: 5; }
-    .team-card:nth-child(7) { order: 6; }
-    .team-card:nth-child(8) { order: 7; }
-    .team-card:nth-child(11) { order: 8; }
-    .team-card:nth-child(5) { order: 9; }
-    .team-card:nth-child(9) { order: 10; }
-    .team-card:nth-child(10) { order: 11; }
-    .section-heading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 24px;
-    }
-    .section-heading::before {
-      content: "";
-      width: 4px;
-      height: 17px;
-      background: var(--red);
-    }
-    .section-heading h2 {
-      margin: 0;
-      text-transform: uppercase;
-      font-family: "Barlow Condensed", sans-serif;
-      letter-spacing: .16em;
-      font-size: clamp(16px, 1.32vw, 24px);
-    }
-    .stars-available {
-      margin-left: auto;
-      color: var(--green);
-      font: 700 clamp(10px, .78vw, 14px) "Work Sans", sans-serif;
-      letter-spacing: .08em;
-      white-space: nowrap;
-    }
-    @media (max-width: 560px) {
-      .stars-available { margin-left: 14px; white-space: normal; }
-      .helmet-logo { width: clamp(62px, 18vw, 92px); height: clamp(62px, 18vw, 92px); }
-    }
-
-    .team-grid {
-      flex: 1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      grid-template-rows: repeat(2, minmax(115px, 1fr));
-      gap: clamp(8px, .75vw, 13px);
-    }
-    .team-card {
-      --team-accent: #e32028;
-      position: relative;
-      min-height: 0;
-      padding: clamp(8px, .8vw, 13px);
-      background: rgba(31,37,45,.92);
-      border: 1px solid rgba(157,168,181,.26);
-      border-top: 3px solid var(--team-accent);
-      border-radius: 7px;
-      box-shadow: 0 10px 22px rgba(0,0,0,.2);
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      overflow: hidden;
-    }
-    .team-card:nth-child(7) { grid-column: 1 / span 1; }
-    .team-name {
-      margin: 0;
-      font-size: clamp(16px, 1.42vw, 26px);
-      line-height: .92;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .slot-stack { display: grid; grid-template-rows: repeat(2, minmax(42px, 1fr)); gap: 6px; flex: 1; }
-    .driver-slot {
-      min-height: 0;
-      position: relative;
-      display: flex;
-      align-items: stretch;
-      padding: 5px;
-      border: 1px dashed rgba(157,168,181,.42);
-      border-radius: 4px;
-      background: rgba(8,10,13,.48);
-      transition: .16s ease;
-      cursor: pointer;
-    }
-    .driver-slot:hover, .driver-slot:focus-visible, .driver-slot.drop-active {
-      border-color: var(--team-accent);
-      background: rgba(227,32,40,.10);
-      outline: none;
-    }
-    .driver-slot.drop-active { box-shadow: inset 0 0 0 1px var(--team-accent), 0 0 17px rgba(227,32,40,.22); }
-    .slot-label {
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #77828e;
-      font-size: clamp(8px, .56vw, 10px);
-      font-weight: 700;
-      letter-spacing: .13em;
-      pointer-events: none;
-    }
-    .driver-slot.has-driver .slot-label { display: none; }
-    .slot-driver-mount { width: 100%; min-width: 0; display: flex; }
-
-    .available-panel {
-      flex: 0 0 auto;
-      min-height: 116px;
-      padding: 11px 13px 13px;
-      border: 1px solid rgba(157,168,181,.3);
-      border-radius: 7px;
-      background: linear-gradient(100deg, rgba(29,35,43,.96), rgba(17,21,27,.9));
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-    }
-    .available-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .available-zone {
-      flex: 1;
-      min-height: 50px;
-      display: flex;
-      flex-wrap: wrap;
-      align-content: flex-start;
-      gap: 8px;
-      padding: 7px;
-      border: 1px dashed rgba(157,168,181,.32);
-      border-radius: 4px;
-      transition: .16s ease;
-    }
-    .available-zone.drop-active {
-      border-color: var(--red);
-      background: rgba(227,32,40,.08);
-      box-shadow: inset 0 0 0 1px var(--red);
-    }
-
-    .driver-card {
-      position: relative;
-      width: 100%;
-      min-width: 0;
-      min-height: 31px;
-      border: 1px solid rgba(227,32,40,.65);
-      border-left: 3px solid var(--red);
-      border-radius: 3px;
-      background: #202731;
-      color: var(--soft);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 6px 5px 8px;
-      cursor: grab;
-      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-    }
-    .available-zone .driver-card { width: min(220px, 100%); }
-    .driver-card:hover, .driver-card:focus-within { box-shadow: 0 8px 16px rgba(0,0,0,.32); transform: translateY(-1px); }
-    .driver-card.dragging { opacity: .42; }
-    .driver-card.selected {
-      border-color: #fff;
-      box-shadow: 0 0 0 2px var(--red), 0 8px 20px rgba(0,0,0,.38);
-    }
-    .driver-name {
-      flex: 1;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-family: "Barlow Condensed", sans-serif;
-      font-size: clamp(13px, 1.05vw, 19px);
-      line-height: 1;
-      letter-spacing: .08em;
-      font-weight: 700;
-    }
-    .driver-actions { display: none; align-items: center; gap: 2px; }
-    .editing .driver-card:hover .driver-actions,
-    .editing .driver-card:focus-within .driver-actions { display: flex; }
-    .driver-action {
-      border: 0;
-      background: transparent;
-      color: #aeb7c0;
-      padding: 2px;
-      line-height: 0;
-      cursor: pointer;
-      border-radius: 2px;
-    }
-    .driver-action:hover, .driver-action:focus-visible { color: #fff; background: rgba(255,255,255,.12); outline: 1px solid #c8d0d8; }
-    .driver-action svg { width: 13px; height: 13px; pointer-events: none; }
-
-    .pair-selector {
-      flex: 0 0 auto;
-      width: min(100%, 980px);
-      align-self: center;
-      padding: 9px 13px 10px;
-      border: 1px solid rgba(157,168,181,.3);
-      border-radius: 7px;
-      background: rgba(21,25,31,.88);
-    }
-    .pair-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; }
-    .pair-label { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .pair-select { min-width: 118px; padding: 6px 8px; border: 1px solid #53606c; border-radius: 4px; background: #0c1014; color: #f3f5f6; font: 600 12px "Work Sans", sans-serif; }
-    .pair-select:focus { outline: 2px solid var(--red); outline-offset: 1px; }
-    .pair-result { min-height: 17px; max-height: 76px; overflow-y: auto; margin: 7px 0 0; color: var(--green); font: 700 12px "Work Sans", sans-serif; letter-spacing: .04em; }
-    .pair-entry { padding: 3px 0; border-bottom: 1px solid rgba(130,211,157,.18); }
-    .pair-entry:last-child { border-bottom: 0; }
-    .broadcast-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 2px;
-      color: #9da8b5;
-      font-size: clamp(10px, .78vw, 14px);
-      font-weight: 700;
-      letter-spacing: .19em;
-      text-transform: uppercase;
-    }
-    .broadcast-footer span:last-child { color: #eceff1; }
-
-    .direct-return {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      right: 12px;
-      bottom: 12px;
-      opacity: .16;
-    }
-    .direct-return:hover, .direct-return:focus-visible { opacity: 1; }
-    .direct-mode .editor-toolbar,
-    .direct-mode .driver-actions { display: none !important; }
-    .direct-mode .app-stage { padding: clamp(14px, 1.7vw, 28px); gap: clamp(9px, 1.05vw, 17px); }
-    .direct-mode .available-panel { min-height: 86px; padding: 8px 11px; }
-    .direct-mode .available-zone { min-height: 43px; padding: 5px; }
-    .direct-mode .driver-card { min-height: 28px; }
-    .direct-mode .direct-return { display: block; }
-
-    .modal-layer {
-      display: none;
-      position: fixed;
-      z-index: 30;
-      inset: 0;
-      padding: 20px;
-      align-items: center;
-      justify-content: center;
-      background: rgba(4,5,7,.74);
-      backdrop-filter: blur(6px);
-    }
-    .modal-layer.open { display: flex; }
-    .modal-card {
-      width: min(430px, 100%);
-      border: 1px solid #4b5662;
-      border-top: 3px solid var(--red);
-      border-radius: 7px;
-      padding: 22px;
-      background: #171c22;
-      box-shadow: 0 24px 70px rgba(0,0,0,.58);
-    }
-    .modal-title { margin: 0 0 8px; font-family: "Barlow Condensed", sans-serif; letter-spacing: .09em; text-transform: uppercase; font-size: 25px; }
-    .modal-copy { margin: 0 0 15px; color: var(--muted); font-size: 14px; line-height: 1.45; }
-    .modal-label { display: block; margin-bottom: 6px; color: #cbd2d9; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .modal-input {
-      width: 100%;
-      padding: 10px 11px;
-      border: 1px solid #53606c;
-      border-radius: 4px;
-      background: #0c1014;
-      color: #fff;
-      font: 600 16px "Work Sans", sans-serif;
-    }
-    .modal-input:focus { outline: 2px solid var(--red); outline-offset: 1px; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 17px; }
-
-    @media (max-width: 900px) {
-      .app-stage { min-height: auto; }
-      .header-strip { align-items: flex-start; flex-direction: column; }
-      .title-lockup { max-width: 100%; }
-      .brand-title { white-space: normal; }
-      .season-meta { justify-content: flex-start; text-align: left; flex-wrap: wrap; }
-      .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: none; }
-      .team-card:nth-child(7) { grid-column: auto; }
-      .direct-mode .broadcast-shell, .direct-mode { overflow: auto; }
-    }
-    @media (max-width: 560px) {
-      .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .editor-toolbar, .available-header, .broadcast-footer { align-items: flex-start; flex-direction: column; }
-      .status-line { text-align: left; }
-    }
-  </style>
-  <script src="/_sdk/fcb6dc01f91829ac.resizing_sdk.js" type="text/javascript" integrity="sha512-YK8JfnN705qaEaVhiL7pcVB2Rs/BbdX5yxV55Az8zT/1JanyEWTw9HqCF915m9iV1YEaoil8qsjJz03l1Kb0Ug=="></script>
- </head>
- <body data-template-id="__page-root">
-  <div class="broadcast-shell"><img data-template-id="race-car-watermark" class="canva-image race-watermark" loading="lazy" aria-hidden="true" src="canva://MAHUFFIuGW8/1" alt="Monoplaza de Fórmula en pista iluminada durante el draft">
-   <main id="app" class="app-stage editing" aria-live="polite">
-    <header class="header-strip">
-     <div>
-      <div class="top-rule" aria-hidden="true"></div>
-      <div class="title-lockup"><img data-template-id="helmet-logo-header" class="canva-image helmet-logo" loading="lazy" src="canva://MAHUFKMUY5c/1" alt="Casco blanco con el logotipo de Cazadores de Curvas">
-       <h1 data-template-id="main-title" class="canva-text condensed brand-title" style="color: rgb(243, 245, 246); font-weight: 800; font-style: normal; font-size: 36px; letter-spacing: 0.05rem;">CAZADORES DE CURVAS </h1>
-      </div>
-      <p data-template-id="draft-year" class="canva-text condensed draft-year" style="color: rgb(217, 221, 226); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.18rem;">                    EL DRAFT 2026</p>
-     </div>
-     <div class="season-meta">
-      <span data-template-id="season-format" class="canva-text" style="color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 13px;">temporada 4</span> <span aria-hidden="true">/</span> <span data-template-id="season-date" class="canva-text" style="color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 13px;">3 SEPTIEMBRE 2026</span> <span data-template-id="draft-status" class="canva-text live-pulse" style="color: rgb(246, 199, 202); font-weight: 700; font-style: normal; font-size: 13px;">DRAFT EN CURSO</span>
-     </div>
-    </header>
-    <section class="editor-toolbar" aria-label="Controles del draft">
-     <div class="toolbar-actions">
-      <button id="add-driver" data-template-id="add-driver-button" class="canva-button control-btn primary" type="button" style="background: rgb(227, 32, 40); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 11px;">AÑADIR PILOTO</button> <button id="save-draft" data-template-id="save-draft-button" class="canva-button control-btn" type="button" style="background: rgb(37, 44, 53); color: rgb(230, 233, 236); font-weight: 700; font-style: normal; font-size: 11px;">GUARDAR DRAFT</button> <button id="recover-draft" data-template-id="recover-draft-button" class="canva-button control-btn" type="button" style="background: rgb(37, 44, 53); color: rgb(230, 233, 236); font-weight: 700; font-style: normal; font-size: 11px;">RECUPERAR ESTADO</button> <button id="reset-draft" data-template-id="reset-draft-button" class="canva-button control-btn subtle" type="button" style="background: transparent; color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 11px;">RESTABLECER</button> <button id="direct-mode" data-template-id="direct-mode-button" class="canva-button control-btn" type="button" style="background: rgb(37, 44, 53); color: rgb(230, 233, 236); font-weight: 700; font-style: normal; font-size: 11px;">MODO DIRECTO</button>
-     </div>
-     <p id="status-message" class="status-line" role="status"></p>
-    </section>
-    <section class="draft-area" aria-labelledby="teams-heading">
-     <div class="section-heading">
-      <h2 id="teams-heading" data-template-id="teams-heading" class="canva-text" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 24px; letter-spacing: 0.16rem;">Equipos max. 14⭐ </h2>
-     </div>
-     <div class="team-grid">
-      <article data-template-id="team-ferrari" class="canva-card team-card" style="--team-accent: #e32028; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-ferrari" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">FERRARI 6⭐</h3>
-       <div class="slot-stack">
-        <button id="ferrari-1" data-template-id="slot-ferrari-1" class="canva-panel driver-slot" type="button" data-slot-id="ferrari-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="ferrari-2" data-template-id="slot-ferrari-2" class="canva-panel driver-slot" type="button" data-slot-id="ferrari-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-redbull" class="canva-card team-card" style="--team-accent: #3671c6; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-redbull" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">RED BULL 4⭐</h3>
-       <div class="slot-stack">
-        <button id="redbull-1" data-template-id="slot-redbull-1" class="canva-panel driver-slot" type="button" data-slot-id="redbull-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="redbull-2" data-template-id="slot-redbull-2" class="canva-panel driver-slot" type="button" data-slot-id="redbull-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-mclaren" class="canva-card team-card" style="--team-accent: #ff8700; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-mclaren" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">McLAREN 6⭐</h3>
-       <div class="slot-stack">
-        <button id="mclaren-1" data-template-id="slot-mclaren-1" class="canva-panel driver-slot" type="button" data-slot-id="mclaren-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="mclaren-2" data-template-id="slot-mclaren-2" class="canva-panel driver-slot" type="button" data-slot-id="mclaren-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-mercedes" class="canva-card team-card" style="--team-accent: #27f4d2; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-mercedes" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">MERCEDES 6⭐</h3>
-       <div class="slot-stack">
-        <button id="mercedes-1" data-template-id="slot-mercedes-1" class="canva-panel driver-slot" type="button" data-slot-id="mercedes-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="mercedes-2" data-template-id="slot-mercedes-2" class="canva-panel driver-slot" type="button" data-slot-id="mercedes-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-astonmartin" class="canva-card team-card" style="--team-accent: #229971; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-astonmartin" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">ASTON MARTIN 2⭐</h3>
-       <div class="slot-stack">
-        <button id="astonmartin-1" data-template-id="slot-astonmartin-1" class="canva-panel driver-slot" type="button" data-slot-id="astonmartin-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="astonmartin-2" data-template-id="slot-astonmartin-2" class="canva-panel driver-slot" type="button" data-slot-id="astonmartin-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-alpine" class="canva-card team-card" style="--team-accent: #ff87bc; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-alpine" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">ALPINE 4⭐</h3>
-       <div class="slot-stack">
-        <button id="alpine-1" data-template-id="slot-alpine-1" class="canva-panel driver-slot" type="button" data-slot-id="alpine-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="alpine-2" data-template-id="slot-alpine-2" class="canva-panel driver-slot" type="button" data-slot-id="alpine-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-williams" class="canva-card team-card" style="--team-accent: #64c4ff; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-williams" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">WILLIAMS 4⭐</h3>
-       <div class="slot-stack">
-        <button id="williams-1" data-template-id="slot-williams-1" class="canva-panel driver-slot" type="button" data-slot-id="williams-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="williams-2" data-template-id="slot-williams-2" class="canva-panel driver-slot" type="button" data-slot-id="williams-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-haas" class="canva-card team-card" style="--team-accent: #b6b6b8; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-haas" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">HAAS 4⭐</h3>
-       <div class="slot-stack">
-        <button id="haas-1" data-template-id="slot-haas-1" class="canva-panel driver-slot" type="button" data-slot-id="haas-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="haas-2" data-template-id="slot-haas-2" class="canva-panel driver-slot" type="button" data-slot-id="haas-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-audi" class="canva-card team-card" style="--team-accent: #ed1c24; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-audi" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">AUDI 2⭐</h3>
-       <div class="slot-stack">
-        <button id="audi-1" data-template-id="slot-audi-1" class="canva-panel driver-slot" type="button" data-slot-id="audi-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="audi-2" data-template-id="slot-audi-2" class="canva-panel driver-slot" type="button" data-slot-id="audi-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-cadillac" class="canva-card team-card" style="--team-accent: #d6c07b; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-cadillac" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">CADILLAC 2⭐</h3>
-       <div class="slot-stack">
-        <button id="cadillac-1" data-template-id="slot-cadillac-1" class="canva-panel driver-slot" type="button" data-slot-id="cadillac-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="cadillac-2" data-template-id="slot-cadillac-2" class="canva-panel driver-slot" type="button" data-slot-id="cadillac-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-      <article data-template-id="team-racingbulls" class="canva-card team-card" style="--team-accent: #7397e7; background: rgb(31, 37, 45);">
-       <h3 data-template-id="name-racingbulls" class="canva-text condensed team-name" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 19px; letter-spacing: 0.06rem;">RACING BULLS 4⭐</h3>
-       <div class="slot-stack">
-        <button id="racingbulls-1" data-template-id="slot-racingbulls-1" class="canva-panel driver-slot" type="button" data-slot-id="racingbulls-1" style="background: rgb(12, 16, 20);"><span data-template-id="slot-one-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 1</span><span class="slot-driver-mount"></span></button> <button id="racingbulls-2" data-template-id="slot-racingbulls-2" class="canva-panel driver-slot" type="button" data-slot-id="racingbulls-2" style="background: rgb(12, 16, 20);"><span data-template-id="slot-two-label" class="canva-text slot-label" style="color: rgb(119, 130, 142); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.13rem;">PILOTO 2</span><span class="slot-driver-mount"></span></button>
-       </div>
-      </article>
-     </div>
-    </section>
-    <section data-template-id="available-panel" class="canva-panel available-panel" aria-labelledby="available-heading" style="background: rgb(29, 35, 43);">
-     <div class="available-header">
-      <div class="section-heading">
-       <h2 id="available-heading" data-template-id="available-heading" class="canva-text" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 24px; letter-spacing: 0.16rem;">PILOTOS DISPONIBLES</h2>
-      </div>
-      <p data-template-id="available-help" class="canva-text text-[10px] font-semibold tracking-wider text-slate-400 uppercase" style="color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.06rem;">el orden se hará mediante ruleta con los pilotos del mismo nivel</p>
-     </div>
-     <div id="available-zone" class="available-zone" tabindex="0" role="button" aria-label="Devolver piloto a pilotos disponibles"></div>
-    </section>
-    <section class="pair-selector" aria-labelledby="pair-selector-heading">
-     <div class="section-heading">
-      <h2 id="pair-selector-heading" data-template-id="pair-selector-heading" class="canva-text" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 24px; letter-spacing: 0.16rem;">SELECCIONAR PAREJA</h2>
-     </div>
-     <div class="pair-controls"><label for="pair-driver-one" data-template-id="pair-driver-one-label" class="canva-text pair-label" style="color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.08rem;">PILOTO 1</label> <select id="pair-driver-one" class="pair-select" aria-label="Primer piloto de la pareja"></select> <label for="pair-driver-two" data-template-id="pair-driver-two-label" class="canva-text pair-label" style="color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 10px; letter-spacing: 0.08rem;">PILOTO 2</label> <select id="pair-driver-two" class="pair-select" aria-label="Segundo piloto de la pareja"></select> <button id="show-pair" data-template-id="show-pair-button" class="canva-button control-btn primary" type="button" style="background: rgb(227, 32, 40); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 11px;">MOSTRAR PAREJA</button>
-     </div>
-     <div id="pair-result" class="pair-result" role="status" aria-live="polite"></div>
-    </section>
-    <footer class="broadcast-footer">
-     <span data-template-id="footer-phrase" class="canva-text" style="color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 13px; letter-spacing: 0.19rem;">temporada 4 // SEGUIMOS SIENDO ÚNICOS</span> <span data-template-id="footer-mark" class="canva-text" style="color: rgb(236, 239, 241); font-weight: 700; font-style: normal; font-size: 13px; letter-spacing: 0.12rem;">Cazadores de curvas simracing league</span>
-    </footer>
-   </main><button id="return-editing" data-template-id="return-editing-button" class="canva-button control-btn direct-return" type="button" style="background: rgb(37, 44, 53); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 11px;">VOLVER A EDICIÓN</button>
-  </div>
-  <template id="driver-template">
-   <article data-template-id="driver-card" class="canva-card driver-card" draggable="true">
-    <span data-template-id="driver-name" class="canva-text driver-name"></span>
-    <div class="driver-actions">
-     <button data-template-id="edit-driver-action" class="canva-button driver-action edit-driver" type="button" aria-label="Editar piloto"><i data-lucide="pencil"></i></button> <button data-template-id="duplicate-driver-action" class="canva-button driver-action duplicate-driver" type="button" aria-label="Duplicar piloto"><i data-lucide="copy"></i></button> <button data-template-id="delete-driver-action" class="canva-button driver-action delete-driver" type="button" aria-label="Eliminar piloto"><i data-lucide="trash-2"></i></button>
-    </div>
-   </article>
-  </template>
-  <div id="edit-modal" class="modal-layer" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
-   <form id="edit-form" class="modal-card">
-    <h2 id="edit-modal-title" data-template-id="edit-modal-title" class="canva-text modal-title" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 24px; letter-spacing: 0.09rem;">EDITAR PILOTO</h2><label for="driver-name-input" data-template-id="edit-name-label" class="canva-text modal-label" style="color: rgb(203, 210, 217); font-weight: 700; font-style: normal; font-size: 12px; letter-spacing: 0.08rem;">NOMBRE DEL PILOTO</label> <input id="driver-name-input" class="modal-input" type="text" maxlength="34" required="">
-    <div class="modal-actions">
-     <button id="cancel-edit" data-template-id="cancel-edit-button" class="canva-button control-btn subtle" type="button" style="background: transparent; color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 11px;">CANCELAR</button> <button data-template-id="confirm-edit-button" class="canva-button control-btn primary" type="submit" style="background: rgb(227, 32, 40); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 11px;">GUARDAR NOMBRE</button>
-    </div>
-   </form>
-  </div>
-  <div id="reset-modal" class="modal-layer" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
-   <div class="modal-card">
-    <h2 id="reset-modal-title" data-template-id="reset-modal-title" class="canva-text modal-title" style="color: rgb(243, 245, 246); font-weight: 700; font-style: normal; font-size: 24px; letter-spacing: 0.09rem;">¿RESTABLECER EL DRAFT?</h2>
-    <p data-template-id="reset-modal-copy" class="canva-text modal-copy" style="color: rgb(157, 168, 181); font-weight: 600; font-style: normal; font-size: 14px;">Todos los pilotos asignados volverán a PILOTOS DISPONIBLES. Los nombres y las tarjetas se conservarán.</p>
-    <div class="modal-actions">
-     <button id="cancel-reset" data-template-id="cancel-reset-button" class="canva-button control-btn subtle" type="button" style="background: transparent; color: rgb(157, 168, 181); font-weight: 700; font-style: normal; font-size: 11px;">CANCELAR</button> <button id="confirm-reset" data-template-id="confirm-reset-button" class="canva-button control-btn primary" type="button" style="background: rgb(227, 32, 40); color: rgb(255, 255, 255); font-weight: 700; font-style: normal; font-size: 11px;">SÍ, RESTABLECER</button>
-    </div>
-   </div>
-  </div>
-  <script src="/_sdk/e10c717c7e974dd1.editing_sdk.js" integrity="sha512-BcrhlH+uc7adjbcWhp1iZYPDDw0dRJh9MMJKYNtKQ35BtD5tMsxKlz53TSV8BnEY+0eujtTiWSFjanv0cOjj1g=="></script>
-  <script>
-    let drivers = [];
-    let selectedDriverId = null;
-    let draggedDriverId = null;
-    let editingDriverId = null;
-    let sdkReady = false;
-
-    const statusMessage = document.getElementById("status-message");
-    const availableZone = document.getElementById("available-zone");
-    const driverTemplate = document.getElementById("driver-template");
-
-    function setStatus(message, kind = "") {
-      statusMessage.textContent = message;
-      statusMessage.className = "status-line" + (kind ? " is-" + kind : "");
-    }
-
-    function now() {
-      return new Date().toISOString();
-    }
-
-    function driverById(id) {
-      return drivers.find(driver => driver.driver_id === id);
-    }
-
-    function driverAtSlot(slotId) {
-      return drivers.find(driver => driver.slot_id === slotId);
-    }
-
-    function clearDragTargets() {
-      document.querySelectorAll(".drop-active").forEach(element => element.classList.remove("drop-active"));
-    }
-
-    function clearSelected() {
-      selectedDriverId = null;
-      document.querySelectorAll(".driver-card.selected").forEach(element => element.classList.remove("selected"));
-    }
-
-    function createDriverElement(driver) {
-      const fragment = driverTemplate.content.cloneNode(true);
-      const card = fragment.querySelector(".driver-card");
-      const name = fragment.querySelector('[data-template-id="driver-name"]');
-
-      card.dataset.driverId = driver.driver_id;
-      card.setAttribute("aria-label", driver.driver_name);
-      name.textContent = driver.driver_name;
-
-      card.addEventListener("dragstart", event => {
-        draggedDriverId = driver.driver_id;
-        card.classList.add("dragging");
-        event.dataTransfer.effectAllowed = "move";
-        event.dataTransfer.setData("text/plain", driver.driver_id);
-      });
-
-      card.addEventListener("dragend", () => {
-        draggedDriverId = null;
-        card.classList.remove("dragging");
-        clearDragTargets();
-      });
-
-      card.addEventListener("click", event => {
-        if (event.target.closest(".driver-actions")) return;
-        chooseDriver(driver.driver_id);
-      });
-
-      card.querySelector(".edit-driver").addEventListener("click", event => {
-        event.stopPropagation();
-        openEditModal(driver.driver_id);
-      });
-
-      card.querySelector(".duplicate-driver").addEventListener("click", async event => {
-        event.stopPropagation();
-        await duplicateDriver(driver.driver_id);
-      });
-
-      card.querySelector(".delete-driver").addEventListener("click", async event => {
-        event.stopPropagation();
-        await deleteDriver(driver.driver_id);
-      });
-
-      return fragment;
-    }
-
-    function renderDrivers() {
-      document.querySelectorAll(".slot-driver-mount").forEach(mount => {
-        mount.replaceChildren();
-        mount.closest(".driver-slot").classList.remove("has-driver");
-      });
-      availableZone.replaceChildren();
-
-      const occupiedIds = new Set();
-      drivers.forEach(driver => {
-        if (driver.slot_id !== "available") occupiedIds.add(driver.slot_id);
-      });
-
-      drivers.forEach(driver => {
-        const element = createDriverElement(driver);
-        if (driver.slot_id === "available" || !document.getElementById(driver.slot_id)) {
-          availableZone.appendChild(element);
-        } else {
-          const slot = document.getElementById(driver.slot_id);
-          slot.querySelector(".slot-driver-mount").appendChild(element);
-          slot.classList.add("has-driver");
-        }
-      });
-
-      if (selectedDriverId && !driverById(selectedDriverId)) selectedDriverId = null;
-      if (selectedDriverId) {
-        const selectedElement = document.querySelector('[data-driver-id="' + selectedDriverId + '"]');
-        if (selectedElement) selectedElement.classList.add("selected");
-      }
-
-      lucide.createIcons();
-    }
-
-    function chooseDriver(driverId) {
-      if (selectedDriverId === driverId) {
-        clearSelected();
-        setStatus("Selección cancelada.");
-        return;
-      }
-      clearSelected();
-      selectedDriverId = driverId;
-      const element = document.querySelector('[data-driver-id="' + driverId + '"]');
-      if (element) element.classList.add("selected");
-      setStatus("Piloto seleccionado. Elige un hueco de escudería o devuélvelo a disponibles.", "ok");
-    }
-
-    async function updateRecord(driver, changes) {
-      const record = { ...driver, ...changes, updated_at: now() };
-      const result = await window.dataSdk.update(record);
-      if (!result.isOk) throw new Error("No se pudo guardar el cambio.");
-      Object.assign(driver, record);
-    }
-
-    async function assignDriver(driverId, destinationSlot) {
-      const source = driverById(driverId);
-      if (!source || !sdkReady) return;
-
-      const sourceSlot = source.slot_id;
-      if (sourceSlot === destinationSlot) {
-        clearSelected();
-        return;
-      }
-
-      const occupant = destinationSlot === "available" ? null : driverAtSlot(destinationSlot);
-      setStatus("Guardando movimiento...");
-
-      try {
-        if (occupant) {
-          const occupantDestination = sourceSlot === "available" ? "available" : sourceSlot;
-          await updateRecord(occupant, {
-            slot_id: occupantDestination,
-            status: occupantDestination === "available" ? "available" : "assigned"
-          });
+    try {
+        const respuesta = await fetch('/api/noticias');
+        const noticias = await respuesta.json();
+        
+        contenedor.innerHTML = ''; 
+        
+        if (noticias.length === 0) {
+            contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+            return;
         }
 
-        await updateRecord(source, {
-          slot_id: destinationSlot,
-          status: destinationSlot === "available" ? "available" : "assigned"
+        noticias.forEach(noticia => {
+            const div = document.createElement('div');
+            div.className = 'noticia-item noticia-destacada-amarilla'; 
+            div.style.marginBottom = "20px";
+            
+            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                            style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
+                    <button onclick="eliminarNoticia(${noticia.id})" 
+                            style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
+                </div>
+            ` : '';
+
+            const fechaObj = new Date(noticia.fecha);
+            div.innerHTML = `
+                <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
+                <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
+                <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                ${botonesAdmin}
+            `;
+            contenedor.appendChild(div);
         });
-
-        clearSelected();
-        renderDrivers();
-        refreshPairSelector();
-        updateAvailableStars();
-        setStatus(occupant ? "Pilotos intercambiados y guardados." : "Piloto asignado y guardado.", "ok");
-      } catch (error) {
-        setStatus("No se pudo guardar el movimiento. Inténtalo de nuevo.", "error");
-      }
+    } catch (error) {
+        console.error("Error cargando noticias:", error);
+        contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
     }
+}
 
-    async function addDriver() {
-      if (!sdkReady) return;
-      if (drivers.length >= 999) {
-        setStatus("Se ha alcanzado el límite de 999 pilotos.", "error");
+    // 3. Acciones Admin
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    const res = await fetch('/api/noticias', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ titulo: tituloInput.value, contenido: contenidoInput.value })
+    });
+    
+    if (res.ok) { 
+        // Limpiamos los campos
+        tituloInput.value = '';
+        contenidoInput.value = '';
+
+            if (res.ok) {
+        // 1. Llamamos a la función de Discord antes de recargar la página
+        await notificarDiscord(titulo, contenido);
+        
+        // 2. Alert y recarga
+        alert("Noticia publicada correctamente y enviada a Discord");
+        location.reload(); 
+    }
+        
+        cargarNoticias(); 
+        alert("Publicado"); 
+    }
+}
+
+
+
+
+
+
+    
+
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    // Validación básica para no enviar noticias vacías
+    if (!tituloInput.value || !contenidoInput.value) {
+        alert("Por favor, rellena el título y el contenido.");
         return;
-      }
-
-      const number = String(drivers.length + 1).padStart(2, "0");
-      const record = {
-        slot_id: "available",
-        driver_id: "driver-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-        driver_name: "NUEVO PILOTO " + number,
-        status: "available",
-        updated_at: now()
-      };
-
-      const button = document.getElementById("add-driver");
-      button.disabled = true;
-      setStatus("Añadiendo piloto...");
-      const result = await window.dataSdk.create(record);
-      button.disabled = false;
-
-      if (result.isOk) {
-        setStatus("Nuevo piloto añadido a disponibles.", "ok");
-      } else {
-        setStatus("No se pudo añadir el piloto.", "error");
-      }
     }
 
-    async function duplicateDriver(driverId) {
-      if (!sdkReady || drivers.length >= 999) {
-        setStatus("No se puede duplicar: se ha alcanzado el límite.", "error");
-        return;
-      }
+    try {
+        const res = await fetch('/api/noticias', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                titulo: tituloInput.value, 
+                contenido: contenidoInput.value 
+            })
+        });
+        
+        if (res.ok) { 
+            // 1. Notificamos a Discord usando los valores de los inputs
+            await notificarDiscord(tituloInput.value, contenidoInput.value);
+            
+            // 2. Limpiamos los campos
+            tituloInput.value = '';
+            contenidoInput.value = '';
 
-      const source = driverById(driverId);
-      if (!source) return;
-      const copy = {
-        slot_id: "available",
-        driver_id: "driver-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
-        driver_name: source.driver_name + " COPIA",
-        status: "available",
-        updated_at: now()
-      };
-
-      setStatus("Duplicando piloto...");
-      const result = await window.dataSdk.create(copy);
-      setStatus(result.isOk ? "Copia añadida a disponibles." : "No se pudo duplicar el piloto.", result.isOk ? "ok" : "error");
-    }
-
-    async function deleteDriver(driverId) {
-      const driver = driverById(driverId);
-      if (!driver || !sdkReady) return;
-
-      setStatus("Eliminando piloto...");
-      const result = await window.dataSdk.delete(driver);
-      if (result.isOk) {
-        if (selectedDriverId === driverId) clearSelected();
-        setStatus("Piloto eliminado.", "ok");
-      } else {
-        setStatus("No se pudo eliminar el piloto.", "error");
-      }
-    }
-
-    function openEditModal(driverId) {
-      const driver = driverById(driverId);
-      if (!driver) return;
-      editingDriverId = driverId;
-      const modal = document.getElementById("edit-modal");
-      const input = document.getElementById("driver-name-input");
-      input.value = driver.driver_name;
-      modal.classList.add("open");
-      setTimeout(() => input.focus(), 0);
-    }
-
-    function closeEditModal() {
-      document.getElementById("edit-modal").classList.remove("open");
-      editingDriverId = null;
-    }
-
-    async function saveEditedName(event) {
-      event.preventDefault();
-      const driver = driverById(editingDriverId);
-      const input = document.getElementById("driver-name-input");
-      const name = input.value.trim().toUpperCase();
-      if (!driver || !name) return;
-
-      const submit = event.submitter;
-      submit.disabled = true;
-      setStatus("Actualizando nombre...");
-      try {
-        await updateRecord(driver, { driver_name: name });
-        renderDrivers();
-        closeEditModal();
-        setStatus("Nombre actualizado y guardado.", "ok");
-      } catch (error) {
-        setStatus("No se pudo actualizar el nombre.", "error");
-      } finally {
-        submit.disabled = false;
-      }
-    }
-
-    async function saveDraft() {
-      if (!sdkReady) return;
-      const button = document.getElementById("save-draft");
-      button.disabled = true;
-      setStatus("Sincronizando draft...");
-      try {
-        for (const driver of drivers) {
-          const result = await window.dataSdk.update({ ...driver, updated_at: now() });
-          if (!result.isOk) throw new Error();
+            // 3. Feedback al usuario
+            alert("Noticia publicada correctamente y enviada a Discord.");
+            
+            // 4. Actualizamos la lista sin recargar toda la página (es más rápido)
+            if (typeof cargarNoticias === 'function') {
+                cargarNoticias();
+            } else {
+                location.reload(); // Si no existe la función, recargamos
+            }
+        } else {
+            alert("Error al publicar la noticia.");
         }
-        setStatus("Draft guardado en la hoja de Canva.", "ok");
-      } catch (error) {
-        setStatus("No se pudo guardar todo el draft.", "error");
-      } finally {
-        button.disabled = false;
-      }
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Error de conexión al publicar.");
     }
+}
 
-    function recoverDraft() {
-      renderDrivers();
-      clearSelected();
-      setStatus("Estado actual recuperado.", "ok");
+
+
+// --- FUNCIÓN PARA ELIMINAR ---
+async function eliminarNoticia(id) {
+    if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+        const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+        if (res.ok) location.reload();
     }
+}
 
-    function openResetModal() {
-      document.getElementById("reset-modal").classList.add("open");
+async function editarNoticia(id, tituloActual, contenidoActual) {
+    const nuevoTitulo = prompt("Edita el título:", tituloActual);
+    const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+    if (nuevoTitulo !== null && nuevoContenido !== null) {
+        const res = await fetch(`/api/noticias/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
+        });
+        if (res.ok) location.reload();
+        else alert("Error al actualizar la noticia.");
     }
+}
 
-    async function resetDraft() {
-      const button = document.getElementById("confirm-reset");
-      button.disabled = true;
-      setStatus("Restableciendo draft...");
-      try {
-        for (const driver of drivers) {
-          if (driver.slot_id !== "available") {
-            await updateRecord(driver, { slot_id: "available", status: "available" });
-          }
+
+    
+    document.addEventListener('DOMContentLoaded', cargarNoticias);
+
+
+    // Esta función vivirá ahora permanentemente en noticias.html
+    function verificarSesion() {
+        console.log("DEBUG: Ejecutando verificación...");
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+        
+        if (btnLogin && btnLogout) {
+            if (adminStatus === true) {
+                btnLogin.style.display = 'none';
+                btnLogout.style.display = 'inline-block';
+            } else {
+                btnLogin.style.display = 'inline-block';
+                btnLogout.style.display = 'none';
+            }
+        } else {
+            console.warn("DEBUG: Botones no encontrados todavía.");
         }
-        document.getElementById("reset-modal").classList.remove("open");
-        renderDrivers();
-        refreshPairSelector();
-        updateAvailableStars();
-        clearSelected();
-        setStatus("Todos los pilotos han vuelto a disponibles.", "ok");
-      } catch (error) {
-        setStatus("No se pudo restablecer el draft.", "error");
-      } finally {
-        button.disabled = false;
-      }
     }
 
-    function setDirectMode(active) {
-      document.getElementById("app").classList.toggle("direct-mode", active);
-      document.getElementById("app").classList.toggle("editing", !active);
-      setStatus(active ? "" : "Modo edición activado.");
+    // Esta función también la movemos aquí para que sea 100% accesible
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
     }
 
-    function makeDropTarget(element, slotId) {
-      element.addEventListener("dragover", event => {
-        event.preventDefault();
-        element.classList.add("drop-active");
-        event.dataTransfer.dropEffect = "move";
-      });
-      element.addEventListener("dragleave", event => {
-        if (!element.contains(event.relatedTarget)) element.classList.remove("drop-active");
-      });
-      element.addEventListener("drop", async event => {
-        event.preventDefault();
-        element.classList.remove("drop-active");
-        const id = event.dataTransfer.getData("text/plain") || draggedDriverId;
-        if (id) await assignDriver(id, slotId);
-      });
-      element.addEventListener("click", async event => {
-        if (event.target.closest(".driver-card")) return;
-        if (selectedDriverId) await assignDriver(selectedDriverId, slotId);
-      });
-      element.addEventListener("keydown", async event => {
-        if ((event.key === "Enter" || event.key === " ") && selectedDriverId) {
-          event.preventDefault();
-          await assignDriver(selectedDriverId, slotId);
-        }
-      });
-    }
 
-    document.querySelectorAll(".driver-slot").forEach(slot => makeDropTarget(slot, slot.dataset.slotId));
-    makeDropTarget(availableZone, "available");
 
-    document.getElementById("add-driver").addEventListener("click", addDriver);
-    document.getElementById("save-draft").addEventListener("click", saveDraft);
-    document.getElementById("recover-draft").addEventListener("click", recoverDraft);
-    document.getElementById("reset-draft").addEventListener("click", openResetModal);
-    document.getElementById("confirm-reset").addEventListener("click", resetDraft);
-    document.getElementById("cancel-reset").addEventListener("click", () => document.getElementById("reset-modal").classList.remove("open"));
-    document.getElementById("direct-mode").addEventListener("click", () => setDirectMode(true));
-    document.getElementById("return-editing").addEventListener("click", () => setDirectMode(false));
-    document.getElementById("cancel-edit").addEventListener("click", closeEditModal);
-    document.getElementById("edit-form").addEventListener("submit", saveEditedName);
 
-    const pairOne = document.getElementById("pair-driver-one");
-    const pairTwo = document.getElementById("pair-driver-two");
-    const pairResult = document.getElementById("pair-result");
-    const createdPairs = [];
 
-    function refreshPairSelector() {
-      const availableDrivers = drivers.filter(driver => driver.slot_id === "available");
-      const options = availableDrivers.map(driver => '<option value="' + driver.driver_id + '">' + driver.driver_name.replace(/</g, "&lt;") + '</option>').join("");
-      pairOne.innerHTML = options;
-      pairTwo.innerHTML = options;
-      if (availableDrivers.length > 1) pairTwo.selectedIndex = 1;
-      updateAvailableStars();
-    }
 
-    function updateAvailableStars() {
-      return;
-    }
+// --- ESTA FUNCIÓN TRAE LAS NOTICIAS Y LAS PONE EN LA WEB ---
 
-    function showSelectedPair() {
-      if (drivers.length < 2 || pairOne.value === pairTwo.value) {
-        pairResult.textContent = "Elige dos pilotos diferentes para formar la pareja.";
-        pairResult.style.color = "#ff9a9f";
-        return;
-      }
-      const one = driverById(pairOne.value);
-      const two = driverById(pairTwo.value);
-      const pairKey = [one.driver_id, two.driver_id].sort().join("|");
-      if (createdPairs.some(pair => pair.key === pairKey)) {
-        pairResult.style.color = "var(--green)";
-        return;
-      }
-      const starsFor = driver => {
-        const match = driver.driver_name.match(/(10|[1-9])\s*⭐/);
-        return match ? Number(match[1]) : 0;
-      };
-      const totalStars = starsFor(one) + starsFor(two);
-      createdPairs.push({ key: pairKey, label: one.driver_name + "  +  " + two.driver_name, totalStars });
-      createdPairs.sort((first, second) => first.totalStars - second.totalStars);
-      pairResult.innerHTML = createdPairs.map((pair, index) => '<div class="pair-entry">' + (index + 1) + '. ' + pair.label.replace(/</g, "&lt;") + '<strong style="float:right">' + pair.totalStars + '⭐</strong></div>').join("");
-      pairResult.style.color = "var(--green)";
-    }
-    document.getElementById("show-pair").addEventListener("click", showSelectedPair);
+async function notificarDiscord(titulo, descripcion, autor) {
+    const webhookUrl = 'https://discord.com/api/webhooks/1517917019813449829/bngxTpKb_bo1EARKD_tNv1uztT95BCQQFqIVH6Wb-8veI8PxGNuiSnYf-SLcAApD61vn'; 
+    const webUrl = "https://cazadores-de-curvas.onrender.com/"; 
 
-    const dataHandler = {
-      onDataChanged(data) {
-        drivers = [...data].sort((a, b) => a.driver_name.localeCompare(b.driver_name, "es"));
-        renderDrivers();
-        refreshPairSelector();
-      }
+    // Cambiamos el nombre de "mensaje" a "payload" para evitar el error de inicialización
+    const payload = {
+        content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
+        embeds: [{
+            title: titulo,
+            description: `${descripcion}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
+            color: 16711680,
+            author: {
+                name: autor || "**- Administración -**"
+            },
+            timestamp: new Date().toISOString()
+        }]
     };
 
-    async function initialize() {
-      const initResult = await window.dataSdk.init(dataHandler);
-      if (initResult.isOk) {
-        sdkReady = true;
-        setStatus("Draft conectado y listo.", "ok");
-      } else {
-        setStatus("No se pudo conectar el draft.", "error");
-      }
-      lucide.createIcons();
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload) // Usamos "payload" aquí
+        });
+
+        if (!response.ok) {
+            console.error('Error al enviar la notificación a Discord:', response.status);
+        } else {
+            console.log('Notificación enviada a Discord con éxito.');
+        }
+    } catch (error) {
+        console.error('Error de red al intentar notificar a Discord:', error);
+    }
+}
+
+
+
+
+
+    
+        async function enviarContacto() {
+        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+        const nombre = document.getElementById('nombre-contacto').value;
+        const asunto = document.getElementById('asunto-contacto').value;
+        const mensaje = document.getElementById('mensaje-contacto').value;
+
+        // Validacion simple
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
+            return;
+        }
+
+        const payload = {
+            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+            embeds: [{
+                title: "📩 Nuevo mensaje de contacto",
+                color: 3447003,
+                fields: [
+                    { name: "Nombre", value: nombre, inline: true },
+                    { name: "Asunto", value: asunto, inline: true },
+                    { name: "Mensaje", value: mensaje }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("¡Mensaje enviado correctamente!");
+            document.getElementById('modal-contacto').style.display = 'none';
+            document.getElementById('nombre-contacto').value = '';
+            document.getElementById('asunto-contacto').value = '';
+            document.getElementById('mensaje-contacto').value = '';
+        } else {
+            alert("Error al enviar el mensaje.");
+        }
     }
 
-    initialize();
-  </script>
- 
-</body></html>
+    
+    
+</script>
