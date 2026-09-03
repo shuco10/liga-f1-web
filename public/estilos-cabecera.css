@@ -1328,4 +1328,60 @@ table tr td:nth-child(2) {
     text-align: center;
 }
 
+.selector-parejas {
+    background: #15191f;
+    padding: 20px;
+    border-radius: 8px;
+    color: #f3f5f6;
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: sans-serif;
+}
+
+.controles-pareja {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.select-piloto, .btn-crear {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #39424d;
+    background: #0b0d10;
+    color: #fff;
+    font-size: 14px;
+}
+
+.btn-crear {
+    background: #e32028;
+    border-color: #e32028;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-crear:hover {
+    background: #fb3139;
+}
+
+.resultado-parejas {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fila-pareja {
+    background: #252c35;
+    padding: 10px 15px;
+    border-radius: 4px;
+    border-left: 4px solid #82d39d;
+    display: flex;
+    justify-content: space-between;
+}
+
+.etiqueta-pareja {
+    font-weight: bold;
+    color: #82d39d;
+}
 
