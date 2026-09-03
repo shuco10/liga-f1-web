@@ -32,6 +32,44 @@
         </div>
     </header>
 
+    <!-- SECCIÓN DE SPONSORS Y STREAMING (EXACTA A TU REFERENCIA) -->
+    <section style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 0 20px; box-sizing: border-box; margin-bottom: 30px;">
+        <!-- Caja de Sponsors -->
+        <div style="background: #21252b; border-left: 4px solid #e10600; padding: 20px; border-radius: 8px; width: 100%; max-width: 650px; text-align: center; box-sizing: border-box; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+            <h3 style="color: #e10600; font-size: 14px; font-weight: bold; letter-spacing: 1px; margin-top: 0; margin-bottom: 15px;">NUESTROS SPONSORS</h3>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;">
+                <!-- Reemplaza los src con las rutas de tus logos de sponsors si difieren -->
+                <img src="/webimagenes/sponsor1.png" alt="Sponsor 1" style="max-height: 35px; width: auto; object-fit: contain;">
+                <img src="/webimagenes/taxibus.png" alt="Taxibus" style="max-height: 35px; width: auto; object-fit: contain;">
+                <img src="/webimagenes/sponsor3.png" alt="Sponsor 3" style="max-height: 35px; width: auto; object-fit: contain;">
+            </div>
+        </div>
+
+        <!-- Canal de Retransmisión Twitch -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; background: #21252b; padding: 6px 12px; border-radius: 6px; gap: 8px; border: 1px solid #333;">
+                <img src="/webimagenes/avatar-twitch.png" alt="Avatar Twitch" style="width: 24px; height: 24px; border-radius: 50%;">
+                <a href="https://twitch.tv" target="_blank" style="background: #9146FF; color: white; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold;"><i class="fa-solid fa-star"></i> Suscribirse</a>
+            </div>
+            <div style="color: #c084fc; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-brands fa-twitch"></i> CANAL DE RETRANSMISIÓN OFICIAL <i class="fa-brands fa-twitch"></i>
+            </div>
+        </div>
+
+        <!-- Banner Publicitario Inferior (Ej: Instant Gaming / Onimusha) -->
+        <div style="background: radial-gradient(circle, #333 0%, #111 100%); border: 1px solid #333; border-radius: 30px; padding: 15px 30px; width: 100%; max-width: 650px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="/webimagenes/instant-gaming.png" alt="Instant Gaming" style="height: 30px; width: auto; object-fit: contain;">
+            </div>
+            <div style="text-align: center; color: #ccc; font-size: 12px;">
+                Todos tus videojuegos más baratos
+            </div>
+            <div>
+                <a href="#" target="_blank" style="background: #e67e22; color: white; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: bold; display: inline-block;">Descúbrelos</a>
+            </div>
+        </div>
+    </section>
+
 <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 20px; width: 100%; box-sizing: border-box;">
     <div style="width: 100%; max-width: 650px;">
         <h1 style="font-size: 22px; color: #fff; margin-bottom: 5px;">🤝 DRAFT DE LA TEMPORADA 4 DE CAZADORES DE CURVAS 🤝</h1>
@@ -326,7 +364,6 @@
             return;
         }
 
-        // 1. Tarjetas principales de gestión de parejas
         contenedor.innerHTML = parejasGuardadas.map((p, index) => {
             const est1 = Number(p.estrellas1) || 0;
             const est2 = Number(p.estrellas2) || 0;
@@ -382,7 +419,6 @@
             `;
         }).join('');
 
-        // 2. Lista resumen justo debajo
         if (contenedorResumen) {
             contenedorResumen.innerHTML = parejasGuardadas.map((p, index) => {
                 const escuderiaAsignada = listaEscuderiasGlobal.find(e => Number(e.id) === Number(p.id_escuderia));
