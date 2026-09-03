@@ -646,6 +646,27 @@ app.post('/api/draft-parejas', async (req, res) => {
     }
 });
 
+// ELIMINAR UNA PAREJA DEL DRAFT POR SU ID
+app.delete('/api/draft-parejas/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM draft_parejas WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al eliminar pareja del draft:", err);
+        res.status(500).json({ error: "Error al eliminar pareja" });
+    }
+});
+
+// VACIAR TODO EL DRAFT (RESET)
+app.delete('/api/draft-parejas', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM draft_parejas');
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al resetear el draft:", err);
+        res.status(500).json({ error: "Error al resetear el draft" });
+    }
+});
 
 
 app.listen(PORT, () => {
