@@ -559,6 +559,23 @@ app.post(['/api/reset', '/api/reset-campeonato'], async (req, res) => {
     }
 });
 
+// ==========================================
+// RUTA PARA GUARDAR PUNTOS DE ESCUDERÍA (Comisarios)
+// ==========================================
+app.post('/api/guardar-puntos-escuderia', async (req, res) => {
+    const { id_gp, escuderia_id, puntos } = req.body;
+    try {
+        await pool.query(
+            `INSERT INTO resultados (id_gp, escuderia_puntos) VALUES ($1, $2)`,
+            [id_gp, puntos]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al guardar puntos de escudería:", err);
+        res.status(500).json({ error: "Error al guardar puntos de escudería" });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
