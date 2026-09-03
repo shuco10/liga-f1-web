@@ -502,6 +502,24 @@
         }
     }
 
+// 1. Añade esta función en cualquier parte global de tu script de JS
+function obtenerLogoEscuderia(nombre) {
+    if (!nombre) return 'mercedes.png';
+    const n = nombre.toLowerCase();
+    if (n.includes('ferrari')) return 'ferrari.png';
+    if (n.includes('mclaren')) return 'mclaren.png';
+    if (n.includes('red bull')) return 'redbull.png';
+    if (n.includes('mercedes')) return 'mercedes.png';
+    if (n.includes('alpine')) return 'alpine.png';
+    if (n.includes('aston martin')) return 'aston.png';
+    if (n.includes('williams')) return 'williams.png';
+    if (n.includes('haas')) return 'hass.png';
+    if (n.includes('audi')) return 'audi.png';
+    if (n.includes('cadillac')) return 'cadillac.png';
+    if (n.includes('racing bulls') || n.includes('rb')) return 'rb.png';
+    return 'mercedes.png';
+}
+
 // Función auxiliar para dar transparencia al color de la escudería
 function hexToRgba(hex, alpha) {
     let c = hex.replace('#', '');
@@ -510,6 +528,7 @@ function hexToRgba(hex, alpha) {
     return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
 }
 
+// 2. Reemplaza tu antigua función renderizarParrillaEscuderias por esta completa:
 function renderizarParrillaEscuderias() {
     const contenedor = document.getElementById('grid-escuderias');
     if (!contenedor) return;
@@ -538,15 +557,16 @@ function renderizarParrillaEscuderias() {
         // Estrellas de la escudería
         const estrellasEscuderia = Number(escuderia.estrellas) || 0;
 
-        // Estrellas individuales de los pilotos (si están asignados, cogemos sus estrellas; si es LIBRE, suman 0)
+        // Estrellas individuales de los pilotos
         const estrellasP1 = (parejaAsignada && parejaAsignada.estrellas1 !== undefined) ? Number(parejaAsignada.estrellas1) : 0;
         const estrellasP2 = (parejaAsignada && parejaAsignada.estrellas2 !== undefined) ? Number(parejaAsignada.estrellas2) : 0;
 
         // Suma total actual de la pareja + escudería
         const sumaActualEstrellas = parejaAsignada ? (estrellasP1 + estrellasP2 + estrellasEscuderia) : estrellasEscuderia;
 
-        // Color oficial de la escudería
+        // Color oficial y archivo de logo de la escudería
         const colorEscuderia = escuderia.color_hex || '#374151';
+        const nombreLogo = obtenerLogoEscuderia(escuderia.nombre);
         const fondoTarjeta = hexToRgba(colorEscuderia, 0.08);
         const bordeTarjeta = hexToRgba(colorEscuderia, 0.35);
 
@@ -559,8 +579,9 @@ function renderizarParrillaEscuderias() {
                     <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em;" title="${escuderia.nombre}">${escuderia.nombre}</span>
                     <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${estrellasEscuderia} ⭐</span>
                 </div>
-                <!-- Indicador de total de estrellas en la zona que querías -->
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+                <!-- Logo a la izquierda y Total de estrellas a la derecha en la misma línea -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; height: 24px;">
+                    <img src="/logos/${nombreLogo}" alt="${escuderia.nombre}" style="height: 22px; width: auto; object-fit: contain;" onerror="this.style.display='none'">
                     <div style="background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #93c5fd; font-weight: 600;">
                         Total: <span style="color: #facc15;">${sumaActualEstrellas}</span> ⭐
                     </div>
