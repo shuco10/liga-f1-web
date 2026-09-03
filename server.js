@@ -62,7 +62,8 @@ await pool.query(`
     CREATE TABLE IF NOT EXISTS draft_parejas (
         id SERIAL PRIMARY KEY,
         id_piloto1 INT REFERENCES pilotos(id) ON DELETE CASCADE,
-        id_piloto2 INT REFERENCES pilotos(id) ON DELETE CASCADE
+        id_piloto2 INT REFERENCES pilotos(id) ON DELETE CASCADE,
+        id_escuderia INT REFERENCES escuderias(id) ON DELETE SET NULL
     );
 `);
        
@@ -699,6 +700,7 @@ app.put('/api/escuderias/:id/estrellas', async (req, res) => {
     }
 });
 
+// LISTAR PILOTOS
 app.get('/api/lista-de-pilotos', async (req, res) => {
     try {
         const query = `
@@ -715,8 +717,6 @@ app.get('/api/lista-de-pilotos', async (req, res) => {
     }
 });
 
-
-
 // OBTENER LISTADO DE ESCUDERÍAS CON SUS ESTRELLAS
 app.get('/api/lista-de-escuderias', async (req, res) => {
     try {
@@ -725,6 +725,89 @@ app.get('/api/lista-de-escuderias', async (req, res) => {
     } catch (err) {
         console.error("Error al listar escuderías:", err);
         res.status(500).json({ error: "Error al listar escuderías" });
+    }
+});
+
+// --- NUEVAS RUTAS PARA EL DRAFT DE PAREJAS Y ASIGNACIÓN DE ESCUDERÍA ---
+
+// OBTENER PAREJAS Y SU ESCUDERÍA ASIGNADA
+app.get('/api/draft-parejas', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                dp.id,
+                dp.id_piloto1,
+                dp.id_piloto2,
+                dp.id_escuderia,
+                p1.gamertag AS nombre1,
+                p1.estrellas AS estrellas1,
+                p2.gamertag AS nombre2,
+                p2.estrellas AS estrellas2,
+                e.nombre AS escuderia_nombre,
+                e.estrellas AS estrellas_escuderia
+            FROM draft_parejas dp
+            JOIN pilotos p1 ON dp.id_piloto1 = p1.id
+            JOIN pilotos p2 ON dp.id_piloto2 = p2.id
+            LEFT JOIN escuderias e ON dp.id_escuderia = e.id
+            ORDER BY dp.id ASC;
+        `;
+        const { rows } = await pool.query(query);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener parejas:", err);
+        res.status(500).json({ error: "Error al obtener parejas" });
+    }
+});
+
+// CREAR PAREJA (SOLO LOS DOS PILOTOS INICIALMENTE)
+app.post('/api/draft-parejas', async (req, res) => {
+    const { id1, id2 } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO draft_parejas (id_piloto1, id_piloto2) VALUES ($1, $2)',
+            [id1, id2]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al guardar pareja:", err);
+        res.status(500).json({ error: "Error al guardar pareja" });
+    }
+});
+
+// ASIGNAR O CAMBIAR ESCUDERÍA A UNA PAREJA EXISTENTE
+app.put('/api/draft-parejas/:id/escuderia', async (req, res) => {
+    const { id_escuderia } = req.body;
+    try {
+        await pool.query(
+            'UPDATE draft_parejas SET id_escuderia = $1 WHERE id = $2',
+            [id_escuderia || null, req.params.id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al asignar escudería a la pareja:", err);
+        res.status(500).json({ error: "Error al asignar escudería" });
+    }
+});
+
+// ELIMINAR UNA PAREJA ESPECÍFICA
+app.delete('/api/draft-parejas/:id', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM draft_parejas WHERE id = $1', [req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al eliminar pareja:", err);
+        res.status(500).json({ error: "Error al eliminar pareja" });
+    }
+});
+
+// RESETEAR / BORRAR TODAS LAS PAREJAS
+app.delete('/api/draft-parejas', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM draft_parejas;');
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al resetear draft:", err);
+        res.status(500).json({ error: "Error al resetear draft" });
     }
 });
 
