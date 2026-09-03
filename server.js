@@ -717,7 +717,40 @@ app.get('/api/lista-de-pilotos', async (req, res) => {
 
 
 
+// OBTENER LISTADO DE ESCUDERÍAS CON SUS ESTRELLAS
+app.get('/api/lista-de-escuderias', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT id, nombre, estrellas FROM escuderias ORDER BY nombre ASC;');
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al listar escuderías:", err);
+        res.status(500).json({ error: "Error al listar escuderías" });
+    }
+});
 
+// ACTUALIZAR ESTRELLAS DE UN PILOTO DESDE LA MODAL
+app.put('/api/pilotos/:id/estrellas', async (req, res) => {
+    const { estrellas } = req.body;
+    try {
+        await pool.query('UPDATE pilotos SET estrellas = $1 WHERE id = $2', [estrellas, req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al actualizar estrellas del piloto:", err);
+        res.status(500).json({ error: "Error al actualizar estrellas" });
+    }
+});
+
+// ACTUALIZAR ESTRELLAS DE UNA ESCUDERÍA DESDE LA MODAL
+app.put('/api/escuderias/:id/estrellas', async (req, res) => {
+    const { estrellas } = req.body;
+    try {
+        await pool.query('UPDATE escuderias SET estrellas = $1 WHERE id = $2', [estrellas, req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al actualizar estrellas de la escudería:", err);
+        res.status(500).json({ error: "Error al actualizar estrellas" });
+    }
+});
 
 
 
