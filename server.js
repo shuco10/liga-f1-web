@@ -576,6 +576,61 @@ app.post('/api/guardar-puntos-escuderia', async (req, res) => {
     }
 });
 
+// ==========================================
+// RUTA PARA RESETEAR / BORRAR AVISOS DE UN PILOTO
+// ==========================================
+app.post('/api/reset-avisos-piloto', async (req, res) => {
+    const { piloto_id } = req.body;
+    try {
+        await pool.query('DELETE FROM registro_avisos WHERE id_piloto = $1', [piloto_id]);
+        res.sendStatus(200);
+    } catch (err) {
+        console.error("Error al resetear avisos del piloto:", err);
+        res.status(500).send("Error al resetear avisos");
+    }
+});
+
+// ==========================================
+// RUTA PARA RESETEAR LAS SANCIONES / AVISOS TOTALES
+// ==========================================
+app.post(['/api/reset-sanciones-totales', '/api/reset-sanciones'], async (req, res) => {
+    try {
+        // Vaciamos la tabla de registro de avisos y ponemos a cero los puntos de sanción en pilotos
+        await pool.query('DELETE FROM registro_avisos;');
+        await pool.query('UPDATE pilotos SET puntos_sancion = 0;');
+        res.sendStatus(200);
+    } catch (err) {
+        console.error("Error al resetear las sanciones totales:", err);
+        res.status(500).send("Error al resetear sanciones");
+    }
+});
+
+// ==========================================
+// RUTA PARA ELIMINAR PILOTO (Con limpieza en cascada)
+// ==========================================
+app.post('/api/eliminar-piloto', async (req, res) => {
+    const piloto_id = req.body.piloto_id || req.body.id;
+    
+    try {
+        if (!piloto_id) {
+            return res.status(400).send("No se ha proporcionado el ID del piloto.");
+        }
+
+        // Borramos primero todos sus rastros en tablas dependientes para evitar bloqueos
+        await pool.query('DELETE FROM registro_avisos WHERE id_piloto = $1', [piloto_id]);
+        await pool.query('DELETE FROM resultados WHERE id_piloto = $1', [piloto_id]);
+        
+        // Finalmente eliminamos al piloto de la tabla principal
+        await pool.query('DELETE FROM pilotos WHERE id = $1', [piloto_id]);
+        
+        res.sendStatus(200);
+    } catch (err) { 
+        console.error("Error al eliminar piloto:", err); 
+        res.status(500).send("Error interno al eliminar el piloto."); 
+    }
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
