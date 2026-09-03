@@ -36,39 +36,81 @@
     <h1 class="titulo-principal">🏁 Sistema de Gestión: Cazadores de Curvas</h1>
     <h3 class="subtitulo-principal">La plataforma integral para el seguimiento técnico, administrativo y comunitario de nuestra liga.</h3>
 
-    <div class="bloques-info">
 
-        <!-- Desplegables de pilotos y contador en vivo -->
-            <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
-                        <option value="">Seleccionar Piloto 1</option>
-                    </select>
-                    <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
-                        <option value="">Seleccionar Piloto 2</option>
-                    </select>
-                </div>
-                
-                <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
-                    Suma de estrellas de los pilotos: <span id="span-total-vivo">0</span> ⭐
-                </div>
-            </div>
 
-            <div style="margin-top: 30px;">
-                <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px; font-size: 16px;">📋 Parejas y Escuderías Asignadas</h3>
-                <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
+<div class="selector-parejas" style="width: 100%; max-width: 650px; margin: 0 auto 30px auto; padding: 20px; background: #21252b; border-radius: 8px; box-sizing: border-box;">
+    <h2 style="margin-top: 0; font-size: 18px;">🤝 CREAR NUEVA PAREJA</h2>
+    
+    <!-- Controles de Admin (Botones) -->
+    <div id="controles-admin-draft" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+        <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; min-width: 130px; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+            <i class="fa-solid fa-plus"></i> Guardar Pareja
+        </button>
+        <button id="btn-ordenar-parejas" style="flex: 2; min-width: 140px; padding: 12px; background: #e67e22; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+            <i class="fa-solid fa-sort-numeric-down"></i> Ordenar ⭐
+        </button>
+        <button id="btn-abrir-modal-estrellas" style="flex: 2; min-width: 130px; padding: 12px; background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+            <i class="fa-solid fa-star"></i> Config. Estrellas
+        </button>
+        <button id="btn-reset-draft" style="flex: 1; min-width: 80px; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 15px;">
+            <i class="fa-solid fa-trash-can"></i> Reset
+        </button>
+    </div>
 
-                <!-- Resumen de Escuderías Asignadas -->
-                <div style="margin-top: 25px; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #444;">
-                    <h4 style="margin-top: 0; color: #82d39d; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 15px;">
-                        <i class="fa-solid fa-list-check"></i> Resumen: Escuderías Asignadas por Pareja
-                    </h4>
-                    <div id="resumen-parejas-escuderias" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
-                </div>
-            </div>
+    <!-- Desplegables de pilotos y contador en vivo -->
+    <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+                <option value="">Seleccionar Piloto 1</option>
+            </select>
+            <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+                <option value="">Seleccionar Piloto 2</option>
+            </select>
         </div>
         
+        <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
+            Suma de estrellas de los pilotos: <span id="span-total-vivo">0</span> ⭐
+        </div>
     </div>
+
+    <div style="margin-top: 30px;">
+        <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px; font-size: 16px;">📋 Parejas y Escuderías Asignadas</h3>
+        <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
+
+        <!-- Resumen de Escuderías Asignadas -->
+        <div style="margin-top: 25px; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #444;">
+            <h4 style="margin-top: 0; color: #82d39d; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 15px;">
+                <i class="fa-solid fa-list-check"></i> Resumen: Escuderías Asignadas por Pareja
+            </h4>
+            <div id="resumen-parejas-escuderias" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Parrilla Visual de Escuderías -->
+<div style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    <h3 style="font-size: 20px; margin-bottom: 20px; text-align: center; color: #fff; font-weight: bold;">Parrilla Oficial de Escuderías</h3>
+    <div id="grid-escuderias" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;"></div>
+</div>
+
+<!-- Modal de Configuración de Estrellas -->
+<div id="modal-estrellas" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+    <div style="background: #21252b; padding: 25px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> Configurar Estrellas</h3>
+            <button id="btn-cerrar-modal" style="background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Escuderías</h4>
+        <div id="lista-escuderias-modal" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;"></div>
+
+        <h4 style="border-bottom: 2px solid #444; padding-bottom: 5px; color: #82d39d;">Pilotos</h4>
+        <div id="lista-pilotos-modal" style="display: flex; flex-direction: column; gap: 8px;"></div>
+    </div>
+</div>
+
+<!-- Hasta aqui diseño del draft -->
+    
 
 </main>
 
