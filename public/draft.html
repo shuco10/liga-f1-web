@@ -372,6 +372,52 @@ async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
         }).join('');
     }
 
+<div class="mt-8">
+    <h3 class="text-xl font-bold text-white mb-4">Parrilla Oficial de Escuderías</h3>
+    <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- Las tarjetas se pintarán solas aquí mediante JavaScript -->
+    </div>
+</div>
+
+    function renderizarParrillaEscuderias() {
+    const contenedor = document.getElementById('grid-escuderias');
+    if (!contenedor) return;
+    contenedor.innerHTML = '';
+
+    // listaEscuderiasGlobal y listaParejasGlobal deben tener los datos cargados de la BD
+    listaEscuderiasGlobal.forEach(escuderia => {
+        // Buscamos si alguna pareja tiene asignada esta escudería
+        const parejaAsignada = listaParejasGlobal.find(p => p.id_escuderia === escuderia.id);
+
+        // Nombres de los pilotos o texto por defecto si está libre
+        const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
+        const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
+
+        const tarjeta = document.createElement('div');
+        tarjeta.className = "bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg flex flex-col justify-between relative overflow-hidden";
+        
+        tarjeta.innerHTML = `
+            <div class="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
+                <div class="flex items-center space-x-2">
+                    <!-- Si guardas la URL del logo en la BBDD, puedes poner una etiqueta <img> aquí -->
+                    ${escuderia.logo ? `<img src="${escuderia.logo}" class="w-6 h-6 object-contain">` : ''}
+                    <span class="font-bold text-white tracking-wider">${escuderia.nombre}</span>
+                </div>
+                <span class="text-yellow-400 font-semibold text-sm">${escuderia.estrellas} ⭐</span>
+            </div>
+            <div class="space-y-2">
+                <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
+                    ${piloto1}
+                </div>
+                <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
+                    ${piloto2}
+                </div>
+            </div>
+        `;
+        contenedor.appendChild(tarjeta);
+    });
+}
+
     function configurarModalEventos() {
         const modal = document.getElementById('modal-estrellas');
         const btnAbrir = document.getElementById('btn-abrir-modal-estrellas');
