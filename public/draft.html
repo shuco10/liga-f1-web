@@ -564,15 +564,15 @@ function renderizarParrillaEscuderias() {
         
         tarjeta.innerHTML = `
             <div>
-                <!-- Cabecera con altura fija para garantizar que todas midan exactamente lo mismo -->
+                <!-- Cabecera simétrica -->
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; height: 42px;">
                     <span style="font-weight: bold; color: white; font-size: 13px; letter-spacing: 0.03em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2;" title="${escuderia.nombre}">${escuderia.nombre}</span>
                     <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${estrellasEscuderia} ⭐</span>
                 </div>
-                <!-- Logo y Total alineados simétricamente -->
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; height: 24px;">
-                    <img src="/logos/${nombreLogo}" alt="${escuderia.nombre}" style="height: 22px; width: auto; object-fit: contain;" onerror="this.style.display='none'">
-                    <div style="background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #93c5fd; font-weight: 600;">
+                <!-- Logo al doble de tamaño (44px) alineado con el total de estrellas -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; height: 44px;">
+                    <img src="/logos/${nombreLogo}" alt="${escuderia.nombre}" style="height: 44px; width: auto; object-fit: contain;" onerror="this.style.display='none'">
+                    <div style="background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 4px; padding: 4px 10px; font-size: 11px; color: #93c5fd; font-weight: 600;">
                         Total: <span style="color: #facc15;">${sumaActualEstrellas}</span> ⭐
                     </div>
                 </div>
