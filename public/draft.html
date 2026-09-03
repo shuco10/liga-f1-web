@@ -35,12 +35,17 @@
 <div class="selector-parejas" style="max-width: 600px; margin: 20px auto; padding: 20px; background: #21252b; border-radius: 8px;">
     <h2 style="margin-top: 0;">🤝 SELECCIÓN DE PAREJAS</h2>
     
-    <!-- Botón colocado arriba y con diseño limpio -->
-    <div style="margin-bottom: 15px;">
-        <button id="btn-crear-pareja" class="btn-crear" style="width: 100%; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 16px;">Crear Pareja</button>
+    <!-- Botones de Acción Arriba: Crear Pareja y Reset -->
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button id="btn-crear-pareja" class="btn-crear" style="flex: 2; padding: 12px; background: #82d39d; color: #1a1a1a; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 16px;">
+            <i class="fa-solid fa-plus"></i> Crear Pareja
+        </button>
+        <button id="btn-reset-draft" style="flex: 1; padding: 12px; background: #e10600; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 16px;">
+            <i class="fa-solid fa-trash-can"></i> Reset
+        </button>
     </div>
 
-    <!-- Desplegables en columna para que no choquen -->
+    <!-- Desplegables de pilotos en columna -->
     <div class="controles-pareja" style="display: flex; flex-direction: column; gap: 10px;">
         <select id="piloto-uno" class="select-piloto" style="padding: 10px; width: 100%; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
             <option value="">Seleccionar Piloto 1</option>
@@ -98,7 +103,6 @@
 
     async function cargarDatosDraft() {
         try {
-            // Cargar pilotos y parejas guardadas en paralelo desde la base de datos
             const [resPilotos, resParejas] = await Promise.all([
                 fetch('/api/lista-de-pilotos'),
                 fetch('/api/draft-parejas')
@@ -121,7 +125,6 @@
         const valorActual1 = select1.value;
         const valorActual2 = select2.value;
 
-        // Obtener IDs de pilotos que ya forman parte de una pareja guardada en BD
         const idsEmparejados = parejasGuardadas.reduce((acc, p) => {
             acc.push(p.id_piloto1.toString(), p.id_piloto2.toString());
             return acc;
@@ -154,7 +157,6 @@
         }
 
         try {
-            // Guardar en la base de datos mediante la API
             const response = await fetch('/api/draft-parejas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -162,7 +164,6 @@
             });
 
             if (response.ok) {
-                // Recargar todo desde la base de datos para sincronizar
                 await cargarDatosDraft();
                 select1.value = "";
                 select2.value = "";
@@ -172,6 +173,46 @@
         } catch (err) {
             console.error("Error de red:", err);
             alert("Error de conexión al guardar la pareja.");
+        }
+    }
+
+    // Función para eliminar una pareja concreta
+    async function eliminarPareja(id) {
+        if (!confirm("¿Seguro que quieres eliminar esta pareja?")) return;
+
+        try {
+            const response = await fetch(`/api/draft-parejas/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                await cargarDatosDraft();
+            } else {
+                alert("Error al eliminar la pareja.");
+            }
+        } catch (err) {
+            console.error("Error de red:", err);
+            alert("Error de conexión al eliminar.");
+        }
+    }
+
+    // Función para resetear/borrar todas las parejas
+    async function resetearDraft() {
+        if (!confirm("¿Seguro que quieres borrar todas las parejas del draft?")) return;
+
+        try {
+            const response = await fetch('/api/draft-parejas', {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                await cargarDatosDraft();
+            } else {
+                alert("Error al resetear el draft.");
+            }
+        } catch (err) {
+            console.error("Error de red:", err);
+            alert("Error de conexión al resetear.");
         }
     }
 
@@ -185,8 +226,13 @@
 
         contenedor.innerHTML = parejasGuardadas.map((pareja, index) => `
             <div class="fila-pareja" style="background: #252c35; padding: 10px 15px; margin-top: 8px; border-radius: 4px; border-left: 4px solid #82d39d; display: flex; justify-content: space-between; color: #fff; align-items: center;">
-                <span class="etiqueta-pareja" style="font-weight: bold; color: #82d39d;">Pareja ${index + 1}:</span>
-                <span class="nombres-pareja">${pareja.nombre1} + ${pareja.nombre2}</span>
+                <div>
+                    <span class="etiqueta-pareja" style="font-weight: bold; color: #82d39d; margin-right: 10px;">Pareja ${index + 1}:</span>
+                    <span class="nombres-pareja">${pareja.nombre1} + ${pareja.nombre2}</span>
+                </div>
+                <button onclick="eliminarPareja(${pareja.id})" style="background: #e10600; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                    <i class="fa-solid fa-trash"></i> Eliminar
+                </button>
             </div>
         `).join('');
     }
@@ -196,10 +242,12 @@
         const sel1 = document.getElementById('piloto-uno');
         const sel2 = document.getElementById('piloto-dos');
         const btnPareja = document.getElementById('btn-crear-pareja');
+        const btnReset = document.getElementById('btn-reset-draft');
 
         if(sel1) sel1.addEventListener('change', actualizarSelects);
         if(sel2) sel2.addEventListener('change', actualizarSelects);
         if(btnPareja) btnPareja.addEventListener('click', crearPareja);
+        if(btnReset) btnReset.addEventListener('click', resetearDraft);
     });
 </script>
 </body>
