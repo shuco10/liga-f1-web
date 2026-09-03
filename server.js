@@ -76,6 +76,12 @@ await pool.query(`
     );
 `);
 
+ // Añadir columna de estrellas a pilotos y escuderías si no existen
+await pool.query(`
+    ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS estrellas INT DEFAULT 3;
+    ALTER TABLE escuderias ADD COLUMN IF NOT EXISTS estrellas INT DEFAULT 2;
+`);       
+
 // API para que los ADMINS guarden una noticia
 app.post('/api/noticias', async (req, res) => {
     // Aquí deberías validar si es admin, pero por ahora vamos a la lógica
@@ -613,20 +619,21 @@ app.get('/api/draft-parejas', async (req, res) => {
                 dp.id_piloto1,
                 dp.id_piloto2,
                 p1.gamertag AS nombre1,
+                p1.estrellas AS estrellas1,
                 e1.nombre AS escuderia1,
+                e1.estrellas AS estrellas_escuderia1,
                 p2.gamertag AS nombre2,
-                e2.nombre AS escuderia2
+                p2.estrellas AS estrellas2
             FROM draft_parejas dp
             JOIN pilotos p1 ON dp.id_piloto1 = p1.id
             LEFT JOIN escuderias e1 ON p1.escuderia_id = e1.id
             JOIN pilotos p2 ON dp.id_piloto2 = p2.id
-            LEFT JOIN escuderias e2 ON p2.escuderia_id = e2.id
             ORDER BY dp.id ASC;
         `;
         const { rows } = await pool.query(query);
         res.json(rows);
     } catch (err) {
-        console.error("Error al obtener parejas del draft:", err);
+        console.error(err);
         res.status(500).json({ error: "Error al obtener parejas" });
     }
 });
@@ -667,6 +674,55 @@ app.delete('/api/draft-parejas', async (req, res) => {
         res.status(500).json({ error: "Error al resetear el draft" });
     }
 });
+
+// RUTA PARA ACTUALIZAR ESTRELLAS DE UN PILOTO
+app.put('/api/pilotos/:id/estrellas', async (req, res) => {
+    const { estrellas } = req.body;
+    try {
+        await pool.query('UPDATE pilotos SET estrellas = $1 WHERE id = $2', [estrellas, req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al actualizar estrellas del piloto:", err);
+        res.status(500).json({ error: "Error al actualizar estrellas" });
+    }
+});
+
+// RUTA PARA ACTUALIZAR ESTRELLAS DE UNA ESCUDERÍA
+app.put('/api/escuderias/:id/estrellas', async (req, res) => {
+    const { estrellas } = req.body;
+    try {
+        await pool.query('UPDATE escuderias SET estrellas = $1 WHERE id = $2', [estrellas, req.params.id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al actualizar estrellas de la escudería:", err);
+        res.status(500).json({ error: "Error al actualizar estrellas" });
+    }
+});
+
+app.get('/api/lista-de-pilotos', async (req, res) => {
+    try {
+        const query = `
+            SELECT p.id, p.gamertag, p.estrellas, e.nombre AS escuderia, e.id AS escuderia_id, e.estrellas AS escuderia_estrellas
+            FROM pilotos p
+            LEFT JOIN escuderias e ON p.escuderia_id = e.id
+            ORDER BY p.gamertag ASC;
+        `;
+        const { rows } = await pool.query(query);
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error al listar pilotos" });
+    }
+});
+
+
+
+
+
+
+
+
+
 
 
 app.listen(PORT, () => {
