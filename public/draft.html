@@ -510,7 +510,7 @@ function renderizarParrillaEscuderias() {
     listaEscuderiasGlobal.forEach(escuderia => {
         const idEscuderiaActual = String(escuderia.id);
         
-        // Buscamos si alguna pareja tiene guardada esta escudería (comparando como texto para evitar errores)
+        // Buscamos si alguna pareja tiene guardada esta escudería
         const parejaAsignada = parejasGuardadas.find(p => {
             if (p.id_escuderia === null || p.id_escuderia === undefined || p.id_escuderia === "") return false;
             return String(p.id_escuderia) === idEscuderiaActual;
@@ -518,7 +518,6 @@ function renderizarParrillaEscuderias() {
 
         const piloto1 = parejaAsignada ? (parejaAsignada.nombre1 || parejaAsignada.piloto1_nombre || 'Piloto 1') : 'LIBRE';
         const piloto2 = parejaAsignada ? (parejaAsignada.nombre2 || parejaAsignada.piloto2_nombre || 'Piloto 2') : 'LIBRE';
-        const rutaLogo = obtenerRutaLogo(escuderia);
 
         const tarjeta = document.createElement('div');
         tarjeta.style.cssText = "background: #111827; border: 1px solid #374151; border-radius: 8px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; height: 100%; box-sizing: border-box;";
@@ -526,10 +525,7 @@ function renderizarParrillaEscuderias() {
         tarjeta.innerHTML = `
             <div>
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #1f2937; padding-bottom: 8px;">
-                    <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-                        <img src="${rutaLogo}" style="width: 24px; height: 24px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">
-                        <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escuderia.nombre}">${escuderia.nombre}</span>
-                    </div>
+                    <span style="font-weight: bold; color: white; font-size: 14px; letter-spacing: 0.05em;" title="${escuderia.nombre}">${escuderia.nombre}</span>
                     <span style="color: #facc15; font-weight: 600; font-size: 14px; flex-shrink: 0; margin-left: 8px;">${Number(escuderia.estrellas) || 0} ⭐</span>
                 </div>
             </div>
