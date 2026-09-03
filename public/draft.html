@@ -161,6 +161,100 @@
             alert("Error al enviar el mensaje.");
         }
     }
+
+
+
+let listaPilotosGlobal = [];
+let parejasGuardadas = [];
+
+// 1. Cargar los pilotos al iniciar la página
+async function cargarPilotosParaDraft() {
+    try {
+        const response = await fetch('/api/lista-de-pilotos');
+        if (!response.ok) throw new Error("Error al obtener los pilotos");
+        
+        listaPilotosGlobal = await response.json();
+        actualizarSelects();
+    } catch (err) {
+        console.error("No se pudieron cargar los pilotos:", err);
+    }
+}
+
+// 2. Rellenar los desplegables evitando duplicar pilotos ya seleccionados
+function actualizarSelects() {
+    const select1 = document.getElementById('piloto-uno');
+    const select2 = document.getElementById('piloto-dos');
+
+    const valorActual1 = select1.value;
+    const valorActual2 = select2.value;
+
+    // Obtener IDs de pilotos que ya forman parte de una pareja creada
+    const idsEmparejados = parejasGuardadas.reduce((acc, p) => {
+        acc.push(p.id1, p.id2);
+        return acc;
+    }, []);
+
+    // Filtrar los disponibles para el Select 1 (excluyendo los ya emparejados)
+    const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
+    // Filtrar los disponibles para el Select 2
+    const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
+
+    select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
+        disponibles1.map(p => `<option value="${p.id}" ${valorActual1 == p.id ? 'selected' : ''}>${p.gamertag} ${p.escuderia ? '(' + p.escuderia + ')' : ''}</option>`).join('');
+
+    select2.innerHTML = '<option value="">Seleccionar Piloto 2</option>' + 
+        disponibles2.map(p => `<option value="${p.id}" ${valorActual2 == p.id ? 'selected' : ''}>${p.gamertag} ${p.escuderia ? '(' + p.escuderia + ')' : ''}</option>`).join('');
+}
+
+// 3. Crear la pareja al pulsar el botón
+function crearPareja() {
+    const select1 = document.getElementById('piloto-uno');
+    const select2 = document.getElementById('piloto-dos');
+    
+    const id1 = select1.value;
+    const id2 = select2.value;
+    const nombre1 = select1.options[select1.selectedIndex]?.text;
+    const nombre2 = select2.options[select2.selectedIndex]?.text;
+
+    if (!id1 || !id2) {
+        alert("Debes seleccionar ambos pilotos.");
+        return;
+    }
+    if (id1 === id2) {
+        alert("Un piloto no puede hacer pareja consigo mismo.");
+        return;
+    }
+
+    parejasGuardadas.push({ id1, id2, nombre1, nombre2 });
+
+    renderizarParejas();
+    actualizarSelects(); // Refresca los desplegables para quitar a los elegidos
+}
+
+// 4. Mostrar la lista ordenada de parejas
+function renderizarParejas() {
+    const contenedor = document.getElementById('resultado-parejas');
+    
+    contenedor.innerHTML = parejasGuardadas.map((pareja, index) => `
+        <div class="fila-pareja" style="background: #252c35; padding: 10px 15px; margin-top: 8px; border-radius: 4px; border-left: 4px solid #82d39d; display: flex; justify-content: space-between; color: #fff;">
+            <span class="etiqueta-pareja" style="font-weight: bold; color: #82d39d;">Pareja ${index + 1}:</span>
+            <span class="nombres-pareja">${pareja.nombre1} + ${pareja.nombre2}</span>
+        </div>
+    `).join('');
+}
+
+// Eventos de escucha
+document.getElementById('piloto-uno').addEventListener('change', actualizarSelects);
+document.getElementById('piloto-dos').addEventListener('change', actualizarSelects);
+document.getElementById('btn-crear-pareja').addEventListener('click', crearPareja);
+
+// Llamar a la carga inicial al abrir la página
+document.addEventListener('DOMContentLoaded', cargarPilotosParaDraft);
+
+
+
+
+    
 let parejasGuardadas = [];
 
 function crearPareja() {
