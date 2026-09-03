@@ -37,37 +37,37 @@
     <h3 class="subtitulo-principal">La plataforma integral para el seguimiento técnico, administrativo y comunitario de nuestra liga.</h3>
 
     <div class="bloques-info">
-        <section>
-            <h4>1. Área Deportiva y de Pilotos</h4>
-            <p>Seguimiento exhaustivo del rendimiento y evolución técnica:</p>
-            <ul>
-                <li><strong>- Gestión de Roster:</strong> Fichas detalladas con historial de carreras, palmarés y números oficiales.</li>
-                <li><strong>- Estadísticas Avanzadas:</strong> Análisis de tiempos de vuelta, consistencia en carrera y progreso individual.</li>
-                <li><strong>- Constructores:</strong> Seguimiento del campeonato de escuderías, desarrollo técnico y gestión de alianzas.</li>
-                <li><strong>- Banco de Circuitos:</strong> Circuitos del calendario 2026 y resultados de los pilotos en cada uno de ellos.</li>
-            </ul>
-        </section>
 
-        <section>
-            <h4>2. Administración, Disciplina y Comisariato</h4>
-            <p>Garantizando el juego limpio y la integridad del campeonato:</p>
-            <ul>
-                <li><strong>- Registro de Sanciones:</strong> Historial público y transparente de todas las penalizaciones aplicadas.</li>
-                <li><strong>- Gestión de Incidentes:</strong> Flujo de trabajo para la recepción, análisis y resolución de reclamaciones mediante el estudio de telemetría y vídeos.</li>
-                <li><strong>- Normativa Deportiva:</strong> Acceso centralizado al reglamento oficial, actualizado para cada temporada.</li>
-            </ul>
-        </section>
+        <!-- Desplegables de pilotos y contador en vivo -->
+            <div id="desplegables-admin-draft" style="display: none; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <select id="piloto-uno" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+                        <option value="">Seleccionar Piloto 1</option>
+                    </select>
+                    <select id="piloto-dos" class="select-piloto" style="padding: 10px; flex: 1; min-width: 200px; background: #1a1a1a; color: white; border: 1px solid #444; border-radius: 4px;">
+                        <option value="">Seleccionar Piloto 2</option>
+                    </select>
+                </div>
+                
+                <div id="contador-estrellas-vivo" style="background: #1a1a1a; padding: 10px; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid #444;">
+                    Suma de estrellas de los pilotos: <span id="span-total-vivo">0</span> ⭐
+                </div>
+            </div>
 
-        <section>
-            <h4>3. Ecosistema Digital y Discord</h4>
-            <p>Conectando la pista con nuestra comunidad en tiempo real:</p>
-            <ul>
-                <li><strong>- Alertas del Sistema:</strong> Notificaciones automáticas sobre aperturas de inscripciones, cambios de calendario y anuncios de última hora.</li>
-                <li><strong>- Foros de Debate:</strong> Canales dedicados a la mejora del reglamento, configuración de coches y setup.</li>
-                <li><strong>- Soporte Técnico:</strong> Canal de asistencia directa para problemas de acceso, bugs o consultas administrativas.</li>
-                <li><strong>- Integración de Roles:</strong> Sincronización de estados de piloto para acceso a canales privados de estrategia y telemetría.</li>
-            </ul>
-        </section>
+            <div style="margin-top: 30px;">
+                <h3 style="border-bottom: 2px solid #444; padding-bottom: 8px; font-size: 16px;">📋 Parejas y Escuderías Asignadas</h3>
+                <div id="resultado-parejas" class="resultado-parejas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
+
+                <!-- Resumen de Escuderías Asignadas -->
+                <div style="margin-top: 25px; background: #1a1a1a; padding: 15px; border-radius: 6px; border: 1px solid #444;">
+                    <h4 style="margin-top: 0; color: #82d39d; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 15px;">
+                        <i class="fa-solid fa-list-check"></i> Resumen: Escuderías Asignadas por Pareja
+                    </h4>
+                    <div id="resumen-parejas-escuderias" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+        </div>
+        
     </div>
 
 </main>
