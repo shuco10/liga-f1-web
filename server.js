@@ -56,8 +56,15 @@ await pool.query(`
 `);
 // Y añadimos la columna para el tiempo (si no existe ya)
 await pool.query(`ALTER TABLE pilotos ADD COLUMN IF NOT EXISTS penalizacion_tiempo INT DEFAULT 0;`);
-        
 
+// Draft parejas        
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS draft_parejas (
+        id SERIAL PRIMARY KEY,
+        id_piloto1 INT REFERENCES pilotos(id) ON DELETE CASCADE,
+        id_piloto2 INT REFERENCES pilotos(id) ON DELETE CASCADE
+    );
+`);
        
 // Crear la tabla noticias si no existe
 await pool.query(`
@@ -597,7 +604,47 @@ app.post('/api/sumar-mundial-escuderia', async (req, res) => {
 });
 
 
+// OBTENER PAREJAS GUARDADAS
+app.get('/api/draft-parejas', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                dp.id,
+                dp.id_piloto1,
+                dp.id_piloto2,
+                p1.gamertag AS nombre1,
+                e1.nombre AS escuderia1,
+                p2.gamertag AS nombre2,
+                e2.nombre AS escuderia2
+            FROM draft_parejas dp
+            JOIN pilotos p1 ON dp.id_piloto1 = p1.id
+            LEFT JOIN escuderias e1 ON p1.escuderia_id = e1.id
+            JOIN pilotos p2 ON dp.id_piloto2 = p2.id
+            LEFT JOIN escuderias e2 ON p2.escuderia_id = e2.id
+            ORDER BY dp.id ASC;
+        `;
+        const { rows } = await pool.query(query);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener parejas del draft:", err);
+        res.status(500).json({ error: "Error al obtener parejas" });
+    }
+});
 
+// GUARDAR UNA NUEVA PAREJA
+app.post('/api/draft-parejas', async (req, res) => {
+    const { id1, id2 } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO draft_parejas (id_piloto1, id_piloto2) VALUES ($1, $2)',
+            [id1, id2]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al guardar pareja:", err);
+        res.status(500).json({ error: "Error al guardar pareja" });
+    }
+});
 
 
 
