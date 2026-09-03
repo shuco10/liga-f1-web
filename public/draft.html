@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Tailwind CSS CDN para que las clases de la parrilla funcionen a la perfección -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
@@ -75,6 +77,14 @@
             <!-- Listado generado dinámicamente -->
         </div>
     </div>
+
+    <!-- PARRILLA VISUAL DE ESCUDERÍAS -->
+    <div class="mt-8">
+        <h3 class="text-xl font-bold text-white mb-4">Parrilla Oficial de Escuderías</h3>
+        <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Las tarjetas se pintarán solas aquí mediante JavaScript -->
+        </div>
+    </div>
 </div>
 
 <!-- MODAL DE CONFIGURACIÓN DE ESTRELLAS -->
@@ -137,12 +147,13 @@
         if (desplegablesAdminDraft) desplegablesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
 
         renderizarParejas();
+        renderizarParrillaEscuderias();
     }
 
     let listaPilotosGlobal = [];
     let listaEscuderiasGlobal = [];
     let parejasGuardadas = [];
-    let ordenAscendenteEstrellas = false; // Estado para alternar o mantener orden
+    let ordenAscendenteEstrellas = false;
 
     async function cargarDatosDraft() {
         try {
@@ -159,6 +170,7 @@
             actualizarSelects();
             calcularEstrellasEnVivo();
             renderizarParejas();
+            renderizarParrillaEscuderias();
             llenarModalEstrellas();
         } catch (err) {
             console.error("Error al cargar los datos del draft:", err);
@@ -181,7 +193,6 @@
         const disponibles1 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual2);
         const disponibles2 = listaPilotosGlobal.filter(p => !idsEmparejados.includes(p.id.toString()) && p.id.toString() !== valorActual1);
 
-        // Se usa parseInt o Number para asegurar que lee bien las estrellas y evitar 'undefined'
         select1.innerHTML = '<option value="">Seleccionar Piloto 1</option>' + 
             disponibles1.map(p => {
                 const est = Number(p.estrellas) || 0;
@@ -246,43 +257,43 @@
         }
     }
 
-    // Función para reordenar las parejas guardadas según las estrellas de los dos pilotos (menor a mayor)
     function ordenarParejasPorEstrellas() {
         parejasGuardadas.sort((a, b) => {
             const sumaA = (Number(a.estrellas1) || 0) + (Number(a.estrellas2) || 0);
             const sumaB = (Number(b.estrellas1) || 0) + (Number(b.estrellas2) || 0);
-            return sumaA - sumaB; // Menor a mayor
+            return sumaA - sumaB;
         });
         renderizarParejas();
+        renderizarParrillaEscuderias();
     }
 
-async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
-    if (idEscuderia) {
-        const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
-        const totalFinal = estrellasPilotos + (esc ? Number(esc.estrellas) || 0 : 0);
+    async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
+        if (idEscuderia) {
+            const esc = listaEscuderiasGlobal.find(e => e.id.toString() === idEscuderia);
+            const totalFinal = estrellasPilotos + (esc ? Number(esc.estrellas) || 0 : 0);
 
-        if (totalFinal > 14) {
-            alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
-            renderizarParejas();
-            return;
+            if (totalFinal > 14) {
+                alert(`¡Exceso de estrellas! Esta escudería (${esc.estrellas}⭐) hace un total de ${totalFinal}⭐ para la pareja. El límite es 14.`);
+                renderizarParejas();
+                return;
+            }
+        }
+
+        try {
+            const res = await fetch(`/api/draft-parejas/${idPareja}/escuderia`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_escuderia: idEscuderia ? parseInt(idEscuderia) : null })
+            });
+            if (res.ok) {
+                await cargarDatosDraft();
+            } else {
+                alert("Error al asignar la escudería.");
+            }
+        } catch (err) {
+            console.error(err);
         }
     }
-
-    try {
-        const res = await fetch(`/api/draft-parejas/${idPareja}/escuderia`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_escuderia: idEscuderia ? parseInt(idEscuderia) : null })
-        });
-        if (res.ok) {
-            await cargarDatosDraft();
-        } else {
-            alert("Error al asignar la escudería.");
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
 
     async function eliminarPareja(id) {
         if (!confirm("¿Seguro que quieres eliminar esta pareja?")) return;
@@ -329,7 +340,6 @@ async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
             return `
                 <div class="fila-pareja" style="background: #252c35; padding: 15px; border-radius: 6px; border-left: 4px solid ${totalFinal > 14 ? '#e10600' : '#82d39d'}; color: #fff; display: flex; flex-direction: column; gap: 10px; width: 100%; box-sizing: border-box;">
                     
-                    <!-- Cabecera de la tarjeta: Título y Total de Estrellas / Botón Borrar -->
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <span style="font-weight: bold; color: #82d39d; font-size: 15px;">Pareja ${index + 1}</span>
                         <div style="display: flex; align-items: center; gap: 10px;">
@@ -344,23 +354,26 @@ async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
                         </div>
                     </div>
 
-                    <!-- Nombres de los pilotos claramente detallados -->
                     <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-size: 14px; border: 1px solid #444; display: flex; flex-direction: column; gap: 4px;">
                         <div>🧑‍✈️ <b>${p.nombre1}</b> <span style="color: #f1c40f;">(${est1} ⭐)</span></div>
                         <div>🧑‍✈️ <b>${p.nombre2}</b> <span style="color: #f1c40f;">(${est2} ⭐)</span></div>
                     </div>
 
-                    <!-- Selector de Escudería adaptado y limpio -->
                     <div style="display: flex; align-items: center; gap: 8px; background: #1a1a1a; padding: 8px 10px; border-radius: 4px; border: 1px solid #444; flex-wrap: wrap;">
                         <span style="font-size: 13px; color: #aaa; white-space: nowrap;"><i class="fa-solid fa-shield-halved"></i> Escudería:</span>
                         ${adminStatus ? `
                             <select onchange="asignarEscuderiaPareja(${p.id}, this.value, ${sumaPilotos})" style="flex: 1; min-width: 200px; padding: 6px; background: #252c35; color: white; border: 1px solid #444; border-radius: 4px;">
                                 <option value="">-- Sin escudería asignada --</option>
-                                ${listaEscuderiasGlobal.map(e => `
-                                    <option value="${e.id}" ${p.id_escuderia == e.id ? 'selected' : ''}>
-                                        ${e.nombre} (${Number(e.estrellas) || 0} ⭐)
-                                    </option>
-                                `).join('')}
+                                ${listaEscuderiasGlobal.map(e => {
+                                    // Filtramos para que no se muestre si otra pareja ya la tiene (excepto la propia pareja)
+                                    const ocupadaPorOtra = parejasGuardadas.some(other => Number(other.id_escuderia) === Number(e.id) && other.id !== p.id);
+                                    if (ocupadaPorOtra) return '';
+                                    return `
+                                        <option value="${e.id}" ${p.id_escuderia == e.id ? 'selected' : ''}>
+                                            ${e.nombre} (${Number(e.estrellas) || 0} ⭐)
+                                        </option>
+                                    `;
+                                }).join('')}
                             </select>
                         ` : `
                             <span style="font-weight: 500; color: #fff;">${p.escuderia_nombre || 'Sin escudería'} (${estEsc} ⭐)</span>
@@ -372,51 +385,40 @@ async function asignarEscuderiaPareja(idPareja, idEscuderia, estrellasPilotos) {
         }).join('');
     }
 
-<div class="mt-8">
-    <h3 class="text-xl font-bold text-white mb-4">Parrilla Oficial de Escuderías</h3>
-    <div id="grid-escuderias" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <!-- Las tarjetas se pintarán solas aquí mediante JavaScript -->
-    </div>
-</div>
-
     function renderizarParrillaEscuderias() {
-    const contenedor = document.getElementById('grid-escuderias');
-    if (!contenedor) return;
-    contenedor.innerHTML = '';
+        const contenedor = document.getElementById('grid-escuderias');
+        if (!contenedor) return;
+        contenedor.innerHTML = '';
 
-    // listaEscuderiasGlobal y listaParejasGlobal deben tener los datos cargados de la BD
-    listaEscuderiasGlobal.forEach(escuderia => {
-        // Buscamos si alguna pareja tiene asignada esta escudería
-        const parejaAsignada = listaParejasGlobal.find(p => p.id_escuderia === escuderia.id);
+        listaEscuderiasGlobal.forEach(escuderia => {
+            const parejaAsignada = parejasGuardadas.find(p => Number(p.id_escuderia) === Number(escuderia.id));
 
-        // Nombres de los pilotos o texto por defecto si está libre
-        const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
-        const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
+            const piloto1 = parejaAsignada ? parejaAsignada.nombre1 : 'LIBRE';
+            const piloto2 = parejaAsignada ? parejaAsignada.nombre2 : 'LIBRE';
 
-        const tarjeta = document.createElement('div');
-        tarjeta.className = "bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg flex flex-col justify-between relative overflow-hidden";
-        
-        tarjeta.innerHTML = `
-            <div class="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
-                <div class="flex items-center space-x-2">
-                    <!-- Si guardas la URL del logo en la BBDD, puedes poner una etiqueta <img> aquí -->
-                    ${escuderia.logo ? `<img src="${escuderia.logo}" class="w-6 h-6 object-contain">` : ''}
-                    <span class="font-bold text-white tracking-wider">${escuderia.nombre}</span>
+            const tarjeta = document.createElement('div');
+            tarjeta.className = "bg-gray-900 border border-gray-700 rounded-lg p-4 shadow-lg flex flex-col justify-between relative overflow-hidden";
+            
+            tarjeta.innerHTML = `
+                <div class="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
+                    <div class="flex items-center space-x-2">
+                        ${escuderia.logo ? `<img src="${escuderia.logo}" class="w-6 h-6 object-contain">` : ''}
+                        <span class="font-bold text-white tracking-wider">${escuderia.nombre}</span>
+                    </div>
+                    <span class="text-yellow-400 font-semibold text-sm">${Number(escuderia.estrellas) || 0} ⭐</span>
                 </div>
-                <span class="text-yellow-400 font-semibold text-sm">${escuderia.estrellas} ⭐</span>
-            </div>
-            <div class="space-y-2">
-                <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
-                    ${piloto1}
+                <div class="space-y-2">
+                    <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
+                        🧑‍✈️ ${piloto1}
+                    </div>
+                    <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
+                        🧑‍✈️ ${piloto2}
+                    </div>
                 </div>
-                <div class="bg-gray-800/80 rounded p-2 text-sm text-gray-200 border-l-4 border-red-500 truncate">
-                    ${piloto2}
-                </div>
-            </div>
-        `;
-        contenedor.appendChild(tarjeta);
-    });
-}
+            `;
+            contenedor.appendChild(tarjeta);
+        });
+    }
 
     function configurarModalEventos() {
         const modal = document.getElementById('modal-estrellas');
