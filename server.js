@@ -608,30 +608,6 @@ app.post(['/api/reset-sanciones-totales', '/api/reset-sanciones'], async (req, r
 // ==========================================
 // RUTA PARA ELIMINAR PILOTO (Con limpieza en cascada)
 // ==========================================
-app.post('/api/eliminar-piloto', async (req, res) => {
-    const piloto_id = req.body.piloto_id || req.body.id;
-    
-    try {
-        if (!piloto_id) {
-            return res.status(400).send("No se ha proporcionado el ID del piloto.");
-        }
-
-        // Borramos primero todos sus rastros en tablas dependientes para evitar bloqueos
-        await pool.query('DELETE FROM registro_avisos WHERE id_piloto = $1', [piloto_id]);
-        await pool.query('DELETE FROM resultados WHERE id_piloto = $1', [piloto_id]);
-        
-        // Finalmente eliminamos al piloto de la tabla principal
-        await pool.query('DELETE FROM pilotos WHERE id = $1', [piloto_id]);
-        
-        res.sendStatus(200);
-    } catch (err) { 
-        console.error("Error al eliminar piloto:", err); 
-        res.status(500).send("Error interno al eliminar el piloto."); 
-    }
-});
-// ==========================================
-// ENDPOINT DE GUARDADO DE RESULTADOS (Comisarios)
-// ==========================================
 app.post('/api/guardar-resultado', async (req, res) => {
     const { circuito_id, piloto_id, posicion } = req.body;
     const esPole = req.body.pole === true || req.body.pole === 'true' || req.body.pole === 'on' || req.body.es_pole === true;
@@ -647,7 +623,7 @@ app.post('/api/guardar-resultado', async (req, res) => {
             [circuito_id, piloto_id]
         );
 
-        // 2. Insertamos el nuevo resultado de forma limpia
+        // 2. Insertamos el nuevo resultado
         await pool.query(
             `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
             [circuito_id, piloto_id, posicion, puntos]
@@ -671,14 +647,14 @@ app.post('/api/guardar-resultado', async (req, res) => {
             );
         }
 
-        // 5. Actualizamos las estadísticas de la ESCUDERÍA
+        // 5. Actualizamos las estadísticas de la ESCUDERÍA (cambia 'puntos' por el nombre real de tu columna si es diferente)
         const escuderiaRes = await pool.query(`SELECT escuderia_id FROM pilotos WHERE id = $1`, [piloto_id]);
         const escuderiaId = escuderiaRes.rows[0]?.escuderia_id;
 
         if (escuderiaId) {
             await pool.query(
                 `UPDATE escuderias 
-                 SET puntos_totales = (
+                 SET puntos = (
                      SELECT COALESCE(SUM(r.puntos), 0) 
                      FROM resultados r 
                      JOIN pilotos p ON r.id_piloto = p.id 
