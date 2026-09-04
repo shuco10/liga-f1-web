@@ -674,10 +674,11 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
     try {
         const query = `
             SELECT p.id, p.gamertag, p.numero_piloto, p.estrellas, p.escuderia_id, 
+                   p.victorias, p.podios, p.poles,
                    COALESCE(SUM(r.puntos), 0) as puntos_totales
             FROM pilotos p
             LEFT JOIN resultados r ON p.id = r.id_piloto
-            GROUP BY p.id
+            GROUP BY p.id, p.gamertag, p.numero_piloto, p.estrellas, p.escuderia_id, p.victorias, p.podios, p.poles
             ORDER BY puntos_totales DESC, p.gamertag ASC;
         `;
         const { rows } = await pool.query(query);
