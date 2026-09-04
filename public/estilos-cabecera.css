@@ -1386,3 +1386,13 @@ table tr td:nth-child(2) {
     color: #82d39d;
 }
 
+
+.tag-dnf {
+    background-color: #ff3333;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85em;
+    display: inline-block;
+}
