@@ -23,7 +23,12 @@
    <div id="header-placeholder"></div>
     
     <div class="titulo-liga">🛣️ CALENDARIO DE CIRCUITOS 🛣️</div>
-
+<!-- Botón de reseteo exclusivo para administradores -->
+<div id="admin-reset-container" style="text-align: center; margin-bottom: 20px; display: none;">
+    <button onclick="resetearResultadosTemporada()" style="background-color: #ff3333; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
+        🗑️ RESETEAR TODOS LOS RESULTADOS
+    </button>
+</div>
     <main id="lista-circuitos"></main>
 
     <div id="footer-placeholder"></div>
@@ -143,16 +148,24 @@ async function cargarCircuitos() {
             else console.warn("El modal de login aún no está cargado.");
         }
 
-        function verificarSesion() {
+function verificarSesion() {
             const btnLogin = document.getElementById('btn-login');
             const btnLogout = document.getElementById('btn-logout');
+            const adminResetContainer = document.getElementById('admin-reset-container');
             const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+            
             if (btnLogin && btnLogout) {
                 btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
                 btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-            } else { setTimeout(verificarSesion, 100); }
+                
+                // Añadimos esto para que aparezca o desaparezca el botón de reset
+                if (adminResetContainer) {
+                    adminResetContainer.style.display = adminStatus ? 'block' : 'none';
+                }
+            } else { 
+                setTimeout(verificarSesion, 100); 
+            }
         }
-
         async function enviarContacto() {
             const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
             const nombre = document.getElementById('nombre-contacto').value;
@@ -203,12 +216,6 @@ async function cargarCircuitos() {
     <input type="number" id="edit-posicion" style="width:100%; padding:8px; margin:10px 0;"><br>
     <button onclick="guardarEdicion()" style="background:#ff3333; color:white; border:none; padding:10px; cursor:pointer;">Guardar Cambios</button>
     <button onclick="document.getElementById('modal-editar').style.display='none'" style="background:#444; color:white; border:none; padding:10px; cursor:pointer;">Cancelar</button>
-</div>
-<!-- Botón de reseteo exclusivo para administradores -->
-<div id="admin-reset-container" style="text-align: center; margin-bottom: 20px; display: none;">
-    <button onclick="resetearResultadosTemporada()" style="background-color: #ff3333; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
-        🗑️ RESETEAR TODOS LOS RESULTADOS
-    </button>
 </div>
 
       
