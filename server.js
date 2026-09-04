@@ -738,7 +738,38 @@ app.post('/api/restar-licencia', async (req, res) => {
     }
 });
 
+// Editar un resultado específico por ID
+app.put('/api/editar-resultado/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { posicion } = req.body;
+        await pool.query('UPDATE resultados SET posicion = $1 WHERE id = $2', [posicion, id]);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Error al actualizar" });
+    }
+});
 
+// Eliminar un resultado específico por ID
+app.delete('/api/eliminar-resultado/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query('DELETE FROM resultados WHERE id = $1', [id]);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Error al eliminar" });
+    }
+});
+
+// Resetear todos los resultados de los Grandes Premios
+app.post('/api/resetear-resultados', async (req, res) => {
+    try {
+        await pool.query('DELETE FROM resultados');
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Error al resetear" });
+    }
+});
 
 
 // ==========================================
