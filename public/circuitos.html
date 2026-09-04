@@ -84,8 +84,12 @@ async function cargarCircuitos() {
                         <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
                     </div>`;
 
-                // Ordenamos directamente los circuitos que vienen de la BD por su r_round
-                const circuitosOrdenados = [...circuitosRaw].sort((a, b) => (a.r_round || 99) - (b.r_round || 99));
+                // Ordenación numérica estricta por r_round
+                const circuitosOrdenados = [...circuitosRaw].sort((a, b) => {
+                    const rA = Number(a.r_round) || 99;
+                    const rB = Number(b.r_round) || 99;
+                    return rA - rB;
+                });
 
                 contenedor.innerHTML = circuitosOrdenados.map(c => {
                     const archivo = archivosMap[c.nombre] || 'default';
@@ -97,7 +101,7 @@ async function cargarCircuitos() {
                     return `
                     <div class="circuito-card">
                         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #ff4444; font-weight: bold; margin-bottom: 4px;">
-                            <span>ROUND ${c.r_round || ''}</span>
+                            <span>ROUND ${c.r_round !== undefined && c.r_round !== null ? c.r_round : ''}</span>
                             <span>${c.fecha_carrera || ''}</span>
                         </div>
                         <h3 class="circuito-titulo">${c.nombre}</h3>
