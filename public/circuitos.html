@@ -205,6 +205,32 @@ function verificarSesion() {
                 document.getElementById('mensaje-contacto').value = '';
             } else { alert("Error al enviar el mensaje."); }
         }
+
+
+
+async function resetearResultadosTemporada() {
+    if (!confirm("⚠️ ¿Estás seguro de reiniciar todos los podios y resultados de la temporada? Esta acción no se puede deshacer.")) return;
+
+    try {
+        const res = await fetch('/api/resetear-resultados', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (res.ok) {
+            alert("¡Todos los resultados han sido reseteados correctamente!");
+            cargarCircuitos(); // Recarga los circuitos para vaciar los podios en pantalla
+        } else {
+            alert("Error al resetear los resultados.");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Error de conexión con el servidor.");
+    }
+}
+
+
+        
     </script>
 
 
