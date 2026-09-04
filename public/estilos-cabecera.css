@@ -447,7 +447,7 @@ table tr td:nth-child(2) {
 }
 
 .circuito-imagen-container {
-    background: #000;
+    background: transparent;
     border-radius: 6px;
     padding: 5px;
     margin-bottom: 15px;
