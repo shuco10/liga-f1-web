@@ -23,12 +23,7 @@
    <div id="header-placeholder"></div>
     
     <div class="titulo-liga">🛣️ CALENDARIO DE CIRCUITOS 🛣️</div>
-<!-- Botón de reseteo exclusivo para administradores -->
-<div id="admin-reset-container" style="text-align: center; margin-bottom: 20px; display: none;">
-    <button onclick="resetearResultadosTemporada()" style="background-color: #ff3333; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
-        🗑️ RESETEAR TODOS LOS RESULTADOS
-    </button>
-</div>
+
     <main id="lista-circuitos"></main>
 
     <div id="footer-placeholder"></div>
@@ -209,7 +204,12 @@ async function cargarCircuitos() {
     <button onclick="guardarEdicion()" style="background:#ff3333; color:white; border:none; padding:10px; cursor:pointer;">Guardar Cambios</button>
     <button onclick="document.getElementById('modal-editar').style.display='none'" style="background:#444; color:white; border:none; padding:10px; cursor:pointer;">Cancelar</button>
 </div>
-
+<!-- Botón de reseteo exclusivo para administradores -->
+<div id="admin-reset-container" style="text-align: center; margin-bottom: 20px; display: none;">
+    <button onclick="resetearResultadosTemporada()" style="background-color: #ff3333; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
+        🗑️ RESETEAR TODOS LOS RESULTADOS
+    </button>
+</div>
 
       
 </body>
