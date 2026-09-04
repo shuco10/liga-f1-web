@@ -90,8 +90,7 @@
                 contenedor.innerHTML = listaMaestra.map(item => {
                     const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
                     const resultadosCircuito = c ? resultados.filter(r => {
-                        const circuitoDB = circuitosRaw.find(x => x.id === r.circuito_id);
-                        return circuitoDB && circuitoDB.nombre === item.nombre;
+                        return r.id_gp === c.id;
                     }).sort((a, b) => a.posicion - b.posicion) : [];
 
                     const podio = resultadosCircuito.filter(r => r.posicion <= 3);
@@ -106,9 +105,9 @@
                         ${podio.length > 0 ? `<div class="podio-container">${podio.map(p => `
                             <div class="podio-item pos-${p.posicion}">
                                 <strong>${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
-                                <span style="font-size: 11px;">${p.piloto_nombre}</span>
+                                <span style="font-size: 11px;">${p.gamertag}</span>
                             </div>`).join('')}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
-                        <ul class="resultados-resto">${resto.map(p => `<li class="item-resto"><span>${p.posicion}º ${p.piloto_nombre}</span> ${renderAcciones(p.id)}</li>`).join('')}</ul>
+                        <ul class="resultados-resto">${resto.map(p => `<li class="item-resto"><span>${p.posicion}º ${p.gamertag}</span> ${renderAcciones(p.id)}</li>`).join('')}</ul>
                     </div>`;
                 }).join('');
             } catch (e) { console.error("Error al cargar los circuitos:", e); }
