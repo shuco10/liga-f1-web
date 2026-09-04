@@ -457,9 +457,10 @@ table tr td:nth-child(2) {
 
 .circuito-imagen-container img {
     width: 100%;
-    height: 90px;
+    height: 135px; /* Subimos la altura para que se vea más grande y detallado */
     object-fit: contain;
     display: block;
+    background: transparent !important; /* Forzamos transparencia por si traían fondo propio */
 }
 
 .podio-container { 
