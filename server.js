@@ -653,7 +653,7 @@ app.post('/api/guardar-resultado', async (req, res) => {
         }
 
         // 5. Sumar a la escudería
-        if (escuderia estaria_id || escuderia_id) {
+        if (escuderia_id) {
             await pool.query(`UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2`, [puntos, escuderia_id]);
         }
 
