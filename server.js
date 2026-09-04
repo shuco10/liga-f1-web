@@ -764,14 +764,26 @@ app.delete('/api/resultados/:id', async (req, res) => {
 });
 
 // Resetear todos los resultados de los Grandes Premios
-app.post('/api/resetear-resultados', async (req, res) => {
+async function resetearResultadosTemporada() {
+    if (!confirm("⚠️ ¿Estás seguro de reiniciar todos los podios y resultados de la temporada? Esta acción no se puede deshacer.")) return;
+
     try {
-        await pool.query('DELETE FROM resultados');
-        res.status(200).json({ success: true });
+        const res = await fetch('/api/resetear-resultados', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (res.ok) {
+            alert("¡Todos los resultados han sido reseteados correctamente!");
+            cargarCircuitos(); // Recarga los circuitos para vaciar los podios en pantalla
+        } else {
+            alert("Error al resetear los resultados.");
+        }
     } catch (err) {
-        res.status(500).json({ error: "Error al resetear" });
+        console.error("Error:", err);
+        alert("Error de conexión con el servidor.");
     }
-});
+}
 
 
 // ==========================================
