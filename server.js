@@ -738,37 +738,30 @@ app.post('/api/restar-licencia', async (req, res) => {
     }
 });
 
-// Editar un resultado específico por ID
-app.put('/api/editar-resultado/:id', async (req, res) => {
+// Actualizar posición de un resultado
+app.put('/api/resultados/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { posicion } = req.body;
         await pool.query('UPDATE resultados SET posicion = $1 WHERE id = $2', [posicion, id]);
         res.status(200).json({ success: true });
     } catch (err) {
+        console.error("Error al actualizar resultado:", err);
         res.status(500).json({ error: "Error al actualizar" });
     }
 });
 
-// Eliminar un resultado específico por ID
-async function eliminarResultado(id) {
-    if (!confirm("¿Seguro que quieres eliminar este resultado?")) return;
-
+// Eliminar un resultado
+app.delete('/api/resultados/:id', async (req, res) => {
     try {
-        const res = await fetch(`/api/resultados/${id}`, {
-            method: 'DELETE'
-        });
-
-        if (res.ok) {
-            alert("¡Resultado eliminado!");
-            cargarCircuitos();
-        } else {
-            alert("Error al eliminar el resultado.");
-        }
+        const { id } = req.params;
+        await pool.query('DELETE FROM resultados WHERE id = $1', [id]);
+        res.status(200).json({ success: true });
     } catch (err) {
-        console.error("Error:", err);
+        console.error("Error al eliminar resultado:", err);
+        res.status(500).json({ error: "Error al eliminar" });
     }
-}
+});
 
 // Resetear todos los resultados de los Grandes Premios
 app.post('/api/resetear-resultados', async (req, res) => {
