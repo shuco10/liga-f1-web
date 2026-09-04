@@ -683,6 +683,7 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
         const query = `
             SELECT p.id, p.gamertag, p.numero_piloto, p.estrellas, p.escuderia_id, 
                    p.victorias, p.podios, p.poles,
+                   COALESCE(COUNT(r.id) FILTER (WHERE r.dnf = true), 0) AS dnfs,
                    COALESCE(SUM(r.puntos), 0) as puntos_totales
             FROM pilotos p
             LEFT JOIN resultados r ON p.id = r.id_piloto
