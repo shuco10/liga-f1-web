@@ -722,14 +722,13 @@ app.post('/api/restar-licencia', async (req, res) => {
     try {
         const { piloto_id, puntos_restar } = req.body;
         
-        // Consulta SQL (ajústala al nombre de tu tabla y columnas reales, por ejemplo si usas pool de PostgreSQL o similar)
-        // Ejemplo genérico:
+        // Sumamos los puntos de sanción (acumulando la penalización sobre los 12 puntos)
         await pool.query(
-            'UPDATE pilotos SET puntos_licencia = puntos_licencia - $1 WHERE id = $2',
+            'UPDATE pilotos SET puntos_sancion = puntos_sancion + $1 WHERE id = $2',
             [puntos_restar, piloto_id]
         );
 
-        res.status(200).json({ success: true, message: "Licencia actualizada correctamente" });
+        res.status(200).json({ success: true, message: "Sanción aplicada correctamente" });
     } catch (error) {
         console.error("Error al restar licencia:", error);
         res.status(500).json({ error: "Error en el servidor al aplicar la sanción" });
