@@ -609,38 +609,44 @@ app.post(['/api/reset-sanciones-totales', '/api/reset-sanciones'], async (req, r
 // RUTA PARA ELIMINAR PILOTO (Con limpieza en cascada)
 // ==========================================
 app.post('/api/guardar-resultado', async (req, res) => {
-    const { circuito_id, piloto_id, posicion } = req.body;
+    const { circuito_id, piloto_id, posicion, escuderia_id } = req.body;
     const esPole = req.body.pole === true || req.body.pole === 'true' || req.body.pole === 'on' || req.body.es_pole === true;
     
     const tablaPuntosF1 = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     let puntos = tablaPuntosF1[parseInt(posicion)] || 0;
     if (esPole) puntos += 1;
 
-    try {
-        await pool.query(
-            `DELETE FROM resultados WHERE id_gp = $1 AND id_piloto = $2`,
-            [circuito_id, piloto_id]
-        );
+    const esVictoria = parseInt(posicion) === 1 ? 1 : 0;
+    const esPodio = (parseInt(posicion) >= 1 && parseInt(posicion) <= 3) ? 1 : 0;
 
+    try {
+        // 1. Limpiar duplicado en el GP
+        await pool.query(`DELETE FROM resultados WHERE id_gp = $1 AND id_piloto = $2`, [circuito_id, piloto_id]);
+
+        // 2. Insertar el resultado
         await pool.query(
             `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
             [circuito_id, piloto_id, posicion, puntos]
         );
 
+        // 3. Sumar puntos al piloto (y acumular victorias/podios de forma directa y segura)
         await pool.query(
             `UPDATE pilotos 
-             SET puntos_totales = (SELECT COALESCE(SUM(puntos), 0) FROM resultados WHERE id_piloto = $1),
-                 victorias = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion::integer = 1),
-                 podios = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion::integer <= 3)
-             WHERE id = $1`,
-            [piloto_id]
+             SET puntos_totales = puntos_totales + $1,
+                 victorias = victorias + $2,
+                 podios = podios + $3
+             WHERE id = $4`,
+            [puntos, esVictoria, esPodio, piloto_id]
         );
 
+        // 4. Si hubo pole, sumarla por separado
         if (esPole) {
-            await pool.query(
-                `UPDATE pilotos SET poles = poles + 1 WHERE id = $1`,
-                [piloto_id]
-            );
+            await pool.query(`UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1`, [piloto_id]);
+        }
+
+        // 5. Sumar a la escudería (que confirmas que sí va bien)
+        if (escuderia_id) {
+            await pool.query(`UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2`, [puntos, escuderia_id]);
         }
 
         res.json({ success: true });
@@ -689,12 +695,14 @@ app.get('/api/clasificacion-pilotos', async (req, res) => {
 app.get('/api/clasificacion-escuderias', async (req, res) => {
     try {
         const query = `
-            SELECT e.id, e.nombre, COALESCE(SUM(r.puntos), 0) as puntos_totales
+            SELECT e.id, e.nombre, e.color_hex,
+                   COALESCE(SUM(p.puntos_totales), 0) as puntos_totales,
+                   COALESCE(SUM(p.victorias), 0) as victorias,
+                   COALESCE(SUM(p.podios), 0) as podios
             FROM escuderias e
             LEFT JOIN pilotos p ON e.id = p.escuderia_id
-            LEFT JOIN resultados r ON p.id = r.id_piloto
-            GROUP BY e.id
-            ORDER BY puntos_totales DESC;
+            GROUP BY e.id, e.nombre, e.color_hex
+            ORDER BY puntos_totales DESC, victorias DESC;
         `;
         const { rows } = await pool.query(query);
         res.json(rows);
