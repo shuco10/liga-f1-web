@@ -751,15 +751,24 @@ app.put('/api/editar-resultado/:id', async (req, res) => {
 });
 
 // Eliminar un resultado específico por ID
-app.delete('/api/eliminar-resultado/:id', async (req, res) => {
+async function eliminarResultado(id) {
+    if (!confirm("¿Seguro que quieres eliminar este resultado?")) return;
+
     try {
-        const { id } = req.params;
-        await pool.query('DELETE FROM resultados WHERE id = $1', [id]);
-        res.status(200).json({ success: true });
+        const res = await fetch(`/api/resultados/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            alert("¡Resultado eliminado!");
+            cargarCircuitos();
+        } else {
+            alert("Error al eliminar el resultado.");
+        }
     } catch (err) {
-        res.status(500).json({ error: "Error al eliminar" });
+        console.error("Error:", err);
     }
-});
+}
 
 // Resetear todos los resultados de los Grandes Premios
 app.post('/api/resetear-resultados', async (req, res) => {
