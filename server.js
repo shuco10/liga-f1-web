@@ -613,7 +613,10 @@ app.post(['/api/reset-sanciones-totales', '/api/reset-sanciones'], async (req, r
 // ==========================================
 app.post('/api/guardar-resultado', async (req, res) => {
     const { circuito_id, piloto_id, posicion, escuderia_id } = req.body;
+    
+    // Captura segura de Pole y DNF desde el front
     const esPole = req.body.pole === true || req.body.pole === 'true' || req.body.pole === 'on' || req.body.es_pole === true;
+    const esDnf = req.body.dnf === true || req.body.dnf === 'true' || req.body.dnf === 'on' || req.body.es_dnf === true;
     
     const tablaPuntosF1 = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     let puntos = tablaPuntosF1[parseInt(posicion)] || 0;
@@ -626,13 +629,13 @@ app.post('/api/guardar-resultado', async (req, res) => {
         // 1. Limpiar duplicado en el GP
         await pool.query(`DELETE FROM resultados WHERE id_gp = $1 AND id_piloto = $2`, [circuito_id, piloto_id]);
 
-        // 2. Insertar el resultado
+        // 2. Insertar el resultado incluyendo la columna dnf
         await pool.query(
-            `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
-            [circuito_id, piloto_id, posicion, puntos]
+            `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos, pole, dnf) VALUES ($1, $2, $3, $4, $5, $6)`,
+            [circuito_id, piloto_id, posicion, puntos, esPole, esDnf]
         );
 
-        // 3. Sumar puntos al piloto (y acumular victorias/podios de forma directa y segura)
+        // 3. Sumar puntos al piloto (y acumular victorias/podios)
         await pool.query(
             `UPDATE pilotos 
              SET puntos_totales = puntos_totales + $1,
@@ -647,7 +650,7 @@ app.post('/api/guardar-resultado', async (req, res) => {
             await pool.query(`UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1`, [piloto_id]);
         }
 
-        // 5. Sumar a la escudería (que confirmas que sí va bien)
+        // 5. Sumar a la escudería
         if (escuderia_id) {
             await pool.query(`UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2`, [puntos, escuderia_id]);
         }
