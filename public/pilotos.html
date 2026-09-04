@@ -122,7 +122,7 @@
     });
 
  // --- LÓGICA DE PILOTOS ---
-    async function cargarTodosLosDatos() {
+async function cargarTodosLosDatos() {
         try {
             const [res, resResultados] = await Promise.all([
                 fetch('/api/lista-de-pilotos'),
@@ -132,15 +132,11 @@
             const listaPilotosGlobal = await res.json();
             const resultados = await resResultados.json();
 
-            listaPilotosGlobal.forEach(p => {
-                p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
-                p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
-            });
+            // ELIMINADO EL BUCLE FOREACH QUE SOBREESCRIBÍA LAS VICTORIAS Y PODIOS
 
             const titulares = listaPilotosGlobal.filter(p => !p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
             const reservas = listaPilotosGlobal.filter(p => p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
 
-            // CORREGIDO: Ahora el ID es 'tabla-titulares' para que coincida con tu HTML
             renderizarTabla('tabla-titulares', titulares, false);
             renderizarTabla('tabla-reservas', reservas, true);
         } catch(e) { console.error("Error al cargar datos:", e); }
