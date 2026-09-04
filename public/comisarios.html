@@ -820,14 +820,16 @@ async function editarResultado(id) {
         
 
 async function guardarResultado() {
-    // 1. Datos para la carrera
+    // 1. Datos para la carrera (incluyendo pole y dnf)
     const data = {
         circuito_id: document.getElementById('select-circuito-admin').value,
         piloto_id: document.getElementById('select-piloto-admin').value,
-        posicion: parseInt(document.getElementById('input-posicion').value)
+        posicion: parseInt(document.getElementById('input-posicion').value),
+        pole: document.getElementById('es_pole') ? document.getElementById('es_pole').checked : false,
+        dnf: document.getElementById('input-dnf') ? document.getElementById('input-dnf').checked : false
     };
 
-    // 2. Guardar resultado de la carrera
+    // 2. Guardar resultado completo de la carrera en el servidor
     const res = await fetch('/api/guardar-resultado', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -835,25 +837,14 @@ async function guardarResultado() {
     });
 
     if (res.ok) {
-        // 3. Si se guardó, verificamos si hay que sumar pole (usando el ID del checkbox)
-        const esPoleMarcado = document.getElementById('es_pole') ? document.getElementById('es_pole').checked : false;
-
-        if (esPoleMarcado) {
-            await fetch('/api/actualizar-pole', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ piloto_id: data.piloto_id })
-            });
-            console.log("Pole procesada");
-        }
-
         alert("Resultado guardado y puntos actualizados");
         
-        // Limpieza de campos
+        // Limpieza de campos y checkboxes
         if(document.getElementById('select-circuito-admin')) document.getElementById('select-circuito-admin').value = "";
         if(document.getElementById('select-piloto-admin')) document.getElementById('select-piloto-admin').value = "";
         if(document.getElementById('input-posicion')) document.getElementById('input-posicion').value = "";
-        if(document.getElementById('es_pole')) document.getElementById('es_pole').checked = false; // Desmarcamos el checkbox
+        if(document.getElementById('es_pole')) document.getElementById('es_pole').checked = false; 
+        if(document.getElementById('input-dnf')) document.getElementById('input-dnf').checked = false; // Limpiamos el dnf
 
         cargarTodosLosDatos(); 
         cargarCircuitos(); 
@@ -861,7 +852,6 @@ async function guardarResultado() {
         alert("Error al guardar el resultado");
     }
 }
-
 async function sumarPuntosManual() {
         const elEscuderia = document.getElementById('select-escuderia-puntos') || document.getElementById('select-escuderia');
         const laPosicion = document.getElementById('input-posicion-escuderia');
