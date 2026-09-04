@@ -629,8 +629,27 @@ app.post('/api/eliminar-piloto', async (req, res) => {
         res.status(500).send("Error interno al eliminar el piloto."); 
     }
 });
+// ==========================================
+// RUTA PARA GUARDAR RESULTADOS DE CARRERA (Comisarios)
+// ==========================================
+app.post('/api/guardar-resultado', async (req, res) => {
+    const { id_gp, id_piloto, posicion, puntos } = req.body;
+    try {
+        await pool.query(
+            `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
+            [id_gp, id_piloto, posicion, puntos]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al guardar el resultado:", err);
+        res.status(500).json({ error: "Error al guardar el resultado" });
+    }
+});
 
 
+// ==========================================
+// PONER TODO POR ENCIMA DE ESTO ============
+// ==========================================
 
 app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
