@@ -634,35 +634,50 @@ app.post('/api/eliminar-piloto', async (req, res) => {
 // ==========================================
 app.post('/api/guardar-resultado', async (req, res) => {
     const { circuito_id, piloto_id, posicion } = req.body;
+    const esPole = req.body.pole === true || req.body.pole === 'true' || req.body.pole === 'on' || req.body.es_pole === true;
     
     const tablaPuntosF1 = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    const puntos = tablaPuntosF1[parseInt(posicion)] || 0;
+    let puntos = tablaPuntosF1[parseInt(posicion)] || 0;
+    if (esPole) puntos += 1; // Suma punto extra por pole si está marcado
 
     try {
-        // 1. Borramos si ya existía un resultado previo para este piloto en este GP
+        // 1. Borramos el resultado previo de este piloto en este GP para evitar duplicados
         await pool.query(
             `DELETE FROM resultados WHERE id_gp = $1 AND id_piloto = $2`,
             [circuito_id, piloto_id]
         );
 
-        // 2. Insertamos el nuevo resultado limpio
-        await pool.query(
-            `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) 
-             VALUES ($1, $2, $3, $4)`,
-            [circuito_id, piloto_id, posicion, puntos]
-        );
+        // 2. Insertamos el nuevo resultado (intentando guardar la pole si la tabla la tiene)
+        try {
+            await pool.query(
+                `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos, pole) VALUES ($1, $2, $3, $4, $5)`,
+                [circuito_id, piloto_id, posicion, puntos, esPole]
+            );
+        } catch (e) {
+            // Si la columna 'pole' no existe en la tabla resultados, insertamos sin ella
+            await pool.query(
+                `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
+                [circuito_id, piloto_id, posicion, puntos]
+            );
+        }
 
-        // 3. Actualizamos los puntos totales del piloto
+        // 3. Recalculamos automáticamente Puntos, Victorias y Podios sumando todos sus registros
         await pool.query(
             `UPDATE pilotos 
-             SET puntos_totales = (
-                 SELECT COALESCE(SUM(puntos), 0) 
-                 FROM resultados 
-                 WHERE id_piloto = $1
-             )
+             SET puntos_totales = (SELECT COALESCE(SUM(puntos), 0) FROM resultados WHERE id_piloto = $1),
+                 victorias = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion = 1),
+                 podios = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion <= 3)
              WHERE id = $1`,
             [piloto_id]
         );
+
+        // Si marcó pole, incrementamos su contador de poles de forma segura
+        if (esPole) {
+            await pool.query(
+                `UPDATE pilotos SET poles = poles + 1 WHERE id = $1`,
+                [piloto_id]
+            );
+        }
 
         res.json({ success: true });
     } catch (err) {
