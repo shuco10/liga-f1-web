@@ -620,8 +620,10 @@ app.post('/api/guardar-resultado', async (req, res) => {
     const esDnf = req.body.dnf === true || req.body.dnf === 'true' || req.body.dnf === 'on' || req.body.es_dnf === true;
     
     const tablaPuntosF1 = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
-    let puntos = tablaPuntosF1[parseInt(posicion)] || 0;
-    if (esPole) puntos += 1;
+    
+    // Si es DNF, los puntos por posición se quedan a 0; si no, se calculan normal
+    let puntos = esDnf ? 0 : (tablaPuntosF1[parseInt(posicion)] || 0);
+    if (esPole) puntos += 1; // La pole se suma de forma independiente
 
     const esVictoria = parseInt(posicion) === 1 ? 1 : 0;
     const esPodio = (parseInt(posicion) >= 1 && parseInt(posicion) <= 3) ? 1 : 0;
