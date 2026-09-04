@@ -563,16 +563,19 @@ app.post(['/api/reset', '/api/reset-campeonato'], async (req, res) => {
 // RUTA PARA GUARDAR PUNTOS DE ESCUDERÍA (Comisarios)
 // ==========================================
 app.post('/api/guardar-puntos-escuderia', async (req, res) => {
-    const { id_gp, escuderia_id, puntos } = req.body;
     try {
+        const { escuderia_id, posicion } = req.body; // 'posicion' contiene el número de puntos a sumar o restar que metiste en el input
+
+        // Actualizamos directamente la tabla de escuderías sumando o restando los puntos
         await pool.query(
-            `INSERT INTO resultados (id_gp, escuderia_puntos) VALUES ($1, $2)`,
-            [id_gp, puntos]
+            'UPDATE escuderias SET puntos = puntos + $1 WHERE id = $2',
+            [posicion, escuderia_id]
         );
-        res.json({ success: true });
+
+        res.status(200).send("¡Puntos sumados correctamente!");
     } catch (err) {
         console.error("Error al guardar puntos de escudería:", err);
-        res.status(500).json({ error: "Error al guardar puntos de escudería" });
+        res.status(500).send("Error al guardar puntos de escudería");
     }
 });
 
