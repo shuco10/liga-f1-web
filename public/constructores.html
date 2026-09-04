@@ -212,10 +212,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const escuderias = await resE.json();
         const resultados = await resR.json();
 
-        pilotos.forEach(p => {
-            p.podios = resultados.filter(r => r.piloto_id === p.id && r.posicion <= 3).length;
-            p.victorias = resultados.filter(r => r.piloto_id === p.id && r.posicion === 1).length;
-        });
+        // ELIMINADO EL BUCLE FOREACH QUE SOBREESCRIBÍA LAS VICTORIAS Y PODIOS
 
         renderizarConstructores(pilotos, escuderias);
     } catch (error) {
