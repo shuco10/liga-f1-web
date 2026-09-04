@@ -630,15 +630,20 @@ app.post('/api/eliminar-piloto', async (req, res) => {
     }
 });
 // ==========================================
-// RUTA PARA GUARDAR RESULTADOS DE CARRERA (Comisarios)
+// RUTA PARA GUARDAR Y ACTUALIZAR RESULTADOS (Comisarios)
 // ==========================================
 app.post('/api/guardar-resultado', async (req, res) => {
-    const { id_gp, id_piloto, posicion, puntos } = req.body;
+    const { id_gp, id_piloto, posicion, puntos, escuderia_id } = req.body;
     try {
+        // Guardamos o actualizamos el resultado del GP para este piloto
         await pool.query(
-            `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
+            `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) 
+             VALUES ($1, $2, $3, $4)
+             ON CONFLICT (id_gp, id_piloto) 
+             DO UPDATE SET posicion = EXCLUDED.posicion, puntos = EXCLUDED.puntos`,
             [id_gp, id_piloto, posicion, puntos]
         );
+
         res.json({ success: true });
     } catch (err) {
         console.error("Error al guardar el resultado:", err);
@@ -646,6 +651,58 @@ app.post('/api/guardar-resultado', async (req, res) => {
     }
 });
 
+// ==========================================
+// RUTAS DE RECUPERACIÓN PARA CLASIFICACIONES Y CIRCUITOS
+// ==========================================
+
+// 1. Circuitos
+app.get('/api/circuitos', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM circuitos ORDER BY id ASC;');
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener circuitos:", err);
+        res.status(500).json({ error: 'Error al obtener circuitos' });
+    }
+});
+
+// 2. Clasificación general de pilotos (Suma los puntos de la tabla resultados)
+app.get('/api/clasificacion-pilotos', async (req, res) => {
+    try {
+        const query = `
+            SELECT p.id, p.gamertag, p.numero_piloto, p.estrellas, p.escuderia_id, 
+                   COALESCE(SUM(r.puntos), 0) as puntos_totales
+            FROM pilotos p
+            LEFT JOIN resultados r ON p.id = r.id_piloto
+            GROUP BY p.id
+            ORDER BY puntos_totales DESC, p.gamertag ASC;
+        `;
+        const { rows } = await pool.query(query);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener clasificación de pilotos:", err);
+        res.status(500).json({ error: 'Error al obtener clasificación' });
+    }
+});
+
+// 3. Clasificación de escuderías / constructores
+app.get('/api/clasificacion-escuderias', async (req, res) => {
+    try {
+        const query = `
+            SELECT e.id, e.nombre, COALESCE(SUM(r.puntos), 0) as puntos_totales
+            FROM escuderias e
+            LEFT JOIN pilotos p ON e.id = p.escuderia_id
+            LEFT JOIN resultados r ON p.id = r.id_piloto
+            GROUP BY e.id
+            ORDER BY puntos_totales DESC;
+        `;
+        const { rows } = await pool.query(query);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener clasificación de escuderías:", err);
+        res.status(500).json({ error: 'Error al obtener escuderías' });
+    }
+});
 
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
