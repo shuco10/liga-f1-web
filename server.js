@@ -712,6 +712,33 @@ app.get('/api/clasificacion-escuderias', async (req, res) => {
     }
 });
 
+
+
+// ==========================================
+// Endpoint para restar puntos de licencia al piloto
+// ==========================================
+
+app.post('/api/restar-licencia', async (req, res) => {
+    try {
+        const { piloto_id, puntos_restar } = req.body;
+        
+        // Consulta SQL (ajústala al nombre de tu tabla y columnas reales, por ejemplo si usas pool de PostgreSQL o similar)
+        // Ejemplo genérico:
+        await pool.query(
+            'UPDATE pilotos SET puntos_licencia = puntos_licencia - $1 WHERE id = $2',
+            [puntos_restar, piloto_id]
+        );
+
+        res.status(200).json({ success: true, message: "Licencia actualizada correctamente" });
+    } catch (error) {
+        console.error("Error al restar licencia:", error);
+        res.status(500).json({ error: "Error en el servidor al aplicar la sanción" });
+    }
+});
+
+
+
+
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
 // ==========================================
