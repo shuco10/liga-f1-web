@@ -623,13 +623,13 @@ app.post('/api/guardar-resultado', async (req, res) => {
             [circuito_id, piloto_id]
         );
 
-        // 2. Insertamos el nuevo resultado
+        // 2. Insertamos el nuevo resultado limpio
         await pool.query(
             `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
             [circuito_id, piloto_id, posicion, puntos]
         );
 
-        // 3. Actualizamos Puntos, Victorias y Podios del PILOTO
+        // 3. Actualizamos Puntos, Victorias y Podios del PILOTO de forma automática
         await pool.query(
             `UPDATE pilotos 
              SET puntos_totales = (SELECT COALESCE(SUM(puntos), 0) FROM resultados WHERE id_piloto = $1),
@@ -644,36 +644,6 @@ app.post('/api/guardar-resultado', async (req, res) => {
             await pool.query(
                 `UPDATE pilotos SET poles = poles + 1 WHERE id = $1`,
                 [piloto_id]
-            );
-        }
-
-        // 5. Actualizamos las estadísticas de la ESCUDERÍA (cambia 'puntos' por el nombre real de tu columna si es diferente)
-        const escuderiaRes = await pool.query(`SELECT escuderia_id FROM pilotos WHERE id = $1`, [piloto_id]);
-        const escuderiaId = escuderiaRes.rows[0]?.escuderia_id;
-
-        if (escuderiaId) {
-            await pool.query(
-                `UPDATE escuderias 
-                 SET puntos = (
-                     SELECT COALESCE(SUM(r.puntos), 0) 
-                     FROM resultados r 
-                     JOIN pilotos p ON r.id_piloto = p.id 
-                     WHERE p.escuderia_id = $1
-                 ),
-                 victorias = (
-                     SELECT COUNT(*) 
-                     FROM resultados r 
-                     JOIN pilotos p ON r.id_piloto = p.id 
-                     WHERE p.escuderia_id = $1 AND r.posicion = 1
-                 ),
-                 podios = (
-                     SELECT COUNT(*) 
-                     FROM resultados r 
-                     JOIN pilotos p ON r.id_piloto = p.id 
-                     WHERE p.escuderia_id = $1 AND r.posicion <= 3
-                 )
-                 WHERE id = $1`,
-                [escuderiaId]
             );
         }
 
