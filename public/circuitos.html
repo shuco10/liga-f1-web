@@ -84,11 +84,11 @@ async function cargarCircuitos() {
                         <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
                     </div>`;
 
-                // Ordenación numérica estricta por r_round
+                // Creamos una copia explícita y ordenamos por el número de ronda (r_round)
                 const circuitosOrdenados = [...circuitosRaw].sort((a, b) => {
-                    const rA = Number(a.r_round) || 99;
-                    const rB = Number(b.r_round) || 99;
-                    return rA - rB;
+                    const roundA = parseInt(a.r_round, 10) || 99;
+                    const roundB = parseInt(b.r_round, 10) || 99;
+                    return roundA - roundB;
                 });
 
                 contenedor.innerHTML = circuitosOrdenados.map(c => {
@@ -119,6 +119,7 @@ async function cargarCircuitos() {
             } catch (e) { console.error("Error al cargar los circuitos:", e); }
         }
 
+        
         function seguridadAbrirModal() {
             const modal = document.getElementById('login-modal');
             if (modal) modal.style.display = 'block';
