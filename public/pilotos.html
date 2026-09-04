@@ -170,25 +170,26 @@ function renderizarTabla(id, data, esReserva) {
                </div>`;
 
         return `<tr>
-            <td class="col-pos"><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
-            <td class="col-piloto" style="text-align: left;">
-                <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
-                    <div class="contenedor-avatar-grande">
-                        ${estrellas}
-                        <img src="${avatarUrl}" class="avatar-grande" style="flex-shrink: 0;" onerror="this.src='/pilotos/R.png'">
-                    </div>
-                    <span class="numero-piloto">${p.numero_piloto || '00'}</span>
-                    <strong style="overflow: hidden; text-overflow: ellipsis;">${p.gamertag}</strong>
-                </div>
-            </td>
+<td class="col-pos"><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
+    <td class="col-piloto" style="text-align: left;">
+        <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
+            <div class="contenedor-avatar-grande">
+                ${estrellas}
+                <img src="${avatarUrl}" class="avatar-grande" style="flex-shrink: 0;" onerror="this.src='/pilotos/R.png'">
+            </div>
+            <span class="numero-piloto">${p.numero_piloto || '00'}</span>
+            <strong style="overflow: hidden; text-overflow: ellipsis;">${p.gamertag}</strong>
+        </div>
+    </td>
 
-            <td class="col-plataforma"><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
-            <td class="col-escuderia">${escuderiaCol}</td>
-            <td class="col-vics">${p.victorias}</td>
-            <td class="col-podios">${p.podios || '0'}</td>
-            <td class="col-poles">${p.poles || '0'}</td>
-            <td class="col-puntos"><strong>${p.puntos_totales} pts</strong></td>
-        </tr>`;
+    <td class="col-plataforma"><span class="plataforma ${p.plataforma.toUpperCase()}">${p.plataforma}</span></td>
+    <td class="col-escuderia">${escuderiaCol}</td>
+    <td class="col-vics">${p.victorias}</td>
+    <td class="col-podios">${p.podios || '0'}</td>
+    <td class="col-poles">${p.poles || '0'}</td>
+    <td class="col-dnfs">${p.dnfs || '0'}</td> <!-- <--- Añadido aquí entre poles y puntos -->
+    <td class="col-puntos"><strong>${p.puntos_totales} pts</strong></td>
+</tr>`;
     }).join('');
 }
 
