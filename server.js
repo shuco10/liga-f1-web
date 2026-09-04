@@ -647,36 +647,35 @@ app.post('/api/guardar-resultado', async (req, res) => {
             [circuito_id, piloto_id]
         );
 
-        // 2. Insertamos el nuevo resultado
-        try {
-            await pool.query(
-                `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos, pole) VALUES ($1, $2, $3, $4, $5)`,
-                [circuito_id, piloto_id, posicion, puntos, esPole]
-            );
-        } catch (e) {
-            await pool.query(
-                `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
-                [circuito_id, piloto_id, posicion, puntos]
-            );
-        }
+        // 2. Insertamos el nuevo resultado de forma limpia
+        await pool.query(
+            `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
+            [circuito_id, piloto_id, posicion, puntos]
+        );
 
-        // 3. Actualizamos las estadísticas del PILOTO (Puntos, Victorias, Podios y Poles)
+        // 3. Actualizamos Puntos, Victorias y Podios del PILOTO
         await pool.query(
             `UPDATE pilotos 
              SET puntos_totales = (SELECT COALESCE(SUM(puntos), 0) FROM resultados WHERE id_piloto = $1),
                  victorias = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion = 1),
-                 podios = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion <= 3),
-                 poles = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND pole = true)
+                 podios = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion <= 3)
              WHERE id = $1`,
             [piloto_id]
         );
 
-        // 4. Buscamos a qué escudería pertenece este piloto para actualizar también las estadísticas del Constructor
+        // 4. Si marcó pole, sumamos 1 al contador de poles del piloto
+        if (esPole) {
+            await pool.query(
+                `UPDATE pilotos SET poles = poles + 1 WHERE id = $1`,
+                [piloto_id]
+            );
+        }
+
+        // 5. Actualizamos las estadísticas de la ESCUDERÍA
         const escuderiaRes = await pool.query(`SELECT escuderia_id FROM pilotos WHERE id = $1`, [piloto_id]);
         const escuderiaId = escuderiaRes.rows[0]?.escuderia_id;
 
         if (escuderiaId) {
-            // Actualizamos los puntos, victorias y podios de la ESCUDERÍA sumando a todos sus pilotos
             await pool.query(
                 `UPDATE escuderias 
                  SET puntos_totales = (
