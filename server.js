@@ -630,12 +630,13 @@ app.post('/api/eliminar-piloto', async (req, res) => {
     }
 });
 // ==========================================
-// RUTA PARA GUARDAR Y ACTUALIZAR RESULTADOS (Comisarios)
+// ENDPOINT DE GUARDADO DE RESULTADOS (Comisarios)
 // ==========================================
 app.post('/api/guardar-resultado', async (req, res) => {
-    const { id_gp, id_piloto, posicion, puntos, escuderia_id } = req.body;
+    const { id_gp, id_piloto, posicion, puntos } = req.body;
+
     try {
-        // Guardamos o actualizamos el resultado del GP para este piloto
+        // 1. Guardamos el resultado en la tabla 'resultados'
         await pool.query(
             `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) 
              VALUES ($1, $2, $3, $4)
@@ -644,10 +645,22 @@ app.post('/api/guardar-resultado', async (req, res) => {
             [id_gp, id_piloto, posicion, puntos]
         );
 
+        // 2. Recalculamos automáticamente los puntos totales en la tabla 'pilotos'
+        await pool.query(
+            `UPDATE pilotos 
+             SET puntos_totales = (
+                 SELECT COALESCE(SUM(puntos), 0) 
+                 FROM resultados 
+                 WHERE id_piloto = $1
+             )
+             WHERE id = $1`,
+            [id_piloto]
+        );
+
         res.json({ success: true });
     } catch (err) {
-        console.error("Error al guardar el resultado:", err);
-        res.status(500).json({ error: "Error al guardar el resultado" });
+        console.error("Error al guardar resultado:", err);
+        res.status(500).json({ error: "Error al guardar el resultado en la base de datos" });
     }
 });
 
