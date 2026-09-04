@@ -66,32 +66,32 @@ async function cargarCircuitos() {
                 const resultados = await resResultados.json();
                 const contenedor = document.getElementById('lista-circuitos');
                 
-                // Lista maestra con el orden exacto de las rondas y sus fechas
+                // Lista maestra con el orden, fechas y códigos de bandera para cada país
                 const listaMaestra = [
-                    { nombre: "Melbourne", archivo: "melburne", round: 1, fecha: "24 SEP" },
-                    { nombre: "Shanghái", archivo: "sangai", round: 2, fecha: "01 OCT" },
-                    { nombre: "Suzuka", archivo: "suzuka", round: 3, fecha: "08 OCT" },
-                    { nombre: "Sakhir", archivo: "sakir", round: 4, fecha: "15 OCT" },
-                    { nombre: "Yeda", archivo: "yeda", round: 5, fecha: "22 OCT" },
-                    { nombre: "Miami", archivo: "miami", round: 6, fecha: "29 OCT" },
-                    { nombre: "Montreal", archivo: "monreal", round: 7, fecha: "05 NOV" },
-                    { nombre: "Mónaco", archivo: "montecarlo", round: 8, fecha: "12 NOV" },
-                    { nombre: "Barcelona", archivo: "barcelona", round: 9, fecha: "19 NOV" },
-                    { nombre: "Spielberg", archivo: "spilberg", round: 10, fecha: "26 NOV" },
-                    { nombre: "Silverstone", archivo: "silverstone", round: 11, fecha: "03 DEC" },
-                    { nombre: "Spa", archivo: "spa", round: 12, fecha: "10 DEC" },
-                    { nombre: "Budapest", archivo: "budapest", round: 13, fecha: "17 DEC" },
-                    { nombre: "Zandvoort", archivo: "zandvoort", round: 14, fecha: "14 JAN" },
-                    { nombre: "Monza", archivo: "monza", round: 15, fecha: "21 JAN" },
-                    { nombre: "Madrid", archivo: "madrid", round: 16, fecha: "28 JAN" },
-                    { nombre: "Bakú", archivo: "baku", round: 17, fecha: "04 FEB" },
-                    { nombre: "Singapur", archivo: "singapur", round: 18, fecha: "11 FEB" },
-                    { nombre: "Austin", archivo: "austin", round: 19, fecha: "18 FEB" },
-                    { nombre: "Ciudad de México", archivo: "mejico", round: 20, fecha: "25 FEB" },
-                    { nombre: "São Paulo", archivo: "saopaulo", round: 21, fecha: "04 MAR" },
-                    { nombre: "Las Vegas", archivo: "lasvegas", round: 22, fecha: "11 MAR" },
-                    { nombre: "Losail", archivo: "losail", round: 23, fecha: "18 MAR" },
-                    { nombre: "Abu Dabi", archivo: "abudabi", round: 24, fecha: "01 APR" }
+                    { nombre: "Melbourne", archivo: "melburne", round: 1, fecha: "24 SEP", bandera: "au" },
+                    { nombre: "Shanghái", archivo: "sangai", round: 2, fecha: "01 OCT", bandera: "cn" },
+                    { nombre: "Suzuka", archivo: "suzuka", round: 3, fecha: "08 OCT", bandera: "jp" },
+                    { nombre: "Sakhir", archivo: "sakir", round: 4, fecha: "15 OCT", bandera: "bh" },
+                    { nombre: "Yeda", archivo: "yeda", round: 5, fecha: "22 OCT", bandera: "sa" },
+                    { nombre: "Miami", archivo: "miami", round: 6, fecha: "29 OCT", bandera: "us" },
+                    { nombre: "Montreal", archivo: "monreal", round: 7, fecha: "05 NOV", bandera: "ca" },
+                    { nombre: "Mónaco", archivo: "montecarlo", round: 8, fecha: "12 NOV", bandera: "mc" },
+                    { nombre: "Barcelona", archivo: "barcelona", round: 9, fecha: "19 NOV", bandera: "es" },
+                    { nombre: "Spielberg", archivo: "spilberg", round: 10, fecha: "26 NOV", bandera: "at" },
+                    { nombre: "Silverstone", archivo: "silverstone", round: 11, fecha: "03 DEC", bandera: "gb" },
+                    { nombre: "Spa", archivo: "spa", round: 12, fecha: "10 DEC", bandera: "be" },
+                    { nombre: "Budapest", archivo: "budapest", round: 13, fecha: "17 DEC", bandera: "hu" },
+                    { nombre: "Zandvoort", archivo: "zandvoort", round: 14, fecha: "14 JAN", bandera: "nl" },
+                    { nombre: "Monza", archivo: "monza", round: 15, fecha: "21 JAN", bandera: "it" },
+                    { nombre: "Madrid", archivo: "madrid", round: 16, fecha: "28 JAN", bandera: "es" },
+                    { nombre: "Bakú", archivo: "baku", round: 17, fecha: "04 FEB", bandera: "az" },
+                    { nombre: "Singapur", archivo: "singapur", round: 18, fecha: "11 FEB", bandera: "sg" },
+                    { nombre: "Austin", archivo: "austin", round: 19, fecha: "18 FEB", bandera: "us" },
+                    { nombre: "Ciudad de México", archivo: "mejico", round: 20, fecha: "25 FEB", bandera: "mx" },
+                    { nombre: "São Paulo", archivo: "saopaulo", round: 21, fecha: "04 MAR", bandera: "br" },
+                    { nombre: "Las Vegas", archivo: "lasvegas", round: 22, fecha: "11 MAR", bandera: "us" },
+                    { nombre: "Losail", archivo: "losail", round: 23, fecha: "18 MAR", bandera: "qa" },
+                    { nombre: "Abu Dabi", archivo: "abudabi", round: 24, fecha: "01 APR", bandera: "ae" }
                 ];
 
                 const renderAcciones = (id) => `
@@ -101,7 +101,6 @@ async function cargarCircuitos() {
                     </div>`;
 
                 contenedor.innerHTML = listaMaestra.map(item => {
-                    // Buscamos el circuito en la base de datos para obtener su ID real (necesario para los resultados)
                     const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
                     const circuitoId = c ? c.id : null;
 
@@ -112,9 +111,12 @@ async function cargarCircuitos() {
                     
                     return `
                     <div class="circuito-card">
-                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #ff4444; font-weight: bold; margin-bottom: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #ff4444; font-weight: bold; margin-bottom: 6px;">
                             <span>ROUND ${item.round}</span>
-                            <span>${item.fecha}</span>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span>${item.fecha}</span>
+                                <img src="https://flagcdn.com/24x18/${item.bandera}.png" alt="${item.nombre}" style="border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+                            </div>
                         </div>
                         <h3 class="circuito-titulo">${item.nombre}</h3>
                         <div class="circuito-imagen-container">
