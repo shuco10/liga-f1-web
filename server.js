@@ -663,7 +663,7 @@ app.post('/api/guardar-resultado', async (req, res) => {
 // 1. Circuitos
 app.get('/api/circuitos', async (req, res) => {
     try {
-        const { rows } = await pool.query('SELECT * FROM circuitos ORDER BY id ASC;');
+        const { rows } = await pool.query('SELECT * FROM circuitos ORDER BY r_round ASC;');
         res.json(rows);
     } catch (err) {
         console.error("Error al obtener circuitos:", err);
