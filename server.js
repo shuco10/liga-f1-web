@@ -639,14 +639,20 @@ app.post('/api/guardar-resultado', async (req, res) => {
     const puntos = tablaPuntosF1[parseInt(posicion)] || 0;
 
     try {
+        // 1. Borramos si ya existía un resultado previo para este piloto en este GP
+        await pool.query(
+            `DELETE FROM resultados WHERE id_gp = $1 AND id_piloto = $2`,
+            [circuito_id, piloto_id]
+        );
+
+        // 2. Insertamos el nuevo resultado limpio
         await pool.query(
             `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) 
-             VALUES ($1, $2, $3, $4)
-             ON CONFLICT (id_gp, id_piloto) 
-             DO UPDATE SET posicion = EXCLUDED.posicion, puntos = EXCLUDED.puntos`,
+             VALUES ($1, $2, $3, $4)`,
             [circuito_id, piloto_id, posicion, puntos]
         );
 
+        // 3. Actualizamos los puntos totales del piloto
         await pool.query(
             `UPDATE pilotos 
              SET puntos_totales = (
