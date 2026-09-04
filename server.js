@@ -621,9 +621,8 @@ app.post('/api/guardar-resultado', async (req, res) => {
     
     const tablaPuntosF1 = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
     
-    // Si es DNF, los puntos por posición se quedan a 0; si no, se calculan normal
+    // Si es DNF, los puntos son 0; si no, se asignan según la posición (la pole ya no da puntos)
     let puntos = esDnf ? 0 : (tablaPuntosF1[parseInt(posicion)] || 0);
-    if (esPole) puntos += 1; // La pole se suma de forma independiente
 
     const esVictoria = parseInt(posicion) === 1 ? 1 : 0;
     const esPodio = (parseInt(posicion) >= 1 && parseInt(posicion) <= 3) ? 1 : 0;
@@ -648,13 +647,13 @@ app.post('/api/guardar-resultado', async (req, res) => {
             [puntos, esVictoria, esPodio, piloto_id]
         );
 
-        // 4. Si hubo pole, sumarla por separado
+        // 4. Si hubo pole, sumarla a su estadística de poles (sin puntos)
         if (esPole) {
             await pool.query(`UPDATE pilotos SET poles = COALESCE(poles, 0) + 1 WHERE id = $1`, [piloto_id]);
         }
 
         // 5. Sumar a la escudería
-        if (escuderia_id) {
+        if (escuderia estaria_id || escuderia_id) {
             await pool.query(`UPDATE escuderias SET puntos_totales = puntos_totales + $1 WHERE id = $2`, [puntos, escuderia_id]);
         }
 
