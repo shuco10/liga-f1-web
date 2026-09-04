@@ -617,29 +617,25 @@ app.post('/api/guardar-resultado', async (req, res) => {
     if (esPole) puntos += 1;
 
     try {
-        // 1. Limpiamos el resultado previo para este piloto en este GP
         await pool.query(
             `DELETE FROM resultados WHERE id_gp = $1 AND id_piloto = $2`,
             [circuito_id, piloto_id]
         );
 
-        // 2. Insertamos el nuevo resultado limpio
         await pool.query(
             `INSERT INTO resultados (id_gp, id_piloto, posicion, puntos) VALUES ($1, $2, $3, $4)`,
             [circuito_id, piloto_id, posicion, puntos]
         );
 
-        // 3. Actualizamos Puntos, Victorias y Podios del PILOTO de forma automática
         await pool.query(
             `UPDATE pilotos 
              SET puntos_totales = (SELECT COALESCE(SUM(puntos), 0) FROM resultados WHERE id_piloto = $1),
-                 victorias = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion = 1),
-                 podios = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion <= 3)
+                 victorias = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion::integer = 1),
+                 podios = (SELECT COUNT(*) FROM resultados WHERE id_piloto = $1 AND posicion::integer <= 3)
              WHERE id = $1`,
             [piloto_id]
         );
 
-        // 4. Si marcó pole, sumamos 1 al contador de poles del piloto
         if (esPole) {
             await pool.query(
                 `UPDATE pilotos SET poles = poles + 1 WHERE id = $1`,
