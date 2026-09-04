@@ -110,24 +110,27 @@ async function cargarCircuitos() {
                     const resto = resultadosCircuito.filter(r => r.posicion > 3);
                     
                     return `
-                    <div class="circuito-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #ff4444; font-weight: bold; margin-bottom: 6px;">
-                            <span>ROUND ${item.round}</span>
-                            <div style="display: flex; align-items: center; gap: 6px;">
+                    <div class="circuito-card" style="position: relative; overflow: hidden;">
+                        <!-- Bandera de fondo con baja opacidad -->
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://flagcdn.com/w640/${item.bandera}.png'); background-size: cover; background-position: center; opacity: 0.08; pointer-events: none; z-index: 0;"></div>
+
+                        <!-- Contenido de la tarjeta (con z-index superior para que esté por encima de la bandera) -->
+                        <div style="position: relative; z-index: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #ff4444; font-weight: bold; margin-bottom: 6px;">
+                                <span>ROUND ${item.round}</span>
                                 <span>${item.fecha}</span>
-                                <img src="https://flagcdn.com/24x18/${item.bandera}.png" alt="${item.nombre}" style="border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">
                             </div>
+                            <h3 class="circuito-titulo">${item.nombre}</h3>
+                            <div class="circuito-imagen-container">
+                                <img src="/circuitos/${item.archivo}.png" alt="${item.nombre}" onerror="this.style.display='none'">
+                            </div>
+                            ${podio.length > 0 ? `<div class="podio-container">${podio.map(p => `
+                                <div class="podio-item pos-${p.posicion}">
+                                    <strong>${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
+                                    <span style="font-size: 11px;">${p.gamertag}</span>
+                                </div>`).join('')}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
+                            <ul class="resultados-resto">${resto.map(p => `<li class="item-resto"><span>${p.posicion}º ${p.gamertag}</span> ${renderAcciones(p.id)}</li>`).join('')}</ul>
                         </div>
-                        <h3 class="circuito-titulo">${item.nombre}</h3>
-                        <div class="circuito-imagen-container">
-                            <img src="/circuitos/${item.archivo}.png" alt="${item.nombre}" onerror="this.style.display='none'">
-                        </div>
-                        ${podio.length > 0 ? `<div class="podio-container">${podio.map(p => `
-                            <div class="podio-item pos-${p.posicion}">
-                                <strong>${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
-                                <span style="font-size: 11px;">${p.gamertag}</span>
-                            </div>`).join('')}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
-                        <ul class="resultados-resto">${resto.map(p => `<li class="item-resto"><span>${p.posicion}º ${p.gamertag}</span> ${renderAcciones(p.id)}</li>`).join('')}</ul>
                     </div>`;
                 }).join('');
             } catch (e) { console.error("Error al cargar los circuitos:", e); }
