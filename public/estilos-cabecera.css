@@ -1480,13 +1480,18 @@ table tr td:nth-child(2) {
 
 .titulo-metrica-header {
     text-align: center;
-    color: #fff;
-    font-size: 1.3rem;
-    font-weight: 800;
-    letter-spacing: 2px;
-    margin: 20px 0 15px 0;
+    color: #ff3333; /* Mismo tono racing que el VS o blanco brillante, como prefieras */
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin: 25px auto 15px auto;
     text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 8px;
+    
+    /* Estilo de placa/badge idéntico al del VS */
+    background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+    padding: 8px 24px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    display: table; /* Hace que el fondo se ajuste al texto en lugar de ocupar todo el ancho */
 }
