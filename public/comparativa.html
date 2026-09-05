@@ -303,7 +303,7 @@
         }
     }
 
-    async function ejecutarComparativa() {
+ async function ejecutarComparativa() {
         const contenedorResultados = document.getElementById('contenedorResultados');
         if (!document.getElementById('nombreItem1') && contenedorResultados) {
             contenedorResultados.innerHTML = `
@@ -319,6 +319,10 @@
                         <h3 id="nombreItem1"></h3>
                     </div>
                     <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                    
+                    <!-- NUEVO HUECO PARA LA POSICIÓN DEL PILOTO 1 -->
+                    <div id="contenedorBadge1" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
+                    
                     <div id="valorItem1" class="caja-valor">0</div>
                 </div>
 
@@ -334,6 +338,10 @@
                         <h3 id="nombreItem2"></h3>
                     </div>
                     <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                    
+                    <!-- NUEVO HUECO PARA LA POSICIÓN DEL PILOTO 2 -->
+                    <div id="contenedorBadge2" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
+                    
                     <div id="valorItem2" class="caja-valor">0</div>
                 </div>
             `;
@@ -676,7 +684,53 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
         contenedorResultados.style.display = 'block';
     }
 
+// Ejemplo de cómo rellenarlo para cada piloto (adapta 'registroPiloto' a tu variable de datos):
+    function actualizarBadgePosicion(idSufijo, registroPiloto) {
+        const contenedorBadge = document.getElementById(`contenedorBadge${idSufijo}`);
+        if (!contenedorBadge) return;
 
+        // Si estamos viendo la métrica de Circuitos y hay un registro válido
+        if (modoActual === 'circuitos' && registroPiloto) {
+            const posReal = registroPiloto.dnf ? null : (registroPiloto.posicion || 1); // O el índice si aplica
+            
+            let badgeBg = '#262626';
+            let badgeColor = '#fff';
+            let badgeBorder = '1px solid #383838';
+
+            if (registroPiloto.dnf) {
+                badgeBg = 'rgba(231, 76, 60, 0.15)';
+                badgeColor = '#e74c3c';
+                badgeBorder = '1px solid #e74c3c';
+            } else if (posReal === 1) {
+                badgeBg = 'linear-gradient(135deg, #f1c40f, #d4ac0d)';
+                badgeColor = '#111';
+                badgeBorder = '1px solid #f39c12';
+            } else if (posReal === 2) {
+                badgeBg = 'linear-gradient(135deg, #bdc3c7, #95a5a6)';
+                badgeColor = '#111';
+                badgeBorder = '1px solid #7f8c8d';
+            } else if (posReal === 3) {
+                badgeBg = 'linear-gradient(135deg, #e67e22, #d35400)';
+                badgeColor = '#fff';
+                badgeBorder = '1px solid #ba4a00';
+            }
+
+            const posDisplay = registroPiloto.dnf ? 'DNF' : `${posReal}º`;
+
+            contenedorBadge.innerHTML = `
+                <span style="display: inline-block; min-width: 40px; text-align: center; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; background: ${badgeBg}; color: ${badgeColor}; border: ${badgeBorder}; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                    ${posDisplay}
+                </span>
+            `;
+            contenedorBadge.style.display = 'flex';
+        } else {
+            // Si no estamos en circuitos o no hay datos, ocultamos el badge para que no ocupe espacio
+            contenedorBadge.innerHTML = '';
+            contenedorBadge.style.display = 'none';
+        }
+    }
+
+    
 
 
     
