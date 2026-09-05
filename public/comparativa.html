@@ -68,6 +68,7 @@
     <!-- Panel de visualización de resultados -->
 <!-- Resultados de la comparativa -->
 <!-- Contenedor principal de resultados (empieza oculto) -->
+    <script>
 const contenedorResultados = document.getElementById('contenedorResultados');
     if (!document.getElementById('nombreItem1') && contenedorResultados) {
         contenedorResultados.innerHTML = `
@@ -83,7 +84,6 @@ const contenedorResultados = document.getElementById('contenedorResultados');
                     </div>
                     <h3 id="nombreItem1"></h3>
                 </div>
-                <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
                 <div class="caja-valor">
                     <span id="valorItem1">0</span>
                 </div>
@@ -102,13 +102,14 @@ const contenedorResultados = document.getElementById('contenedorResultados');
                     </div>
                     <h3 id="nombreItem2"></h3>
                 </div>
-                <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
                 <div class="caja-valor">
                     <span id="valorItem2">0</span>
                 </div>
             </div>
         `;
     }
+        
+    </script>
                 <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 
 </main>
