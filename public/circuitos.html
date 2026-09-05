@@ -105,43 +105,42 @@ async function cargarCircuitos() {
                         <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
                     </div>`;
 
-contenedor.innerHTML = listaMaestra.map(item => {
-    const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
-    const circuitoId = c ? c.id : null;
+ contenedor.innerHTML = listaMaestra.map(item => {
+                    const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
+                    const circuitoId = c ? c.id : null;
 
-    const resultadosCircuito = circuitoId ? resultados.filter(r => r.id_gp === circuitoId).sort((a, b) => a.posicion - b.posicion) : [];
+                    const resultadosCircuito = circuitoId ? resultados.filter(r => r.id_gp === circuitoId).sort((a, b) => a.posicion - b.posicion) : [];
 
-    const podio = resultadosCircuito.filter(r => r.posicion <= 3);
-    const resto = resultadosCircuito.filter(r => r.posicion > 3);
-    
-    return `
-    <div class="circuito-card" style="position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://flagcdn.com/w640/${item.bandera}.png'); background-size: cover; background-position: center; opacity: 0.08; pointer-events: none; z-index: 0;"></div>
-        <div style="position: relative; z-index: 1;">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 24px; color: #ff4444; font-weight: bold; margin-bottom: 10px;">
-                <span style="font-size: 22px; letter-spacing: 1px;">ROUND ${item.round}</span>
-                <span style="font-size: 20px;">${item.fecha}</span>
-            </div>
-            <h3 class="circuito-titulo">${item.nombre}</h3>
-            <div class="circuito-imagen-container">
-                <img src="/circuitos/${item.archivo}.png" alt="${item.nombre}" onerror="this.style.display='none'">
-            </div>
-            
-            ${podio.length > 0 ? `<div class="podio-container">${podio.map(p => `
-                <div class="podio-item pos-${p.posicion}">
-                    <strong>${p.dnf ? '<span class="badge bg-danger text-white">DNF</span>' : p.posicion + 'º'}</strong> ${renderAcciones(p.id)}<br>
-                    <span style="font-size: 11px;">${p.gamertag}</span>
-                </div>`).join('')}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
-            <ul class="resultados-resto">
-                ${resto.map(p => `
-                    <li class="item-resto">
-                        <span>${p.dnf ? '<span class="badge bg-danger text-white">DNF</span>' : p.posicion + 'º'} ${p.gamertag}</span> 
-                        ${renderAcciones(p.id)}
-                    </li>`).join('')}
-            </ul>
-        </div>
-    </div>`;
-}).join('');
+                    const podio = resultadosCircuito.filter(r => r.posicion <= 3);
+                    const resto = resultadosCircuito.filter(r => r.posicion > 3);
+                    
+                    return `
+                    <div class="circuito-card" style="position: relative; overflow: hidden;">
+                        <!-- Bandera de fondo con baja opacidad -->
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://flagcdn.com/w640/${item.bandera}.png'); background-size: cover; background-position: center; opacity: 0.08; pointer-events: none; z-index: 0;"></div>
+
+                        <!-- Contenido de la tarjeta (con z-index superior para que esté por encima de la bandera) -->
+                        <div style="position: relative; z-index: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 24px; color: #ff4444; font-weight: bold; margin-bottom: 10px;">
+                                <span style="font-size: 22px; letter-spacing: 1px;">ROUND ${item.round}</span>
+                                <span style="font-size: 20px;">${item.fecha}</span>
+                            </div>
+                            <h3 class="circuito-titulo">${item.nombre}</h3>
+                            <div class="circuito-imagen-container">
+                                <img src="/circuitos/${item.archivo}.png" alt="${item.nombre}" onerror="this.style.display='none'">
+                            </div>
+                            ${podio.length > 0 ? `<div class="podio-container">${podio.map(p => `
+                                <div class="podio-item pos-${p.posicion}">
+                                    <strong>${p.posicion}º</strong> ${renderAcciones(p.id)}<br>
+                                    <span style="font-size: 11px;">${p.gamertag}</span>
+                                </div>`).join('')}</div>` : '<p class="sin-resultados">Sin resultados aún</p>'}
+                            <ul class="resultados-resto">${resto.map(p => `<li class="item-resto"><span>${p.posicion}º ${p.gamertag}</span> ${renderAcciones(p.id)}</li>`).join('')}</ul>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) { console.error("Error al cargar los circuitos:", e); }
+        }
+
 
         
         function seguridadAbrirModal() {
