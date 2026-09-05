@@ -304,7 +304,9 @@ async function ejecutarComparativa() {
                 configurarTarjeta('1', reg1, 'escuderia');
                 configurarTarjeta('2', reg2, 'escuderia');
             }
-
+            
+            // Aplicamos los colores dinámicos de verde/rojo según el rendimiento
+            aplicarColoresComparativa(val1, val2, metricaValor);
             // Actualizamos el texto del título dinámico y mostramos el bloque entero
             document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
             document.getElementById('contenedorResultados').style.display = 'block';
@@ -397,6 +399,46 @@ function configurarTarjeta(idSufijo, registro, modo) {
             imgFoto.onerror = function() { 
                 this.style.display = 'none'; 
             };
+        }
+
+    function aplicarColoresComparativa(val1, val2, metrica) {
+            const caja1 = document.getElementById('valorItem1');
+            const caja2 = document.getElementById('valorItem2');
+
+            // Limpiamos colores previos por si acaso
+            caja1.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+            caja2.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+
+            // Si son iguales, dejamos el fondo neutro por defecto
+            if (val1 === val2) return;
+
+            // Metricas donde MENOR valor es mejor (ej. DNF, abandonos, etc.)
+            // Puedes adaptar el texto si tu métrica de DNF se llama distinto en el select
+            const esMetricaInversa = metrica.toLowerCase().includes('dnf') || 
+                                     metrica.toLowerCase().includes('abandono') || 
+                                     metrica.toLowerCase().includes('retirada');
+
+            let gastaVerde1 = false;
+
+            if (!esMetricaInversa) {
+                // Comportamiento normal: mayor número gana
+                gastaVerde1 = val1 > val2;
+            } else {
+                // Comportamiento inverso (DNF): menor número gana
+                gastaVerde1 = val1 < val2;
+            }
+
+            // Tonos sutiles tipo retransmisión oficial (no muy eléctricos)
+            const colorVerdeSuave = 'rgba(40, 167, 69, 0.45)';
+            const colorRojoSuave = 'rgba(220, 53, 69, 0.45)';
+
+            if (gastaVerde1) {
+                caja1.style.backgroundColor = colorVerdeSuave;
+                caja2.style.backgroundColor = colorRojoSuave;
+            } else {
+                caja1.style.backgroundColor = colorRojoSuave;
+                caja2.style.backgroundColor = colorVerdeSuave;
+            }
         }
 
 
