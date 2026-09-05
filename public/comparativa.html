@@ -675,7 +675,7 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
                 <tbody>
     `;
 
-    if (resultadosOrdenados.length === 0) {
+if (resultadosOrdenados.length === 0) {
         htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
     } else {
         resultadosOrdenados.forEach((res, index) => {
@@ -685,7 +685,6 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
             
             const fotoPiloto = res.foto_url || '';
             
-            // Usamos la misma lógica infalible para sacar la ruta de la bandera de la escudería
             const escuderiaArchivo = obtenerNombreArchivoEscuderia(res.escuderia_nombre);
             const imgEscuderia = escuderiaArchivo ? `banderas/${escuderiaArchivo}.png` : '';
             
