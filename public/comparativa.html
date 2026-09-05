@@ -33,13 +33,19 @@
 <div class="comparativa-card" style="background: #1a1a1a; padding: 20px; border-radius: 8px; color: #fff; margin-top: 20px;">
     <h2 style="color: #ff4444; margin-bottom: 15px; text-align: center;">HEAD-TO-HEAD COMPARISON</h2>
     
-    <!-- Selectores de filtros -->
+<!-- Selectores de filtros -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
         <select id="tipoComparacion" onchange="cambiarTipoComparacion()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
             <option value="pilotos">Pilotos</option>
             <option value="escuderias">Escuderías</option>
+            <option value="circuitos">Circuitos</option>
         </select>
         
+        <!-- Selector de Circuito (Aparece solo cuando se selecciona Circuitos) -->
+        <select id="selectCircuito" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px; display: none;">
+            <option value="">Selecciona circuito...</option>
+        </select>
+
         <select id="selectItem1" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
             <option value="">Selecciona 1...</option>
         </select>
@@ -248,15 +254,29 @@ let resultadosGlobales = [];
 
         // Ejecuta la comparativa refrescando datos al vuelo y calculando métricas
 async function ejecutarComparativa() {
+            const tipo = document.getElementById('tipoComparacion').value;
             const item1 = document.getElementById('selectItem1').value;
             const item2 = document.getElementById('selectItem2').value;
             const metricaSelect = document.getElementById('selectMetrica');
             const metricaTexto = metricaSelect.options[metricaSelect.selectedIndex].text;
             const metricaValor = metricaSelect.value;
 
-            if (!item1 || !item2) {
-                alert("Por favor, selecciona ambos contrincantes para comparar.");
-                return;
+            // Validación específica si estamos en modo circuitos
+            if (tipo === 'circuitos') {
+                const circuitoSeleccionado = document.getElementById('selectCircuito').value;
+                if (!circuitoSeleccionado) {
+                    alert("Por favor, selecciona un circuito.");
+                    return;
+                }
+                if (!item1 || !item2) {
+                    alert("Por favor, configura los selectores de comparación.");
+                    return;
+                }
+            } else {
+                if (!item1 || !item2) {
+                    alert("Por favor, selecciona ambos contrincantes para comparar.");
+                    return;
+                }
             }
 
             try {
@@ -269,9 +289,38 @@ async function ejecutarComparativa() {
 
             let val1 = 0;
             let val2 = 0;
-            const tipo = document.getElementById('tipoComparacion').value;
 
-            if (tipo === 'pilotos') {
+            if (tipo === 'circuitos') {
+                const circuitoSeleccionado = document.getElementById('selectCircuito').value;
+                // Filtramos los resultados globales para este circuito específico
+                const resultadosCircuito = resultadosGlobales.filter(r => (r.circuito || r.nombre_circuito) === circuitoSeleccionado);
+
+                // Si eligieron "Parrilla Completa" en alguno de los dos selectores, lanzamos nuestra función de tabla
+                if (item1 === 'PARRILLA_COMPLETA' || item2 === 'PARRILLA_COMPLETA') {
+                    ejecutarVistaParrillaCompleta(resultadosCircuito, circuitoSeleccionado, metricaTexto);
+                    return; // Terminamos aquí porque pintamos la tabla entera
+                } else {
+                    // Si seleccionaron dos pilotos concretos para enfrentarlos en este circuito:
+                    const stats1 = resultadosCircuito.filter(r => r.gamertag === item1);
+                    const stats2 = resultadosCircuito.filter(r => r.gamertag === item2);
+
+                    val1 = calcularMetricaPiloto(stats1, metricaValor);
+                    val2 = calcularMetricaPiloto(stats2, metricaValor);
+
+                    document.getElementById('nombreItem1').innerText = item1;
+                    document.getElementById('valorItem1').innerText = val1;
+                    document.getElementById('nombreItem2').innerText = item2;
+                    document.getElementById('valorItem2').innerText = val2;
+
+                    configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
+                    configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
+
+                    aplicarColoresComparativa(val1, val2, metricaValor);
+                    document.getElementById('tituloMetricaComparativa').innerText = `${metricaTexto.toUpperCase()} EN ${circuitoSeleccionado.toUpperCase()}`;
+                    document.getElementById('contenedorResultados').style.display = 'block';
+                }
+
+            } else if (tipo === 'pilotos') {
                 const stats1 = resultadosGlobales.filter(r => r.gamertag === item1);
                 const stats2 = resultadosGlobales.filter(r => r.gamertag === item2);
 
@@ -285,6 +334,10 @@ async function ejecutarComparativa() {
 
                 configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
                 configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
+
+                aplicarColoresComparativa(val1, val2, metricaValor);
+                document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
+                document.getElementById('contenedorResultados').style.display = 'block';
 
             } else {
                 const stats1 = resultadosGlobales.filter(r => r.escuderia_nombre === item1);
@@ -303,13 +356,11 @@ async function ejecutarComparativa() {
 
                 configurarTarjeta('1', reg1, 'escuderia');
                 configurarTarjeta('2', reg2, 'escuderia');
+
+                aplicarColoresComparativa(val1, val2, metricaValor);
+                document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
+                document.getElementById('contenedorResultados').style.display = 'block';
             }
-            
-            // Aplicamos los colores dinámicos de verde/rojo según el rendimiento
-            aplicarColoresComparativa(val1, val2, metricaValor);
-            // Actualizamos el texto del título dinámico y mostramos el bloque entero
-            document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
-            document.getElementById('contenedorResultados').style.display = 'block';
         }
 
 function calcularMetricaPiloto(registros, metrica) {
@@ -441,7 +492,77 @@ function configurarTarjeta(idSufijo, registro, modo) {
             }
         }
 
+function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaTexto) {
+            const contenedorResultados = document.getElementById('contenedorResultados');
+            const tituloMetrica = document.getElementById('tituloMetricaComparativa');
+            
+            tituloMetrica.innerText = `CLASIFICACIÓN DEL GRAN PREMIO: ${circuito.toUpperCase()}`;
 
+            // Ordenar los resultados del circuito por posición (del 1 al último, manejando nulos o DNF al final)
+            const resultadosOrdenados = [...resultadosCircuito].sort((a, b) => {
+                if (a.dnf && !b.dnf) return 1;
+                if (!a.dnf && b.dnf) return -1;
+                return (a.posicion || 99) - (b.posicion || 99);
+            });
+
+            // Si ya tienes las tarjetas de cara a cara visibles, las ocultamos y mostramos una tabla en su lugar
+            // O podemos reutilizar el contenedor creando una tabla dentro de él:
+            let htmlTabla = `
+                <div style="overflow-x: auto; margin-top: 15px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; background: #1e1e1e; border-radius: 8px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: #2a2a2a; border-bottom: 2px solid #444;">
+                                <th style="padding: 12px; text-align: center;">Pos</th>
+                                <th style="padding: 12px;">Piloto</th>
+                                <th style="padding: 12px; text-align: center;">Puntos</th>
+                                <th style="padding: 12px; text-align: center;">Pole</th>
+                                <th style="padding: 12px; text-align: center;">Estado / DNF</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            if (resultadosOrdenados.length === 0) {
+                htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
+            } else {
+                resultadosOrdenados.forEach((res, index) => {
+                    const posDisplay = res.dnf ? 'DNF' : (res.posicion || (index + 1));
+                    const badgeColor = res.dnf ? '#e74c3c' : (res.posicion === 1 ? '#f1c40f' : '#333');
+                    const textBadgeColor = res.posicion === 1 && !res.dnf ? '#000' : '#fff';
+                    
+                    htmlTabla += `
+                        <tr style="border-bottom: 1px solid #333; transition: background 0.2s;">
+                            <td style="padding: 10px 12px; text-align: center;">
+                                <span style="background: ${badgeColor}; color: ${textBadgeColor}; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
+                                    ${posDisplay}
+                                </span>
+                            </td>
+                            <td style="padding: 10px 12px; font-weight: 500;">${res.gamertag || 'Piloto #' + res.id_piloto}</td>
+                            <td style="padding: 10px 12px; text-align: center; font-weight: bold; color: #3498db;">${res.puntos ?? 0} pts</td>
+                            <td style="padding: 10px 12px; text-align: center;">${res.pole ? '⭐ Pole' : '-'}</td>
+                            <td style="padding: 10px 12px; text-align: center;">${res.dnf ? '<span style="color: #e74c3c; font-weight: bold;">Retirado</span>' : '<span style="color: #2ecc71;">Clasificado</span>'}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            htmlTabla +=`
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // Inyectamos la tabla dentro del contenedor de resultados (puedes adaptarlo al ID de tu contenedor visual)
+            // Si el contenedor usa tarjetas de cara a cara, podemos meter esta tabla debajo o reemplazar su contenido interno.
+            contenedorResultados.innerHTML = `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <h3 id="tituloMetricaComparativa" style="color: #fff; font-size: 1.2rem;">CLASIFICACIÓN - ${circuito.toUpperCase()}</h3>
+                </div>
+                ${htmlTabla}
+            `;
+            
+            contenedorResultados.style.display = 'block';
+        }
     
         // Lanzar carga inicial al cargar la página
         window.onload = cargarDatosGlobales;
