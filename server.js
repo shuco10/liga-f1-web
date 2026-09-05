@@ -520,6 +520,7 @@ app.get('/api/todos-los-resultados', async (req, res) => {
                 r.pole,
                 r.dnf,
                 p.gamertag,
+                p.foto_url,
                 e.nombre AS escuderia_nombre,
                 c.nombre AS circuito_nombre
             FROM resultados r
