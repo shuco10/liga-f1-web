@@ -402,7 +402,8 @@ async function ejecutarComparativa() {
 
         const stats1 = fuenteDatos.filter(r => r.gamertag === item1);
         const stats2 = fuenteDatos.filter(r => r.gamertag === item2);
-
+        console.log("DEBUG STATS 1:", stats1[0]);
+        console.log("DEBUG STATS 2:", stats2[0]);
         val1 = calcularMetricaPiloto(stats1, metricaValor);
         val2 = calcularMetricaPiloto(stats2, metricaValor);
 
