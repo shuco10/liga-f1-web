@@ -519,6 +519,7 @@ app.get('/api/todos-los-resultados', async (req, res) => {
                 r.escuderia_puntos,
                 r.dnf,
                 p.gamertag,
+                p.escuderia AS escuderia_nombre,
                 c.nombre AS circuito_nombre
             FROM resultados r
             LEFT JOIN pilotos p ON r.id_piloto = p.id
