@@ -1411,7 +1411,8 @@ table tr td:nth-child(2) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 85px; /* Altura optimizada para la foto rectangular */
+    min-height: 85px;
+    min-width: 620px; /* <--- Añadimos esto para forzar el ancho y activar el scroll en móvil */
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -1506,3 +1507,10 @@ table tr td:nth-child(2) {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     display: table;
 }
+
+#contenedorResultados {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
