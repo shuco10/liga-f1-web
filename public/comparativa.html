@@ -309,24 +309,26 @@ function configurarTarjeta(idSufijo, registro, modo) {
             const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
 
             // Función para limpiar y acortar el nombre de la escuderia al archivo real
-            const obtenerNombreArchivoEscuderia = (nombre) => {
-                if (!nombre) return '';
-                const n = nombre.toLowerCase();
-                
-                if (n.includes('ferrari')) return 'ferrari';
-                if (n.includes('aston martin')) return 'aston_martin';
-                if (n.includes('red bull')) return 'redbull';
-                if (n.includes('mercedes')) return 'mercedes';
-                if (n.includes('mclaren')) return 'mclaren';
-                if (n.includes('alpine')) return 'alpine';
-                if (n.includes('williams')) return 'williams';
-                if (n.includes('haas')) return 'haas';
-                if (n.includes('audi')) return 'audi';
-                if (n.includes('cadillac')) return 'cadillac';
-                if (n.includes('rb') || n.includes('visa cash app')) return 'rb';
+function obtenerNombreArchivoEscuderia(nombre) {
+            if (!nombre) return '';
+            const n = nombre.toLowerCase().trim();
+            
+            // Diccionario exacto basado en tus archivos de imagen
+            if (n.includes('alpine')) return 'alpine';
+            if (n.includes('aston martin')) return 'aston_martin';
+            if (n.includes('audi')) return 'audi';
+            if (n.includes('cadillac')) return 'cadillac';
+            if (n.includes('ferrari')) return 'ferrari';
+            if (n.includes('haas')) return 'haas';
+            if (n.includes('mclaren')) return 'mclaren';
+            if (n.includes('mercedes')) return 'mercedes';
+            if (n.includes('red bull') || n.includes('redbull')) return 'redbull';
+            if (n.includes('visa') || n.includes('rb') || n.includes('racing bulls')) return 'rb';
+            if (n.includes('williams')) return 'williams';
 
-                return n.trim().replace(/\s+/g, '_');
-            };
+            // Fallback por si acaso limpiando espacios y símbolos
+            return n.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        }
 
             const escuderiaArchivo = obtenerNombreArchivoEscuderia(registro.escuderia_nombre);
 
