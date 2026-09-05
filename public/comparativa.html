@@ -65,51 +65,47 @@
 
     <button onclick="ejecutarComparativa()" style="width: 100%; padding: 10px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">COMPARAR</button>
 
-    <!-- Panel de visualización de resultados -->
+     <!-- Panel de visualización de resultados -->
 <!-- Resultados de la comparativa -->
 <!-- Contenedor principal de resultados (empieza oculto) -->
-    <script>
-const contenedorResultados = document.getElementById('contenedorResultados');
-    if (!document.getElementById('nombreItem1') && contenedorResultados) {
-        contenedorResultados.innerHTML = `
-            <div style="text-align: center;">
-                <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
-            </div>
+        <div class="resultado-comparativa" id="contenedorResultados" style="display: none;">
             
-            <!-- Tarjeta Contrincante 1 -->
-            <div id="bgItem1" class="header-tarjeta">
-                <div class="info-izq">
-                    <div id="contenedorFoto1" class="caja-foto">
-                        <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
-                    </div>
-                    <h3 id="nombreItem1"></h3>
-                </div>
-                <div class="caja-valor">
-                    <span id="valorItem1">0</span>
-                </div>
+            <!-- Título dinámico de la métrica -->
+            <div align="center">
+                <span id="tituloMetricaComparativa" class="titulo-metrica-header">ESTADÍSTICA</span>
             </div>
 
+            <!-- Tarjeta 1 -->
+            <div class="item-resultado" id="tarjetaItem1">
+                <div class="header-tarjeta" id="bgItem1">
+                    <div class="info-izq">
+                        <div class="caja-foto" id="contenedorFoto1">
+                            <img id="fotoItem1" src="" alt="" class="foto-piloto-card" style="display: none;">
+                        </div>
+                        <h3 id="nombreItem1">-</h3>
+                    </div>
+                    <div class="caja-valor" id="valorItem1">0</div>
+                </div>
+            </div>
+            
             <!-- VS Centrado -->
             <div class="contenedor-vs">
                 <span class="badge-vs">VS</span>
             </div>
 
-            <!-- Tarjeta Contrincante 2 -->
-            <div id="bgItem2" class="header-tarjeta">
-                <div class="info-izq">
-                    <div id="contenedorFoto2" class="caja-foto">
-                        <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
+            <!-- Tarjeta 2 -->
+            <div class="item-resultado" id="tarjetaItem2">
+                <div class="header-tarjeta" id="bgItem2">
+                    <div class="info-izq">
+                        <div class="caja-foto" id="contenedorFoto2">
+                            <img id="fotoItem2" src="" alt="" class="foto-piloto-card" style="display: none;">
+                        </div>
+                        <h3 id="nombreItem2">-</h3>
                     </div>
-                    <h3 id="nombreItem2"></h3>
-                </div>
-                <div class="caja-valor">
-                    <span id="valorItem2">0</span>
+                    <div class="caja-valor" id="valorItem2">0</div>
                 </div>
             </div>
-        `;
-    }
-        
-    </script>
+        </div>
                 <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 
 </main>
