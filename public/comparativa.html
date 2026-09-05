@@ -587,7 +587,7 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
             const badgeColor = res.dnf ? '#e74c3c' : (res.posicion === 1 ? '#f1c40f' : '#333');
             const textBadgeColor = res.posicion === 1 && !res.dnf ? '#000' : '#fff';
             
-            const fotoPiloto = res.foto_url || 'img/default-avatar.png';
+            const fotoPiloto = res.foto_url || '';
             
             let escuderiaSlug = res.escuderia_nombre ? res.escuderia_nombre.toLowerCase().trim().replace(/\s+/g, '_') : '';
             if (escuderiaSlug === 'red_bull' || escuderiaSlug === 'red_bull_racing') escuderiaSlug = 'redbull';
@@ -602,7 +602,7 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
                     </td>
                     <td style="padding: 10px 12px; font-weight: 500;">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.src='img/default-avatar.png'">
+                            ${fotoPiloto ? `<img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
                             ${imgEscuderia ? `<img src="${imgEscuderia}" alt="" style="width: 24px; height: 16px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
                             <span>${res.gamertag || 'Piloto #' + res.id_piloto}</span>
                         </div>
@@ -631,7 +631,7 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
     contenedorResultados.style.display = 'block';
 }
     
-        // Lanzar carga inicial al cargar la página
+// Lanzar carga inicial al cargar la página----------------------------------------------------------------------------
         window.onload = cargarDatosGlobales;
     
 
