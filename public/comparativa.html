@@ -257,11 +257,17 @@ let resultadosGlobales = [];
             { id: 27, nombre: "Abu Dabi" }
         ];
 
-        function cambiarTipoComparacion() {
+function cambiarTipoComparacion() {
             const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
             const select1 = document.getElementById('selectItem1');
             const select2 = document.getElementById('selectItem2');
             const selectCircuito = document.getElementById('selectCircuito');
+            
+            // Ocultamos o reseteamos el contenedor de resultados de la parrilla anterior para evitar que falten elementos en el DOM
+            const contenedorResultados = document.getElementById('contenedorResultados');
+            if (contenedorResultados) {
+                contenedorResultados.style.display = 'none';
+            }
             
             select1.innerHTML = '<option value="">Selecciona...</option>';
             select2.innerHTML = '<option value="">Selecciona...</option>';
@@ -309,7 +315,6 @@ let resultadosGlobales = [];
                 }
             }
         }
-
         // Ejecuta la comparativa refrescando datos al vuelo y calculando métricas
 async function ejecutarComparativa() {
             const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
