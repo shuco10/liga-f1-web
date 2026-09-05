@@ -694,13 +694,17 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
     }
 
 // Ejemplo de cómo rellenarlo para cada piloto (adapta 'registroPiloto' a tu variable de datos):
-    function actualizarBadgePosicion(idSufijo, registroPiloto) {
+function actualizarBadgePosicion(idSufijo, registroPiloto) {
         const contenedorBadge = document.getElementById(`contenedorBadge${idSufijo}`);
         if (!contenedorBadge) return;
 
-        // Si estamos viendo la métrica de Circuitos y hay un registro válido
-        if (modoActual === 'circuitos' && registroPiloto) {
-            const posReal = registroPiloto.dnf ? null : (registroPiloto.posicion || 1); // O el índice si aplica
+        // Comprobamos si el tipo de comparativa actual incluye "circuito" de forma segura
+        const tipoActual = (document.getElementById('selectTipoComparativa')?.value || document.getElementById('tipoComparacion')?.value || '').toLowerCase();
+        const esCircuito = tipoActual.includes('circuito');
+
+        // Si estamos viendo la comparativa por circuitos y hay un registro válido
+        if (esCircuito && registroPiloto) {
+            const posReal = registroPiloto.dnf ? null : (registroPiloto.posicion || 1); 
             
             let badgeBg = '#262626';
             let badgeColor = '#fff';
@@ -733,12 +737,11 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
             `;
             contenedorBadge.style.display = 'flex';
         } else {
-            // Si no estamos en circuitos o no hay datos, ocultamos el badge para que no ocupe espacio
+            // Si no estamos en circuitos o no hay datos, ocultamos el badge
             contenedorBadge.innerHTML = '';
             contenedorBadge.style.display = 'none';
         }
     }
-
     
 
 
