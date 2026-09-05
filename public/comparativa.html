@@ -405,8 +405,6 @@ async function ejecutarComparativa() {
         }
     }
 
-    // Si estabamos viendo la parrilla completa y ahora hacemos una comparativa normal, 
-    // nos aseguramos de que el DOM recupere las tarjetas de texto/imagen originales.
 // Si estabamos viendo la parrilla completa y ahora hacemos una comparativa normal, 
     // restauramos tu HTML original de tarjetas rectangulares.
 async function ejecutarComparativa() {
@@ -498,7 +496,7 @@ async function ejecutarComparativa() {
         document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
         contenedorResultados.style.display = 'block';
     }
-}
+} // <--- ¡ESTA LLAVE DE AQUÍ FALTABA Y ROMPÍA TODO EL SCRIPT!
 
 function calcularMetricaPiloto(registros, metrica) {
     if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
