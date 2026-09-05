@@ -188,6 +188,7 @@ let resultadosGlobales = [];
                 const resResultados = await fetch('/api/todos-los-resultados');
                 resultadosGlobales = await resResultados.json();
 
+                // Rellenar los desplegables nada más cargar los datos
                 cambiarTipoComparacion();
             } catch (err) {
                 console.error("Error al cargar datos para comparativas:", err);
@@ -203,15 +204,15 @@ let resultadosGlobales = [];
             select2.innerHTML = '<option value="">Selecciona...</option>';
 
             if (tipo === 'pilotos') {
-                // Extraer pilotos únicos de los resultados para que aparezcan todos los que han corrido
-                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag || r.nombre).filter(Boolean))];
+                // Extraer gamertags únicos
+                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))];
                 pilotosUnicos.forEach(piloto => {
                     select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                     select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                 });
             } else {
-                // Extraer escuderías únicas de los resultados
-                const escuderiasUnicas = [...new Set(resultadosGlobales.map(r => r.escuderia_nombre || r.escuderia).filter(Boolean))];
+                // Extraer escuderías únicas
+                const escuderiasUnicas = [...new Set(resultadosGlobales.map(r => r.escuderia_nombre).filter(Boolean))];
                 escuderiasUnicas.forEach(esc => {
                     select1.innerHTML += `<option value="${esc}">${esc}</option>`;
                     select2.innerHTML += `<option value="${esc}">${esc}</option>`;
@@ -234,14 +235,14 @@ let resultadosGlobales = [];
             let val2 = 0;
 
             if (tipo === 'pilotos') {
-                const stats1 = resultadosGlobales.filter(r => (r.gamertag === item1 || r.nombre === item1));
-                const stats2 = resultadosGlobales.filter(r => (r.gamertag === item2 || r.nombre === item2));
+                const stats1 = resultadosGlobales.filter(r => r.gamertag === item1);
+                const stats2 = resultadosGlobales.filter(r => r.gamertag === item2);
 
                 val1 = calcularMetricaPiloto(stats1, metrica);
                 val2 = calcularMetricaPiloto(stats2, metrica);
             } else {
-                const stats1 = resultadosGlobales.filter(r => (r.escuderia_nombre === item1 || r.escuderia === item1));
-                const stats2 = resultadosGlobales.filter(r => (r.escuderia_nombre === item2 || r.escuderia === item2));
+                const stats1 = resultadosGlobales.filter(r => r.escuderia_nombre === item1);
+                const stats2 = resultadosGlobales.filter(r => r.escuderia_nombre === item2);
 
                 val1 = calcularMetricaEscuderia(stats1, metrica);
                 val2 = calcularMetricaEscuderia(stats2, metrica);
@@ -262,7 +263,7 @@ let resultadosGlobales = [];
         }
 
         function calcularMetricaEscuderia(registros, metrica) {
-            if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.escuderia_puntos || r.puntos) || 0), 0);
+            if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.escuderia_puntos) || 0), 0);
             if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
             if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
             if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
