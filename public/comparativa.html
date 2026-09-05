@@ -312,18 +312,37 @@ function configurarTarjeta(idSufijo, registro, modo) {
             let colorEquipo = '#1f1f1f';
             headerCard.style.backgroundColor = colorEquipo;
 
-            // Formatea el nombre de la escudería para que coincida con el archivo (ej: "Aston Martin" -> "aston_martin.png")
-            const nombreEscuderiaArchivo = registro.escuderia_nombre 
-                ? registro.escuderia_nombre.toLowerCase().trim().replace(/\s+/g, '_') 
-                : '';
+            // Función para limpiar y acortar el nombre de la escuderia al archivo real de la carpeta /banderas/
+            const obtenerNombreArchivoEscuderia = (nombre) => {
+                if (!nombre) return '';
+                const n = nombre.toLowerCase();
+                
+                // Mapeo directo para los nombres largos de la BDD a tus archivos cortos
+                if (n.includes('ferrari')) return 'ferrari';
+                if (n.includes('aston martin')) return 'aston_martin';
+                if (n.includes('red bull')) return 'redbull';
+                if (n.includes('mercedes')) return 'mercedes';
+                if (n.includes('mclaren')) return 'mclaren';
+                if (n.includes('alpine')) return 'alpine';
+                if (n.includes('williams')) return 'williams';
+                if (n.includes('haas')) return 'haas';
+                if (n.includes('audi')) return 'audi';
+                if (n.includes('cadillac')) return 'cadillac';
+                if (n.includes('rb') || n.includes('visa cash app')) return 'rb';
+
+                // Genérico por si entra otro
+                return n.trim().replace(/\s+/g, '_');
+            };
+
+            const escuderiaArchivo = obtenerNombreArchivoEscuderia(registro.escuderia_nombre);
 
             if (modo === 'piloto') {
                 imgFoto.style.display = 'block';
                 imgFoto.src = registro.foto_url || '';
-                imgLogo.src = nombreEscuderiaArchivo ? `/banderas/${nombreEscuderiaArchivo}.png` : '';
+                imgLogo.src = escuderiaArchivo ? `/banderas/${escuderiaArchivo}.png` : '';
             } else {
                 imgFoto.style.display = 'none';
-                imgLogo.src = nombreEscuderiaArchivo ? `/banderas/${nombreEscuderiaArchivo}.png` : '';
+                imgLogo.src = escuderiaArchivo ? `/banderas/${escuderiaArchivo}.png` : '';
             }
 
             imgFoto.onerror = function() { this.style.display = 'none'; };
