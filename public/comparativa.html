@@ -199,21 +199,22 @@ let resultadosGlobales = [];
         });
 
         function cambiarTipoComparacion() {
-            const tipo = document.getElementById('tipoComparacion').value;
+            const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
             const select1 = document.getElementById('selectItem1');
             const select2 = document.getElementById('selectItem2');
             
             select1.innerHTML = '<option value="">Selecciona...</option>';
             select2.innerHTML = '<option value="">Selecciona...</option>';
 
-            if (tipo === 'pilotos') {
+            // Comprobamos tanto singular como plural por si el HTML tiene "piloto" o "pilotos"
+            if (tipo.includes('piloto')) {
                 const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))];
+                
                 pilotosUnicos.forEach(piloto => {
                     select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                     select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                 });
             } else {
-                // Rellenar con los nombres reales de la tabla escuderias
                 escuderiasGlobales.forEach(esc => {
                     select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
                     select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
