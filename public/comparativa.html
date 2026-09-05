@@ -68,45 +68,47 @@
     <!-- Panel de visualización de resultados -->
 <!-- Resultados de la comparativa -->
 <!-- Contenedor principal de resultados (empieza oculto) -->
-        <div class="resultado-comparativa" id="contenedorResultados" style="display: none;">
-            
-            <!-- Título dinámico de la métrica -->
-            <div align="center">
-                <span id="tituloMetricaComparativa" class="titulo-metrica-header">ESTADÍSTICA</span>
+const contenedorResultados = document.getElementById('contenedorResultados');
+    if (!document.getElementById('nombreItem1') && contenedorResultados) {
+        contenedorResultados.innerHTML = `
+            <div style="text-align: center;">
+                <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
             </div>
-
-            <!-- Tarjeta 1 -->
-            <div class="item-resultado" id="tarjetaItem1">
-                <div class="header-tarjeta" id="bgItem1">
-                    <div class="info-izq">
-                        <div class="caja-foto" id="contenedorFoto1">
-                            <img id="fotoItem1" src="" alt="" class="foto-piloto-card" style="display: none;">
-                        </div>
-                        <h3 id="nombreItem1">-</h3>
+            
+            <!-- Tarjeta Contrincante 1 -->
+            <div id="bgItem1" class="header-tarjeta">
+                <div class="info-izq">
+                    <div id="contenedorFoto1" class="caja-foto">
+                        <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
                     </div>
-                    <div class="caja-valor" id="valorItem1">0</div>
+                    <h3 id="nombreItem1"></h3>
+                </div>
+                <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                <div class="caja-valor">
+                    <span id="valorItem1">0</span>
                 </div>
             </div>
-            
+
             <!-- VS Centrado -->
             <div class="contenedor-vs">
                 <span class="badge-vs">VS</span>
             </div>
 
-            <!-- Tarjeta 2 -->
-            <div class="item-resultado" id="tarjetaItem2">
-                <div class="header-tarjeta" id="bgItem2">
-                    <div class="info-izq">
-                        <div class="caja-foto" id="contenedorFoto2">
-                            <img id="fotoItem2" src="" alt="" class="foto-piloto-card" style="display: none;">
-                        </div>
-                        <h3 id="nombreItem2">-</h3>
+            <!-- Tarjeta Contrincante 2 -->
+            <div id="bgItem2" class="header-tarjeta">
+                <div class="info-izq">
+                    <div id="contenedorFoto2" class="caja-foto">
+                        <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
                     </div>
-                    <div class="caja-valor" id="valorItem2">0</div>
+                    <h3 id="nombreItem2"></h3>
+                </div>
+                <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                <div class="caja-valor">
+                    <span id="valorItem2">0</span>
                 </div>
             </div>
-        </div>
-
+        `;
+    }
                 <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 
 </main>
