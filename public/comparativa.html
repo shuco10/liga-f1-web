@@ -303,50 +303,119 @@
         }
     }
 
- async function ejecutarComparativa() {
-        const contenedorResultados = document.getElementById('contenedorResultados');
-        if (!document.getElementById('nombreItem1') && contenedorResultados) {
-            contenedorResultados.innerHTML = `
-                <div style="text-align: center;">
-                    <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
+async function ejecutarComparativa() {
+    const contenedorResultados = document.getElementById('contenedorResultados');
+    if (!document.getElementById('nombreItem1') && contenedorResultados) {
+        contenedorResultados.innerHTML = `
+            <div style="text-align: center;">
+                <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
+            </div>
+            
+            <div id="bgItem1" class="header-tarjeta">
+                <div class="info-izq">
+                    <div id="contenedorFoto1" class="caja-foto">
+                        <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
+                    </div>
+                    <h3 id="nombreItem1"></h3>
                 </div>
+                <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
                 
-                <div id="bgItem1" class="header-tarjeta">
-                    <div class="info-izq">
-                        <div id="contenedorFoto1" class="caja-foto">
-                            <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
-                        </div>
-                        <h3 id="nombreItem1"></h3>
+                <!-- NUEVO HUECO PARA LA POSICIÓN DEL PILOTO 1 -->
+                <div id="contenedorBadge1" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
+                
+                <div id="valorItem1" class="caja-valor">0</div>
+            </div>
+
+            <div class="contenedor-vs">
+                <span class="badge-vs">VS</span>
+            </div>
+
+            <div id="bgItem2" class="header-tarjeta">
+                <div class="info-izq">
+                    <div id="contenedorFoto2" class="caja-foto">
+                        <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
                     </div>
-                    <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
-                    
-                    <!-- NUEVO HUECO PARA LA POSICIÓN DEL PILOTO 1 -->
-                    <div id="contenedorBadge1" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
-                    
-                    <div id="valorItem1" class="caja-valor">0</div>
+                    <h3 id="nombreItem2"></h3>
                 </div>
+                <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                
+                <!-- NUEVO HUECO PARA LA POSICIÓN DEL PILOTO 2 -->
+                <div id="contenedorBadge2" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
+                
+                <div id="valorItem2" class="caja-valor">0</div>
+            </div>
+        `;
+    }
 
-                <div class="contenedor-vs">
-                    <span class="badge-vs">VS</span>
-                </div>
+    // Obtenemos los valores de los selectores o variables que uses para la comparación
+    const tipo = document.getElementById('selectTipoComparativa')?.value || 'piloto';
+    const item1 = document.getElementById('selectItem1')?.value;
+    const item2 = document.getElementById('selectItem2')?.value;
+    const metricaValor = document.getElementById('selectMetrica')?.value || 'puntos';
+    const metricaTexto = document.getElementById('selectMetrica')?.selectedOptions[0]?.text || 'Puntos';
 
-                <div id="bgItem2" class="header-tarjeta">
-                    <div class="info-izq">
-                        <div id="contenedorFoto2" class="caja-foto">
-                            <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
-                        </div>
-                        <h3 id="nombreItem2"></h3>
-                    </div>
-                    <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
-                    
-                    <!-- NUEVO HUECO PARA LA POSICIÓN DEL PILOTO 2 -->
-                    <div id="contenedorBadge2" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
-                    
-                    <div id="valorItem2" class="caja-valor">0</div>
-                </div>
-            `;
-        }
+    let val1 = 0;
+    let val2 = 0;
 
+    if (tipo.includes('circuito') || tipo.includes('piloto')) {
+        const circuitoSeleccionadoId = tipo.includes('circuito') ? document.getElementById('selectCircuito').value : null;
+        const fuenteDatos = tipo.includes('circuito') 
+            ? resultadosGlobales.filter(r => String(r.id_gp) === String(circuitoSeleccionadoId))
+            : resultadosGlobales;
+
+        const stats1 = fuenteDatos.filter(r => r.gamertag === item1);
+        const stats2 = fuenteDatos.filter(r => r.gamertag === item2);
+
+        val1 = calcularMetricaPiloto(stats1, metricaValor);
+        val2 = calcularMetricaPiloto(stats2, metricaValor);
+
+        document.getElementById('nombreItem1').innerText = item1;
+        document.getElementById('valorItem1').innerText = val1;
+        document.getElementById('nombreItem2').innerText = item2;
+        document.getElementById('valorItem2').innerText = val2;
+
+        configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
+        configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
+
+        // Insignias de posición integradas correctamente
+        actualizarBadgePosicion('1', stats1[0]);
+        actualizarBadgePosicion('2', stats2[0]);
+
+        aplicarColoresComparativa(val1, val2, metricaValor);
+        
+        const circuitoObj = tipo.includes('circuito') ? listaCircuitosF1.find(c => String(c.id) === String(circuitoSeleccionadoId)) : null;
+        const tituloFinal = circuitoObj ? `${metricaTexto.toUpperCase()} EN ${circuitoObj.nombre.toUpperCase()}` : metricaTexto.toUpperCase();
+        
+        document.getElementById('tituloMetricaComparativa').innerText = tituloFinal;
+        contenedorResultados.style.display = 'block';
+
+    } else {
+        const stats1 = resultadosGlobales.filter(r => r.escuderia_nombre === item1);
+        const stats2 = resultadosGlobales.filter(r => r.escuderia_nombre === item2);
+
+        val1 = calcularMetricaEscuderia(stats1, metricaValor);
+        val2 = calcularMetricaEscuderia(stats2, metricaValor);
+
+        document.getElementById('nombreItem1').innerText = item1;
+        document.getElementById('valorItem1').innerText = val1;
+        document.getElementById('nombreItem2').innerText = item2;
+        document.getElementById('valorItem2').innerText = val2;
+
+        const reg1 = stats1[0] || { escuderia_nombre: item1 };
+        const reg2 = stats2[0] || { escuderia_nombre: item2 };
+
+        configurarTarjeta('1', reg1, 'escuderia');
+        configurarTarjeta('2', reg2, 'escuderia');
+
+        // Limpiamos los badges si es escudería para que no quede residuo visual
+        if(document.getElementById('contenedorBadge1')) document.getElementById('contenedorBadge1').innerHTML = '';
+        if(document.getElementById('contenedorBadge2')) document.getElementById('contenedorBadge2').innerHTML = '';
+
+        aplicarColoresComparativa(val1, val2, metricaValor);
+        document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
+        contenedorResultados.style.display = 'block';
+    }
+}
         const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
         const item1 = document.getElementById('selectItem1').value;
         const item2 = document.getElementById('selectItem2').value;
