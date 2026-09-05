@@ -1417,17 +1417,30 @@ table tr td:nth-child(2) {
     box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.4); /* Oscurece ligeramente para que el texto resalte */
 }
 
-/* La bandera ocupará todo el fondo del cajón */
+.header-tarjeta {
+    position: relative;
+    padding: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    
+    /* Fondo dinámico por defecto */
+    background-color: #1f1f1f;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* Capa oscura semitransparente encima de la bandera para que el texto resalte siempre */
+    box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.55); 
+}
+
+/* Ocultamos la etiqueta img antigua del logo si seguía por ahí para que no moleste */
 .logo-escuderia-card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Hace que la imagen cubra todo el fondo sin aplastarse ni deformarse */
-    opacity: 0.35; /* Ajusta este valor (0.1 a 1) para que se vea más fuerte o más difuminada */
-    pointer-events: none;
-    z-index: 0; /* La manda al fondo del todo */
+    display: none; 
 }
 
 /* Foto o icono del piloto */
@@ -1438,16 +1451,16 @@ table tr td:nth-child(2) {
     object-fit: cover;
     border: 2px solid rgba(255, 255, 255, 0.8);
     background-color: #222;
-}
-
-/* Aseguramos que el texto y la foto del piloto se queden por encima de la bandera */
-.header-tarjeta h3,
-.foto-piloto-card {
     position: relative;
     z-index: 1;
 }
 
-
+.header-tarjeta h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    z-index: 1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.9); /* Sombra fuerte al texto para legibilidad total */
+}
 
 
 
