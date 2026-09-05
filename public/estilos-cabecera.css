@@ -1455,12 +1455,27 @@ table tr td:nth-child(2) {
     z-index: 1;
 }
 
-.header-tarjeta h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    z-index: 1;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.9); /* Sombra fuerte al texto para legibilidad total */
+.header-tarjeta {
+    position: relative;
+    padding: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    
+    /* Color de fondo por defecto (rellenará los huecos que queden libres a los lados) */
+    background-color: #1f1f1f; 
+    
+    /* 'contain' hace que la imagen de la bandera se ajuste entera dentro del cajón sin recortarse */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* Sombra ligera para mejorar la lectura del texto por encima */
+    box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.4); 
 }
-
 
 
