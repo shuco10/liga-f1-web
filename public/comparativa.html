@@ -643,13 +643,13 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
                         <td style="padding: 12px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 ${fotoPiloto ? `<img src="${fotoPiloto}" alt="" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.15); flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
-                                ${imgEscuderia ? `<img src="${imgEscuderia}" alt="${res.escuderia_nombre || ''}" title="${res.escuderia_nombre || ''}" style="width: 26px; height: 18px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
+                                ${imgEscuderia ? `<img src="${imgEscuderia}" alt="${res.escuderia_nombre || ''}" title="${res.escuderia_nombre || ''}" style="width: 52px; height: 36px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
                                 <span style="font-weight: 600; font-size: 0.950rem; color: #f0f0f0;">${res.gamertag || 'Piloto #' + res.id_piloto}</span>
                             </div>
                         </td>
                         <td style="padding: 12px; text-align: center;">
-                            <span style="display: inline-block; padding: 5px 10px; background: rgba(14, 116, 238, 0.15); border: 1px solid rgba(56, 153, 236, 0.4); border-radius: 6px; font-weight: bold; color: #3899ec; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                ${res.puntos ?? 0} <span style="font-size: 0.75rem; color: #82bcf7; font-weight: normal;">pts</span>
+                            <span style="display: inline-block; padding: 5px 10px; background: rgba(14, 116, 238, 0.15); border: 1px solid rgba(56, 153, 236, 0.4); border-radius: 6px; font-weight: bold; color: #ff4444; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                ${res.puntos ?? 0} <span style="font-size: 0.75rem; color: #3899ec; font-weight: normal;">pts</span>
                             </span>
                         </td>
                         <td style="padding: 12px; text-align: center; font-size: 0.9rem;">${res.pole ? '<span style="color: #f1c40f; font-weight: bold; background: rgba(241,196,15,0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(241,196,15,0.3);">⭐ Pole</span>' : '<span style="color: #555;">-</span>'}</td>
