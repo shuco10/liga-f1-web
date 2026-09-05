@@ -34,9 +34,53 @@
     </a>
 </div>
     <div class="titulo-liga">📊 COMPARATIVA Y ESTADÍSTICAS 📊</div>
-    <h3 class="subtitulo-principal">📈 La plataforma integral para el seguimiento de pilotos y escuderías.📈 </h3>
+<h3 class="subtitulo-principal">📈 La plataforma integral para el seguimiento de pilotos y escuderías. 📈</h3>
 
+                <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
+<!-- Estructura HTML para la sección de comparativas -->
+<div class="comparativa-card" style="background: #1a1a1a; padding: 20px; border-radius: 8px; color: #fff; margin-top: 20px;">
+    <h2 style="color: #ff4444; margin-bottom: 15px; text-align: center;">HEAD-TO-HEAD COMPARISON</h2>
+    
+    <!-- Selectores de filtros -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
+        <select id="tipoComparacion" onchange="cambiarTipoComparacion()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
+            <option value="pilotos">Pilotos</option>
+            <option value="escuderias">Escuderías</option>
+        </select>
+        
+        <select id="selectItem1" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
+            <option value="">Selecciona 1...</option>
+        </select>
 
+        <select id="selectItem2" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
+            <option value="">Selecciona 2...</option>
+        </select>
+
+        <select id="selectMetrica" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
+            <option value="puntos">Puntos</option>
+            <option value="podios">Podios</option>
+            <option value="poles">Poles</option>
+            <option value="dnf">DNFs</option>
+        </select>
+    </div>
+
+    <button onclick="ejecutarComparativa()" style="width: 100%; padding: 10px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">COMPARAR</button>
+
+    <!-- Panel de visualización de resultados -->
+    <div id="panelResultadoComparativa" style="display: flex; justify-content: space-around; align-items: center; margin-top: 25px; text-align: center;">
+        <div style="flex: 1;">
+            <h3 id="nombreItem1" style="color: #aaa;">-</h3>
+            <p id="valorItem1" style="font-size: 36px; font-weight: bold; color: #fff;">0</p>
+        </div>
+        <div style="font-size: 20px; font-weight: bold; color: #666; padding: 0 20px;">VS</div>
+        <div style="flex: 1;">
+            <h3 id="nombreItem2" style="color: #aaa;">-</h3>
+            <p id="valorItem2" style="font-size: 36px; font-weight: bold; color: #fff;">0</p>
+        </div>
+    </div>
+</div>
+
+                <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 
 </main>
 
@@ -136,6 +180,85 @@
         }
     }
 
+// DESPLEGABLES Y DEMAS EN ESTE HUECO -->
+// Lógica base en JavaScript para alimentar y procesar la comparativa
+
+// 1. Rellenar los desplegables de contrincantes según elija Pilotos o Escuderías
+function cambiarTipoComparacion() {
+    const tipo = document.getElementById('tipoComparacion').value;
+    const select1 = document.getElementById('selectItem1');
+    const select2 = document.getElementById('selectItem2');
+    
+    select1.innerHTML = '<option value="">Selecciona 1...</option>';
+    select2.innerHTML = '<option value="">Selecciona 2...</option>';
+
+    if (tipo === 'pilotos') {
+        // Extraer lista única de gamertags de tus resultados actuales
+        // (Asumiendo que tienes la variable global 'resultados' cargada)
+        const pilotosUnicos = [...new Set(resultados.map(r => r.gamertag))];
+        pilotosUnicos.forEach(piloto => {
+            select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+            select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+        });
+    } else {
+        // Aquí cargarías las escuderías si las tienes guardadas en otra tabla o propiedad
+        const escuderiasUnicas = ["Red Bull", "Ferrari", "Mercedes", "McLaren", "Aston Martin"]; // Ejemplo
+        escuderiasUnicas.forEach(escuderia => {
+            select1.innerHTML += `<option value="${escuderia}">${escuderia}</option>`;
+            select2.innerHTML += `<option value="${escuderia}">${escuderia}</option>`;
+        });
+    }
+}
+
+// 2. Calcular y pintar los datos al pulsar el botón
+function ejecutarComparativa() {
+    const tipo = document.getElementById('tipoComparacion').value;
+    const item1 = document.getElementById('selectItem1').value;
+    const item2 = document.getElementById('selectItem2').value;
+    const metrica = document.getElementById('selectMetrica').value;
+
+    if (!item1 || !item2) {
+        alert("Selecciona ambos contrincantes para comparar.");
+        return;
+    }
+
+    // Ejemplo de cálculo para pilotos basados en tu estructura de resultados
+    let val1 = 0;
+    let val2 = 0;
+
+    if (tipo === 'pilotos') {
+        const statsItem1 = resultados.filter(r => r.gamertag === item1);
+        const statsItem2 = resultados.filter(r => r.gamertag === item2);
+
+        val1 = calcularMetricaPiloto(statsItem1, metrica);
+        val2 = calcularMetricaPiloto(statsItem2, metrica);
+    }
+
+    // Pintar en pantalla
+    document.getElementById('nombreItem1').innerText = item1;
+    document.getElementById('valorItem1').innerText = val1;
+    document.getElementById('nombreItem2').innerText = item2;
+    document.getElementById('valorItem2').innerText = val2;
+}
+
+function calcularMetricaPiloto(registrosPiloto, metrica) {
+    if (metrica === 'puntos') {
+        // Sumar puntos (asegúrate de que tus registros tengan la propiedad de puntos, o calcúlala por posición)
+        return registrosPiloto.reduce((acc, r) => acc + (r.puntos || 0), 0);
+    } else if (metrica === 'podios') {
+        return registrosPiloto.filter(r => r.posicion <= 3 && !r.dnf).length;
+    } else if (metrica === 'poles') {
+        return registrosPiloto.filter(r => r.pole === true).length; // Si guardas la pole
+    } else if (metrica === 'dnf') {
+        return registrosPiloto.filter(r => r.dnf === true).length;
+    }
+    return 0;
+}
+
+    
+
+
+ // DESPLEGABLES Y DEMAS EN ESTE HUECO -->   
     
 </script>
 </body>
