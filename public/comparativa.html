@@ -499,137 +499,127 @@ async function ejecutarComparativa() {
         contenedorResultados.style.display = 'block';
     }
 }
-function calcularMetricaPiloto(registros, metrica) {
-            if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
-            if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
-            if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
-            if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
-            return 0;
-        }
 
-        function calcularMetricaEscuderia(registros, metrica) {
-            if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
-            if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
-            if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
-            if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
-            return 0;
-        }
+function calcularMetricaPiloto(registros, metrica) {
+    if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
+    if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
+    if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
+    if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+    if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
+    return 0;
+}
+
+function calcularMetricaEscuderia(registros, metrica) {
+    if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
+    if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
+    if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
+    if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+    if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
+    return 0;
+}
 
 function configurarTarjeta(idSufijo, registro, modo) {
-            const headerCard = document.getElementById(`bgItem${idSufijo}`);
-            const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
-            const contenedorFoto = document.getElementById(`contenedorFoto${idSufijo}`);
+    const headerCard = document.getElementById(`bgItem${idSufijo}`);
+    const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
+    const contenedorFoto = document.getElementById(`contenedorFoto${idSufijo}`);
 
-            // Determinamos el nombre del equipo según el modo
-            const nombreEscuderia = modo === 'escuderia' 
-                ? registro.escuderia_nombre 
-                : registro.escuderia_nombre; // O el campo de equipo que tenga el piloto
+    const nombreEscuderia = modo === 'escuderia' 
+        ? registro.escuderia_nombre 
+        : registro.escuderia_nombre;
 
-            const obtenerNombreArchivoEscuderia = (nombre) => {
-                if (!nombre) return '';
-                const texto = nombre.toLowerCase().trim();
-                
-                if (texto.includes('alpine')) return 'alpine';
-                if (texto.includes('aston martin')) return 'aston_martin';
-                if (texto.includes('audi')) return 'audi';
-                if (texto.includes('cadillac')) return 'cadillac';
-                if (texto.includes('ferrari')) return 'ferrari';
-                if (texto.includes('haas')) return 'haas';
-                if (texto.includes('mclaren')) return 'mclaren';
-                if (texto.includes('mercedes')) return 'mercedes';
-                if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
-                if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
-                if (texto.includes('williams')) return 'williams';
+    const obtenerNombreArchivoEscuderia = (nombre) => {
+        if (!nombre) return '';
+        const texto = nombre.toLowerCase().trim();
+        
+        if (texto.includes('alpine')) return 'alpine';
+        if (texto.includes('aston martin')) return 'aston_martin';
+        if (texto.includes('audi')) return 'audi';
+        if (texto.includes('cadillac')) return 'cadillac';
+        if (texto.includes('ferrari')) return 'ferrari';
+        if (texto.includes('haas')) return 'haas';
+        if (texto.includes('mclaren')) return 'mclaren';
+        if (texto.includes('mercedes')) return 'mercedes';
+        if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
+        if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
+        if (texto.includes('williams')) return 'williams';
 
-                return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-            };
+        return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    };
 
-            // Colores corporativos por equipo
-            let colorEquipo = '#1f1f1f';
-            const textoEscuderia = nombreEscuderia ? nombreEscuderia.toLowerCase() : '';
-            
-            if (textoEscuderia.includes('ferrari')) colorEquipo = '#dc0000';
-            else if (textoEscuderia.includes('aston martin')) colorEquipo = '#006f62';
-            else if (textoEscuderia.includes('red bull')) colorEquipo = '#0600ef';
-            else if (textoEscuderia.includes('mercedes')) colorEquipo = '#00d2be';
-            else if (textoEscuderia.includes('mclaren')) colorEquipo = '#ff8700';
-            else if (textoEscuderia.includes('alpine')) colorEquipo = '#0090ff';
-            else if (textoEscuderia.includes('williams')) colorEquipo = '#005aff';
-            else if (textoEscuderia.includes('haas')) colorEquipo = '#b6babd';
-            else if (textoEscuderia.includes('audi')) colorEquipo = '#e10600';
-            else if (textoEscuderia.includes('cadillac')) colorEquipo = '#111111';
-            else if (textoEscuderia.includes('visa') || textoEscuderia.includes('rb')) colorEquipo = '#2b4562';
+    let colorEquipo = '#1f1f1f';
+    const textoEscuderia = nombreEscuderia ? nombreEscuderia.toLowerCase() : '';
+    
+    if (textoEscuderia.includes('ferrari')) colorEquipo = '#dc0000';
+    else if (textoEscuderia.includes('aston martin')) colorEquipo = '#006f62';
+    else if (textoEscuderia.includes('red bull')) colorEquipo = '#0600ef';
+    else if (textoEscuderia.includes('mercedes')) colorEquipo = '#00d2be';
+    else if (textoEscuderia.includes('mclaren')) colorEquipo = '#ff8700';
+    else if (textoEscuderia.includes('alpine')) colorEquipo = '#0090ff';
+    else if (textoEscuderia.includes('williams')) colorEquipo = '#005aff';
+    else if (textoEscuderia.includes('haas')) colorEquipo = '#b6babd';
+    else if (textoEscuderia.includes('audi')) colorEquipo = '#e10600';
+    else if (textoEscuderia.includes('cadillac')) colorEquipo = '#111111';
+    else if (textoEscuderia.includes('visa') || textoEscuderia.includes('rb')) colorEquipo = '#2b4562';
 
-            headerCard.style.backgroundColor = colorEquipo;
+    headerCard.style.backgroundColor = colorEquipo;
 
-            // Mapear y aplicar la bandera/escudo con las propiedades ajustadas
-            const escuderiaArchivo = obtenerNombreArchivoEscuderia(nombreEscuderia);
+    const escuderiaArchivo = obtenerNombreArchivoEscuderia(nombreEscuderia);
 
-            if (escuderiaArchivo) {
-                headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/banderas/${escuderiaArchivo}.png')`;
-                headerCard.style.backgroundSize = 'contain';
-                headerCard.style.backgroundRepeat = 'no-repeat';
-                headerCard.style.backgroundPosition = 'center';
-            } else {
-                headerCard.style.backgroundImage = 'none';
-            }
+    if (escuderiaArchivo) {
+        headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/banderas/${escuderiaArchivo}.png')`;
+        headerCard.style.backgroundSize = 'contain';
+        headerCard.style.backgroundRepeat = 'no-repeat';
+        headerCard.style.backgroundPosition = 'center';
+    } else {
+        headerCard.style.backgroundImage = 'none';
+    }
 
-            // Gestionar la caja y foto del piloto según el modo
-            if (modo === 'piloto') {
-                contenedorFoto.style.display = 'flex';
-                imgFoto.style.display = 'block';
-                imgFoto.src = registro.foto_url || '';
-            } else {
-                contenedorFoto.style.display = 'none';
-                imgFoto.style.display = 'none';
-            }
+    if (modo === 'piloto') {
+        contenedorFoto.style.display = 'flex';
+        imgFoto.style.display = 'block';
+        imgFoto.src = registro.foto_url || '';
+    } else {
+        contenedorFoto.style.display = 'none';
+        imgFoto.style.display = 'none';
+    }
 
-            imgFoto.onerror = function() { 
-                this.style.display = 'none'; 
-            };
-        }
+    imgFoto.onerror = function() { 
+        this.style.display = 'none'; 
+    };
+}
 
-    function aplicarColoresComparativa(val1, val2, metrica) {
-            const caja1 = document.getElementById('valorItem1');
-            const caja2 = document.getElementById('valorItem2');
+function aplicarColoresComparativa(val1, val2, metrica) {
+    const caja1 = document.getElementById('valorItem1');
+    const caja2 = document.getElementById('valorItem2');
 
-            // Limpiamos colores previos por si acaso
-            caja1.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
-            caja2.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+    caja1.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+    caja2.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
 
-            // Si son iguales, dejamos el fondo neutro por defecto
-            if (val1 === val2) return;
+    if (val1 === val2) return;
 
-            // Metricas donde MENOR valor es mejor (ej. DNF, abandonos, etc.)
-            // Puedes adaptar el texto si tu métrica de DNF se llama distinto en el select
-            const esMetricaInversa = metrica.toLowerCase().includes('dnf') || 
-                                     metrica.toLowerCase().includes('abandono') || 
-                                     metrica.toLowerCase().includes('retirada');
+    const esMetricaInversa = metrica.toLowerCase().includes('dnf') || 
+                           metrica.toLowerCase().includes('abandono') || 
+                           metrica.toLowerCase().includes('retirada');
 
-            let gastaVerde1 = false;
+    let gastaVerde1 = false;
 
-            if (!esMetricaInversa) {
-                // Comportamiento normal: mayor número gana
-                gastaVerde1 = val1 > val2;
-            } else {
-                // Comportamiento inverso (DNF): menor número gana
-                gastaVerde1 = val1 < val2;
-            }
+    if (!esMetricaInversa) {
+        gastaVerde1 = val1 > val2;
+    } else {
+        gastaVerde1 = val1 < val2;
+    }
 
-            // Tonos sutiles tipo retransmisión oficial (no muy eléctricos)
-            const colorVerdeSuave = 'rgba(40, 167, 69, 0.45)';
-            const colorRojoSuave = 'rgba(220, 53, 69, 0.45)';
+    const colorVerdeSuave = 'rgba(40, 167, 69, 0.45)';
+    const colorRojoSuave = 'rgba(220, 53, 69, 0.45)';
 
-            if (gastaVerde1) {
-                caja1.style.backgroundColor = colorVerdeSuave;
-                caja2.style.backgroundColor = colorRojoSuave;
-            } else {
-                caja1.style.backgroundColor = colorRojoSuave;
-                caja2.style.backgroundColor = colorVerdeSuave;
-            }
-        }
+    if (gastaVerde1) {
+        caja1.style.backgroundColor = colorVerdeSuave;
+        caja2.style.backgroundColor = colorRojoSuave;
+    } else {
+        caja1.style.backgroundColor = colorRojoSuave;
+        caja2.style.backgroundColor = colorVerdeSuave;
+    }
+}
 
 function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaTexto) {
     const contenedorResultados = document.getElementById('contenedorResultados');
@@ -640,7 +630,6 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
         return (a.posicion || 99) - (b.posicion || 99);
     });
 
-    // Función auxiliar idéntica a la de tu comparativa para asegurar la ruta de las banderas
     const obtenerNombreArchivoEscuderia = (nombre) => {
         if (!nombre) return '';
         const texto = nombre.toLowerCase().trim();
@@ -675,7 +664,7 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
                 <tbody>
     `;
 
-if (resultadosOrdenados.length === 0) {
+    if (resultadosOrdenados.length === 0) {
         htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
     } else {
         resultadosOrdenados.forEach((res, index) => {
@@ -727,11 +716,9 @@ if (resultadosOrdenados.length === 0) {
 }
 
 // Lanzar carga inicial al cargar la página----------------------------------------------------------------------------
-        window.onload = cargarDatosGlobales;
+window.onload = cargarDatosGlobales;
     
-
-
- // DESPLEGABLES Y DEMAS EN ESTE HUECO -->   
+// DESPLEGABLES Y DEMAS EN ESTE HUECO -->   
     
 </script>
 </body>
