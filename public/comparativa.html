@@ -60,18 +60,28 @@
     <button onclick="ejecutarComparativa()" style="width: 100%; padding: 10px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">COMPARAR</button>
 
     <!-- Panel de visualización de resultados -->
-    <div id="panelResultadoComparativa" style="display: flex; justify-content: space-around; align-items: center; margin-top: 25px; text-align: center;">
-        <div style="flex: 1;">
-            <h3 id="nombreItem1" style="color: #aaa;">-</h3>
-            <p id="valorItem1" style="font-size: 36px; font-weight: bold; color: #fff;">0</p>
+<!-- Resultados de la comparativa -->
+        <div class="resultado-comparativa">
+            <div class="item-resultado" id="tarjetaItem1">
+                <div class="header-tarjeta" id="bgItem1">
+                    <img id="logoItem1" src="" alt="" class="logo-escuderia-card">
+                    <img id="fotoItem1" src="" alt="" class="foto-piloto-card">
+                    <h3 id="nombreItem1">-</h3>
+                </div>
+                <p id="valorItem1">0</p>
+            </div>
+            
+            <div class="vs">VS</div>
+
+            <div class="item-resultado" id="tarjetaItem2">
+                <div class="header-tarjeta" id="bgItem2">
+                    <img id="logoItem2" src="" alt="" class="logo-escuderia-card">
+                    <img id="fotoItem2" src="" alt="" class="foto-piloto-card">
+                    <h3 id="nombreItem2">-</h3>
+                </div>
+                <p id="valorItem2">0</p>
+            </div>
         </div>
-        <div style="font-size: 20px; font-weight: bold; color: #666; padding: 0 20px;">VS</div>
-        <div style="flex: 1;">
-            <h3 id="nombreItem2" style="color: #aaa;">-</h3>
-            <p id="valorItem2" style="font-size: 36px; font-weight: bold; color: #fff;">0</p>
-        </div>
-    </div>
-</div>
 
                 <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 
@@ -219,7 +229,7 @@ let resultadosGlobales = [];
         }
 
         // Ejecuta la comparativa refrescando datos al vuelo y calculando métricas
-        async function ejecutarComparativa() {
+async function ejecutarComparativa() {
             try {
                 const res = await fetch('/api/todos-los-resultados');
                 resultadosGlobales = await res.json();
@@ -246,18 +256,34 @@ let resultadosGlobales = [];
 
                 val1 = calcularMetricaPiloto(stats1, metrica);
                 val2 = calcularMetricaPiloto(stats2, metrica);
+
+                // Pintar valores numéricos
+                document.getElementById('nombreItem1').innerText = item1;
+                document.getElementById('valorItem1').innerText = val1;
+                document.getElementById('nombreItem2').innerText = item2;
+                document.getElementById('valorItem2').innerText = val2;
+
+                // Configurar estilos visuales de pilotos (tarjetas, colores y fotos)
+                configurarTarjeta('1', stats1[0] || {}, 'piloto');
+                configurarTarjeta('2', stats2[0] || {}, 'piloto');
+
             } else {
                 const stats1 = resultadosGlobales.filter(r => r.escuderia_nombre === item1);
                 const stats2 = resultadosGlobales.filter(r => r.escuderia_nombre === item2);
 
                 val1 = calcularMetricaEscuderia(stats1, metrica);
                 val2 = calcularMetricaEscuderia(stats2, metrica);
-            }
 
-            document.getElementById('nombreItem1').innerText = item1;
-            document.getElementById('valorItem1').innerText = val1;
-            document.getElementById('nombreItem2').innerText = item2;
-            document.getElementById('valorItem2').innerText = val2;
+                // Pintar valores numéricos
+                document.getElementById('nombreItem1').innerText = item1;
+                document.getElementById('valorItem1').innerText = val1;
+                document.getElementById('nombreItem2').innerText = item2;
+                document.getElementById('valorItem2').innerText = val2;
+
+                // Configurar estilos visuales de escuderías (logos de marca de agua y colores de fondo)
+                configurarTarjeta('1', stats1[0] || {}, 'escuderia');
+                configurarTarjeta('2', stats2[0] || {}, 'escuderia');
+            }
         }
 
 function calcularMetricaPiloto(registros, metrica) {
@@ -278,6 +304,29 @@ function calcularMetricaPiloto(registros, metrica) {
             return 0;
         }
 
+function configurarTarjeta(idSufijo, registro, modo) {
+            const headerCard = document.getElementById(`bgItem${idSufijo}`);
+            const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
+            const imgLogo = document.getElementById(`logoItem${idSufijo}`);
+
+            // Color por defecto si no viene definido en la BDD
+            let colorEquipo = registro.color_escuderia || registro.color || '#1f1f1f';
+            headerCard.style.backgroundColor = colorEquipo;
+
+            if (modo === 'piloto') {
+                imgFoto.style.display = 'block';
+                imgFoto.src = registro.foto_piloto || registro.avatar || 'default-pilot.png';
+                imgLogo.src = registro.logo_escuderia || registro.escuderia_logo || '';
+            } else {
+                // Si es modo escudería, podemos ocultar la foto redonda del piloto y destacar el escudo
+                imgFoto.style.display = 'none';
+                imgLogo.src = registro.logo_escuderia || registro.logo || '';
+            }
+        }
+
+
+
+    
         // Lanzar carga inicial al cargar la página
         window.onload = cargarDatosGlobales;
     
