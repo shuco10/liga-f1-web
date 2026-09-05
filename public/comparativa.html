@@ -176,19 +176,22 @@
 // Lógica base en JavaScript para alimentar y procesar la comparativa
 
 let resultadosGlobales = [];
+        let escuderiasGlobales = [];
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Cargar componentes externos
             fetch('/header.html').then(res => res.text()).then(data => document.getElementById('header-placeholder').innerHTML = data);
             fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
             fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
 
-            // Cargar datos necesarios para la comparativa
             try {
+                // 1. Cargar resultados
                 const resResultados = await fetch('/api/todos-los-resultados');
                 resultadosGlobales = await resResultados.json();
 
-                // Rellenar los desplegables nada más cargar los datos
+                // 2. Cargar escuderías de la base de datos
+                const resEscuderias = await fetch('/api/escuderias');
+                escuderiasGlobales = await resEscuderias.json();
+
                 cambiarTipoComparacion();
             } catch (err) {
                 console.error("Error al cargar datos para comparativas:", err);
@@ -204,18 +207,16 @@ let resultadosGlobales = [];
             select2.innerHTML = '<option value="">Selecciona...</option>';
 
             if (tipo === 'pilotos') {
-                // Extraer gamertags únicos
                 const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))];
                 pilotosUnicos.forEach(piloto => {
                     select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                     select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                 });
             } else {
-                // Extraer escuderías únicas
-                const escuderiasUnicas = [...new Set(resultadosGlobales.map(r => r.escuderia_nombre).filter(Boolean))];
-                escuderiasUnicas.forEach(esc => {
-                    select1.innerHTML += `<option value="${esc}">${esc}</option>`;
-                    select2.innerHTML += `<option value="${esc}">${esc}</option>`;
+                // Rellenar con los nombres reales de la tabla escuderias
+                escuderiasGlobales.forEach(esc => {
+                    select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+                    select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
                 });
             }
         }
