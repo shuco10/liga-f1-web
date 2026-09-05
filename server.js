@@ -517,7 +517,7 @@ app.get('/api/todos-los-resultados', async (req, res) => {
                 r.posicion,
                 r.puntos,
                 r.escuderia_puntos,
-                r.poles,
+                r.pole,
                 r.dnf,
                 p.gamertag,
                 e.nombre AS escuderia_nombre,
