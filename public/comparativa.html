@@ -46,11 +46,11 @@
             <option value="">Selecciona circuito...</option>
         </select>
 
-        <select id="selectItem1" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
+        <select id="selectItem1" onchange="comprobarOcultarMetrica()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
             <option value="">Selecciona 1...</option>
         </select>
 
-        <select id="selectItem2" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
+        <select id="selectItem2" onchange="comprobarOcultarMetrica()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
             <option value="">Selecciona 2...</option>
         </select>
 
@@ -300,6 +300,23 @@
                     select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
                 });
             }
+        }
+
+        // <-- AÑADE ESTA LÍNEA AQUÍ PARA QUE COMPRUEBE EL ESTADO AL CAMBIAR DE PESTAÑA -->
+        comprobarOcultarMetrica();
+    }
+
+    function comprobarOcultarMetrica() {
+        const item1 = document.getElementById('selectItem1')?.value;
+        const item2 = document.getElementById('selectItem2')?.value;
+        const selectMetrica = document.getElementById('selectMetrica');
+
+        if (!selectMetrica) return;
+
+        if (item1 === 'PARRILLA_COMPLETA' || item2 === 'PARRILLA_COMPLETA') {
+            selectMetrica.style.display = 'none';
+        } else {
+            selectMetrica.style.display = 'block';
         }
     }
 
