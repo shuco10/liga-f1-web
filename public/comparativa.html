@@ -588,7 +588,10 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
             const textBadgeColor = res.posicion === 1 && !res.dnf ? '#000' : '#fff';
             
             const fotoPiloto = res.foto_url || 'img/default-avatar.png';
-            const banderaPiloto = res.bandera || res.pais_bandera || `img/flags/${res.nacionalidad || 'es'}.png`;
+            
+            let escuderiaSlug = res.escuderia_nombre ? res.escuderia_nombre.toLowerCase().trim().replace(/\s+/g, '_') : '';
+            if (escuderiaSlug === 'red_bull' || escuderiaSlug === 'red_bull_racing') escuderiaSlug = 'redbull';
+            const imgEscuderia = escuderiaSlug ? `banderas/${escuderiaSlug}.png` : '';
             
             htmlTabla += `
                 <tr style="border-bottom: 1px solid #333; transition: background 0.2s;">
@@ -600,7 +603,7 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
                     <td style="padding: 10px 12px; font-weight: 500;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.src='img/default-avatar.png'">
-                            <img src="${banderaPiloto}" alt="" style="width: 24px; height: 16px; object-fit: cover; border-radius: 2px; flex-shrink: 0;" onerror="this.style.display='none'">
+                            ${imgEscuderia ? `<img src="${imgEscuderia}" alt="" style="width: 24px; height: 16px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
                             <span>${res.gamertag || 'Piloto #' + res.id_piloto}</span>
                         </div>
                     </td>
