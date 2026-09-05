@@ -178,26 +178,22 @@
 let resultadosGlobales = [];
         let escuderiasGlobales = [];
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            fetch('/header.html').then(res => res.text()).then(data => document.getElementById('header-placeholder').innerHTML = data);
-            fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
-            fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-
+        // Carga inicial de datos al abrir la página
+        async function cargarDatosGlobales() {
             try {
-                // 1. Cargar resultados
                 const resResultados = await fetch('/api/todos-los-resultados');
                 resultadosGlobales = await resResultados.json();
 
-                // 2. Cargar escuderías de la base de datos
                 const resEscuderias = await fetch('/api/escuderias');
                 escuderiasGlobales = await resEscuderias.json();
 
                 cambiarTipoComparacion();
             } catch (err) {
-                console.error("Error al cargar datos para comparativas:", err);
+                console.error("Error al cargar los datos iniciales:", err);
             }
-        });
+        }
 
+        // Cambia los desplegables según se elija Pilotos o Escuderías
         function cambiarTipoComparacion() {
             const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
             const select1 = document.getElementById('selectItem1');
@@ -206,7 +202,6 @@ let resultadosGlobales = [];
             select1.innerHTML = '<option value="">Selecciona...</option>';
             select2.innerHTML = '<option value="">Selecciona...</option>';
 
-            // Comprobamos tanto singular como plural por si el HTML tiene "piloto" o "pilotos"
             if (tipo.includes('piloto')) {
                 const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))];
                 
@@ -222,7 +217,15 @@ let resultadosGlobales = [];
             }
         }
 
-        function ejecutarComparativa() {
+        // Ejecuta la comparativa refrescando datos al vuelo y calculando métricas
+        async function ejecutarComparativa() {
+            try {
+                const res = await fetch('/api/todos-los-resultados');
+                resultadosGlobales = await res.json();
+            } catch (e) {
+                console.error("No se pudieron refrescar los datos", e);
+            }
+
             const tipo = document.getElementById('tipoComparacion').value;
             const item1 = document.getElementById('selectItem1').value;
             const item2 = document.getElementById('selectItem2').value;
@@ -259,7 +262,7 @@ let resultadosGlobales = [];
         function calcularMetricaPiloto(registros, metrica) {
             if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
             if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+            if (metrica === 'poles') return registros.reduce((acc, r) => acc + (Number(r.poles) || 0), 0);
             if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
             return 0;
         }
@@ -267,10 +270,13 @@ let resultadosGlobales = [];
         function calcularMetricaEscuderia(registros, metrica) {
             if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.escuderia_puntos) || 0), 0);
             if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+            if (metrica === 'poles') return registros.reduce((acc, r) => acc + (Number(r.poles) || 0), 0);
             if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
             return 0;
         }
+
+        // Lanzar carga inicial al cargar la página
+        window.onload = cargarDatosGlobales;
     
 
 
