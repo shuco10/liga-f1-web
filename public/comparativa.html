@@ -717,49 +717,55 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
         contenedorResultados.style.display = 'block';
     }
 
-// Ejemplo de cómo rellenarlo para cada piloto (adapta 'registroPiloto' a tu variable de datos):
 function actualizarBadgePosicion(idSufijo, registroPiloto, esPorCircuito) {
-        const contenedorBadge = document.getElementById(`contenedorBadge${idSufijo}`);
-        if (!contenedorBadge) return;
+    const contenedorBadge = document.getElementById(`contenedorBadge${idSufijo}`);
+    if (!contenedorBadge) return;
 
-        if (esPorCircuito && registroPiloto) {
-            const posReal = registroPiloto.dnf ? null : (registroPiloto.posicion || 1); 
-            
-            let badgeBg = '#262626';
-            let badgeColor = '#fff';
-            let badgeBorder = '1px solid #383838';
+    // Forzamos el estilo directamente aquí para anclarlo a la derecha junto al valor
+    contenedorBadge.style.cssText = 'position: absolute; right: 95px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; z-index: 5;';
+    
+    // Aseguramos que la tarjeta contenedora tenga posición relativa para que respete el absolute
+    const tarjeta = document.getElementById(`bgItem${idSufijo}`);
+    if (tarjeta) tarjeta.style.position = 'relative';
 
-            if (registroPiloto.dnf) {
-                badgeBg = 'rgba(231, 76, 60, 0.15)';
-                badgeColor = '#e74c3c';
-                badgeBorder = '1px solid #e74c3c';
-            } else if (posReal === 1) {
-                badgeBg = 'linear-gradient(135deg, #f1c40f, #d4ac0d)';
-                badgeColor = '#111';
-                badgeBorder = '1px solid #f39c12';
-            } else if (posReal === 2) {
-                badgeBg = 'linear-gradient(135deg, #bdc3c7, #95a5a6)';
-                badgeColor = '#111';
-                badgeBorder = '1px solid #7f8c8d';
-            } else if (posReal === 3) {
-                badgeBg = 'linear-gradient(135deg, #e67e22, #d35400)';
-                badgeColor = '#fff';
-                badgeBorder = '1px solid #ba4a00';
-            }
+    if (esPorCircuito && registroPiloto) {
+        const posReal = registroPiloto.dnf ? null : (registroPiloto.posicion || 1);
+        
+        let badgeBg = '#262626';
+        let badgeColor = '#fff';
+        let badgeBorder = '1px solid #383838';
 
-            const posDisplay = registroPiloto.dnf ? 'DNF' : `${posReal}º`;
-
-            contenedorBadge.innerHTML = `
-                <span style="display: inline-block; min-width: 40px; text-align: center; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; background: ${badgeBg}; color: ${badgeColor}; border: ${badgeBorder}; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                    ${posDisplay}
-                </span>
-            `;
-            contenedorBadge.style.display = 'flex';
-        } else {
-            contenedorBadge.innerHTML = '';
-            contenedorBadge.style.display = 'none';
+        if (registroPiloto.dnf) {
+            badgeBg = 'rgba(231, 76, 60, 0.15)';
+            badgeColor = '#e74c3c';
+            badgeBorder = '1px solid #e74c3c';
+        } else if (posReal === 1) {
+            badgeBg = 'linear-gradient(135deg, #f1c40f, #d4ac0d)';
+            badgeColor = '#111';
+            badgeBorder = '1px solid #f39c12';
+        } else if (posReal === 2) {
+            badgeBg = 'linear-gradient(135deg, #bdc3c7, #95a5a6)';
+            badgeColor = '#111';
+            badgeBorder = '1px solid #7f8c8d';
+        } else if (posReal === 3) {
+            badgeBg = 'linear-gradient(135deg, #e67e22, #d35400)';
+            badgeColor = '#fff';
+            badgeBorder = '1px solid #ba4a00';
         }
+
+        const posDisplay = registroPiloto.dnf ? 'DNF' : `${posReal}º`;
+
+        contenedorBadge.innerHTML = `
+            <span style="display: inline-block; min-width: 40px; text-align: center; padding: 6px 10px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; background: ${badgeBg}; color: ${badgeColor}; border: ${badgeBorder}; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                ${posDisplay}
+            </span>
+        `;
+        contenedorBadge.style.display = 'flex';
+    } else {
+        contenedorBadge.innerHTML = '';
+        contenedorBadge.style.display = 'none';
     }
+}
     
 
 
