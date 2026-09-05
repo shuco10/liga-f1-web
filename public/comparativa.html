@@ -31,18 +31,17 @@
                 <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 <!-- Estructura HTML para la sección de comparativas -->
 <div class="comparativa-card" style="background: #1a1a1a; padding: 20px; border-radius: 8px; color: #fff; margin-top: 20px;">
-    <h2 style="color: #ff4444; margin-bottom: 15px; text-align: center;">HEAD-TO-HEAD & TEMPORADA</h2>
+    <h2 style="color: #ff4444; margin-bottom: 15px; text-align: center;">HEAD-TO-HEAD COMPARISON</h2>
     
-    <!-- Selectores de filtros -->
+<!-- Selectores de filtros -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
-<select id="tipoComparacion" onchange="cambiarTipoComparacion()">
-    <option value="pilotos">Pilotos</option>
-    <option value="escuderias">Escuderías</option>
-    <option value="circuitos">Circuitos</option>
-    <option value="temporada">Temporada Completa</option>
-</select>
+        <select id="tipoComparacion" onchange="cambiarTipoComparacion()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
+            <option value="pilotos">Pilotos</option>
+            <option value="escuderias">Escuderías</option>
+            <option value="circuitos">Circuitos</option>
+        </select>
         
-        <!-- Selector de Circuito -->
+        <!-- Selector de Circuito (Aparece solo cuando se selecciona Circuitos) -->
         <select id="selectCircuito" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px; display: none;">
             <option value="">Selecciona circuito...</option>
         </select>
@@ -64,62 +63,49 @@
         </select>
     </div>
 
-    <button onclick="ejecutarAccionPrincipal()" style="width: 100%; padding: 10px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">VER DATOS</button>
+    <button onclick="ejecutarComparativa()" style="width: 100%; padding: 10px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">COMPARAR</button>
 
-    <!-- Panel de visualización Head-to-Head -->
-    <div class="resultado-comparativa" id="contenedorResultados" style="display: none;">
-        <div align="center">
-            <span id="tituloMetricaComparativa" class="titulo-metrica-header">ESTADÍSTICA</span>
-        </div>
+     <!-- Panel de visualización de resultados -->
+<!-- Resultados de la comparativa -->
+<!-- Contenedor principal de resultados (empieza oculto) -->
+        <div class="resultado-comparativa" id="contenedorResultados" style="display: none;">
+            
+            <!-- Título dinámico de la métrica -->
+            <div align="center">
+                <span id="tituloMetricaComparativa" class="titulo-metrica-header">ESTADÍSTICA</span>
+            </div>
 
-        <!-- Tarjeta 1 -->
-        <div class="item-resultado" id="tarjetaItem1">
-            <div class="header-tarjeta" id="bgItem1">
-                <div class="info-izq">
-                    <div class="caja-foto" id="contenedorFoto1">
-                        <img id="fotoItem1" src="" alt="" class="foto-piloto-card" style="display: none;">
+            <!-- Tarjeta 1 -->
+            <div class="item-resultado" id="tarjetaItem1">
+                <div class="header-tarjeta" id="bgItem1">
+                    <div class="info-izq">
+                        <div class="caja-foto" id="contenedorFoto1">
+                            <img id="fotoItem1" src="" alt="" class="foto-piloto-card" style="display: none;">
+                        </div>
+                        <h3 id="nombreItem1">-</h3>
                     </div>
-                    <h3 id="nombreItem1">-</h3>
+                    <div class="caja-valor" id="valorItem1">0</div>
                 </div>
-                <div class="caja-valor" id="valorItem1">0</div>
+            </div>
+            
+            <!-- VS Centrado -->
+            <div class="contenedor-vs">
+                <span class="badge-vs">VS</span>
+            </div>
+
+            <!-- Tarjeta 2 -->
+            <div class="item-resultado" id="tarjetaItem2">
+                <div class="header-tarjeta" id="bgItem2">
+                    <div class="info-izq">
+                        <div class="caja-foto" id="contenedorFoto2">
+                            <img id="fotoItem2" src="" alt="" class="foto-piloto-card" style="display: none;">
+                        </div>
+                        <h3 id="nombreItem2">-</h3>
+                    </div>
+                    <div class="caja-valor" id="valorItem2">0</div>
+                </div>
             </div>
         </div>
-        
-        <!-- VS Centrado -->
-        <div class="contenedor-vs">
-            <span class="badge-vs">VS</span>
-        </div>
-
-        <!-- Tarjeta 2 -->
-        <div class="item-resultado" id="tarjetaItem2">
-            <div class="header-tarjeta" id="bgItem2">
-                <div class="info-izq">
-                    <div class="caja-foto" id="contenedorFoto2">
-                        <img id="fotoItem2" src="" alt="" class="foto-piloto-card" style="display: none;">
-                    </div>
-                    <h3 id="nombreItem2">-</h3>
-                </div>
-                <div class="caja-valor" id="valorItem2">0</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NUEVO CONTENEDOR: Matriz de Temporada con Scroll Horizontal -->
-    <div id="contenedorTablaTemporada" style="display: none; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 20px; background: #1a1a1a; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); padding: 10px;">
-        <div style="min-width: 800px;"> <!-- Fuerza el ancho para el scroll en móvil -->
-            <table style="width: 100%; border-collapse: collapse; color: #fff; text-align: center; font-size: 0.9rem;">
-                <thead>
-                    <tr id="tablaHeaderCircuitos" style="border-bottom: 2px solid rgba(255,255,255,0.15);">
-                        <!-- Cabeceras inyectadas por JS -->
-                    </tr>
-                </thead>
-                <tbody id="tablaBodyPilotos">
-                    <!-- Filas inyectadas por JS -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
                 <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 
 </main>
@@ -262,187 +248,63 @@
     ];
 
     function cambiarTipoComparacion() {
-    const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
-    const select1 = document.getElementById('selectItem1');
-    const select2 = document.getElementById('selectItem2');
-    const selectCircuito = document.getElementById('selectCircuito');
-    const contenedorResultados = document.getElementById('contenedorResultados');
-    const contenedorTabla = document.getElementById('contenedorTablaTemporada'); // El nuevo contenedor de la matriz
-
-    // Ocultar ambos contenedores por defecto al cambiar de opción
-    if (contenedorResultados) contenedorResultados.style.display = 'none';
-    if (contenedorTabla) contenedorTabla.style.display = 'none';
-
-    // SI ELIGEN TEMPORADA COMPLETA
-    if (tipo.includes('temporada')) {
-        if (selectCircuito) selectCircuito.style.display = 'none';
-        if (select1) select1.style.display = 'none';
-        if (select2) select2.style.display = 'none';
+        const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
+        const select1 = document.getElementById('selectItem1');
+        const select2 = document.getElementById('selectItem2');
+        const selectCircuito = document.getElementById('selectCircuito');
         
-        // Mostramos la matriz y la renderizamos de golpe
-        if (contenedorTabla) contenedorTabla.style.display = 'block';
-        const metricaActual = document.getElementById('selectMetrica').value;
-        renderizarMatrizTemporada(metricaActual);
-        return; // Salimos para que no ejecute el resto
-    } else {
-        // Restauramos visibilidad de selects si venían de temporada
-        if (select1) select1.style.display = 'inline-block';
-        if (select2) select2.style.display = 'inline-block';
-    }
-
-    select1.innerHTML = '<option value="">Selecciona...</option>';
-    select2.innerHTML = '<option value="">Selecciona...</option>';
-
-    if (tipo.includes('piloto')) {
-        if (selectCircuito) selectCircuito.style.display = 'none';
-
-        const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
+        const contenedorResultados = document.getElementById('contenedorResultados');
+        if (contenedorResultados) {
+            contenedorResultados.style.display = 'none';
+        }
         
-        pilotosUnicos.forEach(piloto => {
-            select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
-            select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
-        });
+        select1.innerHTML = '<option value="">Selecciona...</option>';
+        select2.innerHTML = '<option value="">Selecciona...</option>';
 
-    } else if (tipo.includes('circuito')) {
-        if (selectCircuito) selectCircuito.style.display = 'inline-block';
+        if (tipo.includes('piloto')) {
+            if (selectCircuito) selectCircuito.style.display = 'none';
 
-        let optsCircuito = '<option value="">Selecciona circuito...</option>';
-        listaCircuitosF1.forEach(c => {
-            optsCircuito += `<option value="${c.id}">${c.nombre}</option>`;
-        });
-        if (selectCircuito) selectCircuito.innerHTML = optsCircuito;
-
-        const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
-        let optsPilotos = '<option value="PARRILLA_COMPLETA">Parrilla Completa</option>';
-        pilotosUnicos.forEach(p => {
-            optsPilotos += `<option value="${p}">${p}</option>`;
-        });
-
-        select1.innerHTML = optsPilotos;
-        select2.innerHTML = optsPilotos;
-        select1.value = 'PARRILLA_COMPLETA';
-        select2.value = 'PARRILLA_COMPLETA';
-
-    } else {
-        if (selectCircuito) selectCircuito.style.display = 'none';
-
-        if (typeof escuderiasGlobales !== 'undefined') {
-            escuderiasGlobales.forEach(esc => {
-                select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
-                select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+            const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
+            
+            pilotosUnicos.forEach(piloto => {
+                select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+                select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
             });
+
+        } else if (tipo.includes('circuito')) {
+            if (selectCircuito) selectCircuito.style.display = 'inline-block';
+
+            let optsCircuito = '<option value="">Selecciona circuito...</option>';
+            listaCircuitosF1.forEach(c => {
+                optsCircuito += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+            if (selectCircuito) selectCircuito.innerHTML = optsCircuito;
+
+            const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
+            let optsPilotos = '<option value="PARRILLA_COMPLETA">Parrilla Completa</option>';
+            pilotosUnicos.forEach(p => {
+                optsPilotos += `<option value="${p}">${p}</option>`;
+            });
+
+            select1.innerHTML = optsPilotos;
+            select2.innerHTML = optsPilotos;
+            select1.value = 'PARRILLA_COMPLETA';
+            select2.value = 'PARRILLA_COMPLETA';
+
+        } else {
+            if (selectCircuito) selectCircuito.style.display = 'none';
+
+            if (typeof escuderiasGlobales !== 'undefined') {
+                escuderiasGlobales.forEach(esc => {
+                    select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+                    select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+                });
+            }
         }
     }
-}
-
-
-function renderizarMatrizTemporada(metrica) {
-    const contenedorTabla = document.getElementById('contenedorTablaTemporada');
-    if (!contenedorTabla) return;
-
-    // Obtener lista única de pilotos ordenada
-    const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
-
-    // 1. Construir la cabecera (Piloto + Circuitos + Total)
-    let headerHtml = `<th style="padding: 12px; text-align: left; position: sticky; left: 0; background: #1a1a1a; z-index: 2; border-bottom: 2px solid rgba(255,255,255,0.15); white-space: nowrap;">Piloto</th>`;
-    
-    listaCircuitosF1.forEach(c => {
-        headerHtml += `<th style="padding: 12px 8px; border-bottom: 2px solid rgba(255,255,255,0.15); font-size: 0.75rem; text-transform: uppercase; white-space: nowrap;">${c.nombre}</th>`;
-    });
-    
-    headerHtml += `<th style="padding: 12px 8px; border-bottom: 2px solid rgba(255,255,255,0.15); color: #ff4444; white-space: nowrap;">TOTAL</th>`;
-    document.getElementById('tablaHeaderCircuitos').innerHTML = headerHtml;
-
-    // 2. Construir filas de cada piloto cruzando sus resultados por circuito
-    let bodyHtml = '';
-    
-    pilotosUnicos.forEach((piloto, index) => {
-        const bgRow = index % 2 === 0 ? 'background: rgba(255,255,255,0.02);' : '';
-        bodyHtml += `<tr style="${bgRow} border-bottom: 1px solid rgba(255,255,255,0.05);">`;
-        
-        // Columna fija a la izquierda con el nombre del piloto
-        bodyHtml += `<td style="padding: 10px 12px; text-align: left; font-weight: bold; position: sticky; left: 0; background: #1a1a1a; z-index: 1; white-space: nowrap; box-shadow: 2px 0 5px rgba(0,0,0,0.5);">${piloto}</td>`;
-        
-        let acumuladoTotal = 0;
-
-        // Recorrer cada circuito de la lista oficial
-        listaCircuitosF1.forEach(c => {
-            // Buscar el registro de este piloto en este circuito específico dentro de tus resultados globales
-            const resultadoCarrera = resultadosGlobales.find(r => r.gamertag === piloto && (r.circuitoId === c.id || r.circuito === c.nombre));
-            
-            let contenidoCelda = '-';
-            let estiloCelda = 'color: #777;';
-
-            if (resultadoCarrera) {
-                if (metrica === 'puntos') {
-                    const pts = Number(resultadoCarrera.puntos) || 0;
-                    contenidoCelda = pts;
-                    acumuladoTotal += pts;
-                    estiloCelda = 'font-weight: bold; color: #fff;';
-                } else if (metrica === 'victorias') {
-                    const vic = Number(resultadoCarrera.victorias) || (resultadoCarrera.posicion === 1 ? 1 : 0);
-                    contenidoCelda = vic > 0 ? vic : '-';
-                    acumuladoTotal += vic;
-                    estiloCelda = vic > 0 ? 'color: #f1c40f; font-weight: bold;' : 'color: #777;';
-                } else if (metrica === 'podios') {
-                    const podio = Number(resultadoCarrera.posicion) <= 3 ? 1 : 0;
-                    contenidoCelda = podio ? ' podium ' : '-'; // O el número que tengas
-                    acumuladoTotal += podio;
-                    estiloCelda = podio ? 'color: #2ecc71; font-weight: bold;' : 'color: #777;';
-                } else if (metrica === 'dnf') {
-                    const dnf = resultadoCarrera.dnf || resultadoEstadoEsDnf(resultadoCarrera) ? 1 : 0;
-                    contenidoCelda = dnf ? 'DNF' : '-';
-                    acumuladoTotal += dnf;
-                    estiloCelda = dnf ? 'color: #e74c3c; font-weight: bold; background: rgba(231,76,60,0.1);' : 'color: #777;';
-                } else {
-                    // Por defecto mostramos la posición en la carrera
-                    contenidoCelda = resultadoCarrera.posicion ? `${resultadoCarrera.posicion}º` : '-';
-                    estiloCelda = 'color: #ddd;';
-                }
-            }
-
-            bodyHtml += `<td style="padding: 10px 8px; text-align: center; ${estiloCelda}">${contenidoCelda}</td>`;
-        });
-
-        // Columna de Total acumulado de la temporada
-        bodyHtml += `<td style="padding: 10px 8px; text-align: center; font-weight: bold; color: #ff4444; background: rgba(255,68,68,0.05);">${acumuladoTotal}</td>`;
-        bodyHtml += `</tr>`;
-    });
-
-    document.getElementById('tablaBodyPilotos').innerHTML = bodyHtml;
-}
-
-    
 
 async function ejecutarComparativa() {
-    const tipo = (document.getElementById('selectTipoComparativa')?.value || document.getElementById('tipoComparacion')?.value || '').toLowerCase();
-    
     const contenedorResultados = document.getElementById('contenedorResultados');
-    const contenedorTabla = document.getElementById('contenedorTablaTemporada');
-
-    // SI ELIGEN TEMPORADA COMPLETA, PINTAMOS LA MATRIZ Y SALIMOS
-    if (tipo.includes('temporada')) {
-        if (contenedorResultados) contenedorResultados.style.display = 'none';
-        if (contenedorTabla) contenedorTabla.style.display = 'block';
-
-        const metricaSelect = document.getElementById('selectMetrica');
-        const metricaValor = metricaSelect?.value || 'puntos';
-
-        try {
-            const res = await fetch('/api/todos-los-resultados');
-            resultadosGlobales = await res.json();
-        } catch (e) {
-            console.error("No se pudieron refrescar los datos", e);
-        }
-
-        renderizarMatrizTemporada(metricaValor);
-        return;
-    } else {
-        if (contenedorTabla) contenedorTabla.style.display = 'none';
-        if (contenedorResultados) contenedorResultados.style.display = 'block';
-    }
-
-    // --- RESTO DE TU CÓDIGO ORIGINAL DE HEAD-TO-HEAD ---
     if (!document.getElementById('nombreItem1') && contenedorResultados) {
         contenedorResultados.innerHTML = `
             <div style="text-align: center;">
@@ -490,6 +352,7 @@ async function ejecutarComparativa() {
         `;
     }
      else if (contenedorResultados) {
+        // Aseguramos que los contenedores de los badges existan siempre aunque la tarjeta ya estuviera creada previamente
         const bg1 = document.getElementById('bgItem1');
         const bg2 = document.getElementById('bgItem2');
         
@@ -510,6 +373,7 @@ async function ejecutarComparativa() {
         }
     }
 
+    const tipo = (document.getElementById('selectTipoComparativa')?.value || document.getElementById('tipoComparacion')?.value || '').toLowerCase();
     const item1 = document.getElementById('selectItem1')?.value;
     const item2 = document.getElementById('selectItem2')?.value;
     const metricaSelect = document.getElementById('selectMetrica');
@@ -576,6 +440,7 @@ async function ejecutarComparativa() {
         configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
         configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
 
+        // Añadimos los badges de posición correctamente asegurando el renderizado
         const esPorCircuito = tipo.includes('circuito') && Boolean(circuitoSeleccionadoId);
         if (typeof actualizarBadgePosicion === 'function') {
             actualizarBadgePosicion('1', stats1[0], esPorCircuito);
@@ -608,6 +473,7 @@ async function ejecutarComparativa() {
         configurarTarjeta('1', reg1, 'escuderia');
         configurarTarjeta('2', reg2, 'escuderia');
 
+        // Limpiamos los badges si es escudería para que no queden rastros visuales
         if(document.getElementById('contenedorBadge1')) document.getElementById('contenedorBadge1').innerHTML = '';
         if(document.getElementById('contenedorBadge2')) document.getElementById('contenedorBadge2').innerHTML = '';
 
