@@ -316,7 +316,7 @@ function cambiarTipoComparacion() {
         }
         // Ejecuta la comparativa refrescando datos al vuelo y calculando métricas
 async function ejecutarComparativa() {
-    // 1. Aseguramos que las tarjetas de resultados existen en el DOM antes de operar con ellas
+    // Reutilizamos la variable sin volver a poner 'const'
     const contenedorResultados = document.getElementById('contenedorResultados');
     if (!document.getElementById('nombreItem1') && contenedorResultados) {
         contenedorResultados.innerHTML = `
