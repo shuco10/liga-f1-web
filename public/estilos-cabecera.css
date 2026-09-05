@@ -1404,14 +1404,14 @@ table tr td:nth-child(2) {
 
 .header-tarjeta {
     position: relative;
-    padding: 15px 20px;
+    padding: 12px 20px;
     border-radius: 8px;
     overflow: hidden;
     color: #fff;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Pone el texto a la izquierda y la caja del valor a la derecha */
-    min-height: 70px;
+    justify-content: space-between;
+    min-height: 85px; /* Altura optimizada para la foto rectangular */
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -1427,17 +1427,30 @@ table tr td:nth-child(2) {
     z-index: 1;
 }
 
+/* Recuadro tipo placa para la foto grande del piloto */
+.caja-foto {
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
 .foto-piloto-card {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border: 2px solid #fff;
+    border-radius: 4px;
 }
 
 .header-tarjeta h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 700;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
 }
@@ -1447,14 +1460,15 @@ table tr td:nth-child(2) {
     background-color: rgba(0, 0, 0, 0.75);
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
-    padding: 8px 20px;
-    font-size: 1.5rem;
+    padding: 10px 20px;
+    font-size: 1.6rem;
     font-weight: 800;
     color: #fff;
-    min-width: 60px;
+    min-width: 65px;
     text-align: center;
     position: relative;
     z-index: 1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 /* El VS centrado y con estilo */
@@ -1477,21 +1491,18 @@ table tr td:nth-child(2) {
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 
-
 .titulo-metrica-header {
     text-align: center;
-    color: #ff3333; /* Mismo tono racing que el VS o blanco brillante, como prefieras */
+    color: #ff3333;
     font-size: 1.1rem;
     font-weight: 900;
     letter-spacing: 3px;
     margin: 25px auto 15px auto;
     text-transform: uppercase;
-    
-    /* Estilo de placa/badge idéntico al del VS */
     background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
     padding: 8px 24px;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    display: table; /* Hace que el fondo se ajuste al texto en lugar de ocupar todo el ancho */
+    display: table;
 }
