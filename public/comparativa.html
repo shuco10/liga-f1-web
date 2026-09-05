@@ -557,7 +557,7 @@
         }
     }
 
-    function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaTexto) {
+function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaTexto) {
         const contenedorResultados = document.getElementById('contenedorResultados');
         
         const resultadosOrdenados = [...resultadosCircuito].sort((a, b) => {
@@ -586,50 +586,74 @@
         };
 
         let htmlTabla = `
-            <div style="overflow-x: auto; margin-top: 15px;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; background: #1e1e1e; border-radius: 8px; overflow: hidden;">
+            <div style="overflow-x: auto; margin-top: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; background: #161616; font-family: sans-serif;">
                     <thead>
-                        <tr style="background: #2a2a2a; border-bottom: 2px solid #444;">
-                            <th style="padding: 12px; text-align: center;">Pos</th>
-                            <th style="padding: 12px;">Piloto</th>
-                            <th style="padding: 12px; text-align: center;">Puntos</th>
-                            <th style="padding: 12px; text-align: center;">Pole</th>
-                            <th style="padding: 12px; text-align: center;">Estado / DNF</th>
+                        <tr style="background: linear-gradient(135deg, #222222, #2c2c2c); border-bottom: 2px solid #ff4444; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+                            <th style="padding: 14px 12px; text-align: center; color: #aaa;">Pos</th>
+                            <th style="padding: 14px 12px; color: #aaa;">Piloto / Escudería</th>
+                            <th style="padding: 14px 12px; text-align: center; color: #aaa;">Puntos</th>
+                            <th style="padding: 14px 12px; text-align: center; color: #aaa;">Pole</th>
+                            <th style="padding: 14px 12px; text-align: center; color: #aaa;">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
         `;
 
         if (resultadosOrdenados.length === 0) {
-            htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
+            htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 30px; color: #888; font-style: italic;">No hay registros para este circuito todavía.</td></tr>`;
         } else {
             resultadosOrdenados.forEach((res, index) => {
-                const posDisplay = res.dnf ? 'DNF' : (res.posicion || (index + 1));
-                const badgeColor = res.dnf ? '#e74c3c' : (res.posicion === 1 ? '#f1c40f' : '#333');
-                const textBadgeColor = res.posicion === 1 && !res.dnf ? '#000' : '#fff';
+                const posReal = res.dnf ? null : (res.posicion || (index + 1));
                 
+                // Estilos personalizados para las posiciones del podio y resto
+                let badgeBg = '#262626';
+                let badgeColor = '#fff';
+                let badgeBorder = '1px solid #383838';
+
+                if (res.dnf) {
+                    badgeBg = 'rgba(231, 76, 60, 0.15)';
+                    badgeColor = '#e74c3c';
+                    badgeBorder = '1px solid #e74c3c';
+                } else if (posReal === 1) {
+                    // Oro F1 / Brillante
+                    badgeBg = 'linear-gradient(135deg, #f1c40f, #d4ac0d)';
+                    badgeColor = '#111';
+                    badgeBorder = '1px solid #f39c12';
+                } else if (posReal === 2) {
+                    // Plata
+                    badgeBg = 'linear-gradient(135deg, #bdc3c7, #95a5a6)';
+                    badgeColor = '#111';
+                    badgeBorder = '1px solid #7f8c8d';
+                } else if (posReal === 3) {
+                    // Bronce
+                    badgeBg = 'linear-gradient(135deg, #e67e22, #d35400)';
+                    badgeColor = '#fff';
+                    badgeBorder = '1px solid #ba4a00';
+                }
+
+                const posDisplay = res.dnf ? 'DNF' : `${posReal}º`;
                 const fotoPiloto = res.foto_url || '';
-                
                 const escuderiaArchivo = obtenerNombreArchivoEscuderia(res.escuderia_nombre);
                 const imgEscuderia = escuderiaArchivo ? `banderas/${escuderiaArchivo}.png` : '';
                 
                 htmlTabla += `
-                    <tr style="border-bottom: 1px solid #333; transition: background 0.2s;">
-                        <td style="padding: 10px 12px; text-align: center;">
-                            <span style="background: ${badgeColor}; color: ${textBadgeColor}; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
+                    <tr style="border-bottom: 1px solid #222; transition: background 0.2s;" onmouseover="this.style.background='#1f1f1f'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 12px; text-align: center;">
+                            <span style="display: inline-block; min-width: 36px; padding: 5px 8px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; background: ${badgeBg}; color: ${badgeColor}; border: ${badgeBorder}; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
                                 ${posDisplay}
                             </span>
                         </td>
-                        <td style="padding: 10px 12px; font-weight: 500;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                ${fotoPiloto ? `<img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
-                                ${imgEscuderia ? `<img src="${imgEscuderia}" alt="${res.escuderia_nombre || ''}" title="${res.escuderia_nombre || ''}" style="width: 24px; height: 16px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
-                                <span>${res.gamertag || 'Piloto #' + res.id_piloto}</span>
+                        <td style="padding: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                ${fotoPiloto ? `<img src="${fotoPiloto}" alt="" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.15); flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
+                                ${imgEscuderia ? `<img src="${imgEscuderia}" alt="${res.escuderia_nombre || ''}" title="${res.escuderia_nombre || ''}" style="width: 26px; height: 18px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
+                                <span style="font-weight: 600; font-size: 0.950rem; color: #f0f0f0;">${res.gamertag || 'Piloto #' + res.id_piloto}</span>
                             </div>
                         </td>
-                        <td style="padding: 10px 12px; text-align: center; font-weight: bold; color: #3498db;">${res.puntos ?? 0} pts</td>
-                        <td style="padding: 10px 12px; text-align: center;">${res.pole ? '⭐ Pole' : '-'}</td>
-                        <td style="padding: 10px 12px; text-align: center;">${res.dnf ? '<span style="color: #e74c3c; font-weight: bold;">Retirado</span>' : '<span style="color: #2ecc71;">Clasificado</span>'}</td>
+                        <td style="padding: 12px; text-align: center; font-weight: bold; color: #3498db; font-size: 0.95rem;">${res.puntos ?? 0} <span style="font-size: 0.75rem; color: #888; font-weight: normal;">pts</span></td>
+                        <td style="padding: 12px; text-align: center; font-size: 0.9rem;">${res.pole ? '<span style="color: #f1c40f; font-weight: bold; background: rgba(241,196,15,0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(241,196,15,0.3);">⭐ Pole</span>' : '<span style="color: #555;">-</span>'}</td>
+                        <td style="padding: 12px; text-align: center; font-size: 0.85rem;">${res.dnf ? '<span style="color: #e74c3c; font-weight: bold; background: rgba(231,76,60,0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(231,76,60,0.3);">Retirado</span>' : '<span style="color: #2ecc71; font-weight: 500;">Clasificado</span>'}</td>
                     </tr>
                 `;
             });
@@ -642,8 +666,9 @@
         `;
 
         contenedorResultados.innerHTML = `
-            <div style="text-align: center; margin-bottom: 15px;">
-                <h3 id="tituloMetricaComparativa" style="color: #fff; font-size: 1.2rem;">CLASIFICACIÓN - ${circuito.toUpperCase()}</h3>
+            <div style="text-align: center; margin-bottom: 20px; background: linear-gradient(90deg, transparent, rgba(255,68,68,0.15), transparent); padding: 12px 0; border-radius: 6px;">
+                <span style="font-size: 0.8rem; color: #ff4444; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 4px; font-weight: bold;">Gran Premio / Circuito</span>
+                <h3 id="tituloMetricaComparativa" style="color: #fff; font-size: 1.5rem; margin: 0; font-weight: 800; letter-spacing: 1px;">${circuito.toUpperCase()}</h3>
             </div>
             ${htmlTabla}
         `;
@@ -651,6 +676,10 @@
         contenedorResultados.style.display = 'block';
     }
 
+
+
+
+    
     window.onload = cargarDatosGlobales;
 </script>
 </body>
