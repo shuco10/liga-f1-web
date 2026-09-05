@@ -412,13 +412,14 @@ async function ejecutarComparativa() {
         document.getElementById('nombreItem2').innerText = item2;
         document.getElementById('valorItem2').innerText = val2;
 
-        configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
+configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
         configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
 
         // Añadimos los badges de posición correctamente
+        const esPorCircuito = tipo.includes('circuito') && Boolean(circuitoSeleccionadoId);
         if (typeof actualizarBadgePosicion === 'function') {
-            actualizarBadgePosicion('1', stats1[0]);
-            actualizarBadgePosicion('2', stats2[0]);
+            actualizarBadgePosicion('1', stats1[0], esPorCircuito);
+            actualizarBadgePosicion('2', stats2[0], esPorCircuito);
         }
 
         aplicarColoresComparativa(val1, val2, metricaValor);
@@ -695,16 +696,11 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
     }
 
 // Ejemplo de cómo rellenarlo para cada piloto (adapta 'registroPiloto' a tu variable de datos):
-function actualizarBadgePosicion(idSufijo, registroPiloto) {
+function actualizarBadgePosicion(idSufijo, registroPiloto, esPorCircuito) {
         const contenedorBadge = document.getElementById(`contenedorBadge${idSufijo}`);
         if (!contenedorBadge) return;
 
-        // Comprobamos si el tipo de comparativa actual incluye "circuito" de forma segura
-        const tipoActual = (document.getElementById('selectTipoComparativa')?.value || document.getElementById('tipoComparacion')?.value || '').toLowerCase();
-        const esCircuito = tipoActual.includes('circuito');
-
-        // Si estamos viendo la comparativa por circuitos y hay un registro válido
-        if (esCircuito && registroPiloto) {
+        if (esPorCircuito && registroPiloto) {
             const posReal = registroPiloto.dnf ? null : (registroPiloto.posicion || 1); 
             
             let badgeBg = '#262626';
@@ -738,7 +734,6 @@ function actualizarBadgePosicion(idSufijo, registroPiloto) {
             `;
             contenedorBadge.style.display = 'flex';
         } else {
-            // Si no estamos en circuitos o no hay datos, ocultamos el badge
             contenedorBadge.innerHTML = '';
             contenedorBadge.style.display = 'none';
         }
