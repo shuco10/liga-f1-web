@@ -308,36 +308,51 @@ function configurarTarjeta(idSufijo, registro, modo) {
             const headerCard = document.getElementById(`bgItem${idSufijo}`);
             const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
 
-            // Función para limpiar y acortar el nombre de la escuderia al archivo real
-function obtenerNombreArchivoEscuderia(nombre) {
-            if (!nombre) return '';
-            const n = nombre.toLowerCase().trim();
-            
-            // Diccionario exacto basado en tus archivos de imagen
-            if (n.includes('alpine')) return 'alpine';
-            if (n.includes('aston martin')) return 'aston_martin';
-            if (n.includes('audi')) return 'audi';
-            if (n.includes('cadillac')) return 'cadillac';
-            if (n.includes('ferrari')) return 'ferrari';
-            if (n.includes('haas')) return 'haas';
-            if (n.includes('mclaren')) return 'mclaren';
-            if (n.includes('mercedes')) return 'mercedes';
-            if (n.includes('red bull') || n.includes('redbull')) return 'redbull';
-            if (n.includes('visa') || n.includes('rb') || n.includes('racing bulls')) return 'rb';
-            if (n.includes('williams')) return 'williams';
+            console.log(`Configurando tarjeta ${idSufijo} (${modo}):`, registro.escuderia_nombre);
 
-            // Fallback por si acaso limpiando espacios y símbolos
-            return n.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-        }
+            const obtenerNombreArchivoEscuderia = (nombre) => {
+                if (!nombre) return '';
+                const n = nombre.toLowerCase().trim();
+                
+                if (n.includes('alpine')) return 'alpine';
+                if (n.includes('aston martin')) return 'aston_martin';
+                if (n.includes('audi')) return 'audi';
+                if (n.includes('cadillac')) return 'cadillac';
+                if (n.includes('ferrari')) return 'ferrari';
+                if (n.includes('haas')) return 'haas';
+                if (n.includes('mclaren')) return 'mclaren';
+                if (n.includes('mercedes')) return 'mercedes';
+                if (n.includes('red bull') || n.includes('redbull')) return 'redbull';
+                if (n.includes('visa') || n.includes('rb') || n.includes('racing bulls')) return 'rb';
+                if (n.includes('williams')) return 'williams';
+
+                return n.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+            };
+
+            let colorEquipo = '#1f1f1f';
+            const nEscuderia = registro.escuderia_nombre ? registro.escuderia_nombre.toLowerCase() : '';
+            
+            if (nEscuderia.includes('ferrari')) colorEquipo = '#dc0000';
+            else if (nEscuderia.includes('aston martin')) colorEquipo = '#006f62';
+            else if (nEscuderia.includes('red bull')) colorEquipo = '#0600ef';
+            else if (nEscuderia.includes('mercedes')) colorEquipo = '#00d2be';
+            else if (nEscuderia.includes('mclaren')) colorEquipo = '#ff8700';
+            else if (nEscuderia.includes('alpine')) colorEquipo = '#0090ff';
+            else if (nEscuderia.includes('williams')) colorEquipo = '#005aff';
+            else if (nEscuderia.includes('haas')) colorEquipo = '#b6babd';
+            else if (nEscuderia.includes('audi')) colorEquipo = '#e10600';
+            else if (nEscuderia.includes('cadillac')) colorEquipo = '#111111';
+            else if (nEscuderia.includes('visa') || n.includes('rb')) colorEquipo = '#2b4562';
+
+            headerCard.style.backgroundColor = colorEquipo;
 
             const escuderiaArchivo = obtenerNombreArchivoEscuderia(registro.escuderia_nombre);
+            console.log("Archivo mapeado:", escuderiaArchivo);
 
-            // Aplicamos la bandera como fondo con un filtro oscuro semitransparente encima para que destaque bien
             if (escuderiaArchivo) {
-                headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/banderas/${escuderiaArchivo}.png')`;
+                headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/banderas/${escuderiaArchivo}.png')`;
             } else {
                 headerCard.style.backgroundImage = 'none';
-                headerCard.style.backgroundColor = '#1f1f1f';
             }
 
             if (modo === 'piloto') {
@@ -349,7 +364,6 @@ function obtenerNombreArchivoEscuderia(nombre) {
 
             imgFoto.onerror = function() { this.style.display = 'none'; };
         }
-
 
 
     
