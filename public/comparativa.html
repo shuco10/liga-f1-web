@@ -307,17 +307,12 @@ function calcularMetricaPiloto(registros, metrica) {
 function configurarTarjeta(idSufijo, registro, modo) {
             const headerCard = document.getElementById(`bgItem${idSufijo}`);
             const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
-            const imgLogo = document.getElementById(`logoItem${idSufijo}`);
 
-            let colorEquipo = '#1f1f1f';
-            headerCard.style.backgroundColor = colorEquipo;
-
-            // Función para limpiar y acortar el nombre de la escuderia al archivo real de la carpeta /banderas/
+            // Función para limpiar y acortar el nombre de la escuderia al archivo real
             const obtenerNombreArchivoEscuderia = (nombre) => {
                 if (!nombre) return '';
                 const n = nombre.toLowerCase();
                 
-                // Mapeo directo para los nombres largos de la BDD a tus archivos cortos
                 if (n.includes('ferrari')) return 'ferrari';
                 if (n.includes('aston martin')) return 'aston_martin';
                 if (n.includes('red bull')) return 'redbull';
@@ -330,23 +325,27 @@ function configurarTarjeta(idSufijo, registro, modo) {
                 if (n.includes('cadillac')) return 'cadillac';
                 if (n.includes('rb') || n.includes('visa cash app')) return 'rb';
 
-                // Genérico por si entra otro
                 return n.trim().replace(/\s+/g, '_');
             };
 
             const escuderiaArchivo = obtenerNombreArchivoEscuderia(registro.escuderia_nombre);
 
+            // Aplicamos la bandera como fondo con un filtro oscuro semitransparente encima para que destaque bien
+            if (escuderiaArchivo) {
+                headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/banderas/${escuderiaArchivo}.png')`;
+            } else {
+                headerCard.style.backgroundImage = 'none';
+                headerCard.style.backgroundColor = '#1f1f1f';
+            }
+
             if (modo === 'piloto') {
                 imgFoto.style.display = 'block';
                 imgFoto.src = registro.foto_url || '';
-                imgLogo.src = escuderiaArchivo ? `/banderas/${escuderiaArchivo}.png` : '';
             } else {
                 imgFoto.style.display = 'none';
-                imgLogo.src = escuderiaArchivo ? `/banderas/${escuderiaArchivo}.png` : '';
             }
 
             imgFoto.onerror = function() { this.style.display = 'none'; };
-            imgLogo.onerror = function() { this.style.display = 'none'; };
         }
 
 
