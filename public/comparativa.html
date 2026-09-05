@@ -331,6 +331,7 @@ function calcularMetricaPiloto(registros, metrica) {
 function configurarTarjeta(idSufijo, registro, modo) {
             const headerCard = document.getElementById(`bgItem${idSufijo}`);
             const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
+            const contenedorFoto = document.getElementById(`contenedorFoto${idSufijo}`);
 
             // Determinamos el nombre del equipo según el modo
             const nombreEscuderia = modo === 'escuderia' 
@@ -383,15 +384,19 @@ function configurarTarjeta(idSufijo, registro, modo) {
                 headerCard.style.backgroundImage = 'none';
             }
 
-            // Gestionar foto de piloto
+            // Gestionar la caja y foto del piloto según el modo
             if (modo === 'piloto') {
+                contenedorFoto.style.display = 'flex';
                 imgFoto.style.display = 'block';
                 imgFoto.src = registro.foto_url || '';
             } else {
+                contenedorFoto.style.display = 'none';
                 imgFoto.style.display = 'none';
             }
 
-            imgFoto.onerror = function() { this.style.display = 'none'; };
+            imgFoto.onerror = function() { 
+                this.style.display = 'none'; 
+            };
         }
 
 
