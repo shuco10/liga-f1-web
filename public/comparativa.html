@@ -50,6 +50,7 @@
 
         <select id="selectMetrica" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
             <option value="puntos">Puntos</option>
+            <option value="victorias">Victorias</option>
             <option value="podios">Podios</option>
             <option value="poles">Poles</option>
             <option value="dnf">DNFs</option>
@@ -261,14 +262,16 @@ let resultadosGlobales = [];
 
 function calcularMetricaPiloto(registros, metrica) {
             if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
+            if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
             if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
             if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
             if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
             return 0;
         }
 
-function calcularMetricaEscuderia(registros, metrica) {
+        function calcularMetricaEscuderia(registros, metrica) {
             if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
+            if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
             if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
             if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
             if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
