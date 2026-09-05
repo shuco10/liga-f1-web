@@ -345,6 +345,26 @@ async function ejecutarComparativa() {
                 <div id="valorItem2" class="caja-valor">0</div>
             </div>
         `;
+    } else if (contenedorResultados) {
+        // Aseguramos que los contenedores de los badges existan siempre aunque la tarjeta ya estuviera creada previamente
+        const bg1 = document.getElementById('bgItem1');
+        const bg2 = document.getElementById('bgItem2');
+        
+        if (bg1 && !document.getElementById('contenedorBadge1')) {
+            const badgeDiv1 = document.createElement('div');
+            badgeDiv1.id = 'contenedorBadge1';
+            badgeDiv1.style.cssText = 'display: flex; align-items: center; justify-content: center; padding: 0 10px;';
+            const valor1 = document.getElementById('valorItem1');
+            if (valor1) bg1.insertBefore(badgeDiv1, valor1);
+        }
+        
+        if (bg2 && !document.getElementById('contenedorBadge2')) {
+            const badgeDiv2 = document.createElement('div');
+            badgeDiv2.id = 'contenedorBadge2';
+            badgeDiv2.style.cssText = 'display: flex; align-items: center; justify-content: center; padding: 0 10px;';
+            const valor2 = document.getElementById('valorItem2');
+            if (valor2) bg2.insertBefore(badgeDiv2, valor2);
+        }
     }
 
     const tipo = (document.getElementById('selectTipoComparativa')?.value || document.getElementById('tipoComparacion')?.value || '').toLowerCase();
@@ -402,8 +422,7 @@ async function ejecutarComparativa() {
 
         const stats1 = fuenteDatos.filter(r => r.gamertag === item1);
         const stats2 = fuenteDatos.filter(r => r.gamertag === item2);
-        console.log("DEBUG STATS 1:", stats1[0]);
-        console.log("DEBUG STATS 2:", stats2[0]);
+        
         val1 = calcularMetricaPiloto(stats1, metricaValor);
         val2 = calcularMetricaPiloto(stats2, metricaValor);
 
@@ -412,10 +431,10 @@ async function ejecutarComparativa() {
         document.getElementById('nombreItem2').innerText = item2;
         document.getElementById('valorItem2').innerText = val2;
 
-configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
+        configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
         configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
 
-        // Añadimos los badges de posición correctamente
+        // Añadimos los badges de posición correctamente asegurando el renderizado
         const esPorCircuito = tipo.includes('circuito') && Boolean(circuitoSeleccionadoId);
         if (typeof actualizarBadgePosicion === 'function') {
             actualizarBadgePosicion('1', stats1[0], esPorCircuito);
