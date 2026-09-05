@@ -229,26 +229,63 @@ let resultadosGlobales = [];
         }
 
         // Cambia los desplegables según se elija Pilotos o Escuderías
-        function cambiarTipoComparacion() {
+function cambiarTipoComparacion() {
             const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
             const select1 = document.getElementById('selectItem1');
             const select2 = document.getElementById('selectItem2');
+            
+            // Intentamos buscar o comprobar si existe el elemento del circuito en tu HTML
+            const selectCircuito = document.getElementById('selectCircuito');
             
             select1.innerHTML = '<option value="">Selecciona...</option>';
             select2.innerHTML = '<option value="">Selecciona...</option>';
 
             if (tipo.includes('piloto')) {
-                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))];
+                // Ocultar selector de circuito si existiera
+                if (selectCircuito) selectCircuito.style.display = 'none';
+
+                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
                 
                 pilotosUnicos.forEach(piloto => {
                     select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                     select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
                 });
-            } else {
-                escuderiasGlobales.forEach(esc => {
-                    select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
-                    select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+
+            } else if (tipo.includes('circuito')) {
+                // Mostrar selector de circuito si lo tienes en el HTML
+                if (selectCircuito) selectCircuito.style.display = 'inline-block';
+
+                // Cargar los circuitos únicos en el desplegable de circuitos
+                const circuitosUnicos = [...new Set(resultadosGlobales.map(r => r.circuito || r.nombre_circuito).filter(Boolean))].sort();
+                let optsCircuito = '<option value="">Selecciona circuito...</option>';
+                circuitosUnicos.forEach(c => {
+                    optsCircuito += `<option value="${c}">${c}</option>`;
                 });
+                if (selectCircuito) selectCircuito.innerHTML = optsCircuito;
+
+                // En los selectores laterales, añadimos la opción de Parrilla Completa y los pilotos
+                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
+                let optsPilotos = '<option value="PARRILLA_COMPLETA">Parrilla Completa</option>';
+                pilotosUnicos.forEach(p => {
+                    optsPilotos += `<option value="${p}">${p}</option>`;
+                });
+
+                select1.innerHTML = optsPilotos;
+                select2.innerHTML = optsPilotos;
+                select1.value = 'PARRILLA_COMPLETA';
+                select2.value = 'PARRILLA_COMPLETA';
+
+            } else {
+                // Ocultar selector de circuito si existiera
+                if (selectCircuito) selectCircuito.style.display = 'none';
+
+                // Bloque para Escuderías
+                if (typeof escuderiasGlobales !== 'undefined') {
+                    escuderiasGlobales.forEach(esc => {
+                        select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+                        select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+                    });
+                }
             }
         }
 
