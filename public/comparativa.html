@@ -262,14 +262,14 @@ let resultadosGlobales = [];
 function calcularMetricaPiloto(registros, metrica) {
             if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
             if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-            if (metrica === 'poles') return registros.reduce((acc, r) => acc + (Number(r.poles) || 0), 0);
+            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
             if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
             return 0;
         }
 
         function calcularMetricaEscuderia(registros, metrica) {
             if (metrica === 'puntos') {
-                // Agrupamos por GP para sumar los puntos de la escudería sin duplicarlos por tener dos pilotos
+                // Evita duplicar los puntos de equipo agrupando por GP
                 const puntosPorGp = {};
                 registros.forEach(r => {
                     if (!puntosPorGp[r.id_gp]) {
@@ -279,7 +279,7 @@ function calcularMetricaPiloto(registros, metrica) {
                 return Object.values(puntosPorGp).reduce((acc, val) => acc + val, 0);
             }
             if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-            if (metrica === 'poles') return registros.reduce((acc, r) => acc + (Number(r.poles) || 0), 0);
+            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
             if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
             return 0;
         }
