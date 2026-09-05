@@ -175,78 +175,99 @@
 // DESPLEGABLES Y DEMAS EN ESTE HUECO -->
 // Lógica base en JavaScript para alimentar y procesar la comparativa
 
-// 1. Rellenar los desplegables de contrincantes según elija Pilotos o Escuderías
-function cambiarTipoComparacion() {
-    const tipo = document.getElementById('tipoComparacion').value;
-    const select1 = document.getElementById('selectItem1');
-    const select2 = document.getElementById('selectItem2');
-    
-    select1.innerHTML = '<option value="">Selecciona 1...</option>';
-    select2.innerHTML = '<option value="">Selecciona 2...</option>';
+let resultadosGlobales = [];
 
-    if (tipo === 'pilotos') {
-        // Extraer lista única de gamertags de tus resultados actuales
-        // (Asumiendo que tienes la variable global 'resultados' cargada)
-        const pilotosUnicos = [...new Set(resultados.map(r => r.gamertag))];
-        pilotosUnicos.forEach(piloto => {
-            select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
-            select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cargar componentes externos
+            fetch('/header.html').then(res => res.text()).then(data => document.getElementById('header-placeholder').innerHTML = data);
+            fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
+            fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
+
+            // Cargar datos necesarios para la comparativa
+            try {
+                const resResultados = await fetch('/api/todos-los-resultados');
+                resultadosGlobales = await resResultados.json();
+
+                cambiarTipoComparacion();
+            } catch (err) {
+                console.error("Error al cargar datos para comparativas:", err);
+            }
         });
-    } else {
-        // Aquí cargarías las escuderías si las tienes guardadas en otra tabla o propiedad
-        const escuderiasUnicas = ["Red Bull", "Ferrari", "Mercedes", "McLaren", "Aston Martin"]; // Ejemplo
-        escuderiasUnicas.forEach(escuderia => {
-            select1.innerHTML += `<option value="${escuderia}">${escuderia}</option>`;
-            select2.innerHTML += `<option value="${escuderia}">${escuderia}</option>`;
-        });
-    }
-}
 
-// 2. Calcular y pintar los datos al pulsar el botón
-function ejecutarComparativa() {
-    const tipo = document.getElementById('tipoComparacion').value;
-    const item1 = document.getElementById('selectItem1').value;
-    const item2 = document.getElementById('selectItem2').value;
-    const metrica = document.getElementById('selectMetrica').value;
+        function cambiarTipoComparacion() {
+            const tipo = document.getElementById('tipoComparacion').value;
+            const select1 = document.getElementById('selectItem1');
+            const select2 = document.getElementById('selectItem2');
+            
+            select1.innerHTML = '<option value="">Selecciona...</option>';
+            select2.innerHTML = '<option value="">Selecciona...</option>';
 
-    if (!item1 || !item2) {
-        alert("Selecciona ambos contrincantes para comparar.");
-        return;
-    }
+            if (tipo === 'pilotos') {
+                // Extraer pilotos únicos de los resultados para que aparezcan todos los que han corrido
+                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag || r.nombre).filter(Boolean))];
+                pilotosUnicos.forEach(piloto => {
+                    select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+                    select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+                });
+            } else {
+                // Extraer escuderías únicas de los resultados
+                const escuderiasUnicas = [...new Set(resultadosGlobales.map(r => r.escuderia_nombre || r.escuderia).filter(Boolean))];
+                escuderiasUnicas.forEach(esc => {
+                    select1.innerHTML += `<option value="${esc}">${esc}</option>`;
+                    select2.innerHTML += `<option value="${esc}">${esc}</option>`;
+                });
+            }
+        }
 
-    // Ejemplo de cálculo para pilotos basados en tu estructura de resultados
-    let val1 = 0;
-    let val2 = 0;
+        function ejecutarComparativa() {
+            const tipo = document.getElementById('tipoComparacion').value;
+            const item1 = document.getElementById('selectItem1').value;
+            const item2 = document.getElementById('selectItem2').value;
+            const metrica = document.getElementById('selectMetrica').value;
 
-    if (tipo === 'pilotos') {
-        const statsItem1 = resultados.filter(r => r.gamertag === item1);
-        const statsItem2 = resultados.filter(r => r.gamertag === item2);
+            if (!item1 || !item2) {
+                alert("Por favor, selecciona ambos contrincantes para comparar.");
+                return;
+            }
 
-        val1 = calcularMetricaPiloto(statsItem1, metrica);
-        val2 = calcularMetricaPiloto(statsItem2, metrica);
-    }
+            let val1 = 0;
+            let val2 = 0;
 
-    // Pintar en pantalla
-    document.getElementById('nombreItem1').innerText = item1;
-    document.getElementById('valorItem1').innerText = val1;
-    document.getElementById('nombreItem2').innerText = item2;
-    document.getElementById('valorItem2').innerText = val2;
-}
+            if (tipo === 'pilotos') {
+                const stats1 = resultadosGlobales.filter(r => (r.gamertag === item1 || r.nombre === item1));
+                const stats2 = resultadosGlobales.filter(r => (r.gamertag === item2 || r.nombre === item2));
 
-function calcularMetricaPiloto(registrosPiloto, metrica) {
-    if (metrica === 'puntos') {
-        // Sumar puntos (asegúrate de que tus registros tengan la propiedad de puntos, o calcúlala por posición)
-        return registrosPiloto.reduce((acc, r) => acc + (r.puntos || 0), 0);
-    } else if (metrica === 'podios') {
-        return registrosPiloto.filter(r => r.posicion <= 3 && !r.dnf).length;
-    } else if (metrica === 'poles') {
-        return registrosPiloto.filter(r => r.pole === true).length; // Si guardas la pole
-    } else if (metrica === 'dnf') {
-        return registrosPiloto.filter(r => r.dnf === true).length;
-    }
-    return 0;
-}
+                val1 = calcularMetricaPiloto(stats1, metrica);
+                val2 = calcularMetricaPiloto(stats2, metrica);
+            } else {
+                const stats1 = resultadosGlobales.filter(r => (r.escuderia_nombre === item1 || r.escuderia === item1));
+                const stats2 = resultadosGlobales.filter(r => (r.escuderia_nombre === item2 || r.escuderia === item2));
 
+                val1 = calcularMetricaEscuderia(stats1, metrica);
+                val2 = calcularMetricaEscuderia(stats2, metrica);
+            }
+
+            document.getElementById('nombreItem1').innerText = item1;
+            document.getElementById('valorItem1').innerText = val1;
+            document.getElementById('nombreItem2').innerText = item2;
+            document.getElementById('valorItem2').innerText = val2;
+        }
+
+        function calcularMetricaPiloto(registros, metrica) {
+            if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
+            if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
+            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+            if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
+            return 0;
+        }
+
+        function calcularMetricaEscuderia(registros, metrica) {
+            if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.escuderia_puntos || r.puntos) || 0), 0);
+            if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
+            if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+            if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
+            return 0;
+        }
     
 
 
