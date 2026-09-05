@@ -721,10 +721,9 @@ function actualizarBadgePosicion(idSufijo, registroPiloto, esPorCircuito) {
     const contenedorBadge = document.getElementById(`contenedorBadge${idSufijo}`);
     if (!contenedorBadge) return;
 
-    // Forzamos el estilo directamente aquí para anclarlo a la derecha junto al valor
-    contenedorBadge.style.cssText = 'position: absolute; right: 95px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; z-index: 5;';
+    // Aumentamos a 115px para desplazarlo hacia la izquierda separándolo del cuadro de puntos
+    contenedorBadge.style.cssText = 'position: absolute; right: 115px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; z-index: 5;';
     
-    // Aseguramos que la tarjeta contenedora tenga posición relativa para que respete el absolute
     const tarjeta = document.getElementById(`bgItem${idSufijo}`);
     if (tarjeta) tarjeta.style.position = 'relative';
 
