@@ -1402,3 +1402,49 @@ table tr td:nth-child(2) {
 }
 
 
+.header-tarjeta {
+    position: relative;
+    padding: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.4); /* Oscurece ligeramente para que el texto resalte */
+}
+
+/* Logo de la escuderia de fondo o marca de agua */
+.logo-escuderia-card {
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+    height: 60px;
+    opacity: 0.25; /* Efecto marca de agua sutil */
+    pointer-events: none;
+}
+
+/* Foto o icono del piloto */
+.foto-piloto-card {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background-color: #222;
+}
+
+.header-tarjeta h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    z-index: 2;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+
+
+
+
