@@ -229,7 +229,35 @@ let resultadosGlobales = [];
         }
 
         // Cambia los desplegables según se elija Pilotos o Escuderías
-function cambiarTipoComparacion() {
+// Lista fija con los IDs y nombres exactos de tu base de datos
+        const listaCircuitosF1 = [
+            { id: 3, nombre: "Melbourne" },
+            { id: 8, nombre: "Shanghái" },
+            { id: 7, nombre: "Suzuka" },
+            { id: 4, nombre: "Sakhir" },
+            { id: 2, nombre: "Yeda" },
+            { id: 9, nombre: "Miami" },
+            { id: 14, nombre: "Montreal" },
+            { id: 11, nombre: "Mónaco" },
+            { id: 12, nombre: "Barcelona" },
+            { id: 15, nombre: "Spielberg" },
+            { id: 16, nombre: "Silverstone" },
+            { id: 17, nombre: "Spa" },
+            { id: 76, nombre: "Budapest" },
+            { id: 18, nombre: "Zandvoort" },
+            { id: 19, nombre: "Monza" },
+            { id: 13, nombre: "Madrid" },
+            { id: 20, nombre: "Bakú" },
+            { id: 21, nombre: "Singapur" },
+            { id: 22, nombre: "Austin" },
+            { id: 23, nombre: "Ciudad de México" },
+            { id: 24, nombre: "São Paulo" },
+            { id: 25, nombre: "Las Vegas" },
+            { id: 26, nombre: "Losail" },
+            { id: 27, nombre: "Abu Dabi" }
+        ];
+
+        function cambiarTipoComparacion() {
             const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
             const select1 = document.getElementById('selectItem1');
             const select2 = document.getElementById('selectItem2');
@@ -251,15 +279,14 @@ function cambiarTipoComparacion() {
             } else if (tipo.includes('circuito')) {
                 if (selectCircuito) selectCircuito.style.display = 'inline-block';
 
-                // Usamos 'circuito_nombre' que es tal cual como te lo devuelve tu API de Node.js
-                const circuitosUnicos = [...new Set(resultadosGlobales.map(r => r.circuito_nombre).filter(Boolean))].sort();
+                // Rellenamos el desplegable usando los IDs exactos de la base de datos
                 let optsCircuito = '<option value="">Selecciona circuito...</option>';
-                circuitosUnicos.forEach(c => {
-                    optsCircuito += `<option value="${c}">${c}</option>`;
+                listaCircuitosF1.forEach(c => {
+                    optsCircuito += `<option value="${c.id}">${c.nombre}</option>`;
                 });
                 if (selectCircuito) selectCircuito.innerHTML = optsCircuito;
 
-                // Configuramos los selectores laterales con la opción de Parrilla Completa y los pilotos
+                // Configuramos los selectores laterales con "Parrilla Completa" y los pilotos
                 const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
                 let optsPilotos = '<option value="PARRILLA_COMPLETA">Parrilla Completa</option>';
                 pilotosUnicos.forEach(p => {
@@ -285,7 +312,7 @@ function cambiarTipoComparacion() {
 
         // Ejecuta la comparativa refrescando datos al vuelo y calculando métricas
 async function ejecutarComparativa() {
-            const tipo = document.getElementById('tipoComparacion').value;
+            const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
             const item1 = document.getElementById('selectItem1').value;
             const item2 = document.getElementById('selectItem2').value;
             const metricaSelect = document.getElementById('selectMetrica');
@@ -293,9 +320,9 @@ async function ejecutarComparativa() {
             const metricaValor = metricaSelect.value;
 
             // Validación específica si estamos en modo circuitos
-            if (tipo === 'circuitos') {
-                const circuitoSeleccionado = document.getElementById('selectCircuito').value;
-                if (!circuitoSeleccionado) {
+            if (tipo.includes('circuito')) {
+                const circuitoSeleccionadoId = document.getElementById('selectCircuito').value;
+                if (!circuitoSeleccionadoId) {
                     alert("Por favor, selecciona un circuito.");
                     return;
                 }
@@ -321,17 +348,22 @@ async function ejecutarComparativa() {
             let val1 = 0;
             let val2 = 0;
 
-            if (tipo === 'circuitos') {
-                const circuitoSeleccionado = document.getElementById('selectCircuito').value;
-                // Filtramos los resultados globales para este circuito específico
-                const resultadosCircuito = resultadosGlobales.filter(r => (r.circuito || r.nombre_circuito) === circuitoSeleccionado);
+            if (tipo.includes('circuito')) {
+                const circuitoSeleccionadoId = document.getElementById('selectCircuito').value;
+                
+                // Filtramos los resultados globales comparando el id_gp numérico exacto
+                const resultadosCircuito = resultadosGlobales.filter(r => String(r.id_gp) === String(circuitoSeleccionadoId));
 
-                // Si eligieron "Parrilla Completa" en alguno de los dos selectores, lanzamos nuestra función de tabla
+                // Buscamos el nombre del circuito para la cabecera y títulos
+                const circuitoObj = listaCircuitosF1.find(c => String(c.id) === String(circuitoSeleccionadoId));
+                const nombreCircuitoTexto = circuitoObj ? circuitoObj.nombre : 'Circuito';
+
+                // Si eligieron "Parrilla Completa" en alguno de los dos selectores
                 if (item1 === 'PARRILLA_COMPLETA' || item2 === 'PARRILLA_COMPLETA') {
-                    ejecutarVistaParrillaCompleta(resultadosCircuito, circuitoSeleccionado, metricaTexto);
-                    return; // Terminamos aquí porque pintamos la tabla entera
+                    ejecutarVistaParrillaCompleta(resultadosCircuito, nombreCircuitoTexto, metricaTexto);
+                    return; 
                 } else {
-                    // Si seleccionaron dos pilotos concretos para enfrentarlos en este circuito:
+                    // Si seleccionaron dos pilotos concretos para enfrentarlos en este circuito
                     const stats1 = resultadosCircuito.filter(r => r.gamertag === item1);
                     const stats2 = resultadosCircuito.filter(r => r.gamertag === item2);
 
@@ -347,11 +379,11 @@ async function ejecutarComparativa() {
                     configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
 
                     aplicarColoresComparativa(val1, val2, metricaValor);
-                    document.getElementById('tituloMetricaComparativa').innerText = `${metricaTexto.toUpperCase()} EN ${circuitoSeleccionado.toUpperCase()}`;
+                    document.getElementById('tituloMetricaComparativa').innerText = `${metricaTexto.toUpperCase()} EN ${nombreCircuitoTexto.toUpperCase()}`;
                     document.getElementById('contenedorResultados').style.display = 'block';
                 }
 
-            } else if (tipo === 'pilotos') {
+            } else if (tipo.includes('piloto')) {
                 const stats1 = resultadosGlobales.filter(r => r.gamertag === item1);
                 const stats2 = resultadosGlobales.filter(r => r.gamertag === item2);
 
