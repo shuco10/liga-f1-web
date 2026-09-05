@@ -311,8 +311,8 @@ async function ejecutarComparativa() {
                 <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
             </div>
             
-            <div id="bgItem1" class="header-tarjeta">
-                <div class="info-izq">
+            <div id="bgItem1" class="header-tarjeta" style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="info-izq" style="display: flex; align-items: center; gap: 10px;">
                     <div id="contenedorFoto1" class="caja-foto">
                         <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
                     </div>
@@ -320,18 +320,19 @@ async function ejecutarComparativa() {
                 </div>
                 <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
                 
-                <!-- HUECO PARA LA POSICIÓN DEL PILOTO 1 -->
-                <div id="contenedorBadge1" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
-                
-                <div id="valorItem1" class="caja-valor">0</div>
+                <!-- Contenedor derecho unificado: Badge pegado al cuadro de puntos -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
+                    <div id="contenedorBadge1" style="display: flex; align-items: center; justify-content: center;"></div>
+                    <div id="valorItem1" class="caja-valor">0</div>
+                </div>
             </div>
 
             <div class="contenedor-vs">
                 <span class="badge-vs">VS</span>
             </div>
 
-            <div id="bgItem2" class="header-tarjeta">
-                <div class="info-izq">
+            <div id="bgItem2" class="header-tarjeta" style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="info-izq" style="display: flex; align-items: center; gap: 10px;">
                     <div id="contenedorFoto2" class="caja-foto">
                         <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
                     </div>
@@ -339,13 +340,15 @@ async function ejecutarComparativa() {
                 </div>
                 <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
                 
-                <!-- HUECO PARA LA POSICIÓN DEL PILOTO 2 -->
-                <div id="contenedorBadge2" style="display: flex; align-items: center; justify-content: center; padding: 0 10px;"></div>
-                
-                <div id="valorItem2" class="caja-valor">0</div>
+                <!-- Contenedor derecho unificado: Badge pegado al cuadro de puntos -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
+                    <div id="contenedorBadge2" style="display: flex; align-items: center; justify-content: center;"></div>
+                    <div id="valorItem2" class="caja-valor">0</div>
+                </div>
             </div>
         `;
-    } else if (contenedorResultados) {
+    }
+     else if (contenedorResultados) {
         // Aseguramos que los contenedores de los badges existan siempre aunque la tarjeta ya estuviera creada previamente
         const bg1 = document.getElementById('bgItem1');
         const bg2 = document.getElementById('bgItem2');
