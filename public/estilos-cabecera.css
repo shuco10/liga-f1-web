@@ -1396,3 +1396,9 @@ table tr td:nth-child(2) {
     font-size: 0.85em;
     display: inline-block;
 }
+
+.subtitulo-principal {
+    text-align: center;
+}
+
+
