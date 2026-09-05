@@ -558,7 +558,6 @@ function configurarTarjeta(idSufijo, registro, modo) {
 function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaTexto) {
     const contenedorResultados = document.getElementById('contenedorResultados');
     
-    // Ordenar los resultados del circuito por posición (del 1 al último, manejando nulos o DNF al final)
     const resultadosOrdenados = [...resultadosCircuito].sort((a, b) => {
         if (a.dnf && !b.dnf) return 1;
         if (!a.dnf && b.dnf) return -1;
@@ -570,10 +569,8 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
             <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; background: #1e1e1e; border-radius: 8px; overflow: hidden;">
                 <thead>
                     <tr style="background: #2a2a2a; border-bottom: 2px solid #444;">
-                        <th style="padding: 12px; text-align: center; width: 60px;">Foto</th>
                         <th style="padding: 12px; text-align: center;">Pos</th>
                         <th style="padding: 12px;">Piloto</th>
-                        <th style="padding: 12px; text-align: center;">Bandera</th>
                         <th style="padding: 12px; text-align: center;">Puntos</th>
                         <th style="padding: 12px; text-align: center;">Pole</th>
                         <th style="padding: 12px; text-align: center;">Estado / DNF</th>
@@ -583,31 +580,29 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
     `;
 
     if (resultadosOrdenados.length === 0) {
-        htmlTabla += `<tr><td colspan="7" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
+        htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
     } else {
         resultadosOrdenados.forEach((res, index) => {
             const posDisplay = res.dnf ? 'DNF' : (res.posicion || (index + 1));
             const badgeColor = res.dnf ? '#e74c3c' : (res.posicion === 1 ? '#f1c40f' : '#333');
             const textBadgeColor = res.posicion === 1 && !res.dnf ? '#000' : '#fff';
             
-            // Extraemos la URL de la foto que viene de p.foto_url en tu API
             const fotoPiloto = res.foto_url || 'img/default-avatar.png';
-            // Placeholder para la bandera (por si añades la columna más adelante)
-            const banderaPiloto = res.bandera || 'img/default-flag.png';
+            const banderaPiloto = res.bandera || res.pais_bandera || `img/flags/${res.nacionalidad || 'es'}.png`;
             
             htmlTabla += `
                 <tr style="border-bottom: 1px solid #333; transition: background 0.2s;">
-                    <td style="padding: 8px 12px; text-align: center;">
-                        <img src="${fotoPiloto}" alt="${res.gamertag}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); display: block; margin: 0 auto;" onerror="this.src='img/default-avatar.png'">
-                    </td>
                     <td style="padding: 10px 12px; text-align: center;">
                         <span style="background: ${badgeColor}; color: ${textBadgeColor}; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
                             ${posDisplay}
                         </span>
                     </td>
-                    <td style="padding: 10px 12px; font-weight: 500;">${res.gamertag || 'Piloto #' + res.id_piloto}</td>
-                    <td style="padding: 8px 12px; text-align: center;">
-                        <img src="${banderaPiloto}" alt="Bandera" style="width: 28px; height: 18px; object-fit: cover; border-radius: 3px; border: 1px solid rgba(255, 255, 255, 0.1); display: block; margin: 0 auto;">
+                    <td style="padding: 10px 12px; font-weight: 500;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.src='img/default-avatar.png'">
+                            <img src="${banderaPiloto}" alt="" style="width: 24px; height: 16px; object-fit: cover; border-radius: 2px; flex-shrink: 0;" onerror="this.style.display='none'">
+                            <span>${res.gamertag || 'Piloto #' + res.id_piloto}</span>
+                        </div>
                     </td>
                     <td style="padding: 10px 12px; text-align: center; font-weight: bold; color: #3498db;">${res.puntos ?? 0} pts</td>
                     <td style="padding: 10px 12px; text-align: center;">${res.pole ? '⭐ Pole' : '-'}</td>
