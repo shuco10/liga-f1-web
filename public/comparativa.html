@@ -137,9 +137,9 @@
         // Cargar Footer y Modal
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-    }); // <--- AQUÍ SE CIERRA EL EVENT LISTENER CORRECTAMENTE
+    });
 
-    // 2. Lógica de Sesión (FUERA del DOMContentLoaded)
+    // 2. Lógica de Sesión
     function verificarSesion() {
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
@@ -161,15 +161,12 @@
         if (modal) modal.style.display = 'block';
     }
 
-
-
-        async function enviarContacto() {
+    async function enviarContacto() {
         const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
         const nombre = document.getElementById('nombre-contacto').value;
         const asunto = document.getElementById('asunto-contacto').value;
         const mensaje = document.getElementById('mensaje-contacto').value;
 
-        // Validacion simple
         if(!nombre || !asunto || !mensaje) {
             alert("Por favor, rellena todos los campos.");
             return;
@@ -206,518 +203,455 @@
         }
     }
 
-// DESPLEGABLES Y DEMAS EN ESTE HUECO -->
-// Lógica base en JavaScript para alimentar y procesar la comparativa
+    let resultadosGlobales = [];
+    let escuderiasGlobales = [];
 
-let resultadosGlobales = [];
-        let escuderiasGlobales = [];
+    async function cargarDatosGlobales() {
+        try {
+            const resResultados = await fetch('/api/todos-los-resultados');
+            resultadosGlobales = await resResultados.json();
 
-        // Carga inicial de datos al abrir la página
-        async function cargarDatosGlobales() {
-            try {
-                const resResultados = await fetch('/api/todos-los-resultados');
-                resultadosGlobales = await resResultados.json();
+            const resEscuderias = await fetch('/api/escuderias');
+            escuderiasGlobales = await resEscuderias.json();
 
-                const resEscuderias = await fetch('/api/escuderias');
-                escuderiasGlobales = await resEscuderias.json();
+            cambiarTipoComparacion();
+        } catch (err) {
+            console.error("Error al cargar los datos iniciales:", err);
+        }
+    }
 
-                cambiarTipoComparacion();
-            } catch (err) {
-                console.error("Error al cargar los datos iniciales:", err);
+    const listaCircuitosF1 = [
+        { id: 3, nombre: "Melbourne" },
+        { id: 8, nombre: "Shanghái" },
+        { id: 7, nombre: "Suzuka" },
+        { id: 4, nombre: "Sakhir" },
+        { id: 2, nombre: "Yeda" },
+        { id: 9, nombre: "Miami" },
+        { id: 14, nombre: "Montreal" },
+        { id: 11, nombre: "Mónaco" },
+        { id: 12, nombre: "Barcelona" },
+        { id: 15, nombre: "Spielberg" },
+        { id: 16, nombre: "Silverstone" },
+        { id: 17, nombre: "Spa" },
+        { id: 76, nombre: "Budapest" },
+        { id: 18, nombre: "Zandvoort" },
+        { id: 19, nombre: "Monza" },
+        { id: 13, nombre: "Madrid" },
+        { id: 20, nombre: "Bakú" },
+        { id: 21, nombre: "Singapur" },
+        { id: 22, nombre: "Austin" },
+        { id: 23, nombre: "Ciudad de México" },
+        { id: 24, nombre: "São Paulo" },
+        { id: 25, nombre: "Las Vegas" },
+        { id: 26, nombre: "Losail" },
+        { id: 27, nombre: "Abu Dabi" }
+    ];
+
+    function cambiarTipoComparacion() {
+        const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
+        const select1 = document.getElementById('selectItem1');
+        const select2 = document.getElementById('selectItem2');
+        const selectCircuito = document.getElementById('selectCircuito');
+        
+        const contenedorResultados = document.getElementById('contenedorResultados');
+        if (contenedorResultados) {
+            contenedorResultados.style.display = 'none';
+        }
+        
+        select1.innerHTML = '<option value="">Selecciona...</option>';
+        select2.innerHTML = '<option value="">Selecciona...</option>';
+
+        if (tipo.includes('piloto')) {
+            if (selectCircuito) selectCircuito.style.display = 'none';
+
+            const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
+            
+            pilotosUnicos.forEach(piloto => {
+                select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+                select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
+            });
+
+        } else if (tipo.includes('circuito')) {
+            if (selectCircuito) selectCircuito.style.display = 'inline-block';
+
+            let optsCircuito = '<option value="">Selecciona circuito...</option>';
+            listaCircuitosF1.forEach(c => {
+                optsCircuito += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+            if (selectCircuito) selectCircuito.innerHTML = optsCircuito;
+
+            const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
+            let optsPilotos = '<option value="PARRILLA_COMPLETA">Parrilla Completa</option>';
+            pilotosUnicos.forEach(p => {
+                optsPilotos += `<option value="${p}">${p}</option>`;
+            });
+
+            select1.innerHTML = optsPilotos;
+            select2.innerHTML = optsPilotos;
+            select1.value = 'PARRILLA_COMPLETA';
+            select2.value = 'PARRILLA_COMPLETA';
+
+        } else {
+            if (selectCircuito) selectCircuito.style.display = 'none';
+
+            if (typeof escuderiasGlobales !== 'undefined') {
+                escuderiasGlobales.forEach(esc => {
+                    select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+                    select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
+                });
             }
         }
+    }
 
-        // Cambia los desplegables según se elija Pilotos o Escuderías
-// Lista fija con los IDs y nombres exactos de tu base de datos
-        const listaCircuitosF1 = [
-            { id: 3, nombre: "Melbourne" },
-            { id: 8, nombre: "Shanghái" },
-            { id: 7, nombre: "Suzuka" },
-            { id: 4, nombre: "Sakhir" },
-            { id: 2, nombre: "Yeda" },
-            { id: 9, nombre: "Miami" },
-            { id: 14, nombre: "Montreal" },
-            { id: 11, nombre: "Mónaco" },
-            { id: 12, nombre: "Barcelona" },
-            { id: 15, nombre: "Spielberg" },
-            { id: 16, nombre: "Silverstone" },
-            { id: 17, nombre: "Spa" },
-            { id: 76, nombre: "Budapest" },
-            { id: 18, nombre: "Zandvoort" },
-            { id: 19, nombre: "Monza" },
-            { id: 13, nombre: "Madrid" },
-            { id: 20, nombre: "Bakú" },
-            { id: 21, nombre: "Singapur" },
-            { id: 22, nombre: "Austin" },
-            { id: 23, nombre: "Ciudad de México" },
-            { id: 24, nombre: "São Paulo" },
-            { id: 25, nombre: "Las Vegas" },
-            { id: 26, nombre: "Losail" },
-            { id: 27, nombre: "Abu Dabi" }
-        ];
-
-function cambiarTipoComparacion() {
-            const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
-            const select1 = document.getElementById('selectItem1');
-            const select2 = document.getElementById('selectItem2');
-            const selectCircuito = document.getElementById('selectCircuito');
-            
-            // Ocultamos o reseteamos el contenedor de resultados de la parrilla anterior para evitar que falten elementos en el DOM
-            const contenedorResultados = document.getElementById('contenedorResultados');
-            if (contenedorResultados) {
-                contenedorResultados.style.display = 'none';
-            }
-            
-            select1.innerHTML = '<option value="">Selecciona...</option>';
-            select2.innerHTML = '<option value="">Selecciona...</option>';
-
-            if (tipo.includes('piloto')) {
-                if (selectCircuito) selectCircuito.style.display = 'none';
-
-                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
+    async function ejecutarComparativa() {
+        const contenedorResultados = document.getElementById('contenedorResultados');
+        if (!document.getElementById('nombreItem1') && contenedorResultados) {
+            contenedorResultados.innerHTML = `
+                <div style="text-align: center;">
+                    <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
+                </div>
                 
-                pilotosUnicos.forEach(piloto => {
-                    select1.innerHTML += `<option value="${piloto}">${piloto}</option>`;
-                    select2.innerHTML += `<option value="${piloto}">${piloto}</option>`;
-                });
+                <div id="bgItem1" class="header-tarjeta">
+                    <div class="info-izq">
+                        <div id="contenedorFoto1" class="caja-foto">
+                            <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
+                        </div>
+                        <h3 id="nombreItem1"></h3>
+                    </div>
+                    <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                    <div id="valorItem1" class="caja-valor">0</div>
+                </div>
 
-            } else if (tipo.includes('circuito')) {
-                if (selectCircuito) selectCircuito.style.display = 'inline-block';
+                <div class="contenedor-vs">
+                    <span class="badge-vs">VS</span>
+                </div>
 
-                // Rellenamos el desplegable usando los IDs exactos de la base de datos
-                let optsCircuito = '<option value="">Selecciona circuito...</option>';
-                listaCircuitosF1.forEach(c => {
-                    optsCircuito += `<option value="${c.id}">${c.nombre}</option>`;
-                });
-                if (selectCircuito) selectCircuito.innerHTML = optsCircuito;
+                <div id="bgItem2" class="header-tarjeta">
+                    <div class="info-izq">
+                        <div id="contenedorFoto2" class="caja-foto">
+                            <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
+                        </div>
+                        <h3 id="nombreItem2"></h3>
+                    </div>
+                    <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                    <div id="valorItem2" class="caja-valor">0</div>
+                </div>
+            `;
+        }
 
-                // Configuramos los selectores laterales con "Parrilla Completa" y los pilotos
-                const pilotosUnicos = [...new Set(resultadosGlobales.map(r => r.gamertag).filter(Boolean))].sort();
-                let optsPilotos = '<option value="PARRILLA_COMPLETA">Parrilla Completa</option>';
-                pilotosUnicos.forEach(p => {
-                    optsPilotos += `<option value="${p}">${p}</option>`;
-                });
+        const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
+        const item1 = document.getElementById('selectItem1').value;
+        const item2 = document.getElementById('selectItem2').value;
+        const metricaSelect = document.getElementById('selectMetrica');
+        const metricaTexto = metricaSelect.options[metricaSelect.selectedIndex].text;
+        const metricaValor = metricaSelect.value;
 
-                select1.innerHTML = optsPilotos;
-                select2.innerHTML = optsPilotos;
-                select1.value = 'PARRILLA_COMPLETA';
-                select2.value = 'PARRILLA_COMPLETA';
-
-            } else {
-                if (selectCircuito) selectCircuito.style.display = 'none';
-
-                if (typeof escuderiasGlobales !== 'undefined') {
-                    escuderiasGlobales.forEach(esc => {
-                        select1.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
-                        select2.innerHTML += `<option value="${esc.nombre}">${esc.nombre}</option>`;
-                    });
-                }
+        if (tipo.includes('circuito')) {
+            const circuitoSeleccionadoId = document.getElementById('selectCircuito').value;
+            if (!circuitoSeleccionadoId) {
+                alert("Por favor, selecciona un circuito.");
+                return;
+            }
+            if (!item1 || !item2) {
+                alert("Por favor, configura los selectores de comparación.");
+                return;
+            }
+        } else {
+            if (!item1 || !item2) {
+                alert("Por favor, selecciona ambos contrincantes para comparar.");
+                return;
             }
         }
-        // Ejecuta la comparativa refrescando datos al vuelo y calculando métricas
-async function ejecutarComparativa() {
-    // Reutilizamos la variable sin volver a poner 'const'
-    const contenedorResultados = document.getElementById('contenedorResultados');
-    if (!document.getElementById('nombreItem1') && contenedorResultados) {
-        contenedorResultados.innerHTML = `
-            <div style="text-align: center;">
-                <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
-            </div>
-            
-            <!-- Tarjeta Contrincante 1 -->
-            <div id="bgItem1" class="header-tarjeta">
-                <div class="info-izq">
-                    <div id="contenedorFoto1" class="caja-foto">
-                        <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
-                    </div>
-                    <h3 id="nombreItem1"></h3>
-                </div>
-                <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
-                <div id="valorItem1" class="caja-valor">0</div>
-            </div>
 
-            <!-- VS Centrado -->
-            <div class="contenedor-vs">
-                <span class="badge-vs">VS</span>
-            </div>
-
-            <!-- Tarjeta Contrincante 2 -->
-            <div id="bgItem2" class="header-tarjeta">
-                <div class="info-izq">
-                    <div id="contenedorFoto2" class="caja-foto">
-                        <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
-                    </div>
-                    <h3 id="nombreItem2"></h3>
-                </div>
-                <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
-                <div id="valorItem2" class="caja-valor">0</div>
-            </div>
-        `;
-    }
-
-    // 2. Continúa tu código habitual a partir de aquí...
-    const tipo = document.getElementById('tipoComparacion').value.toLowerCase();
-    const item1 = document.getElementById('selectItem1').value;
-    const item2 = document.getElementById('selectItem2').value;
-    const metricaSelect = document.getElementById('selectMetrica');
-    const metricaTexto = metricaSelect.options[metricaSelect.selectedIndex].text;
-    const metricaValor = metricaSelect.value;
-
-    // Validación específica si estamos en modo circuitos
-    if (tipo.includes('circuito')) {
-        const circuitoSeleccionadoId = document.getElementById('selectCircuito').value;
-        if (!circuitoSeleccionadoId) {
-            alert("Por favor, selecciona un circuito.");
+        try {
+            const res = await fetch('/api/todos-los-resultados');
+            resultadosGlobales = await res.json();
+        } catch (e) {
+            console.error("No se pudieron refrescar los datos", e);
             return;
         }
-        if (!item1 || !item2) {
-            alert("Por favor, configura los selectores de comparación.");
-            return;
+
+        let val1 = 0;
+        let val2 = 0;
+
+        if (tipo.includes('circuito')) {
+            const circuitoSeleccionadoId = document.getElementById('selectCircuito').value;
+            const resultadosCircuito = resultadosGlobales.filter(r => String(r.id_gp) === String(circuitoSeleccionadoId));
+            const circuitoObj = listaCircuitosF1.find(c => String(c.id) === String(circuitoSeleccionadoId));
+            const nombreCircuitoTexto = circuitoObj ? circuitoObj.nombre : 'Circuito';
+
+            if (item1 === 'PARRILLA_COMPLETA' || item2 === 'PARRILLA_COMPLETA') {
+                ejecutarVistaParrillaCompleta(resultadosCircuito, nombreCircuitoTexto, metricaTexto);
+                return; 
+            }
         }
-    } else {
-        if (!item1 || !item2) {
-            alert("Por favor, selecciona ambos contrincantes para comparar.");
-            return;
+
+        if (tipo.includes('circuito') || tipo.includes('piloto')) {
+            const circuitoSeleccionadoId = tipo.includes('circuito') ? document.getElementById('selectCircuito').value : null;
+            const fuenteDatos = tipo.includes('circuito') 
+                ? resultadosGlobales.filter(r => String(r.id_gp) === String(circuitoSeleccionadoId))
+                : resultadosGlobales;
+
+            const stats1 = fuenteDatos.filter(r => r.gamertag === item1);
+            const stats2 = fuenteDatos.filter(r => r.gamertag === item2);
+
+            val1 = calcularMetricaPiloto(stats1, metricaValor);
+            val2 = calcularMetricaPiloto(stats2, metricaValor);
+
+            document.getElementById('nombreItem1').innerText = item1;
+            document.getElementById('valorItem1').innerText = val1;
+            document.getElementById('nombreItem2').innerText = item2;
+            document.getElementById('valorItem2').innerText = val2;
+
+            configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
+            configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
+
+            aplicarColoresComparativa(val1, val2, metricaValor);
+            
+            const circuitoObj = tipo.includes('circuito') ? listaCircuitosF1.find(c => String(c.id) === String(circuitoSeleccionadoId)) : null;
+            const tituloFinal = circuitoObj ? `${metricaTexto.toUpperCase()} EN ${circuitoObj.nombre.toUpperCase()}` : metricaTexto.toUpperCase();
+            
+            document.getElementById('tituloMetricaComparativa').innerText = tituloFinal;
+            contenedorResultados.style.display = 'block';
+
+        } else {
+            const stats1 = resultadosGlobales.filter(r => r.escuderia_nombre === item1);
+            const stats2 = resultadosGlobales.filter(r => r.escuderia_nombre === item2);
+
+            val1 = calcularMetricaEscuderia(stats1, metricaValor);
+            val2 = calcularMetricaEscuderia(stats2, metricaValor);
+
+            document.getElementById('nombreItem1').innerText = item1;
+            document.getElementById('valorItem1').innerText = val1;
+            document.getElementById('nombreItem2').innerText = item2;
+            document.getElementById('valorItem2').innerText = val2;
+
+            const reg1 = stats1[0] || { escuderia_nombre: item1 };
+            const reg2 = stats2[0] || { escuderia_nombre: item2 };
+
+            configurarTarjeta('1', reg1, 'escuderia');
+            configurarTarjeta('2', reg2, 'escuderia');
+
+            aplicarColoresComparativa(val1, val2, metricaValor);
+            document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
+            contenedorResultados.style.display = 'block';
         }
     }
 
-    try {
-        const res = await fetch('/api/todos-los-resultados');
-        resultadosGlobales = await res.json();
-    } catch (e) {
-        console.error("No se pudieron refrescar los datos", e);
-        return;
+    function calcularMetricaPiloto(registros, metrica) {
+        if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
+        if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
+        if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
+        if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+        if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
+        return 0;
     }
 
-    let val1 = 0;
-    let val2 = 0;
+    function calcularMetricaEscuderia(registros, metrica) {
+        if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
+        if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
+        if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
+        if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
+        if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
+        return 0;
+    }
 
-    if (tipo.includes('circuito')) {
-        const circuitoSeleccionadoId = document.getElementById('selectCircuito').value;
+    function configurarTarjeta(idSufijo, registro, modo) {
+        const headerCard = document.getElementById(`bgItem${idSufijo}`);
+        const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
+        const contenedorFoto = document.getElementById(`contenedorFoto${idSufijo}`);
+
+        const nombreEscuderia = registro.escuderia_nombre;
+
+        const obtenerNombreArchivoEscuderia = (nombre) => {
+            if (!nombre) return '';
+            const texto = nombre.toLowerCase().trim();
+            
+            if (texto.includes('alpine')) return 'alpine';
+            if (texto.includes('aston martin')) return 'aston_martin';
+            if (texto.includes('audi')) return 'audi';
+            if (texto.includes('cadillac')) return 'cadillac';
+            if (texto.includes('ferrari')) return 'ferrari';
+            if (texto.includes('haas')) return 'haas';
+            if (texto.includes('mclaren')) return 'mclaren';
+            if (texto.includes('mercedes')) return 'mercedes';
+            if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
+            if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
+            if (texto.includes('williams')) return 'williams';
+
+            return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        };
+
+        let colorEquipo = '#1f1f1f';
+        const textoEscuderia = nombreEscuderia ? nombreEscuderia.toLowerCase() : '';
         
-        const resultadosCircuito = resultadosGlobales.filter(r => String(r.id_gp) === String(circuitoSeleccionadoId));
-        const circuitoObj = listaCircuitosF1.find(c => String(c.id) === String(circuitoSeleccionadoId));
-        const nombreCircuitoTexto = circuitoObj ? circuitoObj.nombre : 'Circuito';
+        if (textoEscuderia.includes('ferrari')) colorEquipo = '#dc0000';
+        else if (textoEscuderia.includes('aston martin')) colorEquipo = '#006f62';
+        else if (textoEscuderia.includes('red bull')) colorEquipo = '#0600ef';
+        else if (textoEscuderia.includes('mercedes')) colorEquipo = '#00d2be';
+        else if (textoEscuderia.includes('mclaren')) colorEquipo = '#ff8700';
+        else if (textoEscuderia.includes('alpine')) colorEquipo = '#0090ff';
+        else if (textoEscuderia.includes('williams')) colorEquipo = '#005aff';
+        else if (textoEscuderia.includes('haas')) colorEquipo = '#b6babd';
+        else if (textoEscuderia.includes('audi')) colorEquipo = '#e10600';
+        else if (textoEscuderia.includes('cadillac')) colorEquipo = '#111111';
+        else if (textoEscuderia.includes('visa') || textoEscuderia.includes('rb')) colorEquipo = '#2b4562';
 
-        if (item1 === 'PARRILLA_COMPLETA' || item2 === 'PARRILLA_COMPLETA') {
-            ejecutarVistaParrillaCompleta(resultadosCircuito, nombreCircuitoTexto, metricaTexto);
-            return; 
+        headerCard.style.backgroundColor = colorEquipo;
+
+        const escuderiaArchivo = obtenerNombreArchivoEscuderia(nombreEscuderia);
+
+        if (escuderiaArchivo) {
+            headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/banderas/${escuderiaArchivo}.png')`;
+            headerCard.style.backgroundSize = 'contain';
+            headerCard.style.backgroundRepeat = 'no-repeat';
+            headerCard.style.backgroundPosition = 'center';
+        } else {
+            headerCard.style.backgroundImage = 'none';
+        }
+
+        if (modo === 'piloto') {
+            contenedorFoto.style.display = 'flex';
+            imgFoto.style.display = 'block';
+            imgFoto.src = registro.foto_url || '';
+        } else {
+            contenedorFoto.style.display = 'none';
+            imgFoto.style.display = 'none';
+        }
+
+        imgFoto.onerror = function() { 
+            this.style.display = 'none'; 
+        };
+    }
+
+    function aplicarColoresComparativa(val1, val2, metrica) {
+        const caja1 = document.getElementById('valorItem1');
+        const caja2 = document.getElementById('valorItem2');
+
+        caja1.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+        caja2.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+
+        if (val1 === val2) return;
+
+        const esMetricaInversa = metrica.toLowerCase().includes('dnf') || 
+                               metrica.toLowerCase().includes('abandono') || 
+                               metrica.toLowerCase().includes('retirada');
+
+        let gastaVerde1 = false;
+
+        if (!esMetricaInversa) {
+            gastaVerde1 = val1 > val2;
+        } else {
+            gastaVerde1 = val1 < val2;
+        }
+
+        const colorVerdeSuave = 'rgba(40, 167, 69, 0.45)';
+        const colorRojoSuave = 'rgba(220, 53, 69, 0.45)';
+
+        if (gastaVerde1) {
+            caja1.style.backgroundColor = colorVerdeSuave;
+            caja2.style.backgroundColor = colorRojoSuave;
+        } else {
+            caja1.style.backgroundColor = colorRojoSuave;
+            caja2.style.backgroundColor = colorVerdeSuave;
         }
     }
 
-// Si estabamos viendo la parrilla completa y ahora hacemos una comparativa normal, 
-    // restauramos tu HTML original de tarjetas rectangulares.
-async function ejecutarComparativa() {
-    const contenedorResultadosLocal = document.getElementById('contenedorResultados');
-    if (!document.getElementById('nombreItem1') && contenedorResultadosLocal) {
-        contenedorResultadosLocal.innerHTML = `
-            <div style="text-align: center;">
-                <h3 id="tituloMetricaComparativa" class="titulo-metrica-header"></h3>
-            </div>
-            
-            <!-- Tarjeta Contrincante 1 -->
-            <div id="bgItem1" class="header-tarjeta">
-                <div class="info-izq">
-                    <div id="contenedorFoto1" class="caja-foto">
-                        <img id="fotoItem1" class="foto-piloto-card" src="" alt="" style="display: none;">
-                    </div>
-                    <h3 id="nombreItem1"></h3>
-                </div>
-                <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
-                <div id="valorItem1" class="caja-valor">0</div>
-            </div>
-
-            <!-- VS Centrado -->
-            <div class="contenedor-vs">
-                <span class="badge-vs">VS</span>
-            </div>
-
-            <!-- Tarjeta Contrincante 2 -->
-            <div id="bgItem2" class="header-tarjeta">
-                <div class="info-izq">
-                    <div id="contenedorFoto2" class="caja-foto">
-                        <img id="fotoItem2" class="foto-piloto-card" src="" alt="" style="display: none;">
-                    </div>
-                    <h3 id="nombreItem2"></h3>
-                </div>
-                <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
-                <div id="valorItem2" class="caja-valor">0</div>
-            </div>
-        `;
-    }
-
-    if (tipo.includes('circuito') || tipo.includes('piloto')) {
-        const circuitoSeleccionadoId = tipo.includes('circuito') ? document.getElementById('selectCircuito').value : null;
-        const fuenteDatos = tipo.includes('circuito') 
-            ? resultadosGlobales.filter(r => String(r.id_gp) === String(circuitoSeleccionadoId))
-            : resultadosGlobales;
-
-        const stats1 = fuenteDatos.filter(r => r.gamertag === item1);
-        const stats2 = fuenteDatos.filter(r => r.gamertag === item2);
-
-        val1 = calcularMetricaPiloto(stats1, metricaValor);
-        val2 = calcularMetricaPiloto(stats2, metricaValor);
-
-        document.getElementById('nombreItem1').innerText = item1;
-        document.getElementById('valorItem1').innerText = val1;
-        document.getElementById('nombreItem2').innerText = item2;
-        document.getElementById('valorItem2').innerText = val2;
-
-        configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
-        configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
-
-        aplicarColoresComparativa(val1, val2, metricaValor);
+    function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaTexto) {
+        const contenedorResultados = document.getElementById('contenedorResultados');
         
-        const circuitoObj = tipo.includes('circuito') ? listaCircuitosF1.find(c => String(c.id) === String(circuitoSeleccionadoId)) : null;
-        const tituloFinal = circuitoObj ? `${metricaTexto.toUpperCase()} EN ${circuitoObj.nombre.toUpperCase()}` : metricaTexto.toUpperCase();
-        
-        document.getElementById('tituloMetricaComparativa').innerText = tituloFinal;
-        contenedorResultados.style.display = 'block';
-
-    } else {
-        const stats1 = resultadosGlobales.filter(r => r.escuderia_nombre === item1);
-        const stats2 = resultadosGlobales.filter(r => r.escuderia_nombre === item2);
-
-        val1 = calcularMetricaEscuderia(stats1, metricaValor);
-        val2 = calcularMetricaEscuderia(stats2, metricaValor);
-
-        document.getElementById('nombreItem1').innerText = item1;
-        document.getElementById('valorItem1').innerText = val1;
-        document.getElementById('nombreItem2').innerText = item2;
-        document.getElementById('valorItem2').innerText = val2;
-
-        const reg1 = stats1[0] || { escuderia_nombre: item1 };
-        const reg2 = stats2[0] || { escuderia_nombre: item2 };
-
-        configurarTarjeta('1', reg1, 'escuderia');
-        configurarTarjeta('2', reg2, 'escuderia');
-
-        aplicarColoresComparativa(val1, val2, metricaValor);
-        document.getElementById('tituloMetricaComparativa').innerText = metricaTexto.toUpperCase();
-        contenedorResultados.style.display = 'block';
-    }
-} // <--- ¡ESTA LLAVE DE AQUÍ FALTABA Y ROMPÍA TODO EL SCRIPT!
-
-function calcularMetricaPiloto(registros, metrica) {
-    if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
-    if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
-    if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-    if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
-    if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
-    return 0;
-}
-
-function calcularMetricaEscuderia(registros, metrica) {
-    if (metrica === 'puntos') return registros.reduce((acc, r) => acc + (Number(r.puntos) || 0), 0);
-    if (metrica === 'victorias') return registros.filter(r => Number(r.posicion) === 1 && !r.dnf).length;
-    if (metrica === 'podios') return registros.filter(r => Number(r.posicion) >= 1 && Number(r.posicion) <= 3 && !r.dnf).length;
-    if (metrica === 'poles') return registros.filter(r => r.pole === true || r.pole === 1).length;
-    if (metrica === 'dnf') return registros.filter(r => r.dnf === true || r.dnf === 1).length;
-    return 0;
-}
-
-function configurarTarjeta(idSufijo, registro, modo) {
-    const headerCard = document.getElementById(`bgItem${idSufijo}`);
-    const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
-    const contenedorFoto = document.getElementById(`contenedorFoto${idSufijo}`);
-
-    const nombreEscuderia = modo === 'escuderia' 
-        ? registro.escuderia_nombre 
-        : registro.escuderia_nombre;
-
-    const obtenerNombreArchivoEscuderia = (nombre) => {
-        if (!nombre) return '';
-        const texto = nombre.toLowerCase().trim();
-        
-        if (texto.includes('alpine')) return 'alpine';
-        if (texto.includes('aston martin')) return 'aston_martin';
-        if (texto.includes('audi')) return 'audi';
-        if (texto.includes('cadillac')) return 'cadillac';
-        if (texto.includes('ferrari')) return 'ferrari';
-        if (texto.includes('haas')) return 'haas';
-        if (texto.includes('mclaren')) return 'mclaren';
-        if (texto.includes('mercedes')) return 'mercedes';
-        if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
-        if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
-        if (texto.includes('williams')) return 'williams';
-
-        return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-    };
-
-    let colorEquipo = '#1f1f1f';
-    const textoEscuderia = nombreEscuderia ? nombreEscuderia.toLowerCase() : '';
-    
-    if (textoEscuderia.includes('ferrari')) colorEquipo = '#dc0000';
-    else if (textoEscuderia.includes('aston martin')) colorEquipo = '#006f62';
-    else if (textoEscuderia.includes('red bull')) colorEquipo = '#0600ef';
-    else if (textoEscuderia.includes('mercedes')) colorEquipo = '#00d2be';
-    else if (textoEscuderia.includes('mclaren')) colorEquipo = '#ff8700';
-    else if (textoEscuderia.includes('alpine')) colorEquipo = '#0090ff';
-    else if (textoEscuderia.includes('williams')) colorEquipo = '#005aff';
-    else if (textoEscuderia.includes('haas')) colorEquipo = '#b6babd';
-    else if (textoEscuderia.includes('audi')) colorEquipo = '#e10600';
-    else if (textoEscuderia.includes('cadillac')) colorEquipo = '#111111';
-    else if (textoEscuderia.includes('visa') || textoEscuderia.includes('rb')) colorEquipo = '#2b4562';
-
-    headerCard.style.backgroundColor = colorEquipo;
-
-    const escuderiaArchivo = obtenerNombreArchivoEscuderia(nombreEscuderia);
-
-    if (escuderiaArchivo) {
-        headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/banderas/${escuderiaArchivo}.png')`;
-        headerCard.style.backgroundSize = 'contain';
-        headerCard.style.backgroundRepeat = 'no-repeat';
-        headerCard.style.backgroundPosition = 'center';
-    } else {
-        headerCard.style.backgroundImage = 'none';
-    }
-
-    if (modo === 'piloto') {
-        contenedorFoto.style.display = 'flex';
-        imgFoto.style.display = 'block';
-        imgFoto.src = registro.foto_url || '';
-    } else {
-        contenedorFoto.style.display = 'none';
-        imgFoto.style.display = 'none';
-    }
-
-    imgFoto.onerror = function() { 
-        this.style.display = 'none'; 
-    };
-}
-
-function aplicarColoresComparativa(val1, val2, metrica) {
-    const caja1 = document.getElementById('valorItem1');
-    const caja2 = document.getElementById('valorItem2');
-
-    caja1.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
-    caja2.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
-
-    if (val1 === val2) return;
-
-    const esMetricaInversa = metrica.toLowerCase().includes('dnf') || 
-                           metrica.toLowerCase().includes('abandono') || 
-                           metrica.toLowerCase().includes('retirada');
-
-    let gastaVerde1 = false;
-
-    if (!esMetricaInversa) {
-        gastaVerde1 = val1 > val2;
-    } else {
-        gastaVerde1 = val1 < val2;
-    }
-
-    const colorVerdeSuave = 'rgba(40, 167, 69, 0.45)';
-    const colorRojoSuave = 'rgba(220, 53, 69, 0.45)';
-
-    if (gastaVerde1) {
-        caja1.style.backgroundColor = colorVerdeSuave;
-        caja2.style.backgroundColor = colorRojoSuave;
-    } else {
-        caja1.style.backgroundColor = colorRojoSuave;
-        caja2.style.backgroundColor = colorVerdeSuave;
-    }
-}
-
-function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaTexto) {
-    const contenedorResultados = document.getElementById('contenedorResultados');
-    
-    const resultadosOrdenados = [...resultadosCircuito].sort((a, b) => {
-        if (a.dnf && !b.dnf) return 1;
-        if (!a.dnf && b.dnf) return -1;
-        return (a.posicion || 99) - (b.posicion || 99);
-    });
-
-    const obtenerNombreArchivoEscuderia = (nombre) => {
-        if (!nombre) return '';
-        const texto = nombre.toLowerCase().trim();
-        
-        if (texto.includes('alpine')) return 'alpine';
-        if (texto.includes('aston martin')) return 'aston_martin';
-        if (texto.includes('audi')) return 'audi';
-        if (texto.includes('cadillac')) return 'cadillac';
-        if (texto.includes('ferrari')) return 'ferrari';
-        if (texto.includes('haas')) return 'haas';
-        if (texto.includes('mclaren')) return 'mclaren';
-        if (texto.includes('mercedes')) return 'mercedes';
-        if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
-        if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
-        if (texto.includes('williams')) return 'williams';
-
-        return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-    };
-
-    let htmlTabla = `
-        <div style="overflow-x: auto; margin-top: 15px;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; background: #1e1e1e; border-radius: 8px; overflow: hidden;">
-                <thead>
-                    <tr style="background: #2a2a2a; border-bottom: 2px solid #444;">
-                        <th style="padding: 12px; text-align: center;">Pos</th>
-                        <th style="padding: 12px;">Piloto</th>
-                        <th style="padding: 12px; text-align: center;">Puntos</th>
-                        <th style="padding: 12px; text-align: center;">Pole</th>
-                        <th style="padding: 12px; text-align: center;">Estado / DNF</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-
-    if (resultadosOrdenados.length === 0) {
-        htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
-    } else {
-        resultadosOrdenados.forEach((res, index) => {
-            const posDisplay = res.dnf ? 'DNF' : (res.posicion || (index + 1));
-            const badgeColor = res.dnf ? '#e74c3c' : (res.posicion === 1 ? '#f1c40f' : '#333');
-            const textBadgeColor = res.posicion === 1 && !res.dnf ? '#000' : '#fff';
-            
-            const fotoPiloto = res.foto_url || '';
-            
-            const escuderiaArchivo = obtenerNombreArchivoEscuderia(res.escuderia_nombre);
-            const imgEscuderia = escuderiaArchivo ? `banderas/${escuderiaArchivo}.png` : '';
-            
-            htmlTabla += `
-                <tr style="border-bottom: 1px solid #333; transition: background 0.2s;">
-                    <td style="padding: 10px 12px; text-align: center;">
-                        <span style="background: ${badgeColor}; color: ${textBadgeColor}; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
-                            ${posDisplay}
-                        </span>
-                    </td>
-                    <td style="padding: 10px 12px; font-weight: 500;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            ${fotoPiloto ? `<img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
-                            ${imgEscuderia ? `<img src="${imgEscuderia}" alt="${res.escuderia_nombre || ''}" title="${res.escuderia_nombre || ''}" style="width: 24px; height: 16px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
-                            <span>${res.gamertag || 'Piloto #' + res.id_piloto}</span>
-                        </div>
-                    </td>
-                    <td style="padding: 10px 12px; text-align: center; font-weight: bold; color: #3498db;">${res.puntos ?? 0} pts</td>
-                    <td style="padding: 10px 12px; text-align: center;">${res.pole ? '⭐ Pole' : '-'}</td>
-                    <td style="padding: 10px 12px; text-align: center;">${res.dnf ? '<span style="color: #e74c3c; font-weight: bold;">Retirado</span>' : '<span style="color: #2ecc71;">Clasificado</span>'}</td>
-                </tr>
-            `;
+        const resultadosOrdenados = [...resultadosCircuito].sort((a, b) => {
+            if (a.dnf && !b.dnf) return 1;
+            if (!a.dnf && b.dnf) return -1;
+            return (a.posicion || 99) - (b.posicion || 99);
         });
+
+        const obtenerNombreArchivoEscuderia = (nombre) => {
+            if (!nombre) return '';
+            const texto = nombre.toLowerCase().trim();
+            
+            if (texto.includes('alpine')) return 'alpine';
+            if (texto.includes('aston martin')) return 'aston_martin';
+            if (texto.includes('audi')) return 'audi';
+            if (texto.includes('cadillac')) return 'cadillac';
+            if (texto.includes('ferrari')) return 'ferrari';
+            if (texto.includes('haas')) return 'haas';
+            if (texto.includes('mclaren')) return 'mclaren';
+            if (texto.includes('mercedes')) return 'mercedes';
+            if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
+            if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
+            if (texto.includes('williams')) return 'williams';
+
+            return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        };
+
+        let htmlTabla = `
+            <div style="overflow-x: auto; margin-top: 15px;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; background: #1e1e1e; border-radius: 8px; overflow: hidden;">
+                    <thead>
+                        <tr style="background: #2a2a2a; border-bottom: 2px solid #444;">
+                            <th style="padding: 12px; text-align: center;">Pos</th>
+                            <th style="padding: 12px;">Piloto</th>
+                            <th style="padding: 12px; text-align: center;">Puntos</th>
+                            <th style="padding: 12px; text-align: center;">Pole</th>
+                            <th style="padding: 12px; text-align: center;">Estado / DNF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        if (resultadosOrdenados.length === 0) {
+            htmlTabla += `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #888;">No hay registros para este circuito todavía.</td></tr>`;
+        } else {
+            resultadosOrdenados.forEach((res, index) => {
+                const posDisplay = res.dnf ? 'DNF' : (res.posicion || (index + 1));
+                const badgeColor = res.dnf ? '#e74c3c' : (res.posicion === 1 ? '#f1c40f' : '#333');
+                const textBadgeColor = res.posicion === 1 && !res.dnf ? '#000' : '#fff';
+                
+                const fotoPiloto = res.foto_url || '';
+                
+                const escuderiaArchivo = obtenerNombreArchivoEscuderia(res.escuderia_nombre);
+                const imgEscuderia = escuderiaArchivo ? `banderas/${escuderiaArchivo}.png` : '';
+                
+                htmlTabla += `
+                    <tr style="border-bottom: 1px solid #333; transition: background 0.2s;">
+                        <td style="padding: 10px 12px; text-align: center;">
+                            <span style="background: ${badgeColor}; color: ${textBadgeColor}; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
+                                ${posDisplay}
+                            </span>
+                        </td>
+                        <td style="padding: 10px 12px; font-weight: 500;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                ${fotoPiloto ? `<img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
+                                ${imgEscuderia ? `<img src="${imgEscuderia}" alt="${res.escuderia_nombre || ''}" title="${res.escuderia_nombre || ''}" style="width: 24px; height: 16px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
+                                <span>${res.gamertag || 'Piloto #' + res.id_piloto}</span>
+                            </div>
+                        </td>
+                        <td style="padding: 10px 12px; text-align: center; font-weight: bold; color: #3498db;">${res.puntos ?? 0} pts</td>
+                        <td style="padding: 10px 12px; text-align: center;">${res.pole ? '⭐ Pole' : '-'}</td>
+                        <td style="padding: 10px 12px; text-align: center;">${res.dnf ? '<span style="color: #e74c3c; font-weight: bold;">Retirado</span>' : '<span style="color: #2ecc71;">Clasificado</span>'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        htmlTabla += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        contenedorResultados.innerHTML = `
+            <div style="text-align: center; margin-bottom: 15px;">
+                <h3 id="tituloMetricaComparativa" style="color: #fff; font-size: 1.2rem;">CLASIFICACIÓN - ${circuito.toUpperCase()}</h3>
+            </div>
+            ${htmlTabla}
+        `;
+        
+        contenedorResultados.style.display = 'block';
     }
 
-    htmlTabla += `
-                </tbody>
-            </table>
-        </div>
-    `;
-
-    contenedorResultados.innerHTML = `
-        <div style="text-align: center; margin-bottom: 15px;">
-            <h3 id="tituloMetricaComparativa" style="color: #fff; font-size: 1.2rem;">CLASIFICACIÓN - ${circuito.toUpperCase()}</h3>
-        </div>
-        ${htmlTabla}
-    `;
-    
-    contenedorResultados.style.display = 'block';
-}
-
-// Lanzar carga inicial al cargar la página----------------------------------------------------------------------------
-window.onload = cargarDatosGlobales;
-    
-// DESPLEGABLES Y DEMAS EN ESTE HUECO -->   
-    
+    window.onload = cargarDatosGlobales;
 </script>
 </body>
 </html>
