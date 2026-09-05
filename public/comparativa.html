@@ -368,33 +368,44 @@ async function ejecutarComparativa() {
 
     // Si estabamos viendo la parrilla completa y ahora hacemos una comparativa normal, 
     // nos aseguramos de que el DOM recupere las tarjetas de texto/imagen originales.
-const contenedorResultados = document.getElementById('contenedorResultados');
+// Si estabamos viendo la parrilla completa y ahora hacemos una comparativa normal, 
+    // restauramos tu HTML original de tarjetas rectangulares.
+    const contenedorResultados = document.getElementById('contenedorResultados');
     if (!document.getElementById('nombreItem1') && contenedorResultados) {
         contenedorResultados.innerHTML = `
             <div style="text-align: center; margin-bottom: 15px;">
                 <h3 id="tituloMetricaComparativa" style="color: #fff; font-size: 1.2rem;"></h3>
             </div>
-            <div style="display: flex; justify-content: space-around; gap: 20px;">
-                <div style="text-align: center;">
-                    <div id="bgItem1" style="width: 150px; height: 150px; border-radius: 50%; background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 3px solid #444; background-color: rgba(0,0,0,0.3);">
-                        <div id="contenedorFoto1" style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.3);">
-                            <img id="fotoItem1" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                        </div>
+            
+            <!-- Tarjeta Contrincante 1 -->
+            <div id="bgItem1" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-radius: 6px; margin-bottom: 15px; background-size: cover; background-position: center; border: 1px solid #444;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="contenedorFoto1" style="width: 50px; height: 50px; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5);">
+                        <img id="fotoItem1" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
                     </div>
-                    <h4 id="nombreItem1" style="color: #fff; margin: 5px 0;"></h4>
-                    <span id="valorItem1" style="font-size: 1.5rem; font-weight: bold; color: #fff;">0</span>
+                    <h4 id="nombreItem1" style="color: #fff; margin: 0; font-size: 1.1rem;"></h4>
                 </div>
-                <div style="text-align: center; display: flex; align-items: center; justify-content: center;">
-                    <span style="font-size: 2rem; font-weight: bold; color: #666;">VS</span>
+                <div id="escudoCentro1" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                <div style="background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 4px; border: 1px solid #555; min-width: 50px; text-align: center;">
+                    <span id="valorItem1" style="font-size: 1.3rem; font-weight: bold; color: #fff;">0</span>
                 </div>
-                <div style="text-align: center;">
-                    <div id="bgItem2" style="width: 150px; height: 150px; border-radius: 50%; background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 3px solid #444; background-color: rgba(0,0,0,0.3);">
-                        <div id="contenedorFoto2" style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.3);">
-                            <img id="fotoItem2" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                        </div>
+            </div>
+
+            <div style="text-align: center; margin: 10px 0;">
+                <span style="font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; color: #ff5555; border: 1px solid #444;">VS</span>
+            </div>
+
+            <!-- Tarjeta Contrincante 2 -->
+            <div id="bgItem2" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-radius: 6px; margin-bottom: 15px; background-size: cover; background-position: center; border: 1px solid #444;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="contenedorFoto2" style="width: 50px; height: 50px; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5);">
+                        <img id="fotoItem2" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
                     </div>
-                    <h4 id="nombreItem2" style="color: #fff; margin: 5px 0;"></h4>
-                    <span id="valorItem2" style="font-size: 1.5rem; font-weight: bold; color: #fff;">0</span>
+                    <h4 id="nombreItem2" style="color: #fff; margin: 0; font-size: 1.1rem;"></h4>
+                </div>
+                <div id="escudoCentro2" style="flex-grow: 1; text-align: center; background-size: contain; background-repeat: no-repeat; background-position: center; height: 50px;"></div>
+                <div style="background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 4px; border: 1px solid #555; min-width: 50px; text-align: center;">
+                    <span id="valorItem2" style="font-size: 1.3rem; font-weight: bold; color: #fff;">0</span>
                 </div>
             </div>
         `;
