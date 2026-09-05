@@ -564,6 +564,26 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
         return (a.posicion || 99) - (b.posicion || 99);
     });
 
+    // Función auxiliar idéntica a la de tu comparativa para asegurar la ruta de las banderas
+    const obtenerNombreArchivoEscuderia = (nombre) => {
+        if (!nombre) return '';
+        const texto = nombre.toLowerCase().trim();
+        
+        if (texto.includes('alpine')) return 'alpine';
+        if (texto.includes('aston martin')) return 'aston_martin';
+        if (texto.includes('audi')) return 'audi';
+        if (texto.includes('cadillac')) return 'cadillac';
+        if (texto.includes('ferrari')) return 'ferrari';
+        if (texto.includes('haas')) return 'haas';
+        if (texto.includes('mclaren')) return 'mclaren';
+        if (texto.includes('mercedes')) return 'mercedes';
+        if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
+        if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
+        if (texto.includes('williams')) return 'williams';
+
+        return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    };
+
     let htmlTabla = `
         <div style="overflow-x: auto; margin-top: 15px;">
             <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; background: #1e1e1e; border-radius: 8px; overflow: hidden;">
@@ -589,9 +609,9 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
             
             const fotoPiloto = res.foto_url || '';
             
-            let escuderiaSlug = res.escuderia_nombre ? res.escuderia_nombre.toLowerCase().trim().replace(/\s+/g, '_') : '';
-            if (escuderiaSlug === 'red_bull' || escuderiaSlug === 'red_bull_racing') escuderiaSlug = 'redbull';
-            const imgEscuderia = escuderiaSlug ? `banderas/${escuderiaSlug}.png` : '';
+            // Usamos la misma lógica infalible para sacar la ruta de la bandera de la escudería
+            const escuderiaArchivo = obtenerNombreArchivoEscuderia(res.escuderia_nombre);
+            const imgEscuderia = escuderiaArchivo ? `banderas/${escuderiaArchivo}.png` : '';
             
             htmlTabla += `
                 <tr style="border-bottom: 1px solid #333; transition: background 0.2s;">
@@ -603,7 +623,7 @@ function ejecutarVistaParrillaCompleta(resultadosCircuito, circuito, metricaText
                     <td style="padding: 10px 12px; font-weight: 500;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             ${fotoPiloto ? `<img src="${fotoPiloto}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
-                            ${imgEscuderia ? `<img src="${imgEscuderia}" alt="" style="width: 24px; height: 16px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
+                            ${imgEscuderia ? `<img src="${imgEscuderia}" alt="${res.escuderia_nombre || ''}" title="${res.escuderia_nombre || ''}" style="width: 24px; height: 16px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">` : ''}
                             <span>${res.gamertag || 'Piloto #' + res.id_piloto}</span>
                         </div>
                     </td>
