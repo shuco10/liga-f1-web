@@ -257,15 +257,14 @@ async function ejecutarComparativa() {
                 val1 = calcularMetricaPiloto(stats1, metrica);
                 val2 = calcularMetricaPiloto(stats2, metrica);
 
-                // Pintar valores numéricos
                 document.getElementById('nombreItem1').innerText = item1;
                 document.getElementById('valorItem1').innerText = val1;
                 document.getElementById('nombreItem2').innerText = item2;
                 document.getElementById('valorItem2').innerText = val2;
 
-                // Configurar estilos visuales de pilotos (tarjetas, colores y fotos)
-                configurarTarjeta('1', stats1[0] || {}, 'piloto');
-                configurarTarjeta('2', stats2[0] || {}, 'piloto');
+                // Pasamos el registro y el nombre por si acaso está vacío
+                configurarTarjeta('1', stats1[0] || { gamertag: item1 }, 'piloto');
+                configurarTarjeta('2', stats2[0] || { gamertag: item2 }, 'piloto');
 
             } else {
                 const stats1 = resultadosGlobales.filter(r => r.escuderia_nombre === item1);
@@ -274,15 +273,17 @@ async function ejecutarComparativa() {
                 val1 = calcularMetricaEscuderia(stats1, metrica);
                 val2 = calcularMetricaEscuderia(stats2, metrica);
 
-                // Pintar valores numéricos
                 document.getElementById('nombreItem1').innerText = item1;
                 document.getElementById('valorItem1').innerText = val1;
                 document.getElementById('nombreItem2').innerText = item2;
                 document.getElementById('valorItem2').innerText = val2;
 
-                // Configurar estilos visuales de escuderías (logos de marca de agua y colores de fondo)
-                configurarTarjeta('1', stats1[0] || {}, 'escuderia');
-                configurarTarjeta('2', stats2[0] || {}, 'escuderia');
+                // Forzamos el nombre de la escudería si el registro de resultados está vacío
+                const reg1 = stats1[0] || { escuderia_nombre: item1 };
+                const reg2 = stats2[0] || { escuderia_nombre: item2 };
+
+                configurarTarjeta('1', reg1, 'escuderia');
+                configurarTarjeta('2', reg2, 'escuderia');
             }
         }
 
@@ -308,46 +309,50 @@ function configurarTarjeta(idSufijo, registro, modo) {
             const headerCard = document.getElementById(`bgItem${idSufijo}`);
             const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
 
-            console.log(`Configurando tarjeta ${idSufijo} (${modo}):`, registro.escuderia_nombre);
+            // Determinamos el nombre del equipo según el modo
+            const nombreEscuderia = modo === 'escuderia' 
+                ? registro.escuderia_nombre 
+                : registro.escuderia_nombre; // O el campo de equipo que tenga el piloto
 
             const obtenerNombreArchivoEscuderia = (nombre) => {
                 if (!nombre) return '';
-                const n = nombre.toLowerCase().trim();
+                const texto = nombre.toLowerCase().trim();
                 
-                if (n.includes('alpine')) return 'alpine';
-                if (n.includes('aston martin')) return 'aston_martin';
-                if (n.includes('audi')) return 'audi';
-                if (n.includes('cadillac')) return 'cadillac';
-                if (n.includes('ferrari')) return 'ferrari';
-                if (n.includes('haas')) return 'haas';
-                if (n.includes('mclaren')) return 'mclaren';
-                if (n.includes('mercedes')) return 'mercedes';
-                if (n.includes('red bull') || n.includes('redbull')) return 'redbull';
-                if (n.includes('visa') || n.includes('rb') || n.includes('racing bulls')) return 'rb';
-                if (n.includes('williams')) return 'williams';
+                if (texto.includes('alpine')) return 'alpine';
+                if (texto.includes('aston martin')) return 'aston_martin';
+                if (texto.includes('audi')) return 'audi';
+                if (texto.includes('cadillac')) return 'cadillac';
+                if (texto.includes('ferrari')) return 'ferrari';
+                if (texto.includes('haas')) return 'haas';
+                if (texto.includes('mclaren')) return 'mclaren';
+                if (texto.includes('mercedes')) return 'mercedes';
+                if (texto.includes('red bull') || texto.includes('redbull')) return 'redbull';
+                if (texto.includes('visa') || texto.includes('rb') || texto.includes('racing bulls')) return 'rb';
+                if (texto.includes('williams')) return 'williams';
 
-                return n.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+                return texto.replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
             };
 
+            // Colores corporativos por equipo
             let colorEquipo = '#1f1f1f';
-            const nEscuderia = registro.escuderia_nombre ? registro.escuderia_nombre.toLowerCase() : '';
+            const textoEscuderia = nombreEscuderia ? nombreEscuderia.toLowerCase() : '';
             
-            if (nEscuderia.includes('ferrari')) colorEquipo = '#dc0000';
-            else if (nEscuderia.includes('aston martin')) colorEquipo = '#006f62';
-            else if (nEscuderia.includes('red bull')) colorEquipo = '#0600ef';
-            else if (nEscuderia.includes('mercedes')) colorEquipo = '#00d2be';
-            else if (nEscuderia.includes('mclaren')) colorEquipo = '#ff8700';
-            else if (nEscuderia.includes('alpine')) colorEquipo = '#0090ff';
-            else if (nEscuderia.includes('williams')) colorEquipo = '#005aff';
-            else if (nEscuderia.includes('haas')) colorEquipo = '#b6babd';
-            else if (nEscuderia.includes('audi')) colorEquipo = '#e10600';
-            else if (nEscuderia.includes('cadillac')) colorEquipo = '#111111';
-            else if (nEscuderia.includes('visa') || n.includes('rb')) colorEquipo = '#2b4562';
+            if (textoEscuderia.includes('ferrari')) colorEquipo = '#dc0000';
+            else if (textoEscuderia.includes('aston martin')) colorEquipo = '#006f62';
+            else if (textoEscuderia.includes('red bull')) colorEquipo = '#0600ef';
+            else if (textoEscuderia.includes('mercedes')) colorEquipo = '#00d2be';
+            else if (textoEscuderia.includes('mclaren')) colorEquipo = '#ff8700';
+            else if (textoEscuderia.includes('alpine')) colorEquipo = '#0090ff';
+            else if (textoEscuderia.includes('williams')) colorEquipo = '#005aff';
+            else if (textoEscuderia.includes('haas')) colorEquipo = '#b6babd';
+            else if (textoEscuderia.includes('audi')) colorEquipo = '#e10600';
+            else if (textoEscuderia.includes('cadillac')) colorEquipo = '#111111';
+            else if (textoEscuderia.includes('visa') || textoEscuderia.includes('rb')) colorEquipo = '#2b4562';
 
             headerCard.style.backgroundColor = colorEquipo;
 
-            const escuderiaArchivo = obtenerNombreArchivoEscuderia(registro.escuderia_nombre);
-            console.log("Archivo mapeado:", escuderiaArchivo);
+            // Mapear y aplicar la bandera
+            const escuderiaArchivo = obtenerNombreArchivoEscuderia(nombreEscuderia);
 
             if (escuderiaArchivo) {
                 headerCard.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/banderas/${escuderiaArchivo}.png')`;
@@ -355,6 +360,7 @@ function configurarTarjeta(idSufijo, registro, modo) {
                 headerCard.style.backgroundImage = 'none';
             }
 
+            // Gestionar foto de piloto
             if (modo === 'piloto') {
                 imgFoto.style.display = 'block';
                 imgFoto.src = registro.foto_url || '';
