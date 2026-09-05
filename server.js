@@ -517,6 +517,7 @@ app.get('/api/todos-los-resultados', async (req, res) => {
                 r.posicion,
                 r.puntos,
                 r.escuderia_puntos,
+                r.dnf,
                 p.gamertag,
                 c.nombre AS circuito_nombre
             FROM resultados r
