@@ -309,19 +309,25 @@ function configurarTarjeta(idSufijo, registro, modo) {
             const imgFoto = document.getElementById(`fotoItem${idSufijo}`);
             const imgLogo = document.getElementById(`logoItem${idSufijo}`);
 
-            // Color por defecto si no viene definido en la BDD
-            let colorEquipo = registro.color_escuderia || registro.color || '#1f1f1f';
+            let colorEquipo = '#1f1f1f';
             headerCard.style.backgroundColor = colorEquipo;
+
+            // Formatea el nombre de la escudería para que coincida con el archivo (ej: "Aston Martin" -> "aston_martin.png")
+            const nombreEscuderiaArchivo = registro.escuderia_nombre 
+                ? registro.escuderia_nombre.toLowerCase().trim().replace(/\s+/g, '_') 
+                : '';
 
             if (modo === 'piloto') {
                 imgFoto.style.display = 'block';
-                imgFoto.src = registro.foto_piloto || registro.avatar || 'default-pilot.png';
-                imgLogo.src = registro.logo_escuderia || registro.escuderia_logo || '';
+                imgFoto.src = registro.foto_url || '';
+                imgLogo.src = nombreEscuderiaArchivo ? `/banderas/${nombreEscuderiaArchivo}.png` : '';
             } else {
-                // Si es modo escudería, podemos ocultar la foto redonda del piloto y destacar el escudo
                 imgFoto.style.display = 'none';
-                imgLogo.src = registro.logo_escuderia || registro.logo || '';
+                imgLogo.src = nombreEscuderiaArchivo ? `/banderas/${nombreEscuderiaArchivo}.png` : '';
             }
+
+            imgFoto.onerror = function() { this.style.display = 'none'; };
+            imgLogo.onerror = function() { this.style.display = 'none'; };
         }
 
 
