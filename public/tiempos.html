@@ -175,6 +175,44 @@
         }
     }
 
+
+// 1. Evento único de inicialización cuando el DOM está listo
+document.addEventListener('DOMContentLoaded', () => {
+    // Primero cargamos las opciones en el desplegable de circuitos
+    cargarSelectGP();
+
+    const selectGp = document.getElementById('select-gp');
+    if (selectGp) {
+        // Carga automática si el navegador recuerda una opción seleccionada
+        if (selectGp.value) {
+            cargarTiemposPorGP();
+        }
+
+        // Detecta el cambio en el desplegable y recarga la tabla ordenada
+        selectGp.addEventListener('change', () => {
+            cargarTiemposPorGP();
+        });
+    }
+
+    // Lógica de carga de archivo CSV
+    const fileInput = document.getElementById('csv-file-input');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const text = event.target.result;
+                procesarCSV(text);
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
+    }
+});
+
+
+    
 async function cargarTiemposPorGP() {
     const selectGp = document.getElementById('select-gp'); // O el selector/variable de id_gp que uses
     const id_gp = selectGp ? selectGp.value : null;
@@ -273,6 +311,9 @@ async function cargarTiemposPorGP() {
         console.error("Error al cargar y ordenar los tiempos:", error);
     }
 }
+
+
+    
 
     function cargarSelectGP() {
         const select = document.getElementById('select-gp');
@@ -432,7 +473,6 @@ if (btnGuardar) {
         }
     });
 }
-
 
     
 </script>
