@@ -350,7 +350,6 @@ async function cargarTiemposPorGP() {
 
             const barraHTML = `<span style="float: left; width: 5px; height: 22px; background-color: ${colorEscuderia}; border-radius: 2px; margin-right: 8px; margin-bottom: 2px;"></span>`;
 
-            // Usamos float para que la bandera y la barra formen bloque a la izquierda y el texto fluya de manera natural a su lado y debajo
             const escuderiaHTML = `
                 <div style="display: inline-block; text-align: left; max-width: 100%;">
                     ${banderaHTML}
@@ -364,14 +363,15 @@ async function cargarTiemposPorGP() {
             tr.style.minHeight = '70px'; 
             tr.style.borderRadius = '8px';
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
+            tr.style.display = 'table-row';
             
             tr.innerHTML = `
-                <td style="text-align: center; width: 60px; padding: 10px 8px; font-size: 14px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
-                <td style="padding: 10px 12px; font-weight: 500; font-size: 14px; vertical-align: middle;">${t.gamertag || 'Piloto #' + t.id}</td>
-                <td style="padding: 10px 12px; vertical-align: middle;">${escuderiaHTML}</td>
-                <td style="text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlQuali}</td>
-                <td style="text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlCarreraVR}</td>
-                <td style="text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; font-weight: bold; white-space: nowrap; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
+                <td style="text-align: center; width: 70px; padding: 10px 8px; font-size: 14px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
+                <td style="width: 180px; padding: 10px 12px; font-weight: 500; font-size: 14px; vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.gamertag || 'Piloto #' + t.id}</td>
+                <td style="width: auto; padding: 10px 12px; vertical-align: middle;">${escuderiaHTML}</td>
+                <td style="width: 130px; text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlQuali}</td>
+                <td style="width: 130px; text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlCarreraVR}</td>
+                <td style="width: 140px; text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; font-weight: bold; white-space: nowrap; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
             `;
             tbody.appendChild(tr);
         });
@@ -380,7 +380,6 @@ async function cargarTiemposPorGP() {
         console.error("Error al cargar y ordenar los tiempos:", error);
     }
 }
-
     
 
     function cargarSelectGP() {
