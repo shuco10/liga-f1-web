@@ -25,11 +25,38 @@
 
 <main class="caja-contenido">
 
-    <div class="titulo-liga">⏱️ CONTROL DE TIEMPOS DE PILOTOS ⏱️</div>
+<div class="titulo-liga">⏱️ CONTROL DE TIEMPOS DE PILOTOS ⏱️</div>
     <h3 class="subtitulo-principal">⌚ Plataforma para el control de tiempos de los pilotos por circuito ⌚</h3>
 
+    <!-- Selector de Gran Premio / Circuito -->
+    <div style="margin: 30px auto; text-align: center;">
+        <label for="select-gp" style="font-weight: bold; margin-right: 10px;">Selecciona el Gran Premio:</label>
+        <select id="select-gp" onchange="cargarTiemposPorGP()" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
+            <option value="">-- Selecciona un circuito --</option>
+            <!-- Aquí puedes cargar tus circuitos dinámicamente o dejar el id_gp 21 para probar -->
+            <option value="21">Gran Premio de Prueba (ID 21)</option>
+        </select>
+    </div>
 
-
+    <!-- Contenedor de la Tabla de Tiempos -->
+    <div id="tabla-tiempos-container" style="overflow-x: auto; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse; background-color: #222; text-align: left; border-radius: 8px; overflow: hidden;">
+            <thead>
+                <tr style="background-color: #2563eb; color: white;">
+                    <th style="padding: 12px; text-align: center;">Pos / Orden</th>
+                    <th style="padding: 12px;">Piloto (Gamertag)</th>
+                    <th style="padding: 12px; text-align: center;">Tiempo Clasificación</th>
+                    <th style="padding: 12px; text-align: center;">Vuelta Rápida Carrera</th>
+                    <th style="padding: 12px; text-align: center;">Tiempo Total Carrera</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-tiempos">
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </main>
 
 
@@ -127,6 +154,51 @@
             alert("Error al enviar el mensaje.");
         }
     }
+
+
+// Función para consultar los tiempos del GP seleccionado y pintarlos en la tabla
+    async function cargarTiemposPorGP() {
+        const id_gp = document.getElementById('select-gp').value;
+        const tbody = document.getElementById('tbody-tiempos');
+
+        if (!id_gp) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>`;
+            return;
+        }
+
+        try {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">Cargando tiempos...</td></tr>`;
+            
+            const response = await fetch(`/api/tiempos/${id_gp}`);
+            const tiempos = await response.json();
+
+            if (!response.ok) {
+                throw new Error(tiempos.error || "Error al obtener los datos");
+            }
+
+            if (tiempos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">No hay registros de tiempos para este Gran Premio.</td></tr>`;
+                return;
+            }
+
+            // Pintamos las filas con los datos obtenidos mediante el JOIN
+            tbody.innerHTML = tiempos.map((t, index) => `
+                <tr style="border-bottom: 1px solid #333; transition: background 0.2s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 12px; text-align: center; font-weight: bold; color: #3b82f6;">${index + 1}</td>
+                    <td style="padding: 12px; font-weight: bold;">${t.gamertag}</td>
+                    <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_clasificacion || '-'}</td>
+                    <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_vuelta_rapida_carrera || '-'}</td>
+                    <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_total_carrera || '-'}</td>
+                </tr>
+            `).join('');
+
+        } catch (error) {
+            console.error("Error:", error);
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #ef4444;">Hubo un error al cargar los tiempos.</td></tr>`;
+        }
+    }
+
+
 
     
 </script>
