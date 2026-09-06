@@ -255,7 +255,7 @@ async function cargarTiemposPorGP() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        // Diccionario con colores sólidos bien vivos para las escuderías
+        // Diccionario con colores sólidos bien contrastados (Red Bull actualizado a un azul visible)
         const coloresBordeEscuderias = {
             "Scuderia Ferrari HP": "#DC2626",                    // Rojo Ferrari
             "Audi Revolut F1 Team": "#881337",                   // Granate oscuro Audi
@@ -265,8 +265,8 @@ async function cargarTiemposPorGP() {
             "TGR Haas F1 Team": "#6B7280",                       // Gris Haas
             "Mercedes-AMG PETRONAS Formula One Team": "#10B981",   // Verde eléctrico Mercedes
             "Aston Martin Aramco Formula One Team": "#059669",   // Verde Aston Martin
-            "Oracle Red Bull Racing": "#1E293B",                 // Azul oscuro Red Bull
-            "Atlassian Williams F1 Team": "#2563EB",             // Azul Williams (intermedio)
+            "Oracle Red Bull Racing": "#3B82F6",                 // Azul Red Bull brillante (visible)
+            "Atlassian Williams F1 Team": "#2563EB",             // Azul Williams
             "BWT Alpine Formula One Team": "#2563EB",
             "Stake F1 Team Kick Sauber": "#16A34A"
         };
@@ -307,27 +307,28 @@ async function cargarTiemposPorGP() {
             
             const colorEscuderia = coloresBordeEscuderias[nombreEscuderia] || '#555';
 
-            // Creamos una pequeña pastilla/barra vertical redondeada que acompaña al nombre de la escudería
+            // Barra de color fija: 8px de ancho y 28px de alto para todas por igual
             const escuderiaHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="display: inline-block; width: 6px; height: 18px; background-color: ${colorEscuderia}; border-radius: 4px;"></span>
-                    <span style="color: #cbd5e1; font-size: 14px;">${nombreEscuderia}</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="display: inline-block; width: 8px; height: 28px; background-color: ${colorEscuderia}; border-radius: 4px; flex-shrink: 0;"></span>
+                    <span style="color: #cbd5e1; font-size: 14px; line-height: 1.2;">${nombreEscuderia}</span>
                 </div>
             `;
 
             const tr = document.createElement('tr');
-            // Fila con fondo oscuro, esquinas redondeadas y separación tipo tarjeta
+            // Altura fija, esquinas redondeadas y separación tipo tarjeta
             tr.style.backgroundColor = '#2a2a2a';
+            tr.style.height = '70px'; 
             tr.style.borderRadius = '8px';
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
             
             tr.innerHTML = `
-                <td style="text-align: center; width: 70px; padding: 14px 10px; font-size: 15px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
-                <td style="padding: 14px 10px; font-weight: 500; font-size: 15px; letter-spacing: 0.3px;">${t.gamertag || 'Piloto #' + t.id}</td>
-                <td style="padding: 14px 10px;">${escuderiaHTML}</td>
-                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px;">${htmlQuali}</td>
-                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px;">${htmlCarreraVR}</td>
-                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px; font-weight: bold; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
+                <td style="text-align: center; width: 70px; padding: 0 10px; font-size: 15px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
+                <td style="padding: 0 10px; font-weight: 500; font-size: 15px; vertical-align: middle; letter-spacing: 0.3px;">${t.gamertag || 'Piloto #' + t.id}</td>
+                <td style="padding: 0 10px; vertical-align: middle;">${escuderiaHTML}</td>
+                <td style="text-align: center; padding: 0 10px; vertical-align: middle; font-family: monospace; font-size: 14px;">${htmlQuali}</td>
+                <td style="text-align: center; padding: 0 10px; vertical-align: middle; font-family: monospace; font-size: 14px;">${htmlCarreraVR}</td>
+                <td style="text-align: center; padding: 0 10px; vertical-align: middle; font-family: monospace; font-size: 14px; font-weight: bold; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
             `;
             tbody.appendChild(tr);
         });
