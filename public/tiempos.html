@@ -255,18 +255,19 @@ async function cargarTiemposPorGP() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        // Diccionario de colores con transparencia para las filas de cada escudería
+// Diccionario actualizado con los nombres exactos que devuelve tu base de datos
         const coloresEscuderias = {
-            "Red Bull": "rgba(30, 41, 59, 0.35)",
-            "Ferrari": "rgba(220, 38, 38, 0.2)",
-            "Mercedes": "rgba(13, 148, 136, 0.25)",
-            "McLaren": "rgba(234, 88, 12, 0.25)",
-            "Aston Martin": "rgba(5, 150, 105, 0.25)",
-            "Alpine": "rgba(37, 99, 235, 0.25)",
-            "Williams": "rgba(14, 116, 144, 0.25)",
-            "RB": "rgba(30, 58, 138, 0.25)",
-            "Sauber": "rgba(22, 163, 74, 0.25)",
-            "Haas": "rgba(75, 85, 99, 0.25)"
+            "McLaren Mastercard F1 Team": "rgba(234, 88, 12, 0.25)",
+            "Scuderia Ferrari HP": "rgba(220, 38, 38, 0.2)",
+            "Cadillac Formula 1 Team": "rgba(200, 200, 200, 0.2)",
+            "Aston Martin Aramco Formula One Team": "rgba(5, 150, 105, 0.25)",
+            "TGR Haas F1 Team": "rgba(75, 85, 99, 0.3)",
+            "Oracle Red Bull Racing": "rgba(30, 41, 59, 0.35)",
+            "BWT Alpine Formula One Team": "rgba(37, 99, 235, 0.25)",
+            "Mercedes-AMG Petronas F1 Team": "rgba(13, 148, 136, 0.25)",
+            "Williams Racing": "rgba(14, 116, 144, 0.25)",
+            "Visa Cash App RB F1 Team": "rgba(30, 58, 138, 0.25)",
+            "Stake F1 Team Kick Sauber": "rgba(22, 163, 74, 0.25)"
         };
 
         tiemposOrdenados.forEach((t, index) => {
