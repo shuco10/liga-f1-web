@@ -629,28 +629,11 @@ async function cargarUltimoAvisoGP() {
         
         const data = await response.json();
         
-        if (data && data.id_gp) {
-            const selectGp = document.getElementById('select-gp');
-            let textoCircuito = '';
-            
-            if (selectGp) {
-                for (let option of selectGp.options) {
-                    if (option.value == data.id_gp) {
-                        textoCircuito = option.text;
-                        break;
-                    }
-                }
-            }
-            
-            // Si el select aún no se había llenado o no encontró coincidencia, 
-            // usamos un texto de respaldo basado en lo que devolvió la API
-            if (!textoCircuito) {
-                textoCircuito = data.id_gp; 
-            }
-            
+        // El servidor devuelve directamente { id: 21, nombre: "Singapur", ultima_subida: "..." }
+        if (data && data.nombre) {
             const infoContainer = document.getElementById('info-ultimos-tiempos');
             if (infoContainer) {
-                infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
+                infoContainer.innerText = `Últimos tiempos subidos: ${data.nombre}`;
                 infoContainer.style.color = '#FACC15';
                 infoContainer.style.fontWeight = 'bold';
                 infoContainer.style.fontSize = '15px';
