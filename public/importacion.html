@@ -156,7 +156,85 @@
             alert("Error al enviar el mensaje.");
         }
     }
+/////////////////////////////////////////////////////////////
+//////SISTEMA DE IMPORTACION AQUI EMPIEZA TODO
+/////////////////////////////////////////////////////////////
+function validarYPrevisualizarCSV() {
+    const input = document.getElementById('inputCsvF1');
+    const contenedorFeedback = document.getElementById('resultadoValidacion');
+    
+    if (!input.files || input.files.length === 0) {
+        alert("Selecciona un archivo CSV primero.");
+        return;
+    }
 
+    const archivo = input.files[0];
+    const lector = new FileReader();
+
+    lector.onload = function(e) {
+        const lineas = e.target.result.split('\n');
+        if (lineas.length < 2) {
+            contenedorFeedback.innerHTML = "<p style='color: #e74c3c;'>El archivo está vacío o no tiene formato válido.</p>";
+            return;
+        }
+
+        const separador = lineas[0].includes(';') ? ';' : ',';
+        const cabeceras = lineas[0].toLowerCase().split(separador).map(h => h.trim());
+
+        // Validar que las cabeceras obligatorias existan
+        const obligatorias = ['id_gp', 'gamertag', 'posicion', 'pole', 'dnf'];
+        const faltantes = obligatorias.filter(campo => !cabeceras.includes(campo));
+
+        if (faltantes.length > 0) {
+            contenedorFeedback.innerHTML = `<p style='color: #e74c3c; font-weight: bold;'>Error crítico: Faltan las siguientes columnas obligatorias en el CSV: ${faltantes.join(', ')}</p>`;
+            return;
+        }
+
+        let filasValidas = [];
+        let erroresBloqueantes = [];
+
+        // Analizar fila por fila (empezando desde la 1)
+        for (let i = 1; i < lineas.length; i++) {
+            const lineaTexto = lineas[i].trim();
+            if (!lineaTexto) continue; // Saltar líneas vacías
+
+            const valores = lineaTexto.split(separador).map(v => v.trim());
+            let filaObj = {};
+
+            cabeceras.forEach((cabecera, index) => {
+                filaObj[cabecera] = valores[index] !== undefined ? valores[index] : '';
+            });
+
+            // COMPROBACIONES BLOQUEANTES
+            let numeroFila = i + 1;
+            if (!filaObj.id_gp) erroresBloqueantes.sindes?.push ? null : erroresBloqueantes.push(`Fila ${numeroFila}: Falta el circuito (id_gp).`);
+            if (!filaObj.gamertag) erroresBloqueantes.push(`Fila ${numeroFila}: Falta el nombre del piloto (gamertag).`);
+            if (filaObj.posicion === '' || isNaN(filaObj.posicion)) erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag || 'Piloto desconocido'}): Posición inválida o vacía.`);
+            if (filaObj.pole === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'pole' no puede estar vacío.`);
+            if (filaObj.dnf === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'dnf' no puede estar vacío.`);
+
+            filasValidas.push(filaObj);
+        }
+
+        // SI HAY ERRORES, BLOQUEAMOS EL PROCESO
+        if (erroresBloqueantes.length > 0) {
+            let htmlErrores = `<h4 style="color: #e74c3c;">Se han encontrado errores bloqueantes (${erroresBloqueantes.length}):</h4><ul style="color: #ff9999; background: #2a1515; padding: 15px; border-radius: 4px;">`;
+            erroresBloqueantes.forEach(err => { htmlErrores += `<li>${err}</li>`; });
+            htmlErrores += `</ul><p>Corrije el archivo Excel/CSV y vuelve a subirlo.</p>`;
+            contenedorFeedback.innerHTML = htmlErrores;
+            return;
+        }
+
+        // Si pasa la validación, muestra un mensaje de éxito previo a pintar la tabla editable
+        contenedorFeedback.innerHTML = `<p style="color: #2ecc71; font-weight: bold;">¡Archivo validado con éxito! ${filasValidas.length} registros listos para revisar.</p>`;
+        
+        // Aquí es donde en el siguiente paso montaremos la tabla de previsualización editable
+    };
+
+    lector.readAsText(archivo, 'UTF-8');
+}
+
+    
     
 </script>
 </body>
