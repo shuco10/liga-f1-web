@@ -884,7 +884,7 @@ app.post('/api/importar-tiempos', async (req, res) => {
 app.get('/api/tiempos/:id_gp', async (req, res) => {
     try {
         const { id_gp } = req.params;
-        const resultado = await client.query(`
+        const resultado = await pool.query(`
             SELECT 
                 t.id_gp,
                 t.id,
