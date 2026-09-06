@@ -232,17 +232,38 @@ async function cargarTiemposPorGP() {
         const tabla = tbody.closest('table');
         if (tabla) {
             tabla.style.width = '100%';
-            tabla.style.tableLayout = 'auto';
+            tabla.style.borderCollapse = 'separate';
+            tabla.style.borderSpacing = '0 8px';
+            
+            // Forzamos también la cabecera (thead) a usar flex para que alinee perfecto
+            const thead = tabla.querySelector('thead');
+            if (thead) {
+                thead.style.display = 'block';
+                const trHead = thead.querySelector('tr');
+                if (trHead) {
+                    trHead.style.display = 'flex';
+                    trHead.style.alignItems = 'center';
+                    trHead.style.padding = '0 15px';
+                    trHead.style.width = '100%';
+                    trHead.style.boxSizing = 'border-box';
+                    trHead.innerHTML = `
+                        <th style="flex: 0 0 50px; text-align: center; font-size: 13px;">Pos</th>
+                        <th style="flex: 0 0 130px; text-align: left; padding-left: 10px; font-size: 13px;">Piloto</th>
+                        <th style="flex: 1 1 auto; text-align: left; padding-left: 15px; font-size: 13px;">Escudería</th>
+                        <th style="flex: 0 0 115px; text-align: center; font-size: 13px;">Clasificación</th>
+                        <th style="flex: 0 0 125px; text-align: center; font-size: 13px;">Vuelta Rápida</th>
+                        <th style="flex: 0 0 120px; text-align: center; font-size: 13px;">Tiempo Total</th>
+                    `;
+                }
+            }
         }
 
         tbody.innerHTML = '';
 
         if (!tiempos || tiempos.length === 0) {
             const trVacio = document.createElement('tr');
-            trVacio.style.backgroundColor = '#2a2a2a';
-            trVacio.style.height = '70px';
             trVacio.innerHTML = `
-                <td colspan="6" style="text-align: center; color: #94a3b8; font-size: 15px; vertical-align: middle; border-radius: 8px;">
+                <td colspan="1" style="display: block; width: 100%; text-align: center; color: #94a3b8; font-size: 15px; padding: 25px; background-color: #2a2a2a; border-radius: 8px;">
                     No hay datos para "${nombreCircuito}"
                 </td>
             `;
@@ -345,33 +366,35 @@ async function cargarTiemposPorGP() {
             const archivoBandera = archivosBanderas[nombreEscuderia];
 
             const banderaHTML = archivoBandera 
-                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 32px; height: 22px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; float: left; margin-right: 6px; margin-bottom: 2px;">` 
+                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 28px; height: 20px; object-fit: cover; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;">` 
                 : '';
 
-            const barraHTML = `<span style="float: left; width: 5px; height: 22px; background-color: ${colorEscuderia}; border-radius: 2px; margin-right: 8px; margin-bottom: 2px;"></span>`;
-
             const escuderiaHTML = `
-                <div style="display: inline-block; text-align: left; max-width: 100%;">
-                    ${banderaHTML}
-                    ${barraHTML}
-                    <span style="color: #cbd5e1; font-size: 13px; line-height: 1.2; display: inline-block; word-break: normal; overflow-wrap: break-word;">${nombreEscuderia}</span>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                        ${banderaHTML}
+                        <span style="display: inline-block; width: 5px; height: 20px; background-color: ${colorEscuderia}; border-radius: 2px;"></span>
+                    </div>
+                    <span style="color: #cbd5e1; font-size: 13px; line-height: 1.2;">${nombreEscuderia}</span>
                 </div>
             `;
 
             const tr = document.createElement('tr');
+            tr.style.display = 'block';
             tr.style.backgroundColor = '#2a2a2a';
-            tr.style.minHeight = '70px'; 
+            tr.style.marginBottom = '8px';
             tr.style.borderRadius = '8px';
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
-            tr.style.display = 'table-row';
             
             tr.innerHTML = `
-                <td style="text-align: center; width: 70px; padding: 10px 8px; font-size: 14px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
-                <td style="width: 180px; padding: 10px 12px; font-weight: 500; font-size: 14px; vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.gamertag || 'Piloto #' + t.id}</td>
-                <td style="width: auto; padding: 10px 12px; vertical-align: middle;">${escuderiaHTML}</td>
-                <td style="width: 130px; text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlQuali}</td>
-                <td style="width: 130px; text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlCarreraVR}</td>
-                <td style="width: 140px; text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; font-weight: bold; white-space: nowrap; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
+                <td colspan="6" style="display: flex; align-items: center; padding: 12px 15px; width: 100%; box-sizing: border-box;">
+                    <div style="flex: 0 0 50px; text-align: center;">${posHTML}</div>
+                    <div style="flex: 0 0 130px; padding-left: 10px; font-weight: 500; font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.gamertag || 'Piloto #' + t.id}</div>
+                    <div style="flex: 1 1 auto; padding-left: 15px; padding-right: 15px; min-width: 150px;">${escuderiaHTML}</div>
+                    <div style="flex: 0 0 115px; text-align: center; font-family: monospace; font-size: 13px;">${htmlQuali}</div>
+                    <div style="flex: 0 0 125px; text-align: center; font-family: monospace; font-size: 13px;">${htmlCarreraVR}</div>
+                    <div style="flex: 0 0 120px; text-align: center; font-family: monospace; font-size: 13px; font-weight: bold;">${htmlTotal}</div>
+                </td>
             `;
             tbody.appendChild(tr);
         });
