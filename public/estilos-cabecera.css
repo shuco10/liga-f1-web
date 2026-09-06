@@ -1522,13 +1522,12 @@ table {
 }
 
 .caja_tiempos {
-    max-width: 1250px !important;
-    width: 95% !important;
-    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
     overflow-x: hidden !important;
 }
 
 .caja_tiempos table {
     width: 100% !important;
-    table-layout: fixed !important;
+    table-layout: auto !important;
 }
