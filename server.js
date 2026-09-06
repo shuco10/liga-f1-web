@@ -761,8 +761,9 @@ app.put('/api/resultados/:id', async (req, res) => {
         res.status(500).json({ error: "Error al actualizar" });
     }
 });
-
-// Eliminar un resultado y restar puntos, victorias y poles (sin columna dnf en pilotos)
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// eliminar-resultado - Eliminar un resultado y restar puntos, victorias, poles, DNFs y podios //
+/////////////////////////////////////////////////////////////////////////////////////////////////
 app.delete('/api/resultados/:id', async (req, res) => {
     const client = await pool.connect();
     try {
@@ -785,16 +786,18 @@ app.delete('/api/resultados/:id', async (req, res) => {
         if (id_piloto) {
             const puntosRestar = puntos || 0;
             const esVictoria = (posicion === 1) ? 1 : 0;
+            const esPodio = (posicion >= 1 && posicion <= 3) ? 1 : 0; // Detecta si quedó 1º, 2º o 3º
             const fuePole = (pole === true) ? 1 : 0;
 
-            // 2. Ejecutamos el UPDATE en la tabla pilotos restando puntos, victorias y poles
+            // 2. Ejecutamos el UPDATE en la tabla pilotos restando puntos, victorias, podios y poles
             await client.query(
                 `UPDATE pilotos 
                  SET puntos_totales = puntos_totales - $1, 
                      victorias = GREATEST(0, victorias - $2),
-                     poles = GREATEST(0, poles - $3)
-                 WHERE id = $4`,
-                [puntosRestar, esVictoria, fuePole, id_piloto]
+                     podios = GREATEST(0, podios - $3),
+                     poles = GREATEST(0, poles - $4)
+                 WHERE id = $5`,
+                [puntosRestar, esVictoria, esPodio, fuePole, id_piloto]
             );
         }
 
