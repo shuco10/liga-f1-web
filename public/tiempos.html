@@ -307,75 +307,40 @@ function procesarCSV(contenido) {
 const btnGuardar = document.getElementById('btn-subir-definitivo');
 if (btnGuardar) {
     btnGuardar.addEventListener('click', async () => {
-        const filas = document.querySelectorAll('#tbody-preview tr');
-        if (filas.length === 0) {
-            alert("No hay datos para guardar.");
+        const fileInput = document.getElementById('csv-file-input');
+        if (!fileInput || !fileInput.files[0]) {
+            alert("No se ha seleccionado ningún archivo.");
             return;
         }
 
-        // Extrae el id_gp de la primera fila (guardado en el atributo data-idgp) o del selector superior
-        const primeraCelda = filas[0].querySelector('td');
-        const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
-        const selectGp = document.getElementById('select-gp');
-        const id_gp = idGpInterno || (selectGp ? selectGp.value : null);
-
-        if (!id_gp) {
-            alert("Error: No se ha podido detectar el id_gp del circuito.");
-            return;
-        }
-
-        const tiemposAEnviar = [];
-        filas.forEach(fila => {
-            const celdas = fila.querySelectorAll('td');
-            if (celdas.length >= 4) {
-                const idPiloto = celdas[0].innerText.trim();
-                const tiempoClas = celdas[1].innerText.trim();
-                const tiempoVr = celdas[2].innerText.trim();
-                const tiempoTot = celdas[3].innerText.trim();
-
-                // Solo añade la fila si tiene el ID de piloto y al menos un tiempo válido
-                if (idPiloto) {
-                    tiemposAEnviar.push({
-                        id_gp: parseInt(id_gp, 10),
-                        id: parseInt(idPiloto, 10),
-                        tiempo_clasificacion: tiempoClas,
-                        tiempo_vuelta_rapida_carrera: tiempoVr,
-                        tiempo_total_carrera: tiempoTot
-                    });
-                }
-            }
-        });
-
-        if (tiemposAEnviar.length === 0) {
-            alert("No hay filas válidas para importar.");
-            return;
-        }
-
-        // Estructura del JSON que espera el servidor
-        const payload = {
-            id_gp: parseInt(id_gp, 10),
-            tiempos: tiemposAEnviar
-        };
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
 
         try {
             const response = await fetch('/api/importar-tiempos', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: formData // Envía el archivo binario directamente sin cabecera de JSON
             });
 
-            const resultado = await response.json();
+            const textoRespuesta = await response.text();
+            let resultado;
+            try {
+                resultado = JSON.parse(textoRespuesta);
+            } catch (e) {
+                resultado = { error: textoRespuesta };
+            }
+
             if (response.ok) {
-                alert("¡Tiempos importados y guardados correctamente en la base de datos!");
+                alert("¡Tiempos importados y guardados correctamente!");
                 document.getElementById('preview-container').style.display = 'none';
-                document.getElementById('csv-file-input').value = '';
+                fileInput.value = '';
                 if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
             } else {
-                alert("Error al guardar: " + (resultado.error || resultado.mensaje || 'Desconocido'));
+                alert("Error al guardar: " + (resultado.error || resultado.mensaje || textoRespuesta));
             }
         } catch (error) {
             console.error("Error en la petición:", error);
-            alert("Hubo un error de conexión al enviar los datos al servidor.");
+            alert("Hubo un error de conexión al enviar el archivo.");
         }
     });
 }
