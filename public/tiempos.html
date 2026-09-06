@@ -57,6 +57,12 @@
             </tbody>
         </table>
     </div>
+    
+    <div id="admin-import-container" style="display: none; margin-bottom: 20px;">
+    <button id="btn-abrir-importar" style="background-color: #dc2626; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        Importar Tiempos (CSV)
+    </button>
+</div>
 </main>
 
 
@@ -89,10 +95,12 @@
     }); // <--- AQUÍ SE CIERRA EL EVENT LISTENER CORRECTAMENTE
 
     // 2. Lógica de Sesión (FUERA del DOMContentLoaded)
-    function verificarSesion() {
+function verificarSesion() {
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
         const formAdmin = document.getElementById('form-admin');
+        const adminImportContainer = document.getElementById('admin-import-container'); // Nuestro contenedor del botón/panel de importar
+        
         const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
         
         if (btnLogin && btnLogout) {
@@ -102,6 +110,11 @@
         
         if (formAdmin) {
             formAdmin.style.display = adminStatus ? 'block' : 'none';
+        }
+
+        // Controlamos también el botón/bloque de importación de tiempos
+        if (adminImportContainer) {
+            adminImportContainer.style.display = adminStatus ? 'block' : 'none';
         }
     }
 
