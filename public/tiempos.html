@@ -198,7 +198,34 @@
         }
     }
 
+// Función para cargar los circuitos en el desplegable al abrir la página
+async function cargarSelectGP() {
+    const select = document.getElementById('select-gp');
+    try {
+        const response = await fetch('/api/circuitos');
+        const circuitos = await response.json();
 
+        if (response.ok) {
+            select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
+                circuitos.map(c => `
+                    <option value="${c.id}">
+                        Ronda ${c.r_round} - ${c.nombre}
+                    </option>
+                `).join('');
+        }
+    } catch (error) {
+        console.error("Error al cargar los circuitos en el selector:", error);
+    }
+}
+
+// Asegúrate de llamarla dentro del DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    cargarSelectGP();
+});
+
+
+
+    
 
     
 </script>
