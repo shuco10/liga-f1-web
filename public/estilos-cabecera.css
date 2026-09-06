@@ -1522,13 +1522,13 @@ table {
 }
 
 .caja_tiempos {
-    max-width: 1200px; /* Ampliamos un poco más el límite para que respire con holgura */
-    width: 95%;        
-    margin: 0 auto;    
-    overflow-x: hidden; /* Corta cualquier intento de scroll horizontal */
+    max-width: 1250px !important;
+    width: 95% !important;
+    margin: 0 auto !important;
+    overflow-x: hidden !important;
 }
 
 .caja_tiempos table {
-    width: 100%;
-    table-layout: fixed; /* Esto es clave: reparte el espacio de forma inteligente entre las columnas para que ninguna se dispare */
+    width: 100% !important;
+    table-layout: fixed !important;
 }
