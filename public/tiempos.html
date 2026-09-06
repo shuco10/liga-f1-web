@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
 async function cargarTiemposPorGP() {
-    const selectGp = document.getElementById('select-gp'); // O el selector/variable de id_gp que uses
+    const selectGp = document.getElementById('select-gp');
     const id_gp = selectGp ? selectGp.value : null;
     
     if (!id_gp) return;
@@ -223,21 +223,17 @@ async function cargarTiemposPorGP() {
         const response = await fetch(`/api/tiempos/${id_gp}`);
         const tiempos = await response.json();
 
-        // Función auxiliar para convertir tiempos a segundos para poder ordenar con precisión
         function tiempoASegundos(str) {
             if (!str || str.includes('DNF') || str.includes('No registrada')) return Infinity;
             const partes = str.split(':');
             if (partes.length === 3) {
-                // Formato H:MM:SS.mmm
                 return parseFloat(partes[0]) * 3600 + parseFloat(partes[1]) * 60 + parseFloat(partes[2]);
             } else if (partes.length === 2) {
-                // Formato M:SS.mmm
                 return parseFloat(partes[0]) * 60 + parseFloat(partes[1]);
             }
             return Infinity;
         }
 
-        // 1. Encontrar la vuelta más rápida global de Quali y de Carrera (excluyendo DNF/vacias)
         let mejorQuali = Infinity;
         let mejorCarrera = Infinity;
 
@@ -248,25 +244,20 @@ async function cargarTiemposPorGP() {
             if (cSec < mejorCarrera) mejorCarrera = cSec;
         });
 
-        // 2. Separar finalizados y DNF para ordenar correctamente
         const conTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) !== Infinity);
         const sinTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) === Infinity);
 
-        // Ordenar los que tienen tiempo de menor a mayor (tiempo total de carrera)
         conTiempo.sort((a, b) => tiempoASegundos(a.tiempo_total_carrera) - tiempoASegundos(b.tiempo_total_carrera));
-
-        // Unir: primero los que tienen tiempo ordenados, al final los DNF
         const tiemposOrdenados = [...conTiempo, ...sinTiempo];
 
-        // 3. Pintar la tabla
-        const tbody = document.getElementById('tbody-tabla-tiempos'); // Ajusta el ID de tu tbody de visualización
+        // Apunta al ID correcto que existe en tu HTML
+        const tbody = document.getElementById('tbody-tiempos');
         if (!tbody) return;
         tbody.innerHTML = '';
 
         tiemposOrdenados.forEach((t, index) => {
             const esDNF = tiempoASegundos(t.tiempo_total_carrera) === Infinity;
             
-            // Asignación de posición o etiqueta DNF
             let posHTML = '';
             if (esDNF) {
                 posHTML = `<span style="background-color: #d32f2f; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">DNF</span>`;
@@ -283,7 +274,6 @@ async function cargarTiemposPorGP() {
                 }
             }
 
-            // Comprobar si es la vuelta más rápida de Quali o Carrera para aplicar estilo morado
             const qSec = tiempoASegundos(t.tiempo_clasificacion);
             const cSec = tiempoASegundos(t.tiempo_vuelta_rapida_carrera);
 
@@ -311,7 +301,6 @@ async function cargarTiemposPorGP() {
         console.error("Error al cargar y ordenar los tiempos:", error);
     }
 }
-
 
     
 
