@@ -98,12 +98,12 @@
         let errores = [];
         datosPrevisualizacionGlobal = [];
 
-        datos.forEach((fila, index) => {
+datos.forEach((fila, index) => {
             const numFila = index + 1;
             const identificadorPiloto = fila.gamertag || `ID: ${fila.id}`;
 
             // Validaciones básicas de formato numérico
-            if (!fila.id_gp || isNaN(fila.id_gp)) errores.(`Fila ${numFila} (${identificadorPiloto}): id_gp inválido.`);
+            if (!fila.id_gp || isNaN(fila.id_gp)) errores.push(`Fila ${numFila} (${identificadorPiloto}): id_gp inválido.`);
             if (!fila.id || isNaN(fila.id)) errores.push(`Fila ${numFila} (${identificadorPiloto}): id de piloto inválido.`);
             if (!fila.posicion || isNaN(fila.posicion)) errores.push(`Fila ${numFila} (${identificadorPiloto}): Posición inválida.`);
 
