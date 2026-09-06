@@ -1515,8 +1515,9 @@ table tr td:nth-child(2) {
 }
 
 
+/* Asegura que la tabla permita separar las filas */
 table {
-    border-collapse: separate;
-    border-spacing: 0 10px;
+    border-collapse: separate !important;
+    border-spacing: 0 12px !important; /* Espacio vertical de 12px entre piloto y piloto */
 }
 
