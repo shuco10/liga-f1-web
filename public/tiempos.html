@@ -220,9 +220,43 @@ async function cargarTiemposPorGP() {
     
     if (!id_gp) return;
 
+    // Obtenemos el nombre del circuito seleccionado para el mensaje de aviso
+    const nombreCircuito = selectGp.options[selectGp.selectedIndex]?.text || 'este circuito';
+
     try {
         const response = await fetch(`/api/tiempos/${id_gp}`);
         const tiempos = await response.json();
+
+        const tbody = document.getElementById('tbody-tiempos');
+        if (!tbody) return;
+
+        // Aseguramos que la tabla no tenga un layout forzado que corte el texto
+        const tabla = tbody.closest('table');
+        if (tabla) {
+            tabla.style.width = '100%';
+            tabla.style.tableLayout = 'auto'; // Permitir que las celdas crezcan según su contenido
+            
+            // Opcional: Asegurar que el contenedor padre de la tabla tenga scroll horizontal por seguridad
+            if (tabla.parentElement) {
+                tabla.parentElement.style.overflowX = 'auto';
+            }
+        }
+
+        tbody.innerHTML = '';
+
+        // Si no hay datos, mostramos una fila informativa con el mensaje pedido
+        if (!tiempos || tiempos.length === 0) {
+            const trVacio = document.createElement('tr');
+            trVacio.style.backgroundColor = '#2a2a2a';
+            trVacio.style.height = '70px';
+            trVacio.innerHTML = `
+                <td colspan="6" style="text-align: center; color: #94a3b8; font-size: 15px; vertical-align: middle; border-radius: 8px;">
+                    No hay datos para "${nombreCircuito}"
+                </td>
+            `;
+            tbody.appendChild(trVacio);
+            return;
+        }
 
         function tiempoASegundos(str) {
             if (!str || str.includes('DNF') || str.includes('No registrada')) return Infinity;
@@ -250,18 +284,6 @@ async function cargarTiemposPorGP() {
 
         conTiempo.sort((a, b) => tiempoASegundos(a.tiempo_total_carrera) - tiempoASegundos(b.tiempo_total_carrera));
         const tiemposOrdenados = [...conTiempo, ...sinTiempo];
-
-        const tbody = document.getElementById('tbody-tiempos');
-        if (!tbody) return;
-        
-        // Forzamos el layout fijo en la tabla padre para que respete el ancho de pantalla
-        const tabla = tbody.closest('table');
-        if (tabla) {
-            tabla.style.width = '100%';
-            tabla.style.tableLayout = 'fixed';
-        }
-
-        tbody.innerHTML = '';
 
         const coloresBordeEscuderias = {
             "Scuderia Ferrari HP": "#DC2626",
@@ -298,15 +320,15 @@ async function cargarTiemposPorGP() {
             
             let posHTML = '';
             if (esDNF) {
-                posHTML = `<span style="background-color: #d32f2f; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8em;">DNF</span>`;
+                posHTML = `<span style="background-color: #d32f2f; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">DNF</span>`;
             } else {
                 const puesto = index + 1;
                 if (puesto === 1) {
-                    posHTML = `<span style="background-color: #FFD700; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>`;
+                    posHTML = `<span style="background-color: #FFD700; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>`;
                 } else if (puesto === 2) {
-                    posHTML = `<span style="background-color: #C0C0C0; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>`;
+                    posHTML = `<span style="background-color: #C0C0C0; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>`;
                 } else if (puesto === 3) {
-                    posHTML = `<span style="background-color: #CD7F32; color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>`;
+                    posHTML = `<span style="background-color: #CD7F32; color: #fff; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>`;
                 } else {
                     posHTML = puesto;
                 }
@@ -318,7 +340,7 @@ async function cargarTiemposPorGP() {
             const esMejorQuali = (qSec === mejorQuali && qSec !== Infinity);
             const esMejorCarrera = (cSec === mejorCarrera && cSec !== Infinity);
 
-            const estiloMorado = `background-color: #7B1FA2; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
+            const estiloMorado = `background-color: #7B1FA2; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
 
             const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
             const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
@@ -331,14 +353,15 @@ async function cargarTiemposPorGP() {
             const archivoBandera = archivosBanderas[nombreEscuderia];
 
             const banderaHTML = archivoBandera 
-                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 32px; height: 22px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; flex-shrink: 0; margin-right: 6px;">` 
+                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 36px; height: 25px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; flex-shrink: 0; margin-right: 4px;">` 
                 : '';
 
+            // Quitamos el truncado para que el nombre de la escudería respire y se vea completo
             const escuderiaHTML = `
-                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
                     ${banderaHTML}
-                    <span style="display: inline-block; width: 6px; height: 26px; background-color: ${colorEscuderia}; border-radius: 3px; flex-shrink: 0;"></span>
-                    <span style="color: #cbd5e1; font-size: 13px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nombreEscuderia}</span>
+                    <span style="display: inline-block; width: 8px; height: 28px; background-color: ${colorEscuderia}; border-radius: 4px; flex-shrink: 0;"></span>
+                    <span style="color: #cbd5e1; font-size: 14px; line-height: 1.2;">${nombreEscuderia}</span>
                 </div>
             `;
 
@@ -348,14 +371,14 @@ async function cargarTiemposPorGP() {
             tr.style.borderRadius = '8px';
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
             
-            // Anchos estrictos por columna para evitar que se descuadre o desborde
+            // Celdas sin restricciones de ancho forzado para que piloto y escudería muestren todo su texto
             tr.innerHTML = `
-                <td style="text-align: center; width: 60px; padding: 0 5px; font-size: 14px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
-                <td style="padding: 0 10px; font-weight: 500; font-size: 14px; vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 150px;">${t.gamertag || 'Piloto #' + t.id}</td>
-                <td style="padding: 0 10px; vertical-align: middle; width: 260px; overflow: hidden;">${escuderiaHTML}</td>
-                <td style="text-align: center; padding: 0 5px; vertical-align: middle; font-family: monospace; font-size: 13px; width: 130px;">${htmlQuali}</td>
-                <td style="text-align: center; padding: 0 5px; vertical-align: middle; font-family: monospace; font-size: 13px; width: 130px;">${htmlCarreraVR}</td>
-                <td style="text-align: center; padding: 0 5px; vertical-align: middle; font-family: monospace; font-size: 13px; font-weight: bold; width: 150px; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
+                <td style="text-align: center; width: 70px; padding: 0 10px; font-size: 15px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
+                <td style="padding: 0 15px; font-weight: 500; font-size: 15px; vertical-align: middle; letter-spacing: 0.3px; white-space: nowrap;">${t.gamertag || 'Piloto #' + t.id}</td>
+                <td style="padding: 0 15px; vertical-align: middle;">${escuderiaHTML}</td>
+                <td style="text-align: center; padding: 0 15px; vertical-align: middle; font-family: monospace; font-size: 14px; white-space: nowrap;">${htmlQuali}</td>
+                <td style="text-align: center; padding: 0 15px; vertical-align: middle; font-family: monospace; font-size: 14px; white-space: nowrap;">${htmlCarreraVR}</td>
+                <td style="text-align: center; padding: 0 15px; vertical-align: middle; font-family: monospace; font-size: 14px; font-weight: bold; white-space: nowrap; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
             `;
             tbody.appendChild(tr);
         });
