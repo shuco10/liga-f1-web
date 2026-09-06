@@ -209,7 +209,7 @@ async function cargarSelectGP() {
             select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
                 circuitos.map(c => `
                     <option value="${c.id}">
-                        Ronda ${c.r_round !== undefined ? c.r_round : c.round} - ${c.nombre}
+                        Ronda ${c.r_round} - ${c.nombre} (${c.fecha_carrera})
                     </option>
                 `).join('');
         }
@@ -221,7 +221,6 @@ async function cargarSelectGP() {
 document.addEventListener('DOMContentLoaded', () => {
     cargarSelectGP();
 });
-
 
     
 
