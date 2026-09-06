@@ -50,6 +50,11 @@
             </tbody>
         </table>
     </div>
+
+    
+    <!-- AVISO DE CARGA DE TIEMPOS -->
+    <div id="info-ultimos-tiempos" style="color: #FACC15; font-weight: bold; font-size: 14px; margin: 8px 0;"></div>
+    
     
     <!-- ÚNICO Contenedor de Importación (Visible solo para administradores) -->
     <div id="admin-import-container" style="display: none; margin-top: 30px; padding: 20px; background: #222; border: 1px solid #444; border-radius: 8px;">
@@ -463,38 +468,35 @@ async function cargarTiemposPorGP() {
     });
 
 function procesarCSV(contenido) {
-        const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
-        const tbodyPreview = document.getElementById('tbody-preview');
-        tbodyPreview.innerHTML = '';
+    const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
+    const tbodyPreview = document.getElementById('tbody-preview');
+    tbodyPreview.innerHTML = '';
 
-        for (let i = 1; i < lineas.length; i++) {
-            // Detecta automáticamente si usa coma o punto y coma
-            const separador = lineas[i].includes(';') ? ';' : ',';
-            const columnas = lineas[i].split(separador);
-            
-            if (columnas.length < 5) continue;
+    for (let i = 1; i < lineas.length; i++) {
+        // Detecta automáticamente si usa coma o punto y coma
+        const separador = lineas[i].includes(';') ? ';' : ',';
+        const columnas = lineas[i].split(separador);
+        
+        if (columnas.length < 5) continue;
 
-            const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
+        const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
 
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #333';
-            tr.innerHTML = `
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
-            `;
-            tbodyPreview.appendChild(tr);
-        }
-
-        document.getElementById('preview-container').style.display = 'block';
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #333';
+        tr.innerHTML = `
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
+        `;
+        tbodyPreview.appendChild(tr);
     }
 
+    document.getElementById('preview-container').style.display = 'block';
+}
 
 
 
-
-    
 const btnGuardar = document.getElementById('btn-subir-definitivo');
 if (btnGuardar) {
     btnGuardar.addEventListener('click', async () => {
@@ -552,6 +554,24 @@ if (btnGuardar) {
             const resultado = await response.json();
             if (response.ok) {
                 alert("¡Tiempos importados y guardados correctamente!");
+                
+                // --- ACTUALIZACIÓN DEL MENSAJE FIJO EN AMARILLO FUERTE ---
+                if (selectGp) {
+                    // Selecciona automáticamente en el desplegable el circuito que se acaba de subir
+                    selectGp.value = id_gp;
+                    const textoCircuito = selectGp.options[selectGp.selectedIndex]?.text || '';
+                    
+                    const infoContainer = document.getElementById('info-ultimos-tiempos');
+                    if (infoContainer && textoCircuito) {
+                        infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
+                        infoContainer.style.color = '#FACC15'; // Amarillo fuerte tipo Tailwind (yellow-400)
+                        infoContainer.style.fontWeight = 'bold';
+                        infoContainer.style.fontSize = '14px';
+                        infoContainer.style.margin = '8px 0';
+                    }
+                }
+                // ---------------------------------------------------------
+
                 document.getElementById('preview-container').style.display = 'none';
                 document.getElementById('csv-file-input').value = '';
                 if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
@@ -564,7 +584,6 @@ if (btnGuardar) {
         }
     });
 }
-
     
 </script>
 </body>
