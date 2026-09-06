@@ -255,7 +255,6 @@ async function cargarTiemposPorGP() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        // Diccionario con colores sólidos para las barras de la escudería
         const coloresBordeEscuderias = {
             "Scuderia Ferrari HP": "#DC2626",
             "Audi Revolut F1 Team": "#881337",
@@ -267,11 +266,10 @@ async function cargarTiemposPorGP() {
             "Aston Martin Aramco Formula One Team": "#059669",
             "Oracle Red Bull Racing": "#3B82F6",
             "Atlassian Williams F1 Team": "#2563EB",
-            "BWT Alpine Formula One Team": "#FF1493",
+            "BWT Alpine Formula One Team": "#FF1493", // 🩷 El rosa BWT
             "Stake F1 Team Kick Sauber": "#16A34A"
         };
 
-        // Diccionario basado exactamente en los archivos de tu carpeta public/banderas/
         const archivosBanderas = {
             "Scuderia Ferrari HP": "ferrari.png",
             "Audi Revolut F1 Team": "audi.png",
@@ -284,7 +282,7 @@ async function cargarTiemposPorGP() {
             "Oracle Red Bull Racing": "redbull.png",
             "Atlassian Williams F1 Team": "williams.png",
             "BWT Alpine Formula One Team": "alpine.png",
-            "Stake F1 Team Kick Sauber": "sauber.png" // O el nombre exacto si lo tienes distinto
+            "Stake F1 Team Kick Sauber": "sauber.png"
         };
 
         tiemposOrdenados.forEach((t, index) => {
@@ -324,12 +322,11 @@ async function cargarTiemposPorGP() {
             const colorEscuderia = coloresBordeEscuderias[nombreEscuderia] || '#555';
             const archivoBandera = archivosBanderas[nombreEscuderia];
 
-            // Generamos la etiqueta de la bandera si existe el archivo
+            // 🚩 Bandera más grande, nítida y estilo pegatina 3D
             const banderaHTML = archivoBandera 
-                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 24px; height: 16px; object-fit: cover; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0; margin-right: 2px;">` 
+                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 36px; height: 25px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; flex-shrink: 0; margin-right: 4px;">` 
                 : '';
 
-            // Estructura interna: Bandera + Barra de color + Nombre de la escudería alineados perfectamente
             const escuderiaHTML = `
                 <div style="display: flex; align-items: center; gap: 10px;">
                     ${banderaHTML}
@@ -344,7 +341,6 @@ async function cargarTiemposPorGP() {
             tr.style.borderRadius = '8px';
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
             
-            // Mantiene exactamente las 6 columnas originales de tu tabla
             tr.innerHTML = `
                 <td style="text-align: center; width: 70px; padding: 0 10px; font-size: 15px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
                 <td style="padding: 0 10px; font-weight: 500; font-size: 15px; vertical-align: middle; letter-spacing: 0.3px;">${t.gamertag || 'Piloto #' + t.id}</td>
