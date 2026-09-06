@@ -255,26 +255,20 @@ async function cargarTiemposPorGP() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
-// Limpiamos el texto de la celda para ignorar saltos de línea o espacios extra
-        const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
-        const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
-
-        // Diccionario con tus colores personalizados y los nombres exactos de la BD
+        // Diccionario con tus colores personalizados adaptados a los nombres largos de la BD
         const coloresEscuderias = {
             "McLaren Mastercard F1 Team": "rgba(234, 88, 12, 0.35)",
             "Scuderia Ferrari HP": "rgba(220, 38, 38, 0.35)",
             "Oracle Red Bull Racing": "rgba(30, 41, 59, 0.4)",
             "Visa Cash App Racing Bulls Formula One Team": "rgba(56, 189, 248, 0.35)", // Azul claro
             "Audi Revolut F1 Team": "rgba(114, 21, 41, 0.4)",                         // Granate oscuro
-            "Mercedes-AMG PETRONAS Formula One Team": "rgba(16, 185, 129, 0.35)",       // Verde eléctrico/petróleo de Mercedes
-            "Atlassian Williams F1 Team": "rgba(29, 78, 216, 0.35)",                   // Azul intermedio (más oscuro que Visa, más claro que Red Bull)
+            "Mercedes-AMG PETRONAS Formula One Team": "rgba(16, 185, 129, 0.35)",       // Verde eléctrico
+            "Atlassian Williams F1 Team": "rgba(29, 78, 216, 0.35)",                   // Azul intermedio
             "TGR Haas F1 Team": "rgba(75, 85, 99, 0.35)",
             "BWT Alpine Formula One Team": "rgba(37, 99, 235, 0.35)",
             "Aston Martin Aramco Formula One Team": "rgba(5, 150, 105, 0.35)",
             "Stake F1 Team Kick Sauber": "rgba(22, 163, 74, 0.35)"
         };
-
-        const colorFondoFila = coloresEscuderias[nombreEscuderia] || 'transparent';
 
         tiemposOrdenados.forEach((t, index) => {
             const esDNF = tiempoASegundos(t.tiempo_total_carrera) === Infinity;
@@ -301,15 +295,15 @@ async function cargarTiemposPorGP() {
             const esMejorQuali = (qSec === mejorQuali && qSec !== Infinity);
             const esMejorCarrera = (cSec === mejorCarrera && cSec !== Infinity);
 
-            // Morado sólido con brillo protegido para que resalte por encima de cualquier color de fondo
             const estiloMorado = `background-color: #7B1FA2; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
 
             const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
             const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
             const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
 
-            // Selecciona el color de la fila según la escudería que devuelve la base de datos
-            const nombreEscuderia = t.escuderia || 'Sin Escudería';
+            // Normalizamos el texto de la escudería DENTRO del bucle para evitar errores
+            const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
+            const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
             const colorFondoFila = coloresEscuderias[nombreEscuderia] || 'transparent';
 
             const tr = document.createElement('tr');
