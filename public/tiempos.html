@@ -277,8 +277,10 @@ function procesarCSV(contenido) {
         tbodyPreview.innerHTML = '';
 
         for (let i = 1; i < lineas.length; i++) {
-            const columnas = lineas[i].split(',');
-            // Tu CSV tiene 5 columnas: id_gp, id (piloto), tiempo_clas, tiempo_vr, tiempo_tot
+            // Detecta automáticamente si usa coma o punto y coma
+            const separador = lineas[i].includes(';') ? ';' : ',';
+            const columnas = lineas[i].split(separador);
+            
             if (columnas.length < 5) continue;
 
             const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
@@ -296,16 +298,6 @@ function procesarCSV(contenido) {
 
         document.getElementById('preview-container').style.display = 'block';
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const btnCancelar = document.getElementById('btn-cancelar-preview');
-        if (btnCancelar) {
-            btnCancelar.addEventListener('click', () => {
-                document.getElementById('preview-container').style.display = 'none';
-                document.getElementById('csv-file-input').value = '';
-            });
-        }
-    });
 
 const btnGuardar = document.getElementById('btn-subir-definitivo');
 if (btnGuardar) {
