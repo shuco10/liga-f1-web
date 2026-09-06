@@ -271,21 +271,22 @@
         }
     });
 
-    function procesarCSV(contenido) {
+function procesarCSV(contenido) {
         const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
         const tbodyPreview = document.getElementById('tbody-preview');
         tbodyPreview.innerHTML = '';
 
         for (let i = 1; i < lineas.length; i++) {
             const columnas = lineas[i].split(',');
-            if (columnas.length < 4) continue;
+            // Tu CSV tiene 5 columnas: id_gp, id (piloto), tiempo_clas, tiempo_vr, tiempo_tot
+            if (columnas.length < 5) continue;
 
-            const [idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
+            const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
 
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #333';
             tr.innerHTML = `
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
                 <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
                 <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
                 <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
@@ -304,52 +305,56 @@
                 document.getElementById('csv-file-input').value = '';
             });
         }
+    });
 
-        const btnGuardar = document.getElementById('btn-subir-definitivo');
-        if (btnGuardar) {
-            btnGuardar.addEventListener('click', async () => {
-                const id_gp = document.getElementById('select-gp').value;
-                if (!id_gp) {
-                    alert("Por favor, selecciona un Gran Premio primero.");
-                    return;
-                }
+const btnGuardar = document.getElementById('btn-subir-definitivo');
+if (btnGuardar) {
+    btnGuardar.addEventListener('click', async () => {
+        // Usa el selector visual o el que viene en la primera fila del CSV
+        const filas = document.querySelectorAll('#tbody-preview tr');
+        if (filas.length === 0) return;
 
-                const filas = document.querySelectorAll('#tbody-preview tr');
-                const datosAEnviar = [];
+        const id_gp_sugerido = filas[0].querySelector('td').getAttribute('data-idgp');
+        const id_gp = document.getElementById('select-gp').value || id_gp_sugerido;
 
-                filas.forEach(fila => {
-                    const celdas = fila.querySelectorAll('td');
-                    datosAEnviar.push({
-                        id: celdas[0].innerText.trim(),
-                        tiempo_clasificacion: celdas[1].innerText.trim(),
-                        tiempo_vuelta_rapida_carrera: celdas[2].innerText.trim(),
-                        tiempo_total_carrera: celdas[3].innerText.trim()
-                    });
-                });
+        if (!id_gp) {
+            alert("Por favor, selecciona un Gran Premio primero.");
+            return;
+        }
 
-                try {
-                    const response = await fetch('/api/importar-tiempos', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id_gp, tiempos: datosAEnviar })
-                    });
-
-                    const resultado = await response.json();
-                    if (response.ok) {
-                        alert("¡Tiempos importados y guardados correctamente!");
-                        document.getElementById('preview-container').style.display = 'none';
-                        document.getElementById('csv-file-input').value = '';
-                        cargarTiemposPorGP();
-                    } else {
-                        alert("Error al guardar: " + (resultado.error || 'Desconocido'));
-                    }
-                } catch (error) {
-                    console.error("Error en la petición:", error);
-                    alert("Hubo un error de conexión al enviar los datos.");
-                }
+        const datosAEnviar = [];
+        filas.forEach(fila => {
+            const celdas = fila.querySelectorAll('td');
+            datosAEnviar.push({
+                id: celdas[0].innerText.trim(),
+                tiempo_clasificacion: celdas[1].innerText.trim(),
+                tiempo_vuelta_rapida_carrera: celdas[2].innerText.trim(),
+                tiempo_total_carrera: celdas[3].innerText.trim()
             });
+        });
+
+        try {
+            const response = await fetch('/api/importar-tiempos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_gp, tiempos: datosAEnviar })
+            });
+
+            const resultado = await response.json();
+            if (response.ok) {
+                alert("¡Tiempos importados y guardados correctamente!");
+                document.getElementById('preview-container').style.display = 'none';
+                document.getElementById('csv-file-input').value = '';
+                cargarTiemposPorGP();
+            } else {
+                alert("Error al guardar: " + (resultado.error || 'Desconocido'));
+            }
+        } catch (error) {
+            console.error("Error en la petición:", error);
+            alert("Hubo un error de conexión al enviar los datos.");
         }
     });
+}
 </script>
 </body>
 </html>
