@@ -37,9 +37,30 @@
     <h3 class="subtitulo-principal">Sistema para importación de datos mediante ficheros.</h3>
 
    
-
 </main>
+<div style="background: #1a1a1a; padding: 20px; border-radius: 8px; color: #fff; max-width: 600px; margin: 40px auto; border: 1px solid #333;">
+    <h3 style="color: #ff4444; margin-top: 0;">Subir Resultados de Gran Premio</h3>
+    <p style="color: #aaa; font-size: 13px;">Sube el archivo CSV con los 22 pilotos. Se validarán automáticamente los campos obligatorios.</p>
+    
+    <input type="file" id="inputCsvF1" accept=".csv" style="color: #fff; margin: 15px 0; display: block;" />
+    
+    <button onclick="validarYPrevisualizarCSV()" style="padding: 10px 20px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Validar y Previsualizar</button>
+</div>
 
+<!-- Contenedor donde saldrá la tabla o los errores de validación -->
+<div id="resultadoValidacion" style="max-width: 800px; margin: 20px auto; color: #fff;"></div>
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
     <div id="footer-placeholder"></div>
