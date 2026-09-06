@@ -762,15 +762,53 @@ app.put('/api/resultados/:id', async (req, res) => {
     }
 });
 
-// Eliminar un resultado
+// Eliminar un resultado y restar puntos, victorias y poles (sin columna dnf en pilotos)
 app.delete('/api/resultados/:id', async (req, res) => {
+    const client = await pool.connect();
     try {
+        await client.query('BEGIN');
         const { id } = req.params;
-        await pool.query('DELETE FROM resultados WHERE id = $1', [id]);
+
+        // 1. Obtenemos los datos del resultado antes de borrarlo
+        const resultadoQuery = await client.query(
+            'SELECT id_piloto, puntos, posicion, pole FROM resultados WHERE id = $1', 
+            [id]
+        );
+        
+        if (resultadoQuery.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: "Resultado no encontrado" });
+        }
+
+        const { id_piloto, puntos, posicion, pole } = resultadoQuery.rows[0];
+
+        if (id_piloto) {
+            const puntosRestar = puntos || 0;
+            const esVictoria = (posicion === 1) ? 1 : 0;
+            const fuePole = (pole === true) ? 1 : 0;
+
+            // 2. Ejecutamos el UPDATE en la tabla pilotos restando puntos, victorias y poles
+            await client.query(
+                `UPDATE pilotos 
+                 SET puntos_totales = puntos_totales - $1, 
+                     victorias = GREATEST(0, victorias - $2),
+                     poles = GREATEST(0, poles - $3)
+                 WHERE id = $4`,
+                [puntosRestar, esVictoria, fuePole, id_piloto]
+            );
+        }
+
+        // 3. Borramos el resultado de la tabla resultados
+        await client.query('DELETE FROM resultados WHERE id = $1', [id]);
+
+        await client.query('COMMIT');
         res.status(200).json({ success: true });
     } catch (err) {
+        await client.query('ROLLBACK');
         console.error("Error al eliminar resultado:", err);
         res.status(500).json({ error: "Error al eliminar" });
+    } finally {
+        client.release();
     }
 });
 
