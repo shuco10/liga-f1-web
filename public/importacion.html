@@ -75,6 +75,18 @@
 
                 // AHORA QUE EL HEADER ESTÁ CARGADO, VERIFICAMOS SESIÓN
                 verificarSesion();
+
+                // CONTROL DE ACCESO DE ADMIN: Si no es admin, bloqueamos la pantalla
+                const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+                if (!adminStatus) {
+                    document.body.innerHTML = `
+                        <div style="background: #1a1a1a; color: #ff4444; text-align: center; padding: 50px; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <h2 style="font-size: 24px; margin-bottom: 10px;">ACCESO DENEGADO</h2>
+                            <p style="color: #aaa;">No tienes permisos de administrador para acceder a esta herramienta de importación.</p>
+                            <a href="/" style="margin-top: 20px; color: #3498db; text-decoration: underline;">Volver al inicio</a>
+                        </div>
+                    `;
+                }
             });
 
         // Cargar Footer y Modal
