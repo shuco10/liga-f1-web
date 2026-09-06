@@ -1521,3 +1521,14 @@ table {
     border-spacing: 0 12px !important; /* Espacio vertical de 12px entre piloto y piloto */
 }
 
+.caja_tiempos {
+    max-width: 1100px; /* Amplía el ancho máximo a tu gusto */
+    width: 92%;        /* Deja aire elegante en los laterales */
+    margin: 0 auto;    /* Centra la caja perfectamente */
+    overflow-x: hidden; /* Adiós al scroll horizontal */
+}
+
+/* Asegura que la tabla dentro de esta caja se adapte al 100% */
+.caja_tiempos table {
+    width: 100%;
+}
