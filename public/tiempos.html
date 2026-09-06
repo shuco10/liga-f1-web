@@ -305,21 +305,22 @@ async function cargarTiemposPorGP() {
             const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
             const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
             
-            // Asignamos el color sólido al borde izquierdo de la fila
             const colorBorde = coloresBordeEscuderias[nombreEscuderia] || '#555';
 
             const tr = document.createElement('tr');
-            tr.style.backgroundColor = '#2a2a2a'; // Fondo oscuro limpio y uniforme para las filas
-            tr.style.borderLeft = `6px solid ${colorBorde}`; // La barrita vertical de color a la izquierda
-            tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.08)';
+            // Estilo de tarjeta flotante con bordes redondeados y barra izquierda de 8px
+            tr.style.backgroundColor = '#2a2a2a';
+            tr.style.borderLeft = `8px solid ${colorBorde}`;
+            tr.style.borderRadius = '8px';
+            tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
             
             tr.innerHTML = `
-                <td style="text-align: center; width: 70px; padding: 14px 10px; font-size: 15px;">${posHTML}</td>
+                <td style="text-align: center; width: 70px; padding: 14px 10px; font-size: 15px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
                 <td style="padding: 14px 10px; font-weight: 500; font-size: 15px; letter-spacing: 0.3px;">${t.gamertag || 'Piloto #' + t.id}</td>
                 <td style="padding: 14px 10px; color: #cbd5e1; font-size: 14px;">${nombreEscuderia}</td>
                 <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px;">${htmlQuali}</td>
                 <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px;">${htmlCarreraVR}</td>
-                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px; font-weight: bold;">${htmlTotal}</td>
+                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px; font-weight: bold; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
             `;
             tbody.appendChild(tr);
         });
