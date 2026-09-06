@@ -62,7 +62,36 @@
     <button id="btn-abrir-importar" style="background-color: #dc2626; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
         Importar Tiempos (CSV)
     </button>
+    </div>
+    <div id="admin-import-container" style="display: none; margin-top: 20px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;">
+    <h3 style="color: #ef4444; margin-bottom: 10px;">Importar Tiempos (CSV)</h3>
+    <input type="file" id="csv-file-input" accept=".csv" style="color: #fff; margin-bottom: 10px;" />
+    
+    <!-- Contenedor de la tabla editable (oculto hasta que se carga un archivo) -->
+    <div id="preview-container" style="display: none; margin-top: 15px;">
+        <h4 style="color: #fff; margin-bottom: 8px;">Previsualización y Corrección de Datos</h4>
+        <div style="overflow-x: auto; max-height: 350px; border: 1px solid #444;">
+            <table style="width: 100%; border-collapse: collapse; color: #fff; font-size: 14px;">
+                <thead>
+                    <tr style="background: #ef4444; text-align: left;">
+                        <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
+                        <th style="padding: 8px;">Clasificación</th>
+                        <th style="padding: 8px;">Vuelta Rápida</th>
+                        <th style="padding: 8px;">Tiempo Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-preview">
+                    <!-- Las filas editables se rellenarán automáticamente -->
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button id="btn-subir-definitivo" style="background: #16a34a; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Confirmar y Guardar</button>
+            <button id="btn-cancelar-preview" style="background: #4b5563; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
+        </div>
+    </div>
 </div>
+    
 </main>
 
 
@@ -254,6 +283,99 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarSelectGP();
 });
 
+///////////////////////////////////////////////////
+///// IMPORT DATOS TIEMPOS //////////////////////
+/////////////////////////////////////////////////
+    document.getElementById('csv-file-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const text = event.target.result;
+        procesarCSV(text);
+    };
+    reader.readAsText(file, 'UTF-8');
+});
+
+function procesarCSV(contenido) {
+    const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
+    const tbodyPreview = document.getElementById('tbody-preview');
+    tbodyPreview.innerHTML = '';
+
+    // Omitimos la cabecera del CSV (empezamos en i = 1 si la primera fila son títulos)
+    // Ajusta el índice si tu CSV no trae cabecera.
+    for (let i = 1; i < lineas.length; i++) {
+        const columnas = lineas[i].split(',');
+        if (columnas.length < 4) continue; // Evitar líneas vacías o mal formadas
+
+        const [idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #333';
+        tr.innerHTML = `
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
+        `;
+        tbodyPreview.appendChild(tr);
+    }
+
+    // Mostramos el bloque de previsualización
+    document.getElementById('preview-container').style.display = 'block';
+}
+
+// Botón para cancelar la previsualización
+document.getElementById('btn-cancelar-preview').addEventListener('click', () => {
+    document.getElementById('preview-container').style.display = 'none';
+    document.getElementById('csv-file-input').value = '';
+});
+
+// Botón para enviar los datos corregidos al servidor
+document.getElementById('btn-subir-definitivo').addEventListener('click', async () => {
+    const id_gp = document.getElementById('select-gp').value;
+    if (!id_gp) {
+        alert("Por favor, selecciona un Gran Premio primero.");
+        return;
+    }
+
+    const filas = document.querySelectorAll('#tbody-preview tr');
+    const datosAEnviar = [];
+
+    filas.forEach(fila => {
+        const celdas = fila.querySelectorAll('td');
+        datosAEnviar.push({
+            id: celdas[0].innerText.trim(),
+            tiempo_clasificacion: celdas[1].innerText.trim(),
+            tiempo_vuelta_rapida_carrera: celdas[2].innerText.trim(),
+            tiempo_total_carrera: celdas[3].innerText.trim()
+        });
+    });
+
+    try {
+        const response = await fetch('/api/importar-tiempos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_gp, tiempos: datosAEnviar })
+        });
+
+        const resultado = await response.json();
+        if (response.ok) {
+            alert("¡Tiempos importados y guardados correctamente!");
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('csv-file-input').value = '';
+            cargarTiemposPorGP(); // Recargamos la tabla principal
+        } else {
+            alert("Error al guardar: " + (resultado.error || 'Desconocido'));
+        }
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        alert("Hubo un error de conexión al enviar los datos.");
+    }
+});
+
+    ////////////////////////////////////////////////////////////////////////////////
     
 </script>
 </body>
