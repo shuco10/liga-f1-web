@@ -255,20 +255,36 @@ async function cargarTiemposPorGP() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        // Diccionario con colores sólidos bien contrastados (Red Bull actualizado a un azul visible)
+        // Diccionario con colores sólidos para las barras de la escudería
         const coloresBordeEscuderias = {
-            "Scuderia Ferrari HP": "#DC2626",                    // Rojo Ferrari
-            "Audi Revolut F1 Team": "#881337",                   // Granate oscuro Audi
-            "Visa Cash App Racing Bulls Formula One Team": "#38BDF8", // Azul claro Visa
-            "Cadillac Formula 1 Team": "#E2E8F0",                // Blanco / Plateado Cadillac
-            "McLaren Mastercard F1 Team": "#EA580C",             // Naranja McLaren
-            "TGR Haas F1 Team": "#6B7280",                       // Gris Haas
-            "Mercedes-AMG PETRONAS Formula One Team": "#10B981",   // Verde eléctrico Mercedes
-            "Aston Martin Aramco Formula One Team": "#059669",   // Verde Aston Martin
-            "Oracle Red Bull Racing": "#3B82F6",                 // Azul Red Bull brillante (visible)
-            "Atlassian Williams F1 Team": "#2563EB",             // Azul Williams
+            "Scuderia Ferrari HP": "#DC2626",
+            "Audi Revolut F1 Team": "#881337",
+            "Visa Cash App Racing Bulls Formula One Team": "#38BDF8",
+            "Cadillac Formula 1 Team": "#E2E8F0",
+            "McLaren Mastercard F1 Team": "#EA580C",
+            "TGR Haas F1 Team": "#6B7280",
+            "Mercedes-AMG PETRONAS Formula One Team": "#10B981",
+            "Aston Martin Aramco Formula One Team": "#059669",
+            "Oracle Red Bull Racing": "#3B82F6",
+            "Atlassian Williams F1 Team": "#2563EB",
             "BWT Alpine Formula One Team": "#2563EB",
             "Stake F1 Team Kick Sauber": "#16A34A"
+        };
+
+        // Diccionario basado exactamente en los archivos de tu carpeta public/banderas/
+        const archivosBanderas = {
+            "Scuderia Ferrari HP": "ferrari.png",
+            "Audi Revolut F1 Team": "audi.png",
+            "Visa Cash App Racing Bulls Formula One Team": "rb.png",
+            "Cadillac Formula 1 Team": "cadillac.png",
+            "McLaren Mastercard F1 Team": "mclaren.png",
+            "TGR Haas F1 Team": "haas.png",
+            "Mercedes-AMG PETRONAS Formula One Team": "mercedes.png",
+            "Aston Martin Aramco Formula One Team": "aston_martin.png",
+            "Oracle Red Bull Racing": "redbull.png",
+            "Atlassian Williams F1 Team": "williams.png",
+            "BWT Alpine Formula One Team": "alpine.png",
+            "Stake F1 Team Kick Sauber": "sauber.png" // O el nombre exacto si lo tienes distinto
         };
 
         tiemposOrdenados.forEach((t, index) => {
@@ -306,22 +322,29 @@ async function cargarTiemposPorGP() {
             const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
             
             const colorEscuderia = coloresBordeEscuderias[nombreEscuderia] || '#555';
+            const archivoBandera = archivosBanderas[nombreEscuderia];
 
-            // Barra de color fija: 8px de ancho y 28px de alto para todas por igual
+            // Generamos la etiqueta de la bandera si existe el archivo
+            const banderaHTML = archivoBandera 
+                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 24px; height: 16px; object-fit: cover; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); flex-shrink: 0; margin-right: 2px;">` 
+                : '';
+
+            // Estructura interna: Bandera + Barra de color + Nombre de la escudería alineados perfectamente
             const escuderiaHTML = `
-                <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ${banderaHTML}
                     <span style="display: inline-block; width: 8px; height: 28px; background-color: ${colorEscuderia}; border-radius: 4px; flex-shrink: 0;"></span>
                     <span style="color: #cbd5e1; font-size: 14px; line-height: 1.2;">${nombreEscuderia}</span>
                 </div>
             `;
 
             const tr = document.createElement('tr');
-            // Altura fija, esquinas redondeadas y separación tipo tarjeta
             tr.style.backgroundColor = '#2a2a2a';
             tr.style.height = '70px'; 
             tr.style.borderRadius = '8px';
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
             
+            // Mantiene exactamente las 6 columnas originales de tu tabla
             tr.innerHTML = `
                 <td style="text-align: center; width: 70px; padding: 0 10px; font-size: 15px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
                 <td style="padding: 0 10px; font-weight: 500; font-size: 15px; vertical-align: middle; letter-spacing: 0.3px;">${t.gamertag || 'Piloto #' + t.id}</td>
