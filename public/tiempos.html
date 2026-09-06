@@ -245,6 +245,8 @@ async function cargarTiemposPorGP() {
                     trHead.style.padding = '14px 15px';
                     trHead.style.width = '100%';
                     trHead.style.boxSizing = 'border-box';
+                    trHead.style.borderRadius = '8px'; // Esquinas redondeadas igual que las filas
+                    trHead.style.marginBottom = '8px'; // Espaciado idéntico al de las tarjetas
                     trHead.innerHTML = `
                         <th style="flex: 0 0 50px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Pos</th>
                         <th style="flex: 0 0 130px; text-align: left; padding-left: 10px; font-size: 15px; font-weight: bold; color: #fff;">Piloto</th>
@@ -355,7 +357,7 @@ async function cargarTiemposPorGP() {
             const estiloMorado = `background-color: #7B1FA2; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
 
             const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
-            const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DN F');
+            const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
             const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
 
             const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
