@@ -165,15 +165,16 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="caja-resultados">
             <h2 class="titulo-caja">📊 Gestión de Resultados 📊</h2>
 
-<!-- Botón para ir a la página de importación por CSV -->
-            <div style="text-align: center; margin-bottom: 20px;">
-                <a href="importacion.html" class="btn-importar" style="display: inline-block; background-color: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: background 0.2s;">
-                    📁 Ir a Importación Masiva 💾 (CSV)
-                </a>
-            </div>
+<!-- Botón de importación masiva -->
+        <div style="width: 100%; float: none; text-align: center; margin: 20px 0;">
+            <a href="importacion.html" class="btn-importar" style="display: inline-block; background-color: #2563eb; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: background 0.2s;">
+                📁 Ir a Importación Masiva 💾 (CSV)
+            </a>
+        </div>
             
-<div class="admin-bloque" style="width: 100%; box-sizing: border-box;">
-    <h3>🏁 - Cargar Resultados - 🏁</h3>
+<!-- 2. El bloque de abajo con el clear: both añadido para forzar el salto -->
+    <div class="admin-bloque" style="width: 100%; box-sizing: border-box; clear: both;">
+        <h3>🏁 - Cargar Resultados - 🏁</h3>
     
     <div class="form-group" style="width: 100%; margin-bottom: 15px;">
         <label style="display: block; margin-bottom: 5px;">Circuito</label>
