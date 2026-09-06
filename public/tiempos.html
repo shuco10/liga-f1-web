@@ -345,17 +345,17 @@ async function cargarTiemposPorGP() {
             const archivoBandera = archivosBanderas[nombreEscuderia];
 
             const banderaHTML = archivoBandera 
-                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 36px; height: 25px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; flex-shrink: 0;">` 
+                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 32px; height: 22px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; float: left; margin-right: 6px; margin-bottom: 2px;">` 
                 : '';
 
-            // Permite que el contenido se ajuste y baje de línea de forma natural si falta espacio
+            const barraHTML = `<span style="float: left; width: 5px; height: 22px; background-color: ${colorEscuderia}; border-radius: 2px; margin-right: 8px; margin-bottom: 2px;"></span>`;
+
+            // Usamos float para que la bandera y la barra formen bloque a la izquierda y el texto fluya de manera natural a su lado y debajo
             const escuderiaHTML = `
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                        ${banderaHTML}
-                        <span style="display: inline-block; width: 6px; height: 24px; background-color: ${colorEscuderia}; border-radius: 3px;"></span>
-                    </div>
-                    <span style="color: #cbd5e1; font-size: 14px; line-height: 1.2; word-break: break-word;">${nombreEscuderia}</span>
+                <div style="display: inline-block; text-align: left; max-width: 100%;">
+                    ${banderaHTML}
+                    ${barraHTML}
+                    <span style="color: #cbd5e1; font-size: 13px; line-height: 1.2; display: inline-block; word-break: normal; overflow-wrap: break-word;">${nombreEscuderia}</span>
                 </div>
             `;
 
@@ -366,12 +366,12 @@ async function cargarTiemposPorGP() {
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
             
             tr.innerHTML = `
-                <td style="text-align: center; width: 70px; padding: 10px; font-size: 15px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
-                <td style="padding: 10px 15px; font-weight: 500; font-size: 15px; vertical-align: middle; letter-spacing: 0.3px; word-break: break-word;">${t.gamertag || 'Piloto #' + t.id}</td>
-                <td style="padding: 10px 15px; vertical-align: middle;">${escuderiaHTML}</td>
-                <td style="text-align: center; padding: 10px 15px; vertical-align: middle; font-family: monospace; font-size: 14px;">${htmlQuali}</td>
-                <td style="text-align: center; padding: 10px 15px; vertical-align: middle; font-family: monospace; font-size: 14px;">${htmlCarreraVR}</td>
-                <td style="text-align: center; padding: 10px 15px; vertical-align: middle; font-family: monospace; font-size: 14px; font-weight: bold; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
+                <td style="text-align: center; width: 60px; padding: 10px 8px; font-size: 14px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
+                <td style="padding: 10px 12px; font-weight: 500; font-size: 14px; vertical-align: middle;">${t.gamertag || 'Piloto #' + t.id}</td>
+                <td style="padding: 10px 12px; vertical-align: middle;">${escuderiaHTML}</td>
+                <td style="text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlQuali}</td>
+                <td style="text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; white-space: nowrap;">${htmlCarreraVR}</td>
+                <td style="text-align: center; padding: 10px 8px; vertical-align: middle; font-family: monospace; font-size: 13px; font-weight: bold; white-space: nowrap; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
             `;
             tbody.appendChild(tr);
         });
