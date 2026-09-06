@@ -23,14 +23,14 @@
     <h3 class="subtitulo-principal">⌚ Plataforma para el control de tiempos de los pilotos por circuito ⌚</h3>
 
 <!-- Selector de Gran Premio / Circuito -->
-    <div style="margin: 30px auto; text-align: center;">
-        <label for="select-gp" style="font-weight: bold; margin-right: 10px;">Selecciona el Gran Premio:</label>
-        <select id="select-gp" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
-            <option value="">-- Selecciona un circuito --</option>
-        </select>
-    </div>
+<div style="margin: 30px auto; text-align: center;">
+    <label for="select-gp" style="font-weight: bold; margin-right: 10px;">Selecciona el Gran Premio:</label>
+    <select id="select-gp" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
+        <option value="">-- Selecciona un circuito --</option>
+    </select>
     <!-- AVISO DE CARGA DE TIEMPOS -->
-    <div id="info-ultimos-tiempos" style="color: #FACC15; font-weight: bold; font-size: 14px; margin: 8px 0;"></div>
+    <div id="info-ultimos-tiempos" style="margin-top: 10px; min-height: 20px;"></div>
+</div>
     <!-- Contenedor de la Tabla de Tiempos -->
     <div id="tabla-tiempos-container" style="overflow-x: auto; margin-top: 20px;">
         <table style="width: 100%; border-collapse: collapse; background-color: #222; text-align: left; border-radius: 8px; overflow: hidden;">
@@ -628,12 +628,11 @@ async function cargarUltimoAvisoGP() {
         if (!response.ok) return;
         
         const data = await response.json();
-        // Como los circuitos están mapeados en tu función 'cargarSelectGP', 
-        // puedes buscar el nombre correspondiente o usar el que te devuelva el servidor
+        
         if (data && data.id_gp) {
             const selectGp = document.getElementById('select-gp');
-            // Si el select ya está cargado, buscamos el texto de la opción
             let textoCircuito = '';
+            
             if (selectGp) {
                 for (let option of selectGp.options) {
                     if (option.value == data.id_gp) {
@@ -643,8 +642,14 @@ async function cargarUltimoAvisoGP() {
                 }
             }
             
+            // Si el select aún no se había llenado o no encontró coincidencia, 
+            // usamos un texto de respaldo basado en lo que devolvió la API
+            if (!textoCircuito) {
+                textoCircuito = data.id_gp; 
+            }
+            
             const infoContainer = document.getElementById('info-ultimos-tiempos');
-            if (infoContainer && textoCircuito) {
+            if (infoContainer) {
                 infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
                 infoContainer.style.color = '#FACC15';
                 infoContainer.style.fontWeight = 'bold';
@@ -657,14 +662,6 @@ async function cargarUltimoAvisoGP() {
         console.error("Error al obtener el último GP actualizado:", error);
     }
 }
-
-// Ejecutar al cargar la página (asegúrate de llamar también a cargarSelectGP antes si es necesario)
-document.addEventListener('DOMContentLoaded', () => {
-    if (typeof cargarSelectGP === 'function') {
-        cargarSelectGP();
-    }
-    cargarUltimoAvisoGP();
-});
     
     
 </script>
