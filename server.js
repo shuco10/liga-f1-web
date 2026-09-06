@@ -826,6 +826,88 @@ app.post('/api/resetear-resultados', async (req, res) => {
     }
 });
 
+/////////////////////////////////////////////////////////////////////////
+// Ruta para importar los tiempos de carrera
+app.post('/api/importar-tiempos', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const registros = req.body; // Array con los datos del CSV/Excel
+
+        if (!Array.isArray(registros) || registros.length === 0) {
+            return res.status(400).json({ error: "El archivo está vacío o el formato no es válido." });
+        }
+
+        await client.query('BEGIN');
+
+        for (const row of registros) {
+            const { 
+                id_gp, 
+                id, 
+                tiempo_clasificacion, 
+                tiempo_vuelta_rapida_carrera, 
+                tiempo_total_carrera 
+            } = row;
+
+            // Inserta el registro o lo actualiza si ya existe la combinación de id_gp + id
+            await client.query(`
+                INSERT INTO tiempos (id_gp, id, tiempo_clasificacion, tiempo_vuelta_rapida_carrera, tiempo_total_carrera)
+                VALUES ($1, $2, $3, $4, $5)
+                ON CONFLICT (id_gp, id) 
+                DO UPDATE SET 
+                    tiempo_clasificacion = EXCLUDED.tiempo_clasificacion,
+                    tiempo_vuelta_rapida_carrera = EXCLUDED.tiempo_vuelta_rapida_carrera,
+                    tiempo_total_carrera = EXCLUDED.tiempo_total_carrera;
+            `, [
+                id_gp, 
+                id, 
+                tiempo_clasificacion || null, 
+                tiempo_vuelta_rapida_carrera || null, 
+                tiempo_total_carrera || null
+            ]);
+        }
+
+        await client.query('COMMIT');
+        res.json({ success: true, message: "Tiempos importados correctamente." });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error("Error al importar tiempos:", error);
+        res.status(500).json({ error: "Hubo un error al procesar la importación de tiempos." });
+    } finally {
+        client.release();
+    }
+});
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////  JOIN DE LOS TIEMPOS //////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+app.get('/api/tiempos/:id_gp', async (req, res) => {
+    try {
+        const { id_gp } = req.params;
+        const resultado = await client.query(`
+            SELECT 
+                t.id_gp,
+                t.id,
+                p.gamertag,
+                t.tiempo_clasificacion,
+                t.tiempo_vuelta_rapida_carrera,
+                t.tiempo_total_carrera
+            FROM tiempos t
+            JOIN pilotos p ON t.id = p.id
+            WHERE t.id_gp = $1
+            ORDER BY t.tiempo_clasificacion ASC;
+        `, [id_gp]);
+
+        res.json(resultado.rows);
+    } catch (error) {
+        console.error("Error al obtener los tiempos:", error);
+        res.status(500).json({ error: "Error al cargar los tiempos del Gran Premio." });
+    }
+});
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+
 
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
