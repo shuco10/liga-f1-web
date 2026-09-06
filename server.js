@@ -907,8 +907,31 @@ app.get('/api/tiempos/:id_gp', async (req, res) => {
     }
 });
 //////////////////////////////////////////////////////////
+// Ultimo GP subido a tiempos
 //////////////////////////////////////////////////////////
 
+app.get('/api/ultimo-gp', async (req, res) => {
+    try {
+        const query = `
+            SELECT c.id, c.nombre, MAX(t.updated_at) as ultima_subida
+            FROM circuitos c
+            JOIN tiempos t ON c.id = t.id_gp
+            GROUP BY c.id, c.nombre
+            ORDER BY ultima_subida DESC
+            LIMIT 1;
+        `;
+        const resultado = await pool.query(query); // O tu conector de base de datos habitual
+        if (resultado.rows.length > 0) {
+            res.json(resultado.rows[0]);
+        } else {
+            res.status(404).json({ error: "No hay datos" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 
 // ==========================================
