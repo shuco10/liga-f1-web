@@ -278,46 +278,59 @@ async function enviarDatosDefinitivos() {
         return;
     }
 
-    if (!confirm(`¿Estás seguro de que deseas guardar los ${datosPrevisualizacionGlobal.length} registros en la base de datos?`)) {
+    if (!confirm(`¿Estás seguro de que deseas enviar los ${datosPrevisualizacionGlobal.length} registros a la base de datos?`)) {
         return;
     }
 
-    // Buscamos el botón para bloquearlo y mostrar estado de carga
     const botonGuardar = event.target;
     const textoOriginal = botonGuardar.innerText;
     botonGuardar.disabled = true;
-    botonGuardar.innerText = "Guardando en Neon...";
+    botonGuardar.innerText = "Guardando pilotos...";
 
-    try {
-        // AJUSTA ESTA RUTA A TU ENDPOINT REAL DEL BACKEND (ej: '/api/guardar-resultados' o un script de Node.js/PHP)
-        const respuesta = await fetch('/api/guardar-resultados', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ resultados: datosPrevisualizacionGlobal })
-        });
+    let errores = 0;
 
-        const resultadoJson = await respuesta.json();
+    // Recorremos los datos de la tabla y llamamos a tu API existente uno a uno
+    for (const fila of datosPrevisualizacionGlobal) {
+        try {
+            // Adaptamos las claves de la tabla al formato que espera tu API
+            const payload = {
+                circuito_id: fila.id_gp,
+                piloto_id: fila.gamertag, // Si tu API espera el ID numérico o el gamertag, asegúrate de que coincida con lo que procesa tu backend
+                posicion: parseInt(fila.posicion),
+                escuderia_id: fila.escuderia_id || null,
+                pole: fila.pole,
+                dnf: fila.dnf
+            };
 
-        if (respuesta.ok) {
-            alert("¡Datos guardados correctamente en la base de datos!");
-            // Limpiamos todo tras el éxito
-            document.getElementById('resultadoValidacion.innerHTML = '';
-            document.getElementById('inputCsvF1').value = '';
-            datosPrevisualizacionGlobal = [];
-        } else {
-            alert("Error al guardar: " + (resultadoJson.mensaje || "Revisa la consola."));
+            const respuesta = await fetch('/api/guardar-resultado', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!respuesta.ok) {
+                errores++;
+            }
+        } catch (err) {
+            console.error("Fallo al enviar el piloto:", fila.gamertag, err);
+            errores++;
         }
-    } catch (error) {
-        console.error("Error de red:", error);
-        alert("Hubo un error de conexión al intentar guardar los datos.");
-    } finally {
-        botonGuardar.disabled = false;
-        botonGuardar.innerText = textoOriginal;
+    }
+
+    botonGuardar.disabled = false;
+    botonGuardar.innerText = textoOriginal;
+
+    if (errores === 0) {
+        alert("¡Todos los resultados del Gran Premio se han guardado con éxito!");
+        document.getElementById('resultadoValidacion').innerHTML = '';
+        document.getElementById('inputCsvF1').value = '';
+        datosPrevisualizacionGlobal = [];
+    } else {
+        alert(`Proceso finalizado, pero hubo ${errores} errores al guardar algunos registros. Revisa la consola.`);
     }
 }
-
 
 
 
