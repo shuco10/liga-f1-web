@@ -1522,13 +1522,13 @@ table {
 }
 
 .caja_tiempos {
-    max-width: 1100px; /* Amplía el ancho máximo a tu gusto */
-    width: 92%;        /* Deja aire elegante en los laterales */
-    margin: 0 auto;    /* Centra la caja perfectamente */
-    overflow-x: hidden; /* Adiós al scroll horizontal */
+    max-width: 1200px; /* Ampliamos un poco más el límite para que respire con holgura */
+    width: 95%;        
+    margin: 0 auto;    
+    overflow-x: hidden; /* Corta cualquier intento de scroll horizontal */
 }
 
-/* Asegura que la tabla dentro de esta caja se adapte al 100% */
 .caja_tiempos table {
     width: 100%;
+    table-layout: fixed; /* Esto es clave: reparte el espacio de forma inteligente entre las columnas para que ninguna se dispare */
 }
