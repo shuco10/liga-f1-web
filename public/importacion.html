@@ -2,338 +2,200 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Icono para la pestaña del navegador -->
-    <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inportación de datos | Cazadores de Curvas</title>
-    <!-- Enlace al archivo de estilos compartido -->
-    <link rel="stylesheet" href="estilos-cabecera.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    
+    <title>Importación de Resultados - Cazadores de Curvas</title>
+    <!-- Agrega aquí tus estilos o Tailwind si lo usas en tu web -->
     <style>
-        /* Estilo base para el fondo de esta página */
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: #1e1e1e; padding: 20px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+        th { background-color: #2a2a2a; }
+        td[contenteditable="true"] { background-color: #2c2c2c; cursor: pointer; }
+        td[contenteditable="true"]:focus { background-color: #3d3d3d; outline: 2px solid #3b82f6; }
+        .btn { background: #3b82f6; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; margin-top: 15px; }
+        .btn:hover { background: #2563eb; }
+        .btn:disabled { background: #555; cursor: not-allowed; }
+        .error-box { background: #7f1d1d; border: 1px solid #f87171; padding: 10px; margin-top: 15px; border-radius: 4px; }
     </style>
-    <script src="/auth.js"></script>
 </head>
 <body>
-    <div id="header-placeholder"></div>
 
-
-<main class="caja-contenido">
-
-    <div class="titulo-liga">💾 IMPORTACIÓN DE DATOS 💾</div>
-    <h3 class="subtitulo-principal">Sistema para importación de datos mediante ficheros.</h3>
-
-   
-</main>
-<div style="background: #1a1a1a; padding: 20px; border-radius: 8px; color: #fff; max-width: 600px; margin: 40px auto; border: 1px solid #333;">
-    <h3 style="color: #ff4444; margin-top: 0;">Subir Resultados de Gran Premio</h3>
-    <p style="color: #aaa; font-size: 13px;">Sube el archivo CSV con los 22 pilotos. Se validarán automáticamente los campos obligatorios.</p>
+<div class="container">
+    <h2>Importar Resultados de F1 (CSV)</h2>
+    <p>Sube el archivo CSV con las columnas: <code>id_gp</code>, <code>id</code>, <code>gamertag</code>, <code>posicion</code>, <code>pole</code>, <code>dnf</code>.</p>
     
-    <input type="file" id="inputCsvF1" accept=".csv" style="color: #fff; margin: 15px 0; display: block;" />
+    <input type="file" id="inputCsvF1" accept=".csv" class="btn" style="background: transparent; border: 1px dashed #555;">
     
-    <button onclick="validarYPrevisualizarCSV()" style="padding: 10px 20px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Validar y Previsualizar</button>
+    <div id="resultadoValidacion"></div>
+
+    <div id="contenedorTabla" style="display:none;">
+        <h3>Previsualización y Edición (Haz clic en las celdas para modificar)</h3>
+        <table id="tablaPrevisualizacion">
+            <thead>
+                <tr>
+                    <th>ID GP</th>
+                    <th>ID Piloto</th>
+                    <th>Gamertag</th>
+                    <th>Posición</th>
+                    <th>Pole</th>
+                    <th>DNF</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="btnGuardarDefinitivo" class="btn" onclick="enviarDatosDefinitivos()">Guardar Datos Definitivamente</button>
+    </div>
 </div>
 
-<!-- Contenedor donde saldrá la tabla o los errores de validación -->
-<div id="resultadoValidacion" style="max-width: 800px; margin: 20px auto; color: #fff;"></div>
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-    <div id="footer-placeholder"></div>
+<!-- Librería ligera para parsear CSV -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <script>
-    // 1. Cargar todo en orden
-    document.addEventListener('DOMContentLoaded', () => {
-        // Carga el Header (una sola vez)
-        fetch('/header.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                
-                // Configurar el Banner de Instant Gaming
-                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
-                const script = document.createElement('script');
-                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-                script.defer = true;
-                document.body.appendChild(script);
+    let datosPrevisualizacionGlobal = [];
 
-                // AHORA QUE EL HEADER ESTÁ CARGADO, VERIFICAMOS SESIÓN
-                verificarSesion();
+    document.getElementById('inputCsvF1').addEventListener('change', function(e) {
+        const archivo = e.target.files[0];
+        if (!archivo) return;
 
-                // CONTROL DE ACCESO DE ADMIN: Si no es admin, bloqueamos la pantalla
-                const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-                if (!adminStatus) {
-                    document.body.innerHTML = `
-                        <div style="background: #1a1a1a; color: #ff4444; text-align: center; padding: 50px; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                            <h2 style="font-size: 24px; margin-bottom: 10px;">ACCESO DENEGADO</h2>
-                            <p style="color: #aaa;">No tienes permisos de administrador para acceder a esta herramienta de importación.</p>
-                            <a href="/" style="margin-top: 20px; color: #3498db; text-decoration: underline;">Volver al inicio</a>
-                        </div>
-                    `;
-                }
-            });
+        Papa.parse(archivo, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                validarYMostrarDatos(results.data);
+            },
+            error: function(err) {
+                alert("Error al leer el archivo CSV: " + err.message);
+            }
+        });
+    });
 
-        // Cargar Footer y Modal
-        fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
-        fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-    }); // <--- AQUÍ SE CIERRA EL EVENT LISTENER CORRECTAMENTE
-
-    // 2. Lógica de Sesión (FUERA del DOMContentLoaded)
-    function verificarSesion() {
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const formAdmin = document.getElementById('form-admin');
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+    function validarYMostrarDatos(datos) {
+        const contenedorValidacion = document.getElementById('resultadoValidacion');
+        const contenedorTabla = document.getElementById('contenedorTabla');
+        const tbody = document.querySelector('#tablaPrevisualizacion tbody');
         
-        if (btnLogin && btnLogout) {
-            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-        }
-        
-        if (formAdmin) {
-            formAdmin.style.display = adminStatus ? 'block' : 'none';
-        }
-    }
+        tbody.innerHTML = '';
+        contenedorValidacion.innerHTML = '';
 
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) modal.style.display = 'block';
-    }
-
-
-
-        async function enviarContacto() {
-        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
-        const nombre = document.getElementById('nombre-contacto').value;
-        const asunto = document.getElementById('asunto-contacto').value;
-        const mensaje = document.getElementById('mensaje-contacto').value;
-
-        // Validacion simple
-        if(!nombre || !asunto || !mensaje) {
-            alert("Por favor, rellena todos los campos.");
+        if (datos.length === 0) {
+            contenedorValidacion.innerHTML = '<div class="error-box">El archivo CSV está vacío.</div>';
+            contenedorTabla.style.display = 'none';
             return;
         }
 
-        const payload = {
-            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-            embeds: [{
-                title: "📩 Nuevo mensaje de contacto",
-                color: 3447003,
-                fields: [
-                    { name: "Nombre", value: nombre, inline: true },
-                    { name: "Asunto", value: asunto, inline: true },
-                    { name: "Mensaje", value: mensaje }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
+        // Columnas obligatorias exigidas en el CSV (ahora usamos 'id' para el piloto)
+        const obligatorias = ['id_gp', 'id', 'posicion', 'pole', 'dnf'];
+        const primerasClaves = Object.keys(datos[0]);
+        const faltanColumnas = obligatorias.some(col => !primerasClaves.includes(col));
 
-        const res = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+        if (faltanColumnas) {
+            contenedorValidacion.innerHTML = `<div class="error-box">Faltan columnas obligatorias. Asegúrate de incluir: ${obligatorias.join(', ')}</div>`;
+            contenedorTabla.style.display = 'none';
+            return;
+        }
+
+        let errores = [];
+        datosPrevisualizacionGlobal = [];
+
+        datos.forEach((fila, index) => {
+            const numFila = index + 1;
+            const identificadorPiloto = fila.gamertag || `ID: ${fila.id}`;
+
+            // Validaciones básicas de formato numérico
+            if (!fila.id_gp || isNaN(fila.id_gp)) errores.(`Fila ${numFila} (${identificadorPiloto}): id_gp inválido.`);
+            if (!fila.id || isNaN(fila.id)) errores.push(`Fila ${numFila} (${identificadorPiloto}): id de piloto inválido.`);
+            if (!fila.posicion || isNaN(fila.posicion)) errores.push(`Fila ${numFila} (${identificadorPiloto}): Posición inválida.`);
+
+            datosPrevisualizacionGlobal.push(fila);
+
+            // Pintar tabla interactiva (contenteditable)
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td contenteditable="true" onblur="actualizarDato(${index}, 'id_gp', this.innerText)">${fila.id_gp || ''}</td>
+                <td contenteditable="true" onblur="actualizarDato(${index}, 'id', this.innerText)">${fila.id || ''}</td>
+                <td>${fila.gamertag || '(Sin gamertag)'}</td>
+                <td contenteditable="true" onblur="actualizarDato(${index}, 'posicion', this.innerText)">${fila.posicion || ''}</td>
+                <td contenteditable="true" onblur="actualizarDato(${index}, 'pole', this.innerText)">${fila.pole || 'False'}</td>
+                <td contenteditable="true" onblur="actualizarDato(${index}, 'dnf', this.innerText)">${fila.dnf || 'False'}</td>
+            `;
+            tbody.appendChild(tr);
         });
 
-        if (res.ok) {
-            alert("¡Mensaje enviado correctamente!");
-            document.getElementById('modal-contacto').style.display = 'none';
-            document.getElementById('nombre-contacto').value = '';
-            document.getElementById('asunto-contacto').value = '';
-            document.getElementById('mensaje-contacto').value = '';
+        if (errores.length > 0) {
+            contenedorValidacion.innerHTML = `<div class="error-box"><strong>Se encontraron errores de validación:</strong><br>` + errores.join('<br>') + `</div>`;
+            contenedorTabla.style.display = 'none';
         } else {
-            alert("Error al enviar el mensaje.");
+            contenedorValidacion.innerHTML = `<div style="color: #4ade80; margin-top: 15px; font-weight: bold;">✔ CSV validado correctamente (${datos.length} registros listos). Puedes editar cualquier celda antes de guardar.</div>`;
+            contenedorTabla.style.display = 'block';
         }
     }
-/////////////////////////////////////////////////////////////
-//////SISTEMA DE IMPORTACION AQUI EMPIEZA TODO
-/////////////////////////////////////////////////////////////
-let datosPrevisualizacionGlobal = [];
 
-function validarYPrevisualizarCSV() {
-    const input = document.getElementById('inputCsvF1');
-    const contenedorFeedback = document.getElementById('resultadoValidacion');
-    
-    if (!input.files || input.files.length === 0) {
-        alert("Selecciona un archivo CSV primero.");
-        return;
+    // Actualiza en tiempo real el array global cuando el usuario edita una celda en la tabla
+    function actualizarDato(index, campo, valor) {
+        if (datosPrevisualizacionGlobal[index]) {
+            datosPrevisualizacionGlobal[index][campo] = valor.trim();
+        }
     }
 
-    const archivo = input.files[0];
-    const lector = new FileReader();
-
-    lector.onload = function(e) {
-        const lineas = e.target.result.split('\n');
-        if (lineas.length < 2) {
-            contenedorFeedback.innerHTML = "<p style='color: #e74c3c;'>El archivo está vacío o no tiene formato válido.</p>";
+    // Envío secuencial reutilizando tu API de un solo piloto
+    async function enviarDatosDefinitivos() {
+        if (datosPrevisualizacionGlobal.length === 0) {
+            alert("No hay datos para guardar.");
             return;
         }
 
-        const separador = lineas[0].includes(';') ? ';' : ',';
-        const cabeceras = lineas[0].toLowerCase().split(separador).map(h => h.trim());
-
-        const obligatorias = ['id_gp', 'gamertag', 'posicion', 'pole', 'dnf'];
-        const faltantes = obligatorias.filter(campo => !cabeceras.includes(campo));
-
-        if (faltantes.length > 0) {
-            contenedorFeedback.innerHTML = `<p style='color: #e74c3c; font-weight: bold;'>Error crítico: Faltan las siguientes columnas obligatorias: ${faltantes.join(', ')}</p>`;
+        if (!confirm(`¿Estás seguro de que deseas enviar los ${datosPrevisualizacionGlobal.length} registros a la base de datos?`)) {
             return;
         }
 
-        let filasValidas = [];
-        let erroresBloqueantes = [];
+        const botonGuardar = document.getElementById('btnGuardarDefinitivo');
+        const textoOriginal = botonGuardar.innerText;
+        botonGuardar.disabled = true;
+        botonGuardar.innerText = "Guardando pilotos...";
 
-        for (let i = 1; i < lineas.length; i++) {
-            const lineaTexto = lineas[i].trim();
-            if (!lineaTexto) continue;
+        let errores = 0;
 
-            const valores = lineaTexto.split(separador).map(v => v.trim());
-            let filaObj = {};
+        for (const fila of datosPrevisualizacionGlobal) {
+            try {
+                const payload = {
+                    circuito_id: fila.id_gp,
+                    piloto_id: parseInt(fila.id), // Cogemos el ID numérico de la columna id
+                    posicion: parseInt(fila.posicion),
+                    escuderia_id: fila.escuderia_id || null,
+                    pole: fila.pole,
+                    dnf: fila.dnf
+                };
 
-            cabeceras.forEach((cabecera, index) => {
-                filaObj[cabecera] = valores[index] !== undefined ? valores[index] : '';
-            });
+                const respuesta = await fetch('/api/guardar-resultado', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-            let numeroFila = i + 1;
-            if (!filaObj.id_gp) erroresBloqueantes.push(`Fila ${numeroFila}: Falta el circuito (id_gp).`);
-            if (!filaObj.gamertag) erroresBloqueantes.push(`Fila ${numeroFila}: Falta el nombre del piloto (gamertag).`);
-            if (filaObj.posicion === '' || isNaN(filaObj.posicion)) erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag || 'Desconocido'}): Posición inválida.`);
-            if (filaObj.pole === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'pole' está vacío.`);
-            if (filaObj.dnf === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'dnf' está vacío.`);
-
-            filasValidas.push(filaObj);
-        }
-
-        if (erroresBloqueantes.length > 0) {
-            let htmlErrores = `<h4 style="color: #e74c3c;">Errores bloqueantes (${erroresBloqueantes.length}):</h4><ul style="color: #ff9999; background: #2a1515; padding: 15px; border-radius: 4px;">`;
-            erroresBloqueantes.forEach(err => { htmlErrores += `<li>${err}</li>`; });
-            htmlErrores += `</ul>`;
-            contenedorFeedback.innerHTML = htmlErrores;
-            return;
-        }
-
-        // Guardamos en la variable global para la previsualización
-        datosPrevisualizacionGlobal = filasValidas;
-
-        // Si pasa la validación, pintamos el éxito y la tabla interactiva debajo
-        renderizarTablaPrevia(cabeceras, contenedorFeedback);
-    };
-
-    lector.readAsText(archivo, 'UTF-8');
-}
-
-function renderizarTablaPrevia(cabeceras, contenedor) {
-    let html = `
-        <p style="color: #2ecc71; font-weight: bold; margin-bottom: 10px;">¡Archivo validado con éxito! Revisa los datos, edita lo que necesites haciendo clic en las celdas y pulsa guardar.</p>
-        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #444; border-radius: 4px; margin-bottom: 15px;">
-            <table style="width: 100%; border-collapse: collapse; color: #fff; font-size: 14px; background: #1a1a1a;">
-                <thead>
-                    <tr style="background: #2c3e50; text-align: left; position: sticky; top: 0;">
-    `;
-
-    cabeceras.forEach(h => {
-        html += `<th style="padding: 10px; border-bottom: 2px solid #444;">${h}</th>`;
-    });
-    html += `</tr></thead><tbody>`;
-
-    datosPrevisualizacionGlobal.forEach((fila, rowIndex) => {
-        html += `<tr style="border-bottom: 1px solid #333;">`;
-        cabeceras.forEach(h => {
-            // contenteditable permite editar el texto al vuelo
-            html += `<td contenteditable="true" onblur="actualizarCeldaTemporal(${rowIndex}, '${h}', this.innerText)" style="padding: 8px 10px; outline: none; background: #222;" title="Haz clic para editar">${fila[h] !== undefined ? fila[h] : ''}</td>`;
-        });
-        html += `</tr>`;
-    });
-
-    html += `</tbody></table></div>`;
-    html += `<button onclick="enviarDatosDefinitivos()" style="padding: 10px 20px; background: #2ecc71; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Guardar Datos Definitivamente</button>`;
-
-    contenedor.innerHTML = html;
-}
-
-function actualizarCeldaTemporal(rowIndex, campo, nuevoValor) {
-    if (datosPrevisualizacionGlobal[rowIndex]) {
-        datosPrevisualizacionGlobal[rowIndex][campo] = nuevoValor.trim();
-    }
-}
-
-async function enviarDatosDefinitivos() {
-    if (datosPrevisualizacionGlobal.length === 0) {
-        alert("No hay datos para guardar.");
-        return;
-    }
-
-    if (!confirm(`¿Estás seguro de que deseas enviar los ${datosPrevisualizacionGlobal.length} registros a la base de datos?`)) {
-        return;
-    }
-
-    const botonGuardar = event.target;
-    const textoOriginal = botonGuardar.innerText;
-    botonGuardar.disabled = true;
-    botonGuardar.innerText = "Guardando pilotos...";
-
-    let errores = 0;
-
-    // Recorremos los datos de la tabla y llamamos a tu API existente uno a uno
-    for (const fila of datosPrevisualizacionGlobal) {
-        try {
-            // Adaptamos las claves de la tabla al formato que espera tu API
-            const payload = {
-                circuito_id: fila.id_gp,
-                piloto_id: fila.gamertag, // Si tu API espera el ID numérico o el gamertag, asegúrate de que coincida con lo que procesa tu backend
-                posicion: parseInt(fila.posicion),
-                escuderia_id: fila.escuderia_id || null,
-                pole: fila.pole,
-                dnf: fila.dnf
-            };
-
-            const respuesta = await fetch('/api/guardar-resultado', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!respuesta.ok) {
+                if (!respuesta.ok) {
+                    errores++;
+                }
+            } catch (err) {
+                console.error("Fallo al enviar el registro:", err);
                 errores++;
             }
-        } catch (err) {
-            console.error("Fallo al enviar el piloto:", fila.gamertag, err);
-            errores++;
+        }
+
+        botonGuardar.disabled = false;
+        botonGuardar.innerText = textoOriginal;
+
+        if (errores === 0) {
+            alert("¡Todos los resultados del Gran Premio se han guardado con éxito!");
+            document.getElementById('resultadoValidacion').innerHTML = '';
+            document.getElementById('inputCsvF1').value = '';
+            document.getElementById('contenedorTabla').style.display = 'none';
+            datosPrevisualizacionGlobal = [];
+        } else {
+            alert(`Proceso finalizado, pero hubo ${errores} errores al guardar algunos registros. Revisa la consola del servidor.`);
         }
     }
-
-    botonGuardar.disabled = false;
-    botonGuardar.innerText = textoOriginal;
-
-    if (errores === 0) {
-        alert("¡Todos los resultados del Gran Premio se han guardado con éxito!");
-        document.getElementById('resultadoValidacion').innerHTML = '';
-        document.getElementById('inputCsvF1').value = '';
-        datosPrevisualizacionGlobal = [];
-    } else {
-        alert(`Proceso finalizado, pero hubo ${errores} errores al guardar algunos registros. Revisa la consola.`);
-    }
-}
-
-
-
 </script>
+
 </body>
 </html>
