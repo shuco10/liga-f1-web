@@ -2,19 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tiempos | Cazadores de Curvas</title>
-    <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    
     <style>
-        /* Estilo base para el fondo de esta página */
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
     </style>
     <script src="/auth.js"></script>
@@ -22,10 +17,9 @@
 <body>
     <div id="header-placeholder"></div>
 
-
 <main class="caja-contenido">
 
-<div class="titulo-liga">⏱️ CONTROL DE TIEMPOS DE PILOTOS ⏱️</div>
+    <div class="titulo-liga">⏱️ CONTROL DE TIEMPOS DE PILOTOS ⏱️</div>
     <h3 class="subtitulo-principal">⌚ Plataforma para el control de tiempos de los pilotos por circuito ⌚</h3>
 
     <!-- Selector de Gran Premio / Circuito -->
@@ -33,8 +27,6 @@
         <label for="select-gp" style="font-weight: bold; margin-right: 10px;">Selecciona el Gran Premio:</label>
         <select id="select-gp" onchange="cargarTiemposPorGP()" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
             <option value="">-- Selecciona un circuito --</option>
-            <!-- Aquí puedes cargar tus circuitos dinámicamente o dejar el id_gp 21 para probar -->
-            <option value="21">Gran Premio de Prueba (ID 21)</option>
         </select>
     </div>
 
@@ -58,77 +50,67 @@
         </table>
     </div>
     
-    <div id="admin-import-container" style="display: none; margin-bottom: 20px;">
-    <button id="btn-abrir-importar" style="background-color: #dc2626; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-        Importar Tiempos (CSV)
-    </button>
-    </div>
-    <div id="admin-import-container" style="display: none; margin-top: 20px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px;">
-    <h3 style="color: #ef4444; margin-bottom: 10px;">Importar Tiempos (CSV)</h3>
-    <input type="file" id="csv-file-input" accept=".csv" style="color: #fff; margin-bottom: 10px;" />
-    
-    <!-- Contenedor de la tabla editable (oculto hasta que se carga un archivo) -->
-    <div id="preview-container" style="display: none; margin-top: 15px;">
-        <h4 style="color: #fff; margin-bottom: 8px;">Previsualización y Corrección de Datos</h4>
-        <div style="overflow-x: auto; max-height: 350px; border: 1px solid #444;">
-            <table style="width: 100%; border-collapse: collapse; color: #fff; font-size: 14px;">
-                <thead>
-                    <tr style="background: #ef4444; text-align: left;">
-                        <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
-                        <th style="padding: 8px;">Clasificación</th>
-                        <th style="padding: 8px;">Vuelta Rápida</th>
-                        <th style="padding: 8px;">Tiempo Total</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-preview">
-                    <!-- Las filas editables se rellenarán automáticamente -->
-                </tbody>
-            </table>
-        </div>
-        <div style="margin-top: 15px; display: flex; gap: 10px;">
-            <button id="btn-subir-definitivo" style="background: #16a34a; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Confirmar y Guardar</button>
-            <button id="btn-cancelar-preview" style="background: #4b5563; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
+    <!-- ÚNICO Contenedor de Importación (Visible solo para administradores) -->
+    <div id="admin-import-container" style="display: none; margin-top: 30px; padding: 20px; background: #222; border: 1px solid #444; border-radius: 8px;">
+        <h3 style="color: #ef4444; margin-bottom: 10px; margin-top: 0;">Importar Tiempos (CSV)</h3>
+        <input type="file" id="csv-file-input" accept=".csv" style="color: #fff; margin-bottom: 10px;" />
+        
+        <!-- Contenedor de la tabla editable -->
+        <div id="preview-container" style="display: none; margin-top: 15px;">
+            <h4 style="color: #fff; margin-bottom: 8px;">Previsualización y Corrección de Datos</h4>
+            <div style="overflow-x: auto; max-height: 350px; border: 1px solid #444;">
+                <table style="width: 100%; border-collapse: collapse; color: #fff; font-size: 14px;">
+                    <thead>
+                        <tr style="background: #ef4444; text-align: left;">
+                            <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
+                            <th style="padding: 8px;">Clasificación</th>
+                            <th style="padding: 8px;">Vuelta Rápida</th>
+                            <th style="padding: 8px;">Tiempo Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-preview">
+                        <!-- Filas editables inyectadas dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button id="btn-subir-definitivo" style="background: #16a34a; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Confirmar y Guardar</button>
+                <button id="btn-cancelar-preview" style="background: #4b5563; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Cancelar</button>
+            </div>
         </div>
     </div>
-</div>
     
 </main>
 
-
-
-    <div id="footer-placeholder"></div>
+<div id="footer-placeholder"></div>
 
 <script>
-    // 1. Cargar todo en orden
     document.addEventListener('DOMContentLoaded', () => {
-        // Carga el Header (una sola vez)
         fetch('/header.html')
             .then(res => res.text())
             .then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
                 
-                // Configurar el Banner de Instant Gaming
                 window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
                 const script = document.createElement('script');
                 script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
                 script.defer = true;
                 document.body.appendChild(script);
 
-                // AHORA QUE EL HEADER ESTÁ CARGADO, VERIFICAMOS SESIÓN
                 verificarSesion();
             });
 
-        // Cargar Footer y Modal
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-    }); // <--- AQUÍ SE CIERRA EL EVENT LISTENER CORRECTAMENTE
+        
+        cargarSelectGP();
+    });
 
-    // 2. Lógica de Sesión (FUERA del DOMContentLoaded)
-function verificarSesion() {
+    function verificarSesion() {
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
         const formAdmin = document.getElementById('form-admin');
-        const adminImportContainer = document.getElementById('admin-import-container'); // Nuestro contenedor del botón/panel de importar
+        const adminImportContainer = document.getElementById('admin-import-container');
         
         const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
         
@@ -141,7 +123,6 @@ function verificarSesion() {
             formAdmin.style.display = adminStatus ? 'block' : 'none';
         }
 
-        // Controlamos también el botón/bloque de importación de tiempos
         if (adminImportContainer) {
             adminImportContainer.style.display = adminStatus ? 'block' : 'none';
         }
@@ -152,15 +133,12 @@ function verificarSesion() {
         if (modal) modal.style.display = 'block';
     }
 
-
-
-        async function enviarContacto() {
+    async function enviarContacto() {
         const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
         const nombre = document.getElementById('nombre-contacto').value;
         const asunto = document.getElementById('asunto-contacto').value;
         const mensaje = document.getElementById('mensaje-contacto').value;
 
-        // Validacion simple
         if(!nombre || !asunto || !mensaje) {
             alert("Por favor, rellena todos los campos.");
             return;
@@ -197,8 +175,6 @@ function verificarSesion() {
         }
     }
 
-
-// Función para consultar los tiempos del GP seleccionado y pintarlos en la tabla
     async function cargarTiemposPorGP() {
         const id_gp = document.getElementById('select-gp').value;
         const tbody = document.getElementById('tbody-tiempos');
@@ -223,10 +199,9 @@ function verificarSesion() {
                 return;
             }
 
-            // Pintamos las filas con los datos obtenidos mediante el JOIN
             tbody.innerHTML = tiempos.map((t, index) => `
                 <tr style="border-bottom: 1px solid #333; transition: background 0.2s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background='transparent'">
-                    <td style="padding: 12px; text-align: center; font-weight: bold; color: #3b82f6;">${index + 1}</td>
+                    <td style="padding: 12px; text-align: center; font-weight: bold; color: #ef4444;">${index + 1}</td>
                     <td style="padding: 12px; font-weight: bold;">${t.gamertag}</td>
                     <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_clasificacion || '-'}</td>
                     <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_vuelta_rapida_carrera || '-'}</td>
@@ -240,143 +215,141 @@ function verificarSesion() {
         }
     }
 
-// Función para cargar los circuitos en el desplegable al abrir la página
-async function cargarSelectGP() {
-    const select = document.getElementById('select-gp');
-    
-    const circuitos = [
-        { id: 3, ronda: 1, nombre: "Melbourne", fecha: "24 SEP" },
-        { id: 8, ronda: 2, nombre: "Shanghái", fecha: "01 OCT" },
-        { id: 7, ronda: 3, nombre: "Suzuka", fecha: "08 OCT" },
-        { id: 4, ronda: 4, nombre: "Sakhir", fecha: "15 OCT" },
-        { id: 2, ronda: 5, nombre: "Yeda", fecha: "22 OCT" },
-        { id: 9, ronda: 6, nombre: "Miami", fecha: "29 OCT" },
-        { id: 14, ronda: 7, nombre: "Montreal", fecha: "05 NOV" },
-        { id: 11, ronda: 8, nombre: "Mónaco", fecha: "12 NOV" },
-        { id: 12, ronda: 9, nombre: "Barcelona", fecha: "19 NOV" },
-        { id: 15, ronda: 10, nombre: "Spielberg", fecha: "26 NOV" },
-        { id: 16, ronda: 11, nombre: "Silverstone", fecha: "03 DEC" },
-        { id: 17, ronda: 12, nombre: "Spa", fecha: "10 DEC" },
-        { id: 76, ronda: 13, nombre: "Budapest", fecha: "17 DEC" },
-        { id: 18, ronda: 14, nombre: "Zandvoort", fecha: "14 JAN" },
-        { id: 19, ronda: 15, nombre: "Monza", fecha: "21 JAN" },
-        { id: 13, ronda: 16, nombre: "Madrid", fecha: "28 JAN" },
-        { id: 20, ronda: 17, nombre: "Bakú", fecha: "04 FEB" },
-        { id: 21, ronda: 18, nombre: "Singapur", fecha: "11 FEB" },
-        { id: 22, ronda: 19, nombre: "Austin", fecha: "18 FEB" },
-        { id: 23, ronda: 20, nombre: "Ciudad de México", fecha: "25 FEB" },
-        { id: 24, ronda: 21, nombre: "São Paulo", fecha: "04 MAR" },
-        { id: 25, ronda: 22, nombre: "Las Vegas", fecha: "11 MAR" },
-        { id: 26, ronda: 23, nombre: "Losail", fecha: "18 MAR" },
-        { id: 27, ronda: 24, nombre: "Abu Dabi", fecha: "01 APR" }
-    ];
+    function cargarSelectGP() {
+        const select = document.getElementById('select-gp');
+        
+        const circuitos = [
+            { id: 3, ronda: 1, nombre: "Melbourne", fecha: "24 SEP" },
+            { id: 8, ronda: 2, nombre: "Shanghái", fecha: "01 OCT" },
+            { id: 7, ronda: 3, nombre: "Suzuka", fecha: "08 OCT" },
+            { id: 4, ronda: 4, nombre: "Sakhir", fecha: "15 OCT" },
+            { id: 2, ronda: 5, nombre: "Yeda", fecha: "22 OCT" },
+            { id: 9, ronda: 6, nombre: "Miami", fecha: "29 OCT" },
+            { id: 14, ronda: 7, nombre: "Montreal", fecha: "05 NOV" },
+            { id: 11, ronda: 8, nombre: "Mónaco", fecha: "12 NOV" },
+            { id: 12, ronda: 9, nombre: "Barcelona", fecha: "19 NOV" },
+            { id: 15, ronda: 10, nombre: "Spielberg", fecha: "26 NOV" },
+            { id: 16, ronda: 11, nombre: "Silverstone", fecha: "03 DEC" },
+            { id: 17, ronda: 12, nombre: "Spa", fecha: "10 DEC" },
+            { id: 76, ronda: 13, nombre: "Budapest", fecha: "17 DEC" },
+            { id: 18, ronda: 14, nombre: "Zandvoort", fecha: "14 JAN" },
+            { id: 19, ronda: 15, nombre: "Monza", fecha: "21 JAN" },
+            { id: 13, ronda: 16, nombre: "Madrid", fecha: "28 JAN" },
+            { id: 20, ronda: 17, nombre: "Bakú", fecha: "04 FEB" },
+            { id: 21, ronda: 18, nombre: "Singapur", fecha: "11 FEB" },
+            { id: 22, ronda: 19, nombre: "Austin", fecha: "18 FEB" },
+            { id: 23, ronda: 20, nombre: "Ciudad de México", fecha: "25 FEB" },
+            { id: 24, ronda: 21, nombre: "São Paulo", fecha: "04 MAR" },
+            { id: 25, ronda: 22, nombre: "Las Vegas", fecha: "11 MAR" },
+            { id: 26, ronda: 23, nombre: "Losail", fecha: "18 MAR" },
+            { id: 27, ronda: 24, nombre: "Abu Dabi", fecha: "01 APR" }
+        ];
 
-    select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
-        circuitos.map(c => `
-            <option value="${c.id}">
-                Ronda ${c.ronda} - ${c.nombre} (${c.fecha})
-            </option>
-        `).join('');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    cargarSelectGP();
-});
-
-///////////////////////////////////////////////////
-///// IMPORT DATOS TIEMPOS //////////////////////
-/////////////////////////////////////////////////
-    document.getElementById('csv-file-input').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const text = event.target.result;
-        procesarCSV(text);
-    };
-    reader.readAsText(file, 'UTF-8');
-});
-
-function procesarCSV(contenido) {
-    const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
-    const tbodyPreview = document.getElementById('tbody-preview');
-    tbodyPreview.innerHTML = '';
-
-    // Omitimos la cabecera del CSV (empezamos en i = 1 si la primera fila son títulos)
-    // Ajusta el índice si tu CSV no trae cabecera.
-    for (let i = 1; i < lineas.length; i++) {
-        const columnas = lineas[i].split(',');
-        if (columnas.length < 4) continue; // Evitar líneas vacías o mal formadas
-
-        const [idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
-
-        const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid #333';
-        tr.innerHTML = `
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
-        `;
-        tbodyPreview.appendChild(tr);
+        select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
+            circuitos.map(c => `
+                <option value="${c.id}">
+                    Ronda ${c.ronda} - ${c.nombre} (${c.fecha})
+                </option>
+            `).join('');
     }
 
-    // Mostramos el bloque de previsualización
-    document.getElementById('preview-container').style.display = 'block';
-}
+    // Lógica de carga de archivo CSV
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInput = document.getElementById('csv-file-input');
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
 
-// Botón para cancelar la previsualización
-document.getElementById('btn-cancelar-preview').addEventListener('click', () => {
-    document.getElementById('preview-container').style.display = 'none';
-    document.getElementById('csv-file-input').value = '';
-});
-
-// Botón para enviar los datos corregidos al servidor
-document.getElementById('btn-subir-definitivo').addEventListener('click', async () => {
-    const id_gp = document.getElementById('select-gp').value;
-    if (!id_gp) {
-        alert("Por favor, selecciona un Gran Premio primero.");
-        return;
-    }
-
-    const filas = document.querySelectorAll('#tbody-preview tr');
-    const datosAEnviar = [];
-
-    filas.forEach(fila => {
-        const celdas = fila.querySelectorAll('td');
-        datosAEnviar.push({
-            id: celdas[0].innerText.trim(),
-            tiempo_clasificacion: celdas[1].innerText.trim(),
-            tiempo_vuelta_rapida_carrera: celdas[2].innerText.trim(),
-            tiempo_total_carrera: celdas[3].innerText.trim()
-        });
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    procesarCSV(text);
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
+        }
     });
 
-    try {
-        const response = await fetch('/api/importar-tiempos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_gp, tiempos: datosAEnviar })
-        });
+    function procesarCSV(contenido) {
+        const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
+        const tbodyPreview = document.getElementById('tbody-preview');
+        tbodyPreview.innerHTML = '';
 
-        const resultado = await response.json();
-        if (response.ok) {
-            alert("¡Tiempos importados y guardados correctamente!");
-            document.getElementById('preview-container').style.display = 'none';
-            document.getElementById('csv-file-input').value = '';
-            cargarTiemposPorGP(); // Recargamos la tabla principal
-        } else {
-            alert("Error al guardar: " + (resultado.error || 'Desconocido'));
+        for (let i = 1; i < lineas.length; i++) {
+            const columnas = lineas[i].split(',');
+            if (columnas.length < 4) continue;
+
+            const [idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
+
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #333';
+            tr.innerHTML = `
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
+            `;
+            tbodyPreview.appendChild(tr);
         }
-    } catch (error) {
-        console.error("Error en la petición:", error);
-        alert("Hubo un error de conexión al enviar los datos.");
-    }
-});
 
-    ////////////////////////////////////////////////////////////////////////////////
-    
+        document.getElementById('preview-container').style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnCancelar = document.getElementById('btn-cancelar-preview');
+        if (btnCancelar) {
+            btnCancelar.addEventListener('click', () => {
+                document.getElementById('preview-container').style.display = 'none';
+                document.getElementById('csv-file-input').value = '';
+            });
+        }
+
+        const btnGuardar = document.getElementById('btn-subir-definitivo');
+        if (btnGuardar) {
+            btnGuardar.addEventListener('click', async () => {
+                const id_gp = document.getElementById('select-gp').value;
+                if (!id_gp) {
+                    alert("Por favor, selecciona un Gran Premio primero.");
+                    return;
+                }
+
+                const filas = document.querySelectorAll('#tbody-preview tr');
+                const datosAEnviar = [];
+
+                filas.forEach(fila => {
+                    const celdas = fila.querySelectorAll('td');
+                    datosAEnviar.push({
+                        id: celdas[0].innerText.trim(),
+                        tiempo_clasificacion: celdas[1].innerText.trim(),
+                        tiempo_vuelta_rapida_carrera: celdas[2].innerText.trim(),
+                        tiempo_total_carrera: celdas[3].innerText.trim()
+                    });
+                });
+
+                try {
+                    const response = await fetch('/api/importar-tiempos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id_gp, tiempos: datosAEnviar })
+                    });
+
+                    const resultado = await response.json();
+                    if (response.ok) {
+                        alert("¡Tiempos importados y guardados correctamente!");
+                        document.getElementById('preview-container').style.display = 'none';
+                        document.getElementById('csv-file-input').value = '';
+                        cargarTiemposPorGP();
+                    } else {
+                        alert("Error al guardar: " + (resultado.error || 'Desconocido'));
+                    }
+                } catch (error) {
+                    console.error("Error en la petición:", error);
+                    alert("Hubo un error de conexión al enviar los datos.");
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>
