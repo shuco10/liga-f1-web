@@ -889,11 +889,13 @@ app.get('/api/tiempos/:id_gp', async (req, res) => {
                 t.id_gp,
                 t.id,
                 p.gamertag,
+                e.nombre AS escuderia,
                 t.tiempo_clasificacion,
                 t.tiempo_vuelta_rapida_carrera,
                 t.tiempo_total_carrera
             FROM tiempos t
             JOIN pilotos p ON t.id = p.id
+            LEFT JOIN escuderias e ON p.escuderia_id = e.id
             WHERE t.id_gp = $1
             ORDER BY t.tiempo_clasificacion ASC;
         `, [id_gp]);
