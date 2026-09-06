@@ -201,27 +201,45 @@
 // Función para cargar los circuitos en el desplegable al abrir la página
 async function cargarSelectGP() {
     const select = document.getElementById('select-gp');
-    try {
-        const response = await fetch('/api/circuitos');
-        const circuitos = await response.json();
+    
+    const circuitos = [
+        { id: 3, ronda: 1, nombre: "Melbourne", fecha: "24 SEP" },
+        { id: 8, ronda: 2, nombre: "Shanghái", fecha: "01 OCT" },
+        { id: 7, ronda: 3, nombre: "Suzuka", fecha: "08 OCT" },
+        { id: 4, ronda: 4, nombre: "Sakhir", fecha: "15 OCT" },
+        { id: 2, ronda: 5, nombre: "Yeda", fecha: "22 OCT" },
+        { id: 9, ronda: 6, nombre: "Miami", fecha: "29 OCT" },
+        { id: 14, ronda: 7, nombre: "Montreal", fecha: "05 NOV" },
+        { id: 11, ronda: 8, nombre: "Mónaco", fecha: "12 NOV" },
+        { id: 12, ronda: 9, nombre: "Barcelona", fecha: "19 NOV" },
+        { id: 15, ronda: 10, nombre: "Spielberg", fecha: "26 NOV" },
+        { id: 16, ronda: 11, nombre: "Silverstone", fecha: "03 DEC" },
+        { id: 17, ronda: 12, nombre: "Spa", fecha: "10 DEC" },
+        { id: 76, ronda: 13, nombre: "Budapest", fecha: "17 DEC" },
+        { id: 18, ronda: 14, nombre: "Zandvoort", fecha: "14 JAN" },
+        { id: 19, ronda: 15, nombre: "Monza", fecha: "21 JAN" },
+        { id: 13, ronda: 16, nombre: "Madrid", fecha: "28 JAN" },
+        { id: 20, ronda: 17, nombre: "Bakú", fecha: "04 FEB" },
+        { id: 21, ronda: 18, nombre: "Singapur", fecha: "11 FEB" },
+        { id: 22, ronda: 19, nombre: "Austin", fecha: "18 FEB" },
+        { id: 23, ronda: 20, nombre: "Ciudad de México", fecha: "25 FEB" },
+        { id: 24, ronda: 21, nombre: "São Paulo", fecha: "04 MAR" },
+        { id: 25, ronda: 22, nombre: "Las Vegas", fecha: "11 MAR" },
+        { id: 26, ronda: 23, nombre: "Losail", fecha: "18 MAR" },
+        { id: 27, ronda: 24, nombre: "Abu Dabi", fecha: "01 APR" }
+    ];
 
-        if (response.ok) {
-            select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
-                circuitos.map(c => `
-                    <option value="${c.id}">
-                        Ronda ${c.r_round} - ${c.nombre} (${c.fecha_carrera})
-                    </option>
-                `).join('');
-        }
-    } catch (error) {
-        console.error("Error al cargar los circuitos en el selector:", error);
-    }
+    select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
+        circuitos.map(c => `
+            <option value="${c.id}">
+                Ronda ${c.ronda} - ${c.nombre} (${c.fecha})
+            </option>
+        `).join('');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     cargarSelectGP();
 });
-
     
 
     
