@@ -1517,6 +1517,6 @@ table tr td:nth-child(2) {
 
 table {
     border-collapse: separate;
-    border-spacing: 0 8px; /* Esto deja un espacio vertical limpio de 8px entre fila y fila */
+    border-spacing: 0 10px;
 }
 
