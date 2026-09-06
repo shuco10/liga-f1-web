@@ -220,7 +220,6 @@ async function cargarTiemposPorGP() {
     
     if (!id_gp) return;
 
-    // Obtenemos el nombre del circuito seleccionado para el mensaje de aviso
     const nombreCircuito = selectGp.options[selectGp.selectedIndex]?.text || 'este circuito';
 
     try {
@@ -230,21 +229,14 @@ async function cargarTiemposPorGP() {
         const tbody = document.getElementById('tbody-tiempos');
         if (!tbody) return;
 
-        // Aseguramos que la tabla no tenga un layout forzado que corte el texto
         const tabla = tbody.closest('table');
         if (tabla) {
             tabla.style.width = '100%';
-            tabla.style.tableLayout = 'auto'; // Permitir que las celdas crezcan según su contenido
-            
-            // Opcional: Asegurar que el contenedor padre de la tabla tenga scroll horizontal por seguridad
-            if (tabla.parentElement) {
-                tabla.parentElement.style.overflowX = 'auto';
-            }
+            tabla.style.tableLayout = 'auto';
         }
 
         tbody.innerHTML = '';
 
-        // Si no hay datos, mostramos una fila informativa con el mensaje pedido
         if (!tiempos || tiempos.length === 0) {
             const trVacio = document.createElement('tr');
             trVacio.style.backgroundColor = '#2a2a2a';
@@ -353,32 +345,33 @@ async function cargarTiemposPorGP() {
             const archivoBandera = archivosBanderas[nombreEscuderia];
 
             const banderaHTML = archivoBandera 
-                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 36px; height: 25px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; flex-shrink: 0; margin-right: 4px;">` 
+                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 36px; height: 25px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.2); image-rendering: -webkit-optimize-contrast; flex-shrink: 0;">` 
                 : '';
 
-            // Quitamos el truncado para que el nombre de la escudería respire y se vea completo
+            // Permite que el contenido se ajuste y baje de línea de forma natural si falta espacio
             const escuderiaHTML = `
-                <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
-                    ${banderaHTML}
-                    <span style="display: inline-block; width: 8px; height: 28px; background-color: ${colorEscuderia}; border-radius: 4px; flex-shrink: 0;"></span>
-                    <span style="color: #cbd5e1; font-size: 14px; line-height: 1.2;">${nombreEscuderia}</span>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                        ${banderaHTML}
+                        <span style="display: inline-block; width: 6px; height: 24px; background-color: ${colorEscuderia}; border-radius: 3px;"></span>
+                    </div>
+                    <span style="color: #cbd5e1; font-size: 14px; line-height: 1.2; word-break: break-word;">${nombreEscuderia}</span>
                 </div>
             `;
 
             const tr = document.createElement('tr');
             tr.style.backgroundColor = '#2a2a2a';
-            tr.style.height = '70px'; 
+            tr.style.minHeight = '70px'; 
             tr.style.borderRadius = '8px';
             tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
             
-            // Celdas sin restricciones de ancho forzado para que piloto y escudería muestren todo su texto
             tr.innerHTML = `
-                <td style="text-align: center; width: 70px; padding: 0 10px; font-size: 15px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
-                <td style="padding: 0 15px; font-weight: 500; font-size: 15px; vertical-align: middle; letter-spacing: 0.3px; white-space: nowrap;">${t.gamertag || 'Piloto #' + t.id}</td>
-                <td style="padding: 0 15px; vertical-align: middle;">${escuderiaHTML}</td>
-                <td style="text-align: center; padding: 0 15px; vertical-align: middle; font-family: monospace; font-size: 14px; white-space: nowrap;">${htmlQuali}</td>
-                <td style="text-align: center; padding: 0 15px; vertical-align: middle; font-family: monospace; font-size: 14px; white-space: nowrap;">${htmlCarreraVR}</td>
-                <td style="text-align: center; padding: 0 15px; vertical-align: middle; font-family: monospace; font-size: 14px; font-weight: bold; white-space: nowrap; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
+                <td style="text-align: center; width: 70px; padding: 10px; font-size: 15px; vertical-align: middle; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">${posHTML}</td>
+                <td style="padding: 10px 15px; font-weight: 500; font-size: 15px; vertical-align: middle; letter-spacing: 0.3px; word-break: break-word;">${t.gamertag || 'Piloto #' + t.id}</td>
+                <td style="padding: 10px 15px; vertical-align: middle;">${escuderiaHTML}</td>
+                <td style="text-align: center; padding: 10px 15px; vertical-align: middle; font-family: monospace; font-size: 14px;">${htmlQuali}</td>
+                <td style="text-align: center; padding: 10px 15px; vertical-align: middle; font-family: monospace; font-size: 14px;">${htmlCarreraVR}</td>
+                <td style="text-align: center; padding: 10px 15px; vertical-align: middle; font-family: monospace; font-size: 14px; font-weight: bold; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">${htmlTotal}</td>
             `;
             tbody.appendChild(tr);
         });
