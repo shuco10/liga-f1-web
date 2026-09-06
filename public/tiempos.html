@@ -175,45 +175,104 @@
         }
     }
 
-    async function cargarTiemposPorGP() {
-        const id_gp = document.getElementById('select-gp').value;
-        const tbody = document.getElementById('tbody-tiempos');
+async function cargarTiemposPorGP() {
+    const selectGp = document.getElementById('select-gp'); // O el selector/variable de id_gp que uses
+    const id_gp = selectGp ? selectGp.value : null;
+    
+    if (!id_gp) return;
 
-        if (!id_gp) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>`;
-            return;
+    try {
+        const response = await fetch(`/api/tiempos/${id_gp}`);
+        const tiempos = await response.json();
+
+        // Función auxiliar para convertir tiempos a segundos para poder ordenar con precisión
+        function tiempoASegundos(str) {
+            if (!str || str.includes('DNF') || str.includes('No registrada')) return Infinity;
+            const partes = str.split(':');
+            if (partes.length === 3) {
+                // Formato H:MM:SS.mmm
+                return parseFloat(partes[0]) * 3600 + parseFloat(partes[1]) * 60 + parseFloat(partes[2]);
+            } else if (partes.length === 2) {
+                // Formato M:SS.mmm
+                return parseFloat(partes[0]) * 60 + parseFloat(partes[1]);
+            }
+            return Infinity;
         }
 
-        try {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">Cargando tiempos...</td></tr>`;
+        // 1. Encontrar la vuelta más rápida global de Quali y de Carrera (excluyendo DNF/vacias)
+        let mejorQuali = Infinity;
+        let mejorCarrera = Infinity;
+
+        tiempos.forEach(t => {
+            const qSec = tiempoASegundos(t.tiempo_clasificacion);
+            const cSec = tiempoASegundos(t.tiempo_vuelta_rapida_carrera);
+            if (qSec < mejorQuali) mejorQuali = qSec;
+            if (cSec < mejorCarrera) mejorCarrera = cSec;
+        });
+
+        // 2. Separar finalizados y DNF para ordenar correctamente
+        const conTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) !== Infinity);
+        const sinTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) === Infinity);
+
+        // Ordenar los que tienen tiempo de menor a mayor (tiempo total de carrera)
+        conTiempo.sort((a, b) => tiempoASegundos(a.tiempo_total_carrera) - tiempoASegundos(b.tiempo_total_carrera));
+
+        // Unir: primero los que tienen tiempo ordenados, al final los DNF
+        const tiemposOrdenados = [...conTiempo, ...sinTiempo];
+
+        // 3. Pintar la tabla
+        const tbody = document.getElementById('tbody-tabla-tiempos'); // Ajusta el ID de tu tbody de visualización
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        tiemposOrdenados.forEach((t, index) => {
+            const esDNF = tiempoASegundos(t.tiempo_total_carrera) === Infinity;
             
-            const response = await fetch(`/api/tiempos/${id_gp}`);
-            const tiempos = await response.json();
-
-            if (!response.ok) {
-                throw new Error(tiempos.error || "Error al obtener los datos");
+            // Asignación de posición o etiqueta DNF
+            let posHTML = '';
+            if (esDNF) {
+                posHTML = `<span style="background-color: #d32f2f; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">DNF</span>`;
+            } else {
+                const puesto = index + 1;
+                if (puesto === 1) {
+                    posHTML = `<span style="background-color: #FFD700; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>`;
+                } else if (puesto === 2) {
+                    posHTML = `<span style="background-color: #C0C0C0; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>`;
+                } else if (puesto === 3) {
+                    posHTML = `<span style="background-color: #CD7F32; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>`;
+                } else {
+                    posHTML = puesto;
+                }
             }
 
-            if (tiempos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">No hay registros de tiempos para este Gran Premio.</td></tr>`;
-                return;
-            }
+            // Comprobar si es la vuelta más rápida de Quali o Carrera para aplicar estilo morado
+            const qSec = tiempoASegundos(t.tiempo_clasificacion);
+            const cSec = tiempoASegundos(t.tiempo_vuelta_rapida_carrera);
 
-            tbody.innerHTML = tiempos.map((t, index) => `
-                <tr style="border-bottom: 1px solid #333; transition: background 0.2s;" onmouseover="this.style.background='#2a2a2a'" onmouseout="this.style.background='transparent'">
-                    <td style="padding: 12px; text-align: center; font-weight: bold; color: #ef4444;">${index + 1}</td>
-                    <td style="padding: 12px; font-weight: bold;">${t.gamertag}</td>
-                    <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_clasificacion || '-'}</td>
-                    <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_vuelta_rapida_carrera || '-'}</td>
-                    <td style="padding: 12px; text-align: center; font-family: monospace;">${t.tiempo_total_carrera || '-'}</td>
-                </tr>
-            `).join('');
+            const esMejorQuali = (qSec === mejorQuali && qSec !== Infinity);
+            const esMejorCarrera = (cSec === mejorCarrera && cSec !== Infinity);
 
-        } catch (error) {
-            console.error("Error:", error);
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px; color: #ef4444;">Hubo un error al cargar los tiempos.</td></tr>`;
-        }
+            const estiloMorado = `background-color: #7B1FA2; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;`;
+
+            const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
+            const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
+            const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align: center; width: 60px;">${posHTML}</td>
+                <td>${t.gamertag || 'Piloto #' + t.id}</td>
+                <td style="text-align: center;">${htmlQuali}</td>
+                <td style="text-align: center;">${htmlCarreraVR}</td>
+                <td style="text-align: center;">${htmlTotal}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar y ordenar los tiempos:", error);
     }
+}
 
     function cargarSelectGP() {
         const select = document.getElementById('select-gp');
