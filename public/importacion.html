@@ -272,17 +272,51 @@ function actualizarCeldaTemporal(rowIndex, campo, nuevoValor) {
     }
 }
 
-function enviarDatosDefinitivos() {
+async function enviarDatosDefinitivos() {
     if (datosPrevisualizacionGlobal.length === 0) {
         alert("No hay datos para guardar.");
         return;
     }
 
-    // Aquí prepararemos el envío posterior a tu BBDD
-    console.log("Datos listos para enviar a BBDD:", datosPrevisualizacionGlobal);
-    alert(`¡Perfecto! Tienes ${datosPrevisualizacionGlobal.length} registros listos para ser inyectados en la base de datos.`);
-}
+    if (!confirm(`¿Estás seguro de que deseas guardar los ${datosPrevisualizacionGlobal.length} registros en la base de datos?`)) {
+        return;
+    }
 
+    // Buscamos el botón para bloquearlo y mostrar estado de carga
+    const botonGuardar = event.target;
+    const textoOriginal = botonGuardar.innerText;
+    botonGuardar.disabled = true;
+    botonGuardar.innerText = "Guardando en Neon...";
+
+    try {
+        // AJUSTA ESTA RUTA A TU ENDPOINT REAL DEL BACKEND (ej: '/api/guardar-resultados' o un script de Node.js/PHP)
+        const respuesta = await fetch('/api/guardar-resultados', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ resultados: datosPrevisualizacionGlobal })
+        });
+
+        const resultadoJson = await respuesta.json();
+
+        if (respuesta.ok) {
+            alert("¡Datos guardados correctamente en la base de datos!");
+            // Limpiamos todo tras el éxito
+            document.getElementById('resultadoValidacion.innerHTML = '';
+            document.getElementById('inputCsvF1').value = '';
+            datosPrevisualizacionGlobal = [];
+        } else {
+            alert("Error al guardar: " + (resultadoJson.mensaje || "Revisa la consola."));
+        }
+    } catch (error) {
+        console.error("Error de red:", error);
+        alert("Hubo un error de conexión al intentar guardar los datos.");
+    } finally {
+        botonGuardar.disabled = false;
+        botonGuardar.innerText = textoOriginal;
+    }
+}
 
 
 
