@@ -22,10 +22,10 @@
     <div class="titulo-liga">⏱️ CONTROL DE TIEMPOS DE PILOTOS ⏱️</div>
     <h3 class="subtitulo-principal">⌚ Plataforma para el control de tiempos de los pilotos por circuito ⌚</h3>
 
-    <!-- Selector de Gran Premio / Circuito -->
+<!-- Selector de Gran Premio / Circuito -->
     <div style="margin: 30px auto; text-align: center;">
         <label for="select-gp" style="font-weight: bold; margin-right: 10px;">Selecciona el Gran Premio:</label>
-        <select id="select-gp" onchange="cargarTiemposPorGP()" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
+        <select id="select-gp" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
             <option value="">-- Selecciona un circuito --</option>
         </select>
     </div>
@@ -93,6 +93,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // 1. Cargar componentes externos (Header, Footer, Modal)
         fetch('/header.html')
             .then(res => res.text())
             .then(data => {
@@ -110,7 +111,42 @@
         fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
         fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
         
+        // 2. Inicializar Select de Circuitos y cargar aviso automático
         cargarSelectGP();
+        if (typeof cargarUltimoAvisoGP === 'function') {
+            cargarUltimoAvisoGP();
+        }
+
+        const selectGp = document.getElementById('select-gp');
+        if (selectGp) {
+            // Carga automática si el navegador recuerda una opción seleccionada
+            if (selectGp.value) {
+                cargarTiemposPorGP();
+            }
+
+            // Detecta el cambio en el desplegable (único listener limpio)
+            selectGp.addEventListener('change', () => {
+                cargarTiemposPorGP();
+            });
+        }
+
+        // 3. Lógica de carga de archivo CSV (Solo para administradores)
+        const fileInput = document.getElementById('csv-file-input');
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    if (typeof procesarCSV === 'function') {
+                        procesarCSV(text);
+                    }
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
+        }
     });
 
     function verificarSesion() {
@@ -496,8 +532,6 @@ function procesarCSV(contenido) {
     document.getElementById('preview-container').style.display = 'block';
 }
 
-
-
 const btnGuardar = document.getElementById('btn-subir-definitivo');
 if (btnGuardar) {
     btnGuardar.addEventListener('click', async () => {
@@ -549,29 +583,30 @@ if (btnGuardar) {
             const response = await fetch('/api/importar-tiempos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(registrosAEnviar) // Envía el Array plano directamente
+                body: JSON.stringify(registrosAEnviar)
             });
 
             const resultado = await response.json();
             if (response.ok) {
                 alert("¡Tiempos importados y guardados correctamente!");
                 
-                // --- ACTUALIZACIÓN DEL MENSAJE FIJO EN AMARILLO FUERTE ---
+                // --- ACTUALIZACIÓN DEL MENSAJE FIJO CON EFECTO NEÓN AMARILLO ---
                 if (selectGp) {
-                    // Selecciona automáticamente en el desplegable el circuito que se acaba de subir
                     selectGp.value = id_gp;
                     const textoCircuito = selectGp.options[selectGp.selectedIndex]?.text || '';
                     
                     const infoContainer = document.getElementById('info-ultimos-tiempos');
                     if (infoContainer && textoCircuito) {
                         infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
-                        infoContainer.style.color = '#FACC15'; // Amarillo fuerte tipo Tailwind (yellow-400)
+                        infoContainer.style.color = '#FACC15';
                         infoContainer.style.fontWeight = 'bold';
-                        infoContainer.style.fontSize = '14px';
-                        infoContainer.style.margin = '8px 0';
+                        infoContainer.style.fontSize = '15px';
+                        infoContainer.style.margin = '10px 0';
+                        // Efecto neón brillante
+                        infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
                     }
                 }
-                // ---------------------------------------------------------
+                // -------------------------------------------------------------
 
                 document.getElementById('preview-container').style.display = 'none';
                 document.getElementById('csv-file-input').value = '';
@@ -585,6 +620,52 @@ if (btnGuardar) {
         }
     });
 }
+
+// Función para consultar al servidor cuál es el último GP con tiempos subidos
+async function cargarUltimoAvisoGP() {
+    try {
+        const response = await fetch('/api/ultimo-gp');
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        // Como los circuitos están mapeados en tu función 'cargarSelectGP', 
+        // puedes buscar el nombre correspondiente o usar el que te devuelva el servidor
+        if (data && data.id_gp) {
+            const selectGp = document.getElementById('select-gp');
+            // Si el select ya está cargado, buscamos el texto de la opción
+            let textoCircuito = '';
+            if (selectGp) {
+                for (let option of selectGp.options) {
+                    if (option.value == data.id_gp) {
+                        textoCircuito = option.text;
+                        break;
+                    }
+                }
+            }
+            
+            const infoContainer = document.getElementById('info-ultimos-tiempos');
+            if (infoContainer && textoCircuito) {
+                infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
+                infoContainer.style.color = '#FACC15';
+                infoContainer.style.fontWeight = 'bold';
+                infoContainer.style.fontSize = '15px';
+                infoContainer.style.margin = '10px 0';
+                infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
+            }
+        }
+    } catch (error) {
+        console.error("Error al obtener el último GP actualizado:", error);
+    }
+}
+
+// Ejecutar al cargar la página (asegúrate de llamar también a cargarSelectGP antes si es necesario)
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof cargarSelectGP === 'function') {
+        cargarSelectGP();
+    }
+    cargarUltimoAvisoGP();
+});
+    
     
 </script>
 </body>
