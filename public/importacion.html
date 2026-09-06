@@ -159,6 +159,8 @@
 /////////////////////////////////////////////////////////////
 //////SISTEMA DE IMPORTACION AQUI EMPIEZA TODO
 /////////////////////////////////////////////////////////////
+let datosPrevisualizacionGlobal = [];
+
 function validarYPrevisualizarCSV() {
     const input = document.getElementById('inputCsvF1');
     const contenedorFeedback = document.getElementById('resultadoValidacion');
@@ -181,22 +183,20 @@ function validarYPrevisualizarCSV() {
         const separador = lineas[0].includes(';') ? ';' : ',';
         const cabeceras = lineas[0].toLowerCase().split(separador).map(h => h.trim());
 
-        // Validar que las cabeceras obligatorias existan
         const obligatorias = ['id_gp', 'gamertag', 'posicion', 'pole', 'dnf'];
         const faltantes = obligatorias.filter(campo => !cabeceras.includes(campo));
 
         if (faltantes.length > 0) {
-            contenedorFeedback.innerHTML = `<p style='color: #e74c3c; font-weight: bold;'>Error crítico: Faltan las siguientes columnas obligatorias en el CSV: ${faltantes.join(', ')}</p>`;
+            contenedorFeedback.innerHTML = `<p style='color: #e74c3c; font-weight: bold;'>Error crítico: Faltan las siguientes columnas obligatorias: ${faltantes.join(', ')}</p>`;
             return;
         }
 
         let filasValidas = [];
         let erroresBloqueantes = [];
 
-        // Analizar fila por fila (empezando desde la 1)
         for (let i = 1; i < lineas.length; i++) {
             const lineaTexto = lineas[i].trim();
-            if (!lineaTexto) continue; // Saltar líneas vacías
+            if (!lineaTexto) continue;
 
             const valores = lineaTexto.split(separador).map(v => v.trim());
             let filaObj = {};
@@ -205,32 +205,85 @@ function validarYPrevisualizarCSV() {
                 filaObj[cabecera] = valores[index] !== undefined ? valores[index] : '';
             });
 
-            // COMPROBACIONES BLOQUEANTES
             let numeroFila = i + 1;
-            if (!filaObj.id_gp) erroresBloqueantes.sindes?.push ? null : erroresBloqueantes.push(`Fila ${numeroFila}: Falta el circuito (id_gp).`);
+            if (!filaObj.id_gp) erroresBloqueantes.push(`Fila ${numeroFila}: Falta el circuito (id_gp).`);
             if (!filaObj.gamertag) erroresBloqueantes.push(`Fila ${numeroFila}: Falta el nombre del piloto (gamertag).`);
-            if (filaObj.posicion === '' || isNaN(filaObj.posicion)) erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag || 'Piloto desconocido'}): Posición inválida o vacía.`);
-            if (filaObj.pole === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'pole' no puede estar vacío.`);
-            if (filaObj.dnf === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'dnf' no puede estar vacío.`);
+            if (filaObj.posicion === '' || isNaN(filaObj.posicion)) erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag || 'Desconocido'}): Posición inválida.`);
+            if (filaObj.pole === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'pole' está vacío.`);
+            if (filaObj.dnf === '') erroresBloqueantes.push(`Fila ${numeroFila} (${filaObj.gamertag}): El campo 'dnf' está vacío.`);
 
             filasValidas.push(filaObj);
         }
 
-        // SI HAY ERRORES, BLOQUEAMOS EL PROCESO
         if (erroresBloqueantes.length > 0) {
-            let htmlErrores = `<h4 style="color: #e74c3c;">Se han encontrado errores bloqueantes (${erroresBloqueantes.length}):</h4><ul style="color: #ff9999; background: #2a1515; padding: 15px; border-radius: 4px;">`;
+            let htmlErrores = `<h4 style="color: #e74c3c;">Errores bloqueantes (${erroresBloqueantes.length}):</h4><ul style="color: #ff9999; background: #2a1515; padding: 15px; border-radius: 4px;">`;
             erroresBloqueantes.forEach(err => { htmlErrores += `<li>${err}</li>`; });
-            htmlErrores += `</ul><p>Corrije el archivo Excel/CSV y vuelve a subirlo.</p>`;
+            htmlErrores += `</ul>`;
             contenedorFeedback.innerHTML = htmlErrores;
             return;
         }
 
-        // Si pasa la validación, muestra un mensaje de éxito previo a pintar la tabla editable
-        contenedorFeedback.innerHTML = `<p style="color: #2ecc71; font-weight: bold;">¡Archivo validado con éxito! ${filasValidas.length} registros listos para revisar.</p>`;
-        
-        // Aquí es donde en el siguiente paso montaremos la tabla de previsualización editable
+        // Guardamos en la variable global para la previsualización
+        datosPrevisualizacionGlobal = filasValidas;
+
+        // Si pasa la validación, pintamos el éxito y la tabla interactiva debajo
+        renderizarTablaPrevia(cabeceras, contenedorFeedback);
     };
 
+    lector.readAsText(archivo, 'UTF-8');
+}
+
+function renderizarTablaPrevia(cabeceras, contenedor) {
+    let html = `
+        <p style="color: #2ecc71; font-weight: bold; margin-bottom: 10px;">¡Archivo validado con éxito! Revisa los datos, edita lo que necesites haciendo clic en las celdas y pulsa guardar.</p>
+        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #444; border-radius: 4px; margin-bottom: 15px;">
+            <table style="width: 100%; border-collapse: collapse; color: #fff; font-size: 14px; background: #1a1a1a;">
+                <thead>
+                    <tr style="background: #2c3e50; text-align: left; position: sticky; top: 0;">
+    `;
+
+    cabeceras.forEach(h => {
+        html += `<th style="padding: 10px; border-bottom: 2px solid #444;">${h}</th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    datosPrevisualizacionGlobal.forEach((fila, rowIndex) => {
+        html += `<tr style="border-bottom: 1px solid #333;">`;
+        cabeceras.forEach(h => {
+            // contenteditable permite editar el texto al vuelo
+            html += `<td contenteditable="true" onblur="actualizarCeldaTemporal(${rowIndex}, '${h}', this.innerText)" style="padding: 8px 10px; outline: none; background: #222;" title="Haz clic para editar">${fila[h] !== undefined ? fila[h] : ''}</td>`;
+        });
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+    html += `<button onclick="enviarDatosDefinitivos()" style="padding: 10px 20px; background: #2ecc71; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Guardar Datos Definitivamente</button>`;
+
+    contenedor.innerHTML = html;
+}
+
+function actualizarCeldaTemporal(rowIndex, campo, nuevoValor) {
+    if (datosPrevisualizacionGlobal[rowIndex]) {
+        datosPrevisualizacionGlobal[rowIndex][campo] = nuevoValor.trim();
+    }
+}
+
+function enviarDatosDefinitivos() {
+    if (datosPrevisualizacionGlobal.length === 0) {
+        alert("No hay datos para guardar.");
+        return;
+    }
+
+    // Aquí prepararemos el envío posterior a tu BBDD
+    console.log("Datos listos para enviar a BBDD:", datosPrevisualizacionGlobal);
+    alert(`¡Perfecto! Tienes ${datosPrevisualizacionGlobal.length} registros listos para ser inyectados en la base de datos.`);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+/// NO TOCAR POR DEBAJO DE ESTO ///////////////////////////////////////////////////////    
+///////////////////////////////////////////////////////////////////////////////////////
+
+    
     lector.readAsText(archivo, 'UTF-8');
 }
 
