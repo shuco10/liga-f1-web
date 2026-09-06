@@ -255,19 +255,20 @@ async function cargarTiemposPorGP() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        // Diccionario con tus colores personalizados adaptados a los nombres largos de la BD
-        const coloresEscuderias = {
-            "McLaren Mastercard F1 Team": "rgba(234, 88, 12, 0.35)",
-            "Scuderia Ferrari HP": "rgba(220, 38, 38, 0.35)",
-            "Oracle Red Bull Racing": "rgba(30, 41, 59, 0.4)",
-            "Visa Cash App Racing Bulls Formula One Team": "rgba(56, 189, 248, 0.35)", // Azul claro
-            "Audi Revolut F1 Team": "rgba(114, 21, 41, 0.4)",                         // Granate oscuro
-            "Mercedes-AMG PETRONAS Formula One Team": "rgba(16, 185, 129, 0.35)",       // Verde eléctrico
-            "Atlassian Williams F1 Team": "rgba(29, 78, 216, 0.35)",                   // Azul intermedio
-            "TGR Haas F1 Team": "rgba(75, 85, 99, 0.35)",
-            "BWT Alpine Formula One Team": "rgba(37, 99, 235, 0.35)",
-            "Aston Martin Aramco Formula One Team": "rgba(5, 150, 105, 0.35)",
-            "Stake F1 Team Kick Sauber": "rgba(22, 163, 74, 0.35)"
+        // Diccionario con colores sólidos bien vivos para el borde lateral izquierdo
+        const coloresBordeEscuderias = {
+            "Scuderia Ferrari HP": "#DC2626",                    // Rojo Ferrari
+            "Audi Revolut F1 Team": "#881337",                   // Granate oscuro Audi
+            "Visa Cash App Racing Bulls Formula One Team": "#38BDF8", // Azul claro Visa
+            "Cadillac Formula 1 Team": "#E2E8F0",                // Blanco / Plateado Cadillac
+            "McLaren Mastercard F1 Team": "#EA580C",             // Naranja McLaren
+            "TGR Haas F1 Team": "#6B7280",                       // Gris Haas
+            "Mercedes-AMG PETRONAS Formula One Team": "#10B981",   // Verde eléctrico Mercedes
+            "Aston Martin Aramco Formula One Team": "#059669",   // Verde Aston Martin
+            "Oracle Red Bull Racing": "#1E293B",                 // Azul oscuro Red Bull
+            "Atlassian Williams F1 Team": "#2563EB",             // Azul Williams (intermedio)
+            "BWT Alpine Formula One Team": "#2563EB",
+            "Stake F1 Team Kick Sauber": "#16A34A"
         };
 
         tiemposOrdenados.forEach((t, index) => {
@@ -301,14 +302,16 @@ async function cargarTiemposPorGP() {
             const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
             const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
 
-            // Normalizamos el texto de la escudería DENTRO del bucle para evitar errores
             const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
             const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
-            const colorFondoFila = coloresEscuderias[nombreEscuderia] || 'transparent';
+            
+            // Asignamos el color sólido al borde izquierdo de la fila
+            const colorBorde = coloresBordeEscuderias[nombreEscuderia] || '#555';
 
             const tr = document.createElement('tr');
-            tr.style.backgroundColor = colorFondoFila;
-            tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+            tr.style.backgroundColor = '#2a2a2a'; // Fondo oscuro limpio y uniforme para las filas
+            tr.style.borderLeft = `6px solid ${colorBorde}`; // La barrita vertical de color a la izquierda
+            tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.08)';
             
             tr.innerHTML = `
                 <td style="text-align: center; width: 70px; padding: 14px 10px; font-size: 15px;">${posHTML}</td>
