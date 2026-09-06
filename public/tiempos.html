@@ -33,15 +33,16 @@
     <!-- Contenedor de la Tabla de Tiempos -->
     <div id="tabla-tiempos-container" style="overflow-x: auto; margin-top: 20px;">
         <table style="width: 100%; border-collapse: collapse; background-color: #222; text-align: left; border-radius: 8px; overflow: hidden;">
-            <thead>
-                <tr style="background-color: #ef4444; color: white;">
-                    <th style="padding: 12px; text-align: center;">Pos / Orden</th>
-                    <th style="padding: 12px;">Piloto (Gamertag)</th>
-                    <th style="padding: 12px; text-align: center;">Tiempo Clasificación</th>
-                    <th style="padding: 12px; text-align: center;">Vuelta Rápida Carrera</th>
-                    <th style="padding: 12px; text-align: center;">Tiempo Total Carrera</th>
-                </tr>
-            </thead>
+<thead>
+    <tr style="background-color: #ef4444; color: white;">
+        <th style="padding: 14px 10px; text-align: center;">Pos</th>
+        <th style="padding: 14px 10px;">Piloto</th>
+        <th style="padding: 14px 10px;">Escudería</th>
+        <th style="padding: 14px 10px; text-align: center;">Clasificación</th>
+        <th style="padding: 14px 10px; text-align: center;">Vuelta Rápida</th>
+        <th style="padding: 14px 10px; text-align: center;">Tiempo Total</th>
+    </tr>
+</thead>
             <tbody id="tbody-tiempos">
                 <tr>
                     <td colspan="5" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td>
@@ -250,25 +251,37 @@ async function cargarTiemposPorGP() {
         conTiempo.sort((a, b) => tiempoASegundos(a.tiempo_total_carrera) - tiempoASegundos(b.tiempo_total_carrera));
         const tiemposOrdenados = [...conTiempo, ...sinTiempo];
 
-        // Apunta al ID correcto que existe en tu HTML
         const tbody = document.getElementById('tbody-tiempos');
         if (!tbody) return;
         tbody.innerHTML = '';
+
+        const coloresEscuderias = {
+            "Red Bull": "rgba(30, 41, 59, 0.35)",
+            "Ferrari": "rgba(220, 38, 38, 0.2)",
+            "Mercedes": "rgba(13, 148, 136, 0.25)",
+            "McLaren": "rgba(234, 88, 12, 0.25)",
+            "Aston Martin": "rgba(5, 150, 105, 0.25)",
+            "Alpine": "rgba(37, 99, 235, 0.25)",
+            "Williams": "rgba(14, 116, 144, 0.25)",
+            "RB": "rgba(30, 58, 138, 0.25)",
+            "Sauber": "rgba(22, 163, 74, 0.25)",
+            "Haas": "rgba(75, 85, 99, 0.25)"
+        };
 
         tiemposOrdenados.forEach((t, index) => {
             const esDNF = tiempoASegundos(t.tiempo_total_carrera) === Infinity;
             
             let posHTML = '';
             if (esDNF) {
-                posHTML = `<span style="background-color: #d32f2f; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">DNF</span>`;
+                posHTML = `<span style="background-color: #d32f2f; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">DNF</span>`;
             } else {
                 const puesto = index + 1;
                 if (puesto === 1) {
-                    posHTML = `<span style="background-color: #FFD700; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>`;
+                    posHTML = `<span style="background-color: #FFD700; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>`;
                 } else if (puesto === 2) {
-                    posHTML = `<span style="background-color: #C0C0C0; color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>`;
+                    posHTML = `<span style="background-color: #C0C0C0; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>`;
                 } else if (puesto === 3) {
-                    posHTML = `<span style="background-color: #CD7F32; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>`;
+                    posHTML = `<span style="background-color: #CD7F32; color: #fff; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>`;
                 } else {
                     posHTML = puesto;
                 }
@@ -280,19 +293,27 @@ async function cargarTiemposPorGP() {
             const esMejorQuali = (qSec === mejorQuali && qSec !== Infinity);
             const esMejorCarrera = (cSec === mejorCarrera && cSec !== Infinity);
 
-            const estiloMorado = `background-color: #7B1FA2; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block;`;
+            // Morado sólido y potente para que destaque sin que lo tape el fondo de la fila
+            const estiloMorado = `background-color: #7B1FA2; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
 
             const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
             const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
             const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
 
+            const nombreEscuderia = t.escuderia || t.nombre_escuderia || 'Sin Escudería';
+            const colorFondoFila = coloresEscuderias[nombreEscuderia] || 'transparent';
+
             const tr = document.createElement('tr');
+            tr.style.backgroundColor = colorFondoFila;
+            tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+            
             tr.innerHTML = `
-                <td style="text-align: center; width: 60px;">${posHTML}</td>
-                <td>${t.gamertag || 'Piloto #' + t.id}</td>
-                <td style="text-align: center;">${htmlQuali}</td>
-                <td style="text-align: center;">${htmlCarreraVR}</td>
-                <td style="text-align: center;">${htmlTotal}</td>
+                <td style="text-align: center; width: 70px; padding: 14px 10px; font-size: 15px;">${posHTML}</td>
+                <td style="padding: 14px 10px; font-weight: 500; font-size: 15px; letter-spacing: 0.3px;">${t.gamertag || 'Piloto #' + t.id}</td>
+                <td style="padding: 14px 10px; color: #cbd5e1; font-size: 14px;">${nombreEscuderia}</td>
+                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px;">${htmlQuali}</td>
+                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px;">${htmlCarreraVR}</td>
+                <td style="text-align: center; padding: 14px 10px; font-family: monospace; font-size: 14px; font-weight: bold;">${htmlTotal}</td>
             `;
             tbody.appendChild(tr);
         });
