@@ -37,7 +37,7 @@
     <tr style="background-color: #ef4444; color: white;">
         <th style="padding: 14px 10px; text-align: center;">Pos</th>
         <th style="padding: 14px 10px;">Piloto</th>
-        <th style="padding: 14px 10px;">Escudería</th>
+        <th style="padding: 14px 10px;">Escudería</th> <!-- Nueva columna añadida -->
         <th style="padding: 14px 10px; text-align: center;">Clasificación</th>
         <th style="padding: 14px 10px; text-align: center;">Vuelta Rápida</th>
         <th style="padding: 14px 10px; text-align: center;">Tiempo Total</th>
@@ -255,6 +255,7 @@ async function cargarTiemposPorGP() {
         if (!tbody) return;
         tbody.innerHTML = '';
 
+        // Diccionario de colores con transparencia para las filas de cada escudería
         const coloresEscuderias = {
             "Red Bull": "rgba(30, 41, 59, 0.35)",
             "Ferrari": "rgba(220, 38, 38, 0.2)",
@@ -293,14 +294,15 @@ async function cargarTiemposPorGP() {
             const esMejorQuali = (qSec === mejorQuali && qSec !== Infinity);
             const esMejorCarrera = (cSec === mejorCarrera && cSec !== Infinity);
 
-            // Morado sólido y potente para que destaque sin que lo tape el fondo de la fila
+            // Morado sólido con brillo protegido para que resalte por encima de cualquier color de fondo
             const estiloMorado = `background-color: #7B1FA2; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
 
             const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
             const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
             const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
 
-            const nombreEscuderia = t.escuderia || t.nombre_escuderia || 'Sin Escudería';
+            // Selecciona el color de la fila según la escudería que devuelve la base de datos
+            const nombreEscuderia = t.escuderia || 'Sin Escudería';
             const colorFondoFila = coloresEscuderias[nombreEscuderia] || 'transparent';
 
             const tr = document.createElement('tr');
