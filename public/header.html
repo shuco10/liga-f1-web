@@ -21,13 +21,14 @@
     <a href="info.html" class="boton-header-blur">
         <i class="fa-solid fa-building"></i>
     </a>
-
+<!-- iniciar / cerrar sesion 
     <button id="btn-login" class="boton-login-blur" onclick="seguridadAbrirModal()">
         <i class="fa-solid fa-key"></i>
     </button>
     <button id="btn-logout" class="boton-login-blur" onclick="cerrarSesion()" style="display: none;">
         <i class="fa-solid fa-door-open"></i>
     </button>
+    -->
     <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
         <i class="fa-solid fa-envelope"></i>
     </button>
@@ -111,18 +112,33 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts.js?v=2"></script>
 <script> 
-document.getElementById('btn-logout').addEventListener('click', async () => {
+async function verificarSesionPagina() {
     try {
-        const response = await fetch('/api/auth/logout', { method: 'POST' });
-        const data = await response.json();
-        if (data.success) {
-            localStorage.removeItem('rol');
-            window.location.href = '/'; 
+        const res = await fetch('/api/auth/sesion');
+        const data = await res.json();
+        
+        const seccionFormularios = document.getElementById('seccion-formularios');
+        const panelGestion = document.getElementById('panel-gestion-usuarios');
+        const avisoNoAuth = document.getElementById('aviso-no-autorizado');
+        const btnCerrarSesion = document.getElementById('btn-logout'); // Apuntando al ID unificado
+
+        if (data.logueado && data.rol === 'admin') {
+            if (seccionFormularios) seccionFormularios.style.display = 'none';
+            if (panelGestion) panelGestion.style.display = 'block';
+            if (avisoNoAuth) avisoNoAuth.style.display = 'none';
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'inline-block'; // Muestra el botón
+            
+            cargarListaUsuarios();
+        } else {
+            if (seccionFormularios) seccionFormularios.style.display = 'flex';
+            if (panelGestion) panelGestion.style.display = 'none';
+            if (avisoNoAuth) avisoNoAuth.style.display = 'block';
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none'; // Oculta el botón
         }
-    } catch (error) {
-        console.error('Error al cerrar sesión:', error);
+    } catch (err) {
+        console.error("Error al verificar sesión en la página:", err);
     }
-});
+}
 </script>
 
 
