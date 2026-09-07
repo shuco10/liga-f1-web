@@ -1,4 +1,4 @@
-let socket = io();
+const socket = io();
 
 // 1. Socket.io: Actualizar los usuarios online en tiempo real y pintar la lista
 socket.on('actualizar-conectados', (listaUsuarios) => {
