@@ -24,6 +24,10 @@
 
 <main class="caja-contenido">
 
+    <button id="btnCerrarSesion" class="btn-logout" style="background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 15px;">
+    Cerrar Sesión
+</button>
+
     <div class="titulo-liga">🗝️ USUARIOS: GESTIÓN 🗝️</div>
     <h3 class="subtitulo-principal">🔐 Plataforma para la creación y el mantenimiento de usuarios 🔐</h3>
 <!-- CONTENEDOR DE FORMULARIOS (LOGIN / REGISTRO) -->
@@ -310,6 +314,21 @@ if (typeof socket !== 'undefined') {
         });
     });
 }
+
+
+  document.getElementById('btnCerrarSesion').addEventListener('click', async () => {
+    try {
+        const response = await fetch('/api/auth/logout', { method: 'POST' });
+        const data = await response.json();
+        if (data.success) {
+            window.location.href = '/'; // O la ruta de la página principal
+        }
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+    }
+});  
+
+    
     
 </script>
 <script src="/socket.io/socket.io.js"></script>
