@@ -1,85 +1,23 @@
-// auth.js - Sistema de Autenticación Definitivo
-
-let usuarioActual = { logueado: false, username: '', rol: 'user' };
-
-// Comprobar la sesión activa al cargar la página
-async function verificarSesion() {
-    try {
-        const res = await fetch('/api/auth/sesion', {
-            credentials: 'include'
-        });
-        const data = await res.json();
-        
-        if (data && data.logueado) {
-            usuarioActual = data;
-        } else {
-            usuarioActual = { logueado: false, username: '', rol: 'user' };
-        }
-        
-        actualizarUIUsuario();
-    } catch (err) {
-        console.error("Error al verificar sesión:", err);
-    }
-}
-
-// Verificar si el usuario actual es admin (Actualizado para Shuco_vsk)
+// auth.js
 function esAdmin() {
-    return usuarioActual.logueado && (usuarioActual.rol === 'admin' || usuarioActual.username === 'Shuco_vsk');
+    return localStorage.getItem('rol') === 'admin';
 }
 
-// Cerrar sesión real en el servidor
-async function cerrarSesion() {
-    try {
-        const res = await fetch('/api/auth/logout', { 
-            method: 'POST',
-            credentials: 'include'
-        });
-        if (res.ok) {
-            location.reload();
-        } else {
-            alert("Error al cerrar sesión");
-        }
-    } catch (err) {
-        console.error("Error:", err);
+function verificarPass() {
+    const pass = document.getElementById('pass-admin').value;
+    if (pass === "admin123") { // Cambia esto por tu pass real
+        localStorage.setItem('rol', 'admin');
+        location.reload();
+    } else {
+        alert("Contraseña incorrecta");
     }
 }
 
-// Adaptar la interfaz globalmente según el rol del usuario
-function actualizarUIUsuario() {
-    const btnLogout = document.getElementById('btn-cerrar-sesion') || document.getElementById('btn-logout');
-    if (btnLogout) {
-        btnLogout.style.display = usuarioActual.logueado ? 'inline-block' : 'none';
-    }
-
-    const btnLogin = document.getElementById('btn-login');
-    if (btnLogin) {
-        btnLogin.style.display = usuarioActual.logueado ? 'none' : 'inline-block';
-    }
-
-    aplicarPermisosAdmin();
+function cerrarSesion() {
+    localStorage.removeItem('rol');
+    location.reload();
 }
-
-// Función global para mostrar u ocultar elementos admin
-function aplicarPermisosAdmin() {
-    const adminUser = esAdmin();
-    const elementosAdmin = document.querySelectorAll('.solo-admin, .admin-only');
-    
-    elementosAdmin.forEach(el => {
-        const esEnLinea = el.tagName === 'SPAN' || el.tagName === 'BUTTON' || el.style.display === 'inline-block';
-        el.style.display = adminUser ? (esEnLinea ? 'inline-block' : 'block') : 'none';
-    });
-}
-
-window.aplicarPermisosAdmin = aplicarPermisosAdmin;
-window.esAdmin = esAdmin;
-
-// Ejecutar la comprobación al cargar el DOM
-document.addEventListener('DOMContentLoaded', () => {
-    verificarSesion();
-});
-
-// --- FUNCIONES DE GESTIÓN Y MODALES ---
-
+// /auth.js (Añade esto al final)
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
     if (modal) {
@@ -89,6 +27,20 @@ function seguridadAbrirModal() {
     }
 }
 
+// Editar resultados en circuitos
+function editarResultado(id) {
+    if (!esAdmin()) return alert("No tienes permisos.");
+    
+    // Mostramos el modal
+    const modal = document.getElementById('modal-editar');
+    modal.style.display = 'block';
+    
+    // Guardamos el ID en un campo oculto para saber qué estamos editando
+    document.getElementById('edit-id').value = id;
+}
+
+// Nueva función para enviar los datos al servidor
+
 async function guardarEdicion() {
     const id = document.getElementById('edit-id').value;
     const nuevaPosicion = document.getElementById('edit-posicion').value;
@@ -96,7 +48,6 @@ async function guardarEdicion() {
     const res = await fetch(`/api/resultados/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ posicion: parseInt(nuevaPosicion) })
     });
 
@@ -104,28 +55,28 @@ async function guardarEdicion() {
         alert("Resultado actualizado correctamente");
         location.reload();
     } else {
-        alert("Error al actualizar la posición (Comprueba que el servidor te reconoce como admin)");
+        alert("Error al actualizar la posición");
     }
 }
-
+// Eliminar resultados en circuitos
 function eliminarResultado(id) {
     if (!esAdmin()) {
-        alert("No tienes permisos.");
+        alert("No tienes permisos para eliminar.");
         return;
     }
     
     if (confirm("¿Estás seguro de que quieres eliminar este resultado?")) {
+        // CORREGIDO: Cambiamos la ruta de /api/eliminar-resultado/ a /api/resultados/
         fetch(`/api/resultados/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
+            headers: { 'Content-Type': 'application/json' }
         })
         .then(res => {
             if (res.ok) {
                 alert("Resultado eliminado correctamente.");
                 location.reload(); 
             } else {
-                alert("Error al eliminar el resultado en el servidor.");
+                alert("Error al eliminar el resultado.");
             }
         })
         .catch(err => console.error("Error:", err));
@@ -133,11 +84,8 @@ function eliminarResultado(id) {
 }
 
 function prepararEdicion(id, reclamante, reclamado, articulo, explicacion, sancion) {
-    const formAdmin = document.getElementById('form-admin');
-    if (formAdmin) formAdmin.style.display = 'block';
-    
-    const tituloForm = document.getElementById('titulo-form');
-    if (tituloForm) tituloForm.innerText = "Editar Resolución";
+    document.getElementById('form-admin').style.display = 'block';
+    document.getElementById('titulo-form').innerText = "Editar Resolución"; // Cambia el título
     
     document.getElementById('edit-id').value = id;
     document.getElementById('reclamante').value = reclamante;
@@ -148,28 +96,24 @@ function prepararEdicion(id, reclamante, reclamado, articulo, explicacion, sanci
 }
 
 function eliminarResolucion(id) {
-    if (!esAdmin()) return alert("No tienes permisos.");
     if (!confirm("¿Estás seguro de que quieres eliminar esta resolución?")) return;
 
     fetch(`/api/resoluciones/${id}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
+        headers: { 'Content-Type': 'application/json' }
     })
     .then(res => {
         if (res.ok) {
             alert("Resolución eliminada correctamente.");
-            if (typeof cargarResoluciones === 'function') cargarResoluciones();
+            cargarResoluciones(); // Esto refresca la lista automáticamente
         } else {
             alert("Error al eliminar la resolución.");
         }
     })
     .catch(err => console.error("Error:", err));
 }
-
 async function guardarResolucion() {
-    if (!esAdmin()) return alert("No tienes permisos.");
-
+    // Obtenemos el ID del campo oculto (estará vacío si es nueva, o tendrá número si editamos)
     const id = document.getElementById('edit-id').value;
     
     const datos = {
@@ -180,6 +124,7 @@ async function guardarResolucion() {
         sancion: document.getElementById('sancion').value
     };
 
+    // Si hay ID, usamos PUT (editar). Si no, usamos POST (crear).
     const metodo = id ? 'PUT' : 'POST';
     const url = id ? `/api/resoluciones/${id}` : '/api/resoluciones';
 
@@ -187,25 +132,25 @@ async function guardarResolucion() {
         const res = await fetch(url, {
             method: metodo,
             headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
             body: JSON.stringify(datos)
         });
 
         if (res.ok) {
             alert(id ? "Resolución actualizada correctamente" : "Resolución publicada");
             
-            const formAdmin = document.getElementById('form-admin');
-            if (formAdmin) formAdmin.style.display = 'none';
+            // Limpiamos y cerramos
+            document.getElementById('form-admin').style.display = 'none';
             document.getElementById('edit-id').value = ''; 
             document.getElementById('titulo-form').innerText = "Nueva Resolución";
             
+            // Limpiamos los campos del formulario
             document.getElementById('reclamante').value = '';
             document.getElementById('reclamado').value = '';
             document.getElementById('articulo').value = '';
             document.getElementById('explicacion').value = '';
             document.getElementById('sancion').value = '';
 
-            if (typeof cargarResoluciones === 'function') cargarResoluciones();
+            cargarResoluciones(); // Refrescamos las tarjetas
         } else {
             alert("Error al guardar la resolución.");
         }
@@ -213,19 +158,3 @@ async function guardarResolucion() {
         console.error("Error:", err);
     }
 }
-
-
-// Comprobación automática en todas las páginas
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const respuesta = await fetch('/api/auth/comprobar'); // O la ruta que use tu backend para ver quién está logueado
-        const datos = await respuesta.json();
-        
-        // Si no hay sesión y estás intentando entrar a una zona protegida, te bota o avisa
-        if (!datos.logueado && window.location.pathname.includes('sanciones')) {
-            console.log("Sesión no iniciada");
-        }
-    } catch (error) {
-        console.error("Error al verificar la sesión:", error);
-    }
-});
