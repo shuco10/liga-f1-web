@@ -22,9 +22,9 @@ async function verificarSesion() {
     }
 }
 
-// Verificar si el usuario actual es admin
+// Verificar si el usuario actual es admin (Actualizado para Shuco_vsk)
 function esAdmin() {
-    return usuarioActual.logueado && (usuarioActual.rol === 'admin' || usuarioActual.username === 'admin123');
+    return usuarioActual.logueado && (usuarioActual.rol === 'admin' || usuarioActual.username === 'Shuco_vsk');
 }
 
 // Cerrar sesión real en el servidor
