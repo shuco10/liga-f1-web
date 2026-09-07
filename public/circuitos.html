@@ -183,6 +183,12 @@ async function verificarSesion() {
         if (adminResetContainer) {
             adminResetContainer.style.display = adminStatus ? 'block' : 'none';
         }
+
+        // Mostrar u ocultar elementos con clase admin-only (botones de editar, eliminar y modal)
+        const elementosAdmin = document.querySelectorAll('.admin-only');
+        elementosAdmin.forEach(el => {
+            el.style.display = adminStatus ? 'inline-block' : 'none';
+        });
     } else { 
         setTimeout(verificarSesion, 100); 
     }
