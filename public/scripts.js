@@ -36,49 +36,55 @@ async function gestionarVisitas() {
     }
 }
 
+// Todo se ejecuta de forma segura cuando el DOM está listo
 window.addEventListener('DOMContentLoaded', () => {
     gestionarVisitas();
-});
 
-// 3. Estela del Cursor mediante elementos fijos en el DOM
-const maxParticles = 10;
-const particles = [];
+    // 3. Estela del Cursor (Generación dinámica y fluida)
+    const numDots = 8;
+    const dots = [];
+    const mouse = { x: 0, y: 0 };
+    const tailPos = [];
 
-// Seleccionamos los elementos de la estela directamente del HTML
-for (let i = 0; i < maxParticles; i++) {
-    const p = document.getElementById(`trail-${i}`);
-    if (p) {
-        particles.push({ element: p, x: 0, y: 0 });
+    // Crear las partículas de la estela en memoria e inyectarlas
+    for (let i = 0; i < numDots; i++) {
+        tailPos.push({ x: 0, y: 0 });
+        const dot = document.createElement('div');
+        dot.style.position = 'fixed';
+        dot.style.width = '16px';
+        dot.style.height = '16px';
+        dot.style.backgroundImage = "url('/webimagenes/cursorcdc.png')";
+        dot.style.backgroundSize = 'cover';
+        dot.style.pointerEvents = 'none';
+        dot.style.zIndex = '999999';
+        dot.style.opacity = String((1 - i / numDots) * 0.5); // Se desvanecen gradualmente
+        document.body.appendChild(dot);
+        dots.push(dot);
     }
-}
 
-let mouseX = 0;
-let mouseY = 0;
-
-window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
-
-let index = 0;
-function updateTrail() {
-    if (particles.length === 0) return;
-    
-    const particle = particles[index];
-    particle.x = mouseX;
-    particle.y = mouseY;
-
-    particles.forEach((p, idx) => {
-        const nextParticle = particles[(idx + 1) % particles.length];
-        p.x += (nextParticle.x - p.x) * 0.3;
-        p.y += (nextParticle.y - p.y) * 0.3;
-
-        p.element.style.transform = `translate(${p.x + 8}px, ${p.y + 8}px) scale(${1 - idx / maxParticles})`;
-        p.element.style.opacity = (1 - idx / maxParticles) * 0.4;
+    // Capturar el movimiento del ratón
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
     });
 
-    index = (index + 1) % particles.length;
-    requestAnimationFrame(updateTrail);
-}
+    // Bucle de animación de la estela
+    function animateTrail() {
+        let x = mouse.x;
+        let y = mouse.y;
 
-requestAnimationFrame(updateTrail);
+        tailPos.forEach((pos, index) => {
+            pos.x += (x - pos.x) * 0.35;
+            pos.y += (y - pos.y) * 0.35;
+            
+            dots[index].style.left = `${pos.x}px`;
+            dots[index].style.top = `${pos.y}px`;
+
+            x = pos.x;
+        });
+
+        requestAnimationFrame(animateTrail);
+    }
+
+    requestAnimationFrame(animateTrail);
+});
