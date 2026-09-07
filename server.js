@@ -1126,6 +1126,22 @@ app.post('/api/auth/logout', (req, res) => {
     });
 });
 
+app.delete('/api/usuarios/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Opcional: Evitar que se borre a sí mismo o al admin principal si lo deseas
+        await pool.query('DELETE FROM usuarios WHERE id = $1', [id]);
+        
+        res.json({ success: true, message: 'Usuario eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
+
 // ==========================================
 // ARRANQUE DEL SERVIDOR
 // ==========================================
