@@ -1019,7 +1019,87 @@ app.get('/api/usuarios/lista', async (req, res) => {
         res.status(500).json({ error: 'Error en el servidor' });
     }
 });
+// --- RUTAS DE AUTENTICACIÓN ---
 
+// 1. Registro de usuario
+app.post('/api/auth/registro', async (req, res) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    try {
+        const bcrypt = require('bcrypt');
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await pool.query(
+            'INSERT INTO usuarios (username, email, password, rol) VALUES ($1, $2, $3, $4)',
+            [username, email, hashedPassword, 'user']
+        );
+
+        res.status(201).json({ mensaje: 'Usuario registrado con éxito' });
+    } catch (err) {
+        console.error("Error en registro:", err);
+        if (err.code === '23505') {
+            return res.status(400).json({ error: 'El nombre de usuario o email ya están en uso' });
+        }
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// 2. Inicio de sesión
+app.post('/api/auth/login', async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Introduce usuario y contraseña' });
+    }
+
+    try {
+        const bcrypt = require('bcrypt');
+        const resultado = await pool.query('SELECT * FROM usuarios WHERE username = $1 OR email = $1', [username]);
+
+        if (resultado.rows.length === 0) {
+            return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+
+        const usuario = resultado.rows[0];
+        const passwordValida = await bcrypt.compare(password, usuario.password);
+
+        if (!passwordValida) {
+            return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+
+        req.session.userId = usuario.id;
+        req.session.username = usuario.username;
+        req.session.rol = usuario.rol;
+
+        res.json({ mensaje: 'Login exitoso', rol: usuario.rol });
+    } catch (err) {
+        console.error("Error en login:", err);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// 3. Comprobar sesión actual
+app.get('/api/auth/sesion', (req, res) => {
+    if (req.session.userId) {
+        res.json({
+            logueado: true,
+            username: req.session.username,
+            rol: req.session.rol
+        });
+    } else {
+        res.json({ logueado: false });
+    }
+});
+
+// 4. Cerrar sesión
+app.post('/api/auth/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.clearCookie('connect.sid');
+        res.json({ mensaje: 'Sesión cerrada' });
+    });
+});
 //////////////////////////////////////////////////////////////////
 //// 
 //////////////////////////////////////////////////////////////////
