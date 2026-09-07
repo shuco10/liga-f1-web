@@ -108,276 +108,208 @@
     <div id="footer-placeholder"></div>
 
 <script>
-    // 1. Cargar todo en orden
-    document.addEventListener('DOMContentLoaded', () => {
-        // Carga el Header (una sola vez)
-        fetch('/header.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                
-                // Configurar el Banner de Instant Gaming
-                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
-                const script = document.createElement('script');
-                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-                script.defer = true;
-                document.body.appendChild(script);
-
-                // AHORA QUE EL HEADER ESTÁ CARGADO, VERIFICAMOS SESIÓN
-                verificarSesion();
-            });
-
-        // Cargar Footer y Modal
-        fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
-        fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-    }); // <--- AQUÍ SE CIERRA EL EVENT LISTENER CORRECTAMENTE
-
-    // 2. Lógica de Sesión (FUERA del DOMContentLoaded)
-    function verificarSesion() {
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const formAdmin = document.getElementById('form-admin');
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-        
-        if (btnLogin && btnLogout) {
-            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-        }
-        
-        if (formAdmin) {
-            formAdmin.style.display = adminStatus ? 'block' : 'none';
-        }
-    }
-
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) modal.style.display = 'block';
-    }
-
-
-
-        async function enviarContacto() {
-        const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
-        const nombre = document.getElementById('nombre-contacto').value;
-        const asunto = document.getElementById('asunto-contacto').value;
-        const mensaje = document.getElementById('mensaje-contacto').value;
-
-        // Validacion simple
-        if(!nombre || !asunto || !mensaje) {
-            alert("Por favor, rellena todos los campos.");
-            return;
-        }
-
-        const payload = {
-            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-            embeds: [{
-                title: "📩 Nuevo mensaje de contacto",
-                color: 3447003,
-                fields: [
-                    { name: "Nombre", value: nombre, inline: true },
-                    { name: "Asunto", value: asunto, inline: true },
-                    { name: "Mensaje", value: mensaje }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
-
-        const res = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+   
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Cargar Header, Footer y Modal
+    fetch('/header.html')
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('header-placeholder').innerHTML = data;
+            
+            // Configurar el Banner de Instant Gaming
+            window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+            const script = document.createElement('script');
+            script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+            script.defer = true;
+            document.body.appendChild(script);
         });
 
-        if (res.ok) {
-            alert("¡Mensaje enviado correctamente!");
-            document.getElementById('modal-contacto').style.display = 'none';
-            document.getElementById('nombre-contacto').value = '';
-            document.getElementById('asunto-contacto').value = '';
-            document.getElementById('mensaje-contacto').value = '';
-        } else {
-            alert("Error al enviar el mensaje.");
-        }
-    }
+    fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
+    fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
 
+    // 2. Verificar la sesión contra el servidor al cargar
+    verificarSesionPagina();
+});
 
-// Función ampliada para comprobar permisos y cargar los datos de gestión
-    const originalVerificarSesion = window.verificarSesion || function() {};
-    
-    window.verificarSesion = function() {
-        // Llama a lo que ya tuviera tu auth.js o la función base
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-        
-        const panelGestion = document.getElementById('panel-gestion-usuarios');
-        const avisoNoAuth = document.getElementById('aviso-no-autorizado');
-
-        if (adminStatus) {
-            if (panelGestion) panelGestion.style.display = 'block';
-            if (avisoNoAuth) avisoNoAuth.style.display = 'none';
-            cargarListaUsuarios(); // Petición para traer los usuarios de la BD
-        } else {
-            if (panelGestion) panelGestion.style.display = 'none';
-            if (avisoNoAuth) avisoNoAuth.style.display = 'block';
-        }
-    };
-
-    // Petición AJAX para obtener los usuarios desde el backend
-    async function cargarListaUsuarios() {
-        try {
-            const res = await fetch('/api/usuarios/lista'); // Crearemos esta ruta en el servidor
-            if (!res.ok) return;
-            const usuarios = await res.json();
-            
-            const tbody = document.getElementById('tabla-usuarios-body');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            usuarios.forEach(u => {
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #334155';
-                tr.innerHTML = `
-                    <td style="padding: 10px;">${u.id}</td>
-                    <td style="padding: 10px; font-weight: bold; color: #38bdf8;">${u.username}</td>
-                    <td style="padding: 10px; color: #94a3b8;">${u.email || 'No especificado'}</td>
-                    <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 4px; font-size: 0.85em; background: ${u.rol === 'admin' ? '#e10600' : '#475569'}; color: white;">${u.rol.toUpperCase()}</span></td>
-                    <td style="padding: 10px; color: #94a3b8; font-size: 0.9em;">${new Date(u.creado_en).toLocaleDateString()}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        } catch (e) {
-            console.error("Error al cargar la lista de usuarios:", e);
-        }
-    }
-
-    // Escuchar eventos en tiempo real de usuarios conectados mediante Socket.io ya existente en scripts.js
-    if (typeof socket !== 'undefined') {
-        socket.on('actualizar-conectados-admin', (listaConectados) => {
-            const contenedorLista = document.getElementById('lista-conectados-rt');
-            const contadorSpan = document.getElementById('contador-online');
-            if (!contenedorLista || !contadorSpan) return;
-
-            contadorSpan.innerText = listaConectados.length;
-            contenedorLista.innerHTML = '';
-
-            if (listaConectados.length === 0) {
-                contenedorLista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay usuarios activos ahora mismo.</li>';
-                return;
-            }
-
-            listaConectados.forEach(user => {
-                const li = document.createElement('li');
-                li.style.padding = '6px 10px';
-                li.style.margin = '4px 0';
-                li.style.background = 'rgba(15, 23, 42, 0.6)';
-                li.style.borderRadius = '5px';
-                li.style.display = 'flex';
-                li.style.justifyContent = 'space-between';
-                li.innerHTML = `<span><i class="fa-solid fa-circle" style="color: #10b981; font-size: 0.7em; margin-right: 8px;"></i> ${user.username}</span> <span style="font-size: 0.8em; color: #94a3b8;">IP/Sesión activa</span>`;
-                contenedorLista.appendChild(li);
-            });
-        });
-    }
-
-// Manejar Registro
-    document.getElementById('form-registro').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('reg-username').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-password').value;
-        const msg = document.getElementById('msg-registro');
-
-        try {
-            const res = await fetch('/api/auth/registro', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
-            const data = await res.json();
-            
-            if (res.ok) {
-                msg.style.color = '#4ade80';
-                msg.innerText = '¡Registrado con éxito! Ya puedes iniciar sesión.';
-                document.getElementById('form-registro').reset();
-            } else {
-                msg.style.color = '#f87171';
-                msg.innerText = data.error || 'Error en el registro';
-            }
-        } catch (err) {
-            msg.style.color = '#f87171';
-            msg.innerText = 'Error de conexión con el servidor';
-        }
-    });
-
-    // Manejar Login
-    document.getElementById('form-login').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-        const msg = document.getElementById('msg-login');
-
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await res.json();
-
-            if (res.ok) {
-                msg.style.color = '#4ade80';
-                msg.innerText = '¡Login correcto! Recargando...';
-                setTimeout(() => location.reload(), 800);
-            } else {
-                msg.style.color = '#f87171';
-                msg.innerText = data.error || 'Credenciales incorrectas';
-            }
-        } catch (err) {
-            msg.style.color = '#f87171';
-            msg.innerText = 'Error de conexión con el servidor';
-        }
-    });
-
-    // Función que comprueba el estado y adapta la vista de usuarios.html
-async function verificarSesion() {
+// Función unificada para comprobar permisos y adaptar la vista
+async function verificarSesionPagina() {
     try {
         const res = await fetch('/api/auth/sesion');
         const data = await res.json();
         
         const seccionFormularios = document.getElementById('seccion-formularios');
-        const accesoRestringido = document.getElementById('acceso-restringido'); // El cuadro rojo de abajo
+        const panelGestion = document.getElementById('panel-gestion-usuarios');
+        const avisoNoAuth = document.getElementById('aviso-no-autorizado');
 
         if (data.logueado && data.rol === 'admin') {
-            // Si es admin, ocultamos los formularios de login/registro y cargamos la tabla
             if (seccionFormularios) seccionFormularios.style.display = 'none';
-            if (accesoRestringido) accesoRestringido.style.display = 'none';
+            if (panelGestion) panelGestion.style.display = 'block';
+            if (avisoNoAuth) avisoNoAuth.style.display = 'none';
             
-            cargarTablaUsuarios();
-        } else if (data.logueado) {
-            alert("Has iniciado sesión, pero no tienes permisos de administrador.");
+            cargarListaUsuarios();
+        } else {
+            if (seccionFormularios) seccionFormularios.style.display = 'flex';
+            if (panelGestion) panelGestion.style.display = 'none';
+            if (avisoNoAuth) avisoNoAuth.style.display = 'block';
         }
     } catch (err) {
         console.error("Error al verificar sesión en la página:", err);
     }
 }
 
-// Función para pedir la lista al servidor y pintarla en la tabla
-async function cargarTablaUsuarios() {
+// Petición para obtener los usuarios y pintar la tabla
+async function cargarListaUsuarios() {
     try {
         const res = await fetch('/api/usuarios/lista');
-        if (res.ok) {
-            const usuarios = await res.json();
-            // Aquí pintas tus usuarios en la tabla HTML que tengas preparada
-            console.log("Usuarios cargados:", usuarios);
-        }
-    } catch (err) {
-        console.error("Error al cargar la lista de usuarios:", err);
+        if (!res.ok) return;
+        const usuarios = await res.json();
+        
+        const tbody = document.getElementById('tabla-usuarios-body');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        usuarios.forEach(u => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #334155';
+            tr.innerHTML = `
+                <td style="padding: 10px;">${u.id}</td>
+                <td style="padding: 10px; font-weight: bold; color: #38bdf8;">${u.username}</td>
+                <td style="padding: 10px; color: #94a3b8;">${u.email || 'No especificado'}</td>
+                <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 4px; font-size: 0.85em; background: ${u.rol === 'admin' ? '#e10600' : '#475569'}; color: white;">${u.rol.toUpperCase()}</span></td>
+                <td style="padding: 10px; color: #94a3b8; font-size: 0.9em;">${new Date(u.creado_en).toLocaleDateString()}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (e) {
+        console.error("Error al cargar la lista de usuarios:", e);
     }
 }
 
-// Ejecutar al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    verificarSesion();
+// Envío de Formulario de Contacto por Discord
+async function enviarContacto() {
+    const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
+    const nombre = document.getElementById('nombre-contacto').value;
+    const asunto = document.getElementById('asunto-contacto').value;
+    const mensaje = document.getElementById('mensaje-contacto').value;
+
+    if(!nombre || !asunto || !mensaje) {
+        alert("Por favor, rellena todos los campos.");
+        return;
+    }
+
+    const payload = {
+        content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+        embeds: [{
+            title: "📩 Nuevo mensaje de contacto",
+            color: 3447003,
+            fields: [
+                { name: "Nombre", value: nombre, inline: true },
+                { name: "Asunto", value: asunto, inline: true },
+                { name: "Mensaje", value: mensaje }
+            ],
+            timestamp: new Date().toISOString()
+        }]
+    };
+
+    const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert("¡Mensaje enviado correctamente!");
+        document.getElementById('modal-contacto').style.display = 'none';
+        document.getElementById('nombre-contacto').value = '';
+        document.getElementById('asunto-contacto').value = '';
+        document.getElementById('mensaje-contacto').value = '';
+    } else {
+        alert("Error al enviar el mensaje.");
+    }
+}
+
+// Manejar Registro
+document.getElementById('form-registro').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('reg-username').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const msg = document.getElementById('msg-registro');
+
+    try {
+        const res = await fetch('/api/auth/registro', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            msg.style.color = '#4ade80';
+            msg.innerText = '¡Registrado con éxito! Ya puedes iniciar sesión.';
+            document.getElementById('form-registro').reset();
+        } else {
+            msg.style.color = '#f87171';
+            msg.innerText = data.error || 'Error en el registro';
+        }
+    } catch (err) {
+        msg.style.color = '#f87171';
+        msg.innerText = 'Error de conexión con el servidor';
+    }
 });
 
+// Manejar Login
+document.getElementById('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    const msg = document.getElementById('msg-login');
+
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            msg.style.color = '#4ade80';
+            msg.innerText = '¡Login correcto! Recargando...';
+            setTimeout(() => location.reload(), 800);
+        } else {
+            msg.style.color = '#f87171';
+            msg.innerText = data.error || 'Credenciales incorrectas';
+        }
+    } catch (err) {
+        msg.style.color = '#f87171';
+        msg.innerText = 'Error de conexión con el servidor';
+    }
+});
+
+// Socket.io para conectados en tiempo real
+if (typeof socket !== 'undefined') {
+    socket.on('actualizar-conectados-admin', (listaConectados) => {
+        const contenedorLista = document.getElementById('lista-conectados-rt');
+        const contadorSpan = document.getElementById('contador-online');
+        if (!contenedorLista || !contadorSpan) return;
+
+        contadorSpan.innerText = listaConectados.length;
+        contenedorLista.innerHTML = '';
+
+        if (listaConectados.length === 0) {
+            contenedorLista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay usuarios activos ahora mismo.</li>';
+            return;
+        }
+
+        listaConectados.forEach(user => {
+            const li = document.createElement('li');
+            li.style.cssText = 'padding: 6px 10px; margin: 4px 0; background: rgba(15, 23, 42, 0.6); border-radius: 5px; display: flex; justify-content: space-between;';
+            li.innerHTML = `<span><i class="fa-solid fa-circle" style="color: #10b981; font-size: 0.7em; margin-right: 8px;"></i> ${user.username}</span> <span style="font-size: 0.8em; color: #94a3b8;">Conectado</span>`;
+            contenedorLista.appendChild(li);
+        });
+    });
+}
     
 </script>
 <script src="/socket.io/socket.io.js"></script>
