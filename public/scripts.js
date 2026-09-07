@@ -1,4 +1,4 @@
-const socket = io();
+socket = io();
 
 // 1. Socket.io: Actualizar los usuarios online en tiempo real y pintar la lista
 // Manejador universal para Socket.io (funciona con número o con array)
