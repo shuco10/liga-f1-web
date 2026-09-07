@@ -344,15 +344,11 @@ async function cargarVisitasWeb() {
         if (!res.ok) return;
         const data = await res.json();
         
-        // Buscamos con múltiples alternativas por si el ID/clase difiere
-        const spanHoy = document.getElementById('visitas-hoy') || document.querySelector('.visitas-hoy');
-        const spanTotal = document.getElementById('visitas-total') || document.querySelector('.visitas-total') || document.getElementById('total-visitas');
+        const spanHoy = document.getElementById('visitas-hoy');
+        const spanTotal = document.getElementById('visitas-totales'); // <-- Apuntando al ID correcto del header
         
-        if (spanHoy) spanHoy.innerText = data.hoy !== undefined ? data.hoy : data.visitasHoy;
-        
-        // Comprobamos todas las propiedades posibles que devuelva tu API para el total (totales, total, count, etc.)
-        const valorTotal = data.totales !== undefined ? data.totales : (data.total !== undefined ? data.total : data.count);
-        if (spanTotal) spanTotal.innerText = valorTotal;
+        if (spanHoy) spanHoy.innerText = data.hoy;
+        if (spanTotal) spanTotal.innerText = data.totales;
         
     } catch (e) {
         console.error("Error al cargar las visitas:", e);
