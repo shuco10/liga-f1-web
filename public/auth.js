@@ -1,23 +1,58 @@
-// auth.js
-function esAdmin() {
-    return localStorage.getItem('rol') === 'admin';
-}
+// auth.js - Sistema de Autenticación por Sesiones del Servidor
 
-function verificarPass() {
-    const pass = document.getElementById('pass-admin').value;
-    if (pass === "admin123") { // Cambia esto por tu pass real
-        localStorage.setItem('rol', 'admin');
-        location.reload();
-    } else {
-        alert("Contraseña incorrecta");
+let usuarioActual = { logueado: false, username: '', rol: 'user' };
+
+// Comprobar la sesión activa al cargar la página
+async function verificarSesion() {
+    try {
+        const res = await fetch('/api/auth/sesion');
+        const data = await res.json();
+        if (data.logueado) {
+            usuarioActual = data;
+        } else {
+            usuarioActual = { logueado: false, username: '', rol: 'user' };
+        }
+        actualizarUIUsuario();
+    } catch (err) {
+        console.error("Error al verificar sesión:", err);
     }
 }
 
-function cerrarSesion() {
-    localStorage.removeItem('rol');
-    location.reload();
+// Verificar si el usuario actual es admin
+function esAdmin() {
+    return usuarioActual.logueado && usuarioActual.rol === 'admin';
 }
-// /auth.js (Añade esto al final)
+
+// Cerrar sesión real en el servidor
+async function cerrarSesion() {
+    try {
+        const res = await fetch('/api/auth/logout', { method: 'POST' });
+        if (res.ok) {
+            location.reload();
+        } else {
+            alert("Error al cerrar sesión");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+    }
+}
+
+// Adaptar la interfaz según el rol del usuario
+function actualizarUIUsuario() {
+    // Si existe un botón o panel de logout/admin en la vista, lo gestionamos aquí
+    const btnLogout = document.getElementById('btn-cerrar-sesion');
+    if (btnLogout) {
+        btnLogout.style.display = usuarioActual.logueado ? 'inline-block' : 'none';
+    }
+}
+
+// Ejecutar la comprobación al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    verificarSesion();
+});
+
+// --- FUNCIONES DE GESTIÓN Y MODALES ---
+
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
     if (modal) {
@@ -31,16 +66,14 @@ function seguridadAbrirModal() {
 function editarResultado(id) {
     if (!esAdmin()) return alert("No tienes permisos.");
     
-    // Mostramos el modal
     const modal = document.getElementById('modal-editar');
-    modal.style.display = 'block';
-    
-    // Guardamos el ID en un campo oculto para saber qué estamos editando
-    document.getElementById('edit-id').value = id;
+    if (modal) {
+        modal.style.display = 'block';
+        document.getElementById('edit-id').value = id;
+    }
 }
 
-// Nueva función para enviar los datos al servidor
-
+// Enviar los datos actualizados de resultados al servidor
 async function guardarEdicion() {
     const id = document.getElementById('edit-id').value;
     const nuevaPosicion = document.getElementById('edit-posicion').value;
@@ -58,6 +91,7 @@ async function guardarEdicion() {
         alert("Error al actualizar la posición");
     }
 }
+
 // Eliminar resultados en circuitos
 function eliminarResultado(id) {
     if (!esAdmin()) {
@@ -66,7 +100,6 @@ function eliminarResultado(id) {
     }
     
     if (confirm("¿Estás seguro de que quieres eliminar este resultado?")) {
-        // CORREGIDO: Cambiamos la ruta de /api/eliminar-resultado/ a /api/resultados/
         fetch(`/api/resultados/${id}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
@@ -84,8 +117,11 @@ function eliminarResultado(id) {
 }
 
 function prepararEdicion(id, reclamante, reclamado, articulo, explicacion, sancion) {
-    document.getElementById('form-admin').style.display = 'block';
-    document.getElementById('titulo-form').innerText = "Editar Resolución"; // Cambia el título
+    const formAdmin = document.getElementById('form-admin');
+    if (formAdmin) formAdmin.style.display = 'block';
+    
+    const tituloForm = document.getElementById('titulo-form');
+    if (tituloForm) tituloForm.innerText = "Editar Resolución";
     
     document.getElementById('edit-id').value = id;
     document.getElementById('reclamante').value = reclamante;
@@ -96,6 +132,7 @@ function prepararEdicion(id, reclamante, reclamado, articulo, explicacion, sanci
 }
 
 function eliminarResolucion(id) {
+    if (!esAdmin()) return alert("No tienes permisos.");
     if (!confirm("¿Estás seguro de que quieres eliminar esta resolución?")) return;
 
     fetch(`/api/resoluciones/${id}`, {
@@ -105,15 +142,17 @@ function eliminarResolucion(id) {
     .then(res => {
         if (res.ok) {
             alert("Resolución eliminada correctamente.");
-            cargarResoluciones(); // Esto refresca la lista automáticamente
+            if (typeof cargarResoluciones === 'function') cargarResoluciones();
         } else {
             alert("Error al eliminar la resolución.");
         }
     })
     .catch(err => console.error("Error:", err));
 }
+
 async function guardarResolucion() {
-    // Obtenemos el ID del campo oculto (estará vacío si es nueva, o tendrá número si editamos)
+    if (!esAdmin()) return alert("No tienes permisos.");
+
     const id = document.getElementById('edit-id').value;
     
     const datos = {
@@ -124,7 +163,6 @@ async function guardarResolucion() {
         sancion: document.getElementById('sancion').value
     };
 
-    // Si hay ID, usamos PUT (editar). Si no, usamos POST (crear).
     const metodo = id ? 'PUT' : 'POST';
     const url = id ? `/api/resoluciones/${id}` : '/api/resoluciones';
 
@@ -138,19 +176,18 @@ async function guardarResolucion() {
         if (res.ok) {
             alert(id ? "Resolución actualizada correctamente" : "Resolución publicada");
             
-            // Limpiamos y cerramos
-            document.getElementById('form-admin').style.display = 'none';
+            const formAdmin = document.getElementById('form-admin');
+            if (formAdmin) formAdmin.style.display = 'none';
             document.getElementById('edit-id').value = ''; 
             document.getElementById('titulo-form').innerText = "Nueva Resolución";
             
-            // Limpiamos los campos del formulario
             document.getElementById('reclamante').value = '';
             document.getElementById('reclamado').value = '';
             document.getElementById('articulo').value = '';
             document.getElementById('explicacion').value = '';
             document.getElementById('sancion').value = '';
 
-            cargarResoluciones(); // Refrescamos las tarjetas
+            if (typeof cargarResoluciones === 'function') cargarResoluciones();
         } else {
             alert("Error al guardar la resolución.");
         }
