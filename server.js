@@ -962,8 +962,24 @@ io.on('connection', (socket) => {
 
 
 //////////////////////////////////////////////////////////////////
+///// VISITAS DIARIAS ///////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+// Ruta para obtener las visitas de hoy y el histórico total sumado
+app.get('/api/stats-visitas', async (req, res) => {
+    try {
+        // Visitas del día actual
+        const resHoy = await pool.query("SELECT total FROM visitas_diarias WHERE fecha = CURRENT_DATE");
+        const hoy = resHoy.rows.length > 0 ? resHoy.rows[0].total : 0;
 
+        // Suma total de todas las filas (Histórico)
+        const resTotal = await pool.query("SELECT SUM(total) as historico FROM visitas_diarias");
+        const total = resTotal.rows[0].historico || 0;
+
+        res.json({ hoy, total });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
