@@ -981,12 +981,30 @@ app.post('/api/visitas/registrar', async (req, res) => {
 });
 
 //////////////////////////////////////////////////////////////////
-//// 
+//// RUTA: Obtener lista de usuarios (Protegida para administradores)
 //////////////////////////////////////////////////////////////////
 
+app.get('/api/usuarios/lista', async (req, res) => {
+    // Comprobación de seguridad en el backend
+    if (!req.session.userId || req.session.rol !== 'admin') {
+        return res.status(403).json({ error: 'No autorizado' });
+    }
 
+    try {
+        const resultado = await pool.query('SELECT id, username, email, rol, creado_en FROM usuarios ORDER BY id ASC');
+        res.json(resultado.rows);
+    } catch (e) {
+        console.error("Error al obtener la lista de usuarios:", e);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+});
 
-
+//////////////////////////////////////////////////////////////////
+//// 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//// 
+//////////////////////////////////////////////////////////////////
 
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
