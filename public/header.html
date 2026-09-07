@@ -102,16 +102,16 @@
         </div>
     </div>
     
-    <button id="btnCerrarSesion" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 15px;">
+<button id="btn-logout" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 15px;">
     Cerrar Sesión
-    </button>
+</button>
 </div>
 
 <!-- Carga automática de scripts compatibles con inyección dinámica -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts.js?v=2"></script>
 <script> 
-document.getElementById('btnCerrarSesion').addEventListener('click', async () => {
+document.getElementById('btn-logout').addEventListener('click', async () => {
     try {
         const response = await fetch('/api/auth/logout', { method: 'POST' });
         const data = await response.json();
