@@ -70,11 +70,14 @@
 <div class="titulo-liga">🏁 CAZADORES DE CURVAS 🏁</div>
 
 <!-- USUARIOS CONECTADOS A LA WEB -->
-<div style="text-align: center; width: 100%; margin: 10px 0;">
-    <span style="color: #3b82f6;">Usuarios en directo en Cazadores de Curvas:</span> 
-    <span style="font-weight: bold; margin-left: 6px;">
-        <span id="bola-estado" style="font-size: 1.2em; margin-right: 4px; color: #4ade80;">●</span><span id="num-usuarios" style="color: #4ade80;">1</span>
-    </span>
+<!-- Contenedor con estilo de cajón moderno -->
+<div style="text-align: center; width: 100%; margin: 15px 0;">
+    <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.85); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 16px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); font-family: inherit;">
+        <span style="color: #3b82f6; font-size: 0.95em;">Usuarios en directo en Cazadores de Curvas:</span> 
+        <span style="font-weight: bold; margin-left: 8px; font-size: 1em;">
+            <span id="bola-estado" style="font-size: 1.1em; margin-right: 4px; color: #4ade80;">●</span><span id="num-usuarios" style="color: #4ade80;">1</span>
+        </span>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -88,11 +91,10 @@
             spanNum.innerText = numUsuarios;
         }
 
-        // Forzamos conversión a número por si acaso y aplicamos color
         const total = Number(numUsuarios);
         if (spanBola && spanNum) {
             if (total > 0) {
-                spanBola.style.color = '#4ade80'; // Verde si hay 1 o más
+                spanBola.style.color = '#4ade80'; // Verde si hay gente
                 spanNum.style.color = '#4ade80';
             } else {
                 spanBola.style.color = '#ef4444'; // Rojo si está a 0
