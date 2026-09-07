@@ -1,18 +1,27 @@
-// auth.js - Sistema de Autenticación por Sesiones del Servidor
+// auth.js - Sistema de Autenticación por Sesiones del Servidor (Global)
 
 let usuarioActual = { logueado: false, username: '', rol: 'user' };
 
-// Comprobar la sesión activa al cargar la página
+// Comprobar la sesión activa al cargar la página (con credentials para enviar la cookie)
 async function verificarSesion() {
     try {
-        const res = await fetch('/api/auth/sesion');
+        const res = await fetch('/api/auth/sesion', {
+            credentials: 'include'
+        });
         const data = await res.json();
+        
         if (data.logueado) {
             usuarioActual = data;
         } else {
             usuarioActual = { logueado: false, username: '', rol: 'user' };
         }
+        
         actualizarUIUsuario();
+
+        // Si la página actual tiene una función específica de verificación (ej. panel de usuarios), se ejecuta
+        if (typeof window.onSesionVerificada === 'function') {
+            window.onSesionVerificada(data);
+        }
     } catch (err) {
         console.error("Error al verificar sesión:", err);
     }
@@ -26,7 +35,10 @@ function esAdmin() {
 // Cerrar sesión real en el servidor
 async function cerrarSesion() {
     try {
-        const res = await fetch('/api/auth/logout', { method: 'POST' });
+        const res = await fetch('/api/auth/logout', { 
+            method: 'POST',
+            credentials: 'include'
+        });
         if (res.ok) {
             location.reload();
         } else {
@@ -37,13 +49,25 @@ async function cerrarSesion() {
     }
 }
 
-// Adaptar la interfaz según el rol del usuario
+// Adaptar la interfaz globalmente según el rol del usuario (Cabecera, botones, paneles admin)
 function actualizarUIUsuario() {
-    // Si existe un botón o panel de logout/admin en la vista, lo gestionamos aquí
     const btnLogout = document.getElementById('btn-cerrar-sesion');
     if (btnLogout) {
         btnLogout.style.display = usuarioActual.logueado ? 'inline-block' : 'none';
     }
+
+    // Gestionar elementos comunes de la cabecera (Login / Logout / Admin)
+    const btnLogin = document.getElementById('btn-login');
+    if (btnLogin) {
+        btnLogin.style.display = usuarioActual.logueado ? 'none' : 'inline-block';
+    }
+
+    // Ocultar o mostrar elementos exclusivos para administradores en cualquier página
+    const elementosAdmin = document.querySelectorAll('.solo-admin');
+    const esAdminUser = esAdmin();
+    elementosAdmin.forEach(el => {
+        el.style.display = esAdminUser ? 'block' : 'none'; // O 'inline-block' según prefieras, block funciona bien para bloques de administración
+    });
 }
 
 // Ejecutar la comprobación al cargar el DOM
@@ -81,6 +105,7 @@ async function guardarEdicion() {
     const res = await fetch(`/api/resultados/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ posicion: parseInt(nuevaPosicion) })
     });
 
@@ -102,7 +127,8 @@ function eliminarResultado(id) {
     if (confirm("¿Estás seguro de que quieres eliminar este resultado?")) {
         fetch(`/api/resultados/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         })
         .then(res => {
             if (res.ok) {
@@ -137,7 +163,8 @@ function eliminarResolucion(id) {
 
     fetch(`/api/resoluciones/${id}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
     })
     .then(res => {
         if (res.ok) {
@@ -170,6 +197,7 @@ async function guardarResolucion() {
         const res = await fetch(url, {
             method: metodo,
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(datos)
         });
 
