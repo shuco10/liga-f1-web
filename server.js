@@ -994,6 +994,84 @@ io.on('connection', (socket) => {
     });
 });
 
+
+// 1. Verificar Sesión (GET /api/auth/sesion)
+app.get('/api/auth/sesion', (req, res) => {
+    if (req.session && req.session.usuario) {
+        res.json({
+            logueado: true,
+            usuario: req.session.usuario,
+            rol: req.session.rol || 'user'
+        });
+    } else {
+        res.json({ logueado: false });
+    }
+});
+
+// 2. Registro de Usuario (POST /api/auth/registro)
+app.post('/api/auth/registro', async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        
+        const existe = await pool.query('SELECT * FROM usuarios WHERE username = $1 OR email = $2', [username, email]);
+        if (existe.rows.length > 0) {
+            return res.status(400).json({ error: 'El usuario o el correo ya están registrados.' });
+        }
+
+        const query = `
+            INSERT INTO usuarios (username, email, password, rol, creado_en)
+            VALUES ($1, $2, $3, 'user', CURRENT_TIMESTAMP)
+            RETURNING id, username, email, rol;
+        `;
+        await pool.query(query, [username, email, password]);
+        
+        res.json({ success: true, message: 'Usuario registrado con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 3. Inicio de Sesión / Login (POST /api/auth/login)
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        
+        const resultado = await pool.query('SELECT * FROM usuarios WHERE username = $1', [username]);
+        if (resultado.rows.length === 0) {
+            return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+
+        const usuario = resultado.rows[0];
+
+        if (usuario.password !== password) {
+            return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+
+        req.session.usuario = usuario.username;
+        req.session.rol = usuario.rol;
+        req.session.userId = usuario.id;
+
+        res.json({ success: true, rol: usuario.rol });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 4. Obtener Lista de Usuarios para Administradores (GET /api/usuarios/lista)
+app.get('/api/usuarios/lista', async (req, res) => {
+    try {
+        if (!req.session || req.session.rol !== 'admin') {
+            return res.status(403).json({ error: 'Acceso denegado' });
+        }
+
+        const resultado = await pool.query('SELECT id, username, email, rol, creado_en FROM usuarios ORDER BY id ASC');
+        res.json(resultado.rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
 // ==========================================
