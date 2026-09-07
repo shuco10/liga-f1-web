@@ -1264,16 +1264,35 @@ document.getElementById('form-avisos').addEventListener('submit', async (e) => {
     
 //----------------------CARGA DE LA PANTALLA  -----------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Cargamos datos iniciales
+    // 1. Cargamos los datos iniciales de la página
     await cargarTodosLosDatos();
     
-    // 2. Definimos elementos
-    const esAdmin = localStorage.getItem('rol') === 'admin';
     const panelAdmin = document.getElementById('panel-admin');
-    
-    // 3. Lógica de visibilidad
+    const bloqueLogin = document.getElementById('bloque-login');
+
+    // 2. Primera comprobación local (rápida, por si ya está guardado en el navegador)
+    let esAdmin = localStorage.getItem('rol') === 'admin';
+
+    // 3. Si localmente no consta, consultamos la sesión real conectada a la base de datos vía API
+    if (!esAdmin) {
+        try {
+            const res = await fetch('/api/auth/sesion');
+            const data = await res.json();
+            
+            // Comprobación contra la tabla de usuarios (ej. Shuco_vsk con rol 'admin')
+            if (data.logueado && data.rol === 'admin') {
+                esAdmin = true;
+                // Guardamos el rol localmente para agilizar futuras cargas de esta sesión
+                localStorage.setItem('rol', 'admin');
+            }
+        } catch (err) {
+            console.error("Error al contrastar el rol con la base de datos:", err);
+        }
+    }
+
+    // 4. Lógica de visibilidad unificada y segura
     if (esAdmin) {
-        // Si es admin, cargamos sus herramientas y mostramos el panel
+        // Si el usuario verificado es admin, cargamos sus herramientas y mostramos el panel
         await cargarDesplegablesAdmin();
         aplicarPermisos();
         
@@ -1281,10 +1300,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         irA(null, 'panel-admin');
         marcarBotonActivo('panel-admin');
     } else {
-
-     // --- SI NO ERES ADMIN ---
-        bloqueLogin.style.display = 'block';   // Muestras el login
-        panelAdmin.style.display = 'none';     // Ocultas el panel
+        // --- SI NO ERES ADMIN ---
+        if (bloqueLogin) bloqueLogin.style.display = 'block';
+        if (panelAdmin) panelAdmin.style.display = 'none';
     }
 });
 
