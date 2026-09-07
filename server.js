@@ -1,9 +1,9 @@
-
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 const app = express();
 const server = http.createServer(app);
@@ -11,7 +11,33 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
 
+// 1. EL POOL SE DECLARA PRIMERO DE TODO
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+// Configuración de la sesión
+const sessionMiddleware = session({
+    secret: process.env.SESSION_SECRET || 'clave-secreta-cazadores',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24
+    }
+});
+
+app.use(sessionMiddleware);
+
+// 2. Enlazar la sesión con Socket.io para leer tu usuario logueado
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+});
 
 // Declaración ÚNICA de usuariosConectados para todo el archivo
 const usuariosConectados = new Map();
@@ -21,7 +47,7 @@ io.on('connection', (socket) => {
     const username = sessionData && sessionData.usuario ? sessionData.usuario : 'Anónimo';
     
     usuariosConectados.set(socket.id, username);
-    enviarListaConectados(); // Llamamos a una función para limpiar duplicados
+    enviarListaConectados(); 
 
     socket.on('disconnect', () => {
         usuariosConectados.delete(socket.id);
@@ -37,10 +63,8 @@ function enviarListaConectados() {
 
     todosLosValores.forEach(user => {
         if (user === 'Anónimo') {
-            // Los anónimos se muestran por cada pestaña abierta
             listaUnica.push('Anónimo');
         } else {
-            // Si es un usuario registrado, solo lo añadimos si no estaba ya en la lista
             if (!usuariosVistos.has(user)) {
                 usuariosVistos.add(user);
                 listaUnica.push(user);
@@ -50,6 +74,8 @@ function enviarListaConectados() {
 
     io.emit('actualizar-conectados', listaUnica);
 }
+
+inicializarBaseDeDatos();
 // ==========================================
 // 1. DECLARAS LA FUNCIÓN PRIMERO
 // ==========================================
