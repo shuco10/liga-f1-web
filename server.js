@@ -959,11 +959,6 @@ io.on('connection', (socket) => {
 // PONER TODO POR ENCIMA DE ESTO ============
 // ==========================================
 
-// IMPORTANTE: Se usa server.listen en lugar de app.listen para que los sockets funcionen
-server.listen(PORT, () => {
-    console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
-});
-
 
 
 //////////////////////////////////////////////////////////////////
