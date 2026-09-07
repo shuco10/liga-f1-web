@@ -1047,7 +1047,7 @@ app.post('/api/auth/registro', async (req, res) => {
     }
 });
 
-// 2. Inicio de sesión (Con autodetectador de Admin)
+// 2. Inicio de sesión (Reconoce automáticamente a Shuco_vsk como admin)
 app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -1069,9 +1069,8 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(401).json({ error: 'Credenciales incorrectas' });
         }
 
-        // AUTO-ASIGNACIÓN: Si tu usuario es admin123 (o el que uses), forzamos el rol 'admin'
         let rolFinal = usuario.rol;
-        if (usuario.username === 'admin123') {
+        if (usuario.username === 'Shuco_vsk') {
             rolFinal = 'admin';
         }
 
@@ -1079,25 +1078,26 @@ app.post('/api/auth/login', async (req, res) => {
         req.session.username = usuario.username;
         req.session.rol = rolFinal;
 
-        res.json({ mensaje: 'Login exitoso', rol: rolFinal });
+        req.session.save(() => {
+            res.json({ mensaje: 'Login exitoso', rol: rolFinal });
+        });
     } catch (err) {
         console.error("Error en login:", err);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
-// 3. Comprobar sesión actual (También autovalida si eres admin)
+// 3. Comprobar sesión actual
 app.get('/api/auth/sesion', (req, res) => {
-    if (req.session.userId) {
-        // Seguridad extra: si por lo que sea es el usuario admin, aseguramos el rol
-        if (req.session.username === 'admin123') {
+    if (req.session.userId || req.session.username === 'Shuco_vsk') {
+        if (req.session.username === 'Shuco_vsk') {
             req.session.rol = 'admin';
         }
 
         res.json({
             logueado: true,
             username: req.session.username,
-            rol: req.session.rol
+            rol: req.session.rol || 'user'
         });
     } else {
         res.json({ logueado: false });
@@ -1112,13 +1112,17 @@ app.post('/api/auth/logout', (req, res) => {
     });
 });
 
-// Ruta de emergencia para forzar el rol de administrador al instante si lo necesitas desde el navegador
+// Ruta de emergencia para forzar el rol de administrador con tu usuario
 app.get('/api/auth/forzar-admin', (req, res) => {
-    req.session.userId = 999; // ID ficticio de emergencia
-    req.session.username = 'admin123';
+    req.session.userId = 999;
+    req.session.username = 'Shuco_vsk';
     req.session.rol = 'admin';
     req.session.save((err) => {
-        res.json({ success: true, mensaje: "Sesión forzada a admin123 con éxito", rol: 'admin' });
+        res.json({ 
+            success: true, 
+            mensaje: "Sesión forzada a Shuco_vsk con éxito", 
+            usuario: { logueado: true, username: 'Shuco_vsk', rol: 'admin' } 
+        });
     });
 });
 
