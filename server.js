@@ -1097,6 +1097,18 @@ app.get('/api/usuarios/lista', async (req, res) => {
     }
 });
 
+// ==========================================
+// CERRAR SESIÓN (POST /api/auth/logout)
+// ==========================================
+app.post('/api/auth/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).json({ error: 'No se pudo cerrar la sesión' });
+        }
+        res.clearCookie('connect.sid'); // Limpia la cookie de sesión
+        res.json({ success: true, message: 'Sesión cerrada correctamente' });
+    });
+});
 
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
