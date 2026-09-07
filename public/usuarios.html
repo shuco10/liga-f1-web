@@ -265,6 +265,9 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
     }
 });
 
+// 1. Inicializamos Socket.io al principio para que esté disponible siempre
+const socket = io();
+
 // Manejar Login
 document.getElementById('form-login').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -295,41 +298,39 @@ document.getElementById('form-login').addEventListener('submit', async (e) => {
 });
 
 // Socket.io para conectados en tiempo real
-if (typeof socket !== 'undefined') {
-    socket.on('actualizar-conectados-admin', (listaConectados) => {
-        const contenedorLista = document.getElementById('lista-conectados-rt');
-        const contadorSpan = document.getElementById('contador-online');
-        if (!contenedorLista || !contadorSpan) return;
+socket.on('actualizar-conectados', (listaConectados) => {
+    const contenedorLista = document.getElementById('lista-conectados-rt');
+    const contadorSpan = document.getElementById('contador-online');
+    if (!contenedorLista || !contadorSpan) return;
 
-        contadorSpan.innerText = listaConectados.length;
-        contenedorLista.innerHTML = '';
+    contadorSpan.innerText = listaConectados.length;
+    contenedorLista.innerHTML = '';
 
-        if (listaConectados.length === 0) {
-            contenedorLista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay usuarios activos ahora mismo.</li>';
-            return;
-        }
+    if (listaConectados.length === 0) {
+        contenedorLista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay usuarios activos ahora mismo.</li>';
+        return;
+    }
 
-        listaConectados.forEach(user => {
-            const li = document.createElement('li');
-            li.style.cssText = 'padding: 6px 10px; margin: 4px 0; background: rgba(15, 23, 42, 0.6); border-radius: 5px; display: flex; justify-content: space-between;';
-            li.innerHTML = `<span><i class="fa-solid fa-circle" style="color: #10b981; font-size: 0.7em; margin-right: 8px;"></i> ${user.username}</span> <span style="font-size: 0.8em; color: #94a3b8;">Conectado</span>`;
-            contenedorLista.appendChild(li);
-        });
+    listaConectados.forEach(user => {
+        const li = document.createElement('li');
+        li.style.cssText = 'padding: 6px 10px; margin: 4px 0; background: rgba(15, 23, 42, 0.6); border-radius: 5px; display: flex; justify-content: space-between;';
+        li.innerHTML = `<span><i class="fa-solid fa-circle" style="color: #10b981; font-size: 0.7em; margin-right: 8px;"></i> ${user}</span> <span style="font-size: 0.8em; color: #94a3b8;">Conectado</span>`;
+        contenedorLista.appendChild(li);
     });
-}
+});
 
-
-  document.getElementById('btnCerrarSesion').addEventListener('click', async () => {
+// Manejar Cerrar Sesión
+document.getElementById('btnCerrarSesion').addEventListener('click', async () => {
     try {
         const response = await fetch('/api/auth/logout', { method: 'POST' });
         const data = await response.json();
         if (data.success) {
-            window.location.href = '/'; // O la ruta de la página principal
+            window.location.href = '/'; 
         }
     } catch (error) {
         console.error('Error al cerrar sesión:', error);
     }
-});  
+});
 
     
     
