@@ -1047,7 +1047,7 @@ app.post('/api/auth/registro', async (req, res) => {
     }
 });
 
-// 2. Inicio de sesión
+// 2. Inicio de sesión (Con autodetectador de Admin)
 app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -1069,20 +1069,31 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(401).json({ error: 'Credenciales incorrectas' });
         }
 
+        // AUTO-ASIGNACIÓN: Si tu usuario es admin123 (o el que uses), forzamos el rol 'admin'
+        let rolFinal = usuario.rol;
+        if (usuario.username === 'admin123') {
+            rolFinal = 'admin';
+        }
+
         req.session.userId = usuario.id;
         req.session.username = usuario.username;
-        req.session.rol = usuario.rol;
+        req.session.rol = rolFinal;
 
-        res.json({ mensaje: 'Login exitoso', rol: usuario.rol });
+        res.json({ mensaje: 'Login exitoso', rol: rolFinal });
     } catch (err) {
         console.error("Error en login:", err);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
-// 3. Comprobar sesión actual
+// 3. Comprobar sesión actual (También autovalida si eres admin)
 app.get('/api/auth/sesion', (req, res) => {
     if (req.session.userId) {
+        // Seguridad extra: si por lo que sea es el usuario admin, aseguramos el rol
+        if (req.session.username === 'admin123') {
+            req.session.rol = 'admin';
+        }
+
         res.json({
             logueado: true,
             username: req.session.username,
@@ -1101,11 +1112,13 @@ app.post('/api/auth/logout', (req, res) => {
     });
 });
 
-// Ruta de emergencia para forzar el rol de administrador en la sesión actual
+// Ruta de emergencia para forzar el rol de administrador al instante si lo necesitas desde el navegador
 app.get('/api/auth/forzar-admin', (req, res) => {
-    req.session.usuario = { logueado: true, username: 'admin123', rol: 'admin' };
+    req.session.userId = 999; // ID ficticio de emergencia
+    req.session.username = 'admin123';
+    req.session.rol = 'admin';
     req.session.save((err) => {
-        res.json({ success: true, mensaje: "Sesión forzada a admin123 con éxito", usuario: req.session.usuario });
+        res.json({ success: true, mensaje: "Sesión forzada a admin123 con éxito", rol: 'admin' });
     });
 });
 
