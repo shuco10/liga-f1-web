@@ -318,6 +318,9 @@ document.getElementById('btnCerrarSesion').addEventListener('click', async () =>
         const response = await fetch('/api/auth/logout', { method: 'POST' });
         const data = await response.json();
         if (data.success) {
+            // Limpiamos el rastro local para matar también la sesión híbrida/antigua
+            localStorage.removeItem('rol');
+            
             window.location.href = '/'; 
         }
     } catch (error) {
