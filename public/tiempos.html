@@ -149,27 +149,43 @@
         }
     });
 
-    function verificarSesion() {
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const formAdmin = document.getElementById('form-admin');
-        const adminImportContainer = document.getElementById('admin-import-container');
-        
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-        
-        if (btnLogin && btnLogout) {
-            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-        }
-        
-        if (formAdmin) {
-            formAdmin.style.display = adminStatus ? 'block' : 'none';
-        }
-
-        if (adminImportContainer) {
-            adminImportContainer.style.display = adminStatus ? 'block' : 'none';
+async function verificarSesion() {
+    const btnLogin = document.getElementById('btn-login');
+    const btnLogout = document.getElementById('btn-logout');
+    const formAdmin = document.getElementById('form-admin');
+    const adminImportContainer = document.getElementById('admin-import-container');
+    
+    // 1. Comprobación local inicial (método tradicional / llave)
+    let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
+    
+    // 2. Si localmente no consta, consultamos la sesión real en la base de datos vía API
+    if (!adminStatus) {
+        try {
+            const res = await fetch('/api/auth/sesion');
+            const data = await res.json();
+            
+            if (data.logueado && data.rol === 'admin') {
+                adminStatus = true;
+                localStorage.setItem('rol', 'admin'); // Sincronizamos para agilizar
+            }
+        } catch (err) {
+            console.error("Error al contrastar sesión con la base de datos en tiempos:", err);
         }
     }
+    
+    if (btnLogin && btnLogout) {
+        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+    }
+    
+    if (formAdmin) {
+        formAdmin.style.display = adminStatus ? 'block' : 'none';
+    }
+
+    if (adminImportContainer) {
+        adminImportContainer.style.display = adminStatus ? 'block' : 'none';
+    }
+}
 
     function seguridadAbrirModal() {
         const modal = document.getElementById('login-modal');
