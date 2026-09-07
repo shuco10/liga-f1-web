@@ -24,7 +24,7 @@
 
 <main class="caja-contenido">
 
-    <button id="btnCerrarSesion" class="btn-logout" style="background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 15px;">
+<button id="btnCerrarSesion" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 15px;">
     Cerrar Sesión
 </button>
 
@@ -144,17 +144,20 @@ async function verificarSesionPagina() {
         const seccionFormularios = document.getElementById('seccion-formularios');
         const panelGestion = document.getElementById('panel-gestion-usuarios');
         const avisoNoAuth = document.getElementById('aviso-no-autorizado');
+        const btnCerrarSesion = document.getElementById('btnCerrarSesion'); // Referencia al botón
 
         if (data.logueado && data.rol === 'admin') {
             if (seccionFormularios) seccionFormularios.style.display = 'none';
             if (panelGestion) panelGestion.style.display = 'block';
             if (avisoNoAuth) avisoNoAuth.style.display = 'none';
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'block'; // Muestra el botón si es admin
             
             cargarListaUsuarios();
         } else {
             if (seccionFormularios) seccionFormularios.style.display = 'flex';
             if (panelGestion) panelGestion.style.display = 'none';
             if (avisoNoAuth) avisoNoAuth.style.display = 'block';
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none'; // Oculta el botón si no lo es
         }
     } catch (err) {
         console.error("Error al verificar sesión en la página:", err);
