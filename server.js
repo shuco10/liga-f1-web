@@ -1032,6 +1032,9 @@ app.post('/api/auth/registro', async (req, res) => {
 });
 
 // 3. Inicio de Sesión / Login (POST /api/auth/login)
+// ==========================================
+// LOGIN CON BCRYPT (POST /api/auth/login)
+// ==========================================
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -1043,7 +1046,9 @@ app.post('/api/auth/login', async (req, res) => {
 
         const usuario = resultado.rows[0];
 
-        if (usuario.password !== password) {
+        // Compara la contraseña introducida con el hash de la base de datos
+        const passwordValida = await bcrypt.compare(password, usuario.password);
+        if (!passwordValida) {
             return res.status(401).json({ error: 'Credenciales incorrectas' });
         }
 
