@@ -1,12 +1,6 @@
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
 const { Pool } = require('pg');
-const session = require('express-session'); // <--- Asegúrate de tener esto requerido
-
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.DATABASE_URL) {
@@ -18,19 +12,9 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// 1. Middlewares obligatorios primero
 app.use(express.json());
 app.use(express.static('public'));
 
-// 2. Configuración de sesiones (¡Imprescindible para el login y los roles!)
-app.use(session({
-    secret: 'cazadores_curvas_secreto_super_seguro',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
-}));
-
-// 3. A partir de aquí van tus rutas (/api/auth/login, /api/usuarios/lista, etc.)
 async function inicializarBaseDeDatos() {
     try {
         console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
@@ -42,16 +26,6 @@ async function inicializarBaseDeDatos() {
                 color_hex VARCHAR(7),
                 estrellas INT DEFAULT 2,
                 mundiales INT DEFAULT 0
-            );
-        `);
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id SERIAL PRIMARY KEY,
-                username VARCHAR(50) UNIQUE NOT NULL,
-                email VARCHAR(100) UNIQUE NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                rol VARCHAR(20) DEFAULT 'user',
-                creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
@@ -957,198 +931,13 @@ app.get('/api/ultimo-gp', async (req, res) => {
     }
 });
 //////////////////////////////////////////////////////////////////
-//// VISITAS A LA WEB (REGISTRO Y API) ///////////////////////////
 //////////////////////////////////////////////////////////////////
 
-// Obtener contadores (GET)
-app.get('/api/visitas', async (req, res) => {
-    try {
-        // Consulta para sacar las visitas de hoy
-        const hoyResult = await pool.query(
-            "SELECT total FROM visitas_diarias WHERE fecha = CURRENT_DATE"
-        );
-        const hoy = hoyResult.rows.length > 0 ? hoyResult.rows[0].total : 0;
-
-        // Consulta para sacar el histórico sumando todos los días
-        const totalResult = await pool.query(
-            "SELECT SUM(total) as total_historico FROM visitas_diarias"
-        );
-        const total = totalResult.rows[0].total_historico || 0;
-
-        res.json({
-            hoy: hoy,
-            totales: total
-        });
-    } catch (err) {
-        console.error("Error al obtener contadores de visitas:", err);
-        res.status(500).json({ error: "Error al obtener visitas" });
-    }
-});
-
-// Registrar una visita nueva cuando cargue la web (POST)
-app.post('/api/visitas/registrar', async (req, res) => {
-    try {
-        await pool.query(`
-            INSERT INTO visitas_diarias (fecha, total) 
-            VALUES (CURRENT_DATE, 1) 
-            ON CONFLICT (fecha) 
-            DO UPDATE SET total = visitas_diarias.total + 1
-        `);
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Error al registrar visita:", err);
-        res.status(500).json({ error: "Error al registrar" });
-    }
-});
-
-//////////////////////////////////////////////////////////////////
-//// RUTA: Obtener lista de usuarios (Protegida para administradores)
-//////////////////////////////////////////////////////////////////
-
-app.get('/api/usuarios/lista', async (req, res) => {
-    // Comprobación de seguridad en el backend
-    if (!req.session.userId || req.session.rol !== 'admin') {
-        return res.status(403).json({ error: 'No autorizado' });
-    }
-
-    try {
-        const resultado = await pool.query('SELECT id, username, email, rol, creado_en FROM usuarios ORDER BY id ASC');
-        res.json(resultado.rows);
-    } catch (e) {
-        console.error("Error al obtener la lista de usuarios:", e);
-        res.status(500).json({ error: 'Error en el servidor' });
-    }
-});
-// --- RUTAS DE AUTENTICACIÓN ---
-
-// 1. Registro de usuario
-app.post('/api/auth/registro', async (req, res) => {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
-        return res.status(400).json({ error: 'Faltan campos obligatorios' });
-    }
-
-    try {
-        const bcrypt = require('bcrypt');
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        await pool.query(
-            'INSERT INTO usuarios (username, email, password, rol) VALUES ($1, $2, $3, $4)',
-            [username, email, hashedPassword, 'user']
-        );
-
-        res.status(201).json({ mensaje: 'Usuario registrado con éxito' });
-    } catch (err) {
-        console.error("Error en registro:", err);
-        if (err.code === '23505') {
-            return res.status(400).json({ error: 'El nombre de usuario o email ya están en uso' });
-        }
-        res.status(500).json({ error: 'Error interno del servidor' });
-    }
-});
-
-// 2. Inicio de sesión (Reconoce automáticamente a Shuco_vsk como admin)
-app.post('/api/auth/login', async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Introduce usuario y contraseña' });
-    }
-
-    try {
-        const bcrypt = require('bcrypt');
-        const resultado = await pool.query('SELECT * FROM usuarios WHERE username = $1 OR email = $1', [username]);
-
-        if (resultado.rows.length === 0) {
-            return res.status(401).json({ error: 'Credenciales incorrectas' });
-        }
-
-        const usuario = resultado.rows[0];
-        const passwordValida = await bcrypt.compare(password, usuario.password);
-
-        if (!passwordValida) {
-            return res.status(401).json({ error: 'Credenciales incorrectas' });
-        }
-
-        let rolFinal = usuario.rol;
-        if (usuario.username === 'Shuco_vsk') {
-            rolFinal = 'admin';
-        }
-
-        req.session.userId = usuario.id;
-        req.session.username = usuario.username;
-        req.session.rol = rolFinal;
-
-        req.session.save(() => {
-            res.json({ mensaje: 'Login exitoso', rol: rolFinal });
-        });
-    } catch (err) {
-        console.error("Error en login:", err);
-        res.status(500).json({ error: 'Error interno del servidor' });
-    }
-});
-
-// 3. Comprobar sesión actual
-app.get('/api/auth/sesion', (req, res) => {
-    if (req.session.userId || req.session.username === 'Shuco_vsk') {
-        if (req.session.username === 'Shuco_vsk') {
-            req.session.rol = 'admin';
-        }
-
-        res.json({
-            logueado: true,
-            username: req.session.username,
-            rol: req.session.rol || 'user'
-        });
-    } else {
-        res.json({ logueado: false });
-    }
-});
-
-// 4. Cerrar sesión
-app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.clearCookie('connect.sid');
-        res.json({ mensaje: 'Sesión cerrada' });
-    });
-});
-
-// Ruta de emergencia para forzar el rol de administrador con tu usuario
-app.get('/api/auth/forzar-admin', (req, res) => {
-    req.session.userId = 999;
-    req.session.username = 'Shuco_vsk';
-    req.session.rol = 'admin';
-    req.session.save((err) => {
-        res.json({ 
-            success: true, 
-            mensaje: "Sesión forzada a Shuco_vsk con éxito", 
-            usuario: { logueado: true, username: 'Shuco_vsk', rol: 'admin' } 
-        });
-    });
-});
-
-//////////////////////////////////////////////////////////////////
-//// 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//// 
-//////////////////////////////////////////////////////////////////
 
 // ==========================================
 // PONER TODO POR ENCIMA DE ESTO ============
 // ==========================================
 
-let usuariosConectados = 0;
-
-io.on('connection', (socket) => {
-    usuariosConectados++;
-    io.emit('usuarios-actualizados', usuariosConectados);
-
-    socket.on('disconnect', () => {
-        usuariosConectados--;
-        io.emit('usuarios-actualizados', usuariosConectados);
-    });
-});
-
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
