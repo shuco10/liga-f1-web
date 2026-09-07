@@ -939,19 +939,7 @@ app.get('/api/ultimo-gp', async (req, res) => {
 //// VISITAS A LA WEB (REGISTRO Y API) ///////////////////////////
 //////////////////////////////////////////////////////////////////
 
-// Middleware automático: registra una visita cuando entran a la web y filtra todas las apis
-app.use(async (req, res, next) => {
-    if (req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.startsWith('/socket.io/')) {
-        try {
-            await pool.query('INSERT INTO visitas_web (fecha) VALUES (CURRENT_DATE)');
-        } catch (err) {
-            console.error("Error al registrar visita:", err);
-        }
-    }
-    next();
-});
-
-// Endpoint que pide el frontend para pintar los contadores
+// Obtener contadores (GET)
 app.get('/api/visitas', async (req, res) => {
     try {
         const hoyResult = await pool.query(
@@ -971,6 +959,16 @@ app.get('/api/visitas', async (req, res) => {
     }
 });
 
+// Registrar una visita nueva cuando cargue la web (POST)
+app.post('/api/visitas/registrar', async (req, res) => {
+    try {
+        await pool.query('INSERT INTO visitas_web (fecha) VALUES (CURRENT_DATE)');
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al registrar visita:", err);
+        res.status(500).json({ error: "Error al registrar" });
+    }
+});
 
 //////////////////////////////////////////////////////////////////
 //// 
