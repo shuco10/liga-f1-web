@@ -117,3 +117,24 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 850);
     });
 });
+
+
+
+// Este escucha cualquier clic en el botón de logout, aunque el header se cargue más tarde
+document.addEventListener('click', async (e) => {
+    if (e.target && e.target.id === 'btn-logout') {
+        try {
+            const response = await fetch('/api/auth/logout', { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                localStorage.removeItem('rol');
+                window.location.href = '/'; 
+            }
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+        }
+    }
+});
+
+
+
