@@ -69,6 +69,19 @@
 <!-- BANNER -->
 <div class="titulo-liga">🏁 CAZADORES DE CURVAS 🏁</div>
 
+<!-- USUARIOS CONECTADOS A LA WEB -->
+<span id="contador-online" style="color: #4ade80; font-weight: bold;">🔴 Online: 1</span>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('usuarios-actualizados', (numUsuarios) => {
+        const contador = document.getElementById('contador-online');
+        if (contador) {
+            contador.innerText = `🔴 Online: ${numUsuarios}`;
+        }
+    });
+</script>
+
 <nav style="display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
     <a href="/index.html" class="boton-accion"><i class="fa-solid fa-house"></i></a>
     <a href="/noticias.html" class="boton-accion"><i class="fa-solid fa-newspaper"></i> NOTICIAS</a>
