@@ -9,6 +9,27 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
 
+// ==========================================
+// CONFIGURACIÓN DE MIDDLEWARES Y SESIONES
+// ==========================================
+const session = require('express-session');
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'clave-secreta-cazadores',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24
+    }
+}));
+
+
+
+
 if (!process.env.DATABASE_URL) {
     console.error("❌ ERROR CRÍTICO: La variable DATABASE_URL no está llegando al servidor.");
 }
