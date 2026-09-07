@@ -312,13 +312,18 @@ document.getElementById('form-login').addEventListener('submit', async (e) => {
     }
 });
 
-// Socket.io para conectados en tiempo real
+// Socket.io para conectados en tiempo real (seguro para cualquier página)
 socket.on('actualizar-conectados', (listaConectados) => {
-    const contenedorLista = document.getElementById('lista-conectados-rt');
-    const contadorSpan = document.getElementById('contador-online');
-    if (!contenedorLista || !contadorSpan) return;
+    // 1. Actualizar contador superior (si existe en la página actual)
+    const contadorSpan = document.getElementById('num-usuarios') || document.getElementById('contador-online');
+    if (contadorSpan) {
+        contadorSpan.innerText = listaConectados.length;
+    }
 
-    contadorSpan.innerText = listaConectados.length;
+    // 2. Actualizar lista detallada inferior (solo si la página tiene el contenedor)
+    const contenedorLista = document.getElementById('lista-conectados-rt');
+    if (!contenedorLista) return; // Si no estamos en la página de gestión, salimos sin error
+
     contenedorLista.innerHTML = '';
 
     if (listaConectados.length === 0) {
