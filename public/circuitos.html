@@ -160,38 +160,45 @@ async function verificarSesion() {
     const btnLogout = document.getElementById('btn-logout');
     const adminResetContainer = document.getElementById('admin-reset-container');
     
-    if (btnLogin && btnLogout) {
-        let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
-        
-        if (!adminStatus) {
-            try {
-                const res = await fetch('/api/auth/sesion');
-                const data = await res.json();
-                
-                if (data.logueado && data.rol === 'admin') {
-                    adminStatus = true;
-                    localStorage.setItem('rol', 'admin');
-                }
-            } catch (err) {
-                console.error("Error al verificar sesión en la base de datos:", err);
-            }
-        }
+    let adminStatus = false;
 
+    // Consultamos directamente al servidor para obtener el estado real de la sesión y el rol
+    try {
+        const res = await fetch('/api/auth/sesion');
+        const data = await res.json();
+        
+        if (data.logueado && data.rol === 'admin') {
+            adminStatus = true;
+            localStorage.setItem('rol', 'admin'); // Sincronizamos por si acaso
+        } else {
+            localStorage.removeItem('rol');
+        }
+    } catch (err) {
+        console.error("Error al verificar sesión en la base de datos:", err);
+        // Fallback al localStorage si falla la red
+        adminStatus = (localStorage.getItem('rol') === 'admin');
+    }
+
+    // Gestionar botones de la cabecera
+    if (btnLogin && btnLogout) {
         btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
         btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-        
-        if (adminResetContainer) {
-            adminResetContainer.style.display = adminStatus ? 'block' : 'none';
-        }
-
-        // Mostrar u ocultar elementos con clase admin-only (botones de editar, eliminar y modal)
-        const elementosAdmin = document.querySelectorAll('.admin-only');
-        elementosAdmin.forEach(el => {
-            el.style.display = adminStatus ? 'inline-block' : 'none';
-        });
-    } else { 
-        setTimeout(verificarSesion, 100); 
     }
+    
+    // Gestionar contenedor de reseteo general
+    if (adminResetContainer) {
+        adminResetContainer.style.display = adminStatus ? 'block' : 'none';
+    }
+
+    // Gestionar TODOS los elementos con clase admin-only (lápices, cruces, modales, etc.)
+    const elementosAdmin = document.querySelectorAll('.admin-only');
+    elementosAdmin.forEach(el => {
+        if (adminStatus) {
+            el.style.setProperty('display', 'inline-block', 'important');
+        } else {
+            el.style.setProperty('display', 'none', 'important');
+        }
+    });
 }
 
         async function enviarContacto() {
