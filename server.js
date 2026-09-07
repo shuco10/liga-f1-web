@@ -1149,7 +1149,26 @@ app.delete('/api/usuarios/:id', async (req, res) => {
     }
 });
 
+// Actualizar rol de usuario (PUT /api/usuarios/:id/rol)
+app.put('/api/usuarios/:id/rol', async (req, res) => {
+    try {
+        if (!req.session || req.session.rol !== 'admin') {
+            return res.status(403).json({ error: 'Acceso denegado' });
+        }
 
+        const { id } = req.params;
+        const { rol } = req.body;
+
+        if (!['admin', 'user'].includes(rol)) {
+            return res.status(400).json({ error: 'Rol no válido' });
+        }
+
+        await pool.query('UPDATE usuarios SET rol = $1 WHERE id = $2', [rol, id]);
+        res.json({ success: true, message: 'Rol actualizado correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 
 // ==========================================
