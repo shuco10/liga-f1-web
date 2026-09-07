@@ -1,5 +1,8 @@
 const socket = io();
-
+// Si esta página no tiene esta función, evitamos que rompa el script global
+if (typeof cargarListaUsuarios !== 'function') {
+    window.cargarListaUsuarios = function() {};
+}
 // 1. Socket.io: Actualizar los usuarios online en tiempo real y pintar la lista
 // Manejador universal para Socket.io (funciona con número o con array)
 function actualizarContadorOnline(datos) {
