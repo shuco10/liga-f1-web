@@ -1007,19 +1007,20 @@ app.get('/api/visitas', async (req, res) => {
 });
 
 // ==========================================
-// SOCKET.IO (ÚNICO Y CON EL NOMBRE CORRECTO)
+// SOCKET.IO CON SESIONES Y MAPA DE USUARIOS
 // ==========================================
-let usuariosConectados = 0;
+const usuariosConectados = new Map();
 
 io.on('connection', (socket) => {
-    usuariosConectados++;
+    const sessionData = socket.request.session;
+    const username = sessionData && sessionData.usuario ? sessionData.usuario : 'Anónimo';
     
-    // Emite con el nombre exacto que espera tu scripts.js
-    io.emit('usuarios-actualizados', usuariosConectados);
+    usuariosConectados.set(socket.id, username);
+    io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
 
     socket.on('disconnect', () => {
-        usuariosConectados = Math.max(0, usuariosConectados - 1);
-        io.emit('usuarios-actualizados', usuariosConectados);
+        usuariosConectados.delete(socket.id);
+        io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
     });
 });
 
@@ -1060,7 +1061,6 @@ app.post('/api/auth/registro', async (req, res) => {
     }
 });
 
-// 3. Inicio de Sesión / Login (POST /api/auth/login)
 // ==========================================
 // LOGIN CON BCRYPT (POST /api/auth/login)
 // ==========================================
@@ -1117,10 +1117,6 @@ app.post('/api/auth/logout', (req, res) => {
         res.json({ success: true, message: 'Sesión cerrada correctamente' });
     });
 });
-
-// ==========================================
-// PONER TODO POR ENCIMA DE ESTO ============
-// ==========================================
 
 // ==========================================
 // ARRANQUE DEL SERVIDOR
