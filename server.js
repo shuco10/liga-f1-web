@@ -1007,23 +1007,7 @@ app.get('/api/visitas', async (req, res) => {
     }
 });
 
-// ==========================================
-// SOCKET.IO CON SESIONES Y MAPA DE USUARIOS
-// ==========================================
-const usuariosConectados = new Map();
 
-io.on('connection', (socket) => {
-    const sessionData = socket.request.session;
-    const username = sessionData && sessionData.usuario ? sessionData.usuario : 'Anónimo';
-    
-    usuariosConectados.set(socket.id, username);
-    io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
-
-    socket.on('disconnect', () => {
-        usuariosConectados.delete(socket.id);
-        io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
-    });
-});
 
 
 // 1. Verificar Sesión (GET /api/auth/sesion)
