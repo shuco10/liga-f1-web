@@ -942,16 +942,21 @@ app.get('/api/ultimo-gp', async (req, res) => {
 // Obtener contadores (GET)
 app.get('/api/visitas', async (req, res) => {
     try {
+        // Consulta para sacar las visitas de hoy
         const hoyResult = await pool.query(
-            "SELECT COUNT(*) FROM visitas_web WHERE fecha = CURRENT_DATE"
+            "SELECT total FROM visitas_diarias WHERE fecha = CURRENT_DATE"
         );
+        const hoy = hoyResult.rows.length > 0 ? hoyResult.rows[0].total : 0;
+
+        // Consulta para sacar el histórico sumando todos los días
         const totalResult = await pool.query(
-            "SELECT COUNT(*) FROM visitas_web"
+            "SELECT SUM(total) as total_historico FROM visitas_diarias"
         );
+        const total = totalResult.rows[0].total_historico || 0;
 
         res.json({
-            hoy: hoyResult.rows[0].count,
-            totales: totalResult.rows[0].count
+            hoy: hoy,
+            totales: total
         });
     } catch (err) {
         console.error("Error al obtener contadores de visitas:", err);
@@ -962,7 +967,12 @@ app.get('/api/visitas', async (req, res) => {
 // Registrar una visita nueva cuando cargue la web (POST)
 app.post('/api/visitas/registrar', async (req, res) => {
     try {
-        await pool.query('INSERT INTO visitas_web (fecha) VALUES (CURRENT_DATE)');
+        await pool.query(`
+            INSERT INTO visitas_diarias (fecha, total) 
+            VALUES (CURRENT_DATE, 1) 
+            ON CONFLICT (fecha) 
+            DO UPDATE SET total = visitas_diarias.total + 1
+        `);
         res.json({ success: true });
     } catch (err) {
         console.error("Error al registrar visita:", err);
