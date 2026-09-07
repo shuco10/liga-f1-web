@@ -235,17 +235,34 @@
         if(btnOrdenar) btnOrdenar.addEventListener('click', ordenarParejasPorEstrellas);
     });
 
-    function verificarSesionDraft() {
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-        const controlesAdminDraft = document.getElementById('controles-admin-draft');
-        const desplegablesAdminDraft = document.getElementById('desplegables-admin-draft');
+async function verificarSesionDraft() {
+    // 1. Comprobación local inicial (método tradicional / llave)
+    let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
 
-        if (controlesAdminDraft) controlesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
-        if (desplegablesAdminDraft) desplegablesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
-
-        renderizarParejas();
-        renderizarParrillaEscuderias();
+    // 2. Si localmente no consta, consultamos la sesión real en la base de datos vía API
+    if (!adminStatus) {
+        try {
+            const res = await fetch('/api/auth/sesion');
+            const data = await res.json();
+            
+            if (data.logueado && data.rol === 'admin') {
+                adminStatus = true;
+                localStorage.setItem('rol', 'admin'); // Sincronizamos para agilizar futuras cargas
+            }
+        } catch (err) {
+            console.error("Error al contrastar sesión con la base de datos en el draft:", err);
+        }
     }
+
+    const controlesAdminDraft = document.getElementById('controles-admin-draft');
+    const desplegablesAdminDraft = document.getElementById('desplegables-admin-draft');
+
+    if (controlesAdminDraft) controlesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
+    if (desplegablesAdminDraft) desplegablesAdminDraft.style.display = adminStatus ? 'flex' : 'none';
+
+    renderizarParejas();
+    renderizarParrillaEscuderias();
+}
 
     async function cargarDatosDraft() {
         try {
