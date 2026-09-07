@@ -936,7 +936,48 @@ app.get('/api/ultimo-gp', async (req, res) => {
     }
 });
 //////////////////////////////////////////////////////////////////
+//// VISITAS A LA WEB (REGISTRO Y API) ///////////////////////////
 //////////////////////////////////////////////////////////////////
+
+// Middleware automático: registra una visita cuando entran a la web y filtra todas las apis
+app.use(async (req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.startsWith('/socket.io/')) {
+        try {
+            await pool.query('INSERT INTO visitas_web (fecha) VALUES (CURRENT_DATE)');
+        } catch (err) {
+            console.error("Error al registrar visita:", err);
+        }
+    }
+    next();
+});
+
+// Endpoint que pide el frontend para pintar los contadores
+app.get('/api/visitas', async (req, res) => {
+    try {
+        const hoyResult = await pool.query(
+            "SELECT COUNT(*) FROM visitas_web WHERE fecha = CURRENT_DATE"
+        );
+        const totalResult = await pool.query(
+            "SELECT COUNT(*) FROM visitas_web"
+        );
+
+        res.json({
+            hoy: hoyResult.rows[0].count,
+            totales: totalResult.rows[0].count
+        });
+    } catch (err) {
+        console.error("Error al obtener contadores de visitas:", err);
+        res.status(500).json({ error: "Error al obtener visitas" });
+    }
+});
+
+
+//////////////////////////////////////////////////////////////////
+//// 
+//////////////////////////////////////////////////////////////////
+
+
+
 
 
 // ==========================================
