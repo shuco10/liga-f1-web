@@ -941,27 +941,6 @@ app.get('/api/ultimo-gp', async (req, res) => {
 });
 
 // ==========================================
-// SOCKET.IO: CONTADOR DE USUARIOS ONLINE
-// ==========================================
-let usuariosConectados = 0;
-
-io.on('connection', (socket) => {
-    usuariosConectados++;
-    io.emit('actualizar-usuarios', usuariosConectados);
-
-    socket.on('disconnect', () => {
-        usuariosConectados = Math.max(0, usuariosConectados - 1);
-        io.emit('actualizar-usuarios', usuariosConectados);
-    });
-});
-
-// ==========================================
-// PONER TODO POR ENCIMA DE ESTO ============
-// ==========================================
-
-
-
-// ==========================================
 // RUTAS DE VISITAS (Coherentes con tu scripts.js)
 // ==========================================
 
@@ -999,14 +978,14 @@ app.get('/api/visitas', async (req, res) => {
 });
 
 // ==========================================
-// SOCKET.IO (Coherente con 'usuarios-actualizados')
+// SOCKET.IO (ÚNICO Y CON EL NOMBRE CORRECTO)
 // ==========================================
 let usuariosConectados = 0;
 
 io.on('connection', (socket) => {
     usuariosConectados++;
     
-    // Emite usando exactamente el nombre que espera tu scripts.js
+    // Emite con el nombre exacto que espera tu scripts.js
     io.emit('usuarios-actualizados', usuariosConectados);
 
     socket.on('disconnect', () => {
