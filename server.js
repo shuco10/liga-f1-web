@@ -1,14 +1,3 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-
-const PORT = process.env.PORT || 3000;
-
 // ==========================================
 // CONFIGURACIÓN DE MIDDLEWARES Y SESIONES
 // ==========================================
@@ -17,7 +6,8 @@ const session = require('express-session');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(session({
+// 1. Guardamos la sesión en una constante para compartirla
+const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET || 'clave-secreta-cazadores',
     resave: false,
     saveUninitialized: false,
@@ -25,10 +15,9 @@ app.use(session({
         secure: false,
         maxAge: 1000 * 60 * 60 * 24
     }
-}));
+});
 
-
-
+app.use(sessionMiddleware);
 
 if (!process.env.DATABASE_URL) {
     console.error("❌ ERROR CRÍTICO: La variable DATABASE_URL no está llegando al servidor.");
@@ -39,8 +28,27 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-app.use(express.json());
 app.use(express.static('public'));
+
+// 2. Ahora sí, Socket.io reconoce la variable sessionMiddleware
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+});
+
+const usuariosConectados = new Map();
+
+io.on('connection', (socket) => {
+    const sessionData = socket.request.session;
+    const username = sessionData && sessionData.user ? sessionData.user.usuario : 'Anónimo';
+    
+    usuariosConectados.set(socket.id, username);
+    io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
+
+    socket.on('disconnect', () => {
+        usuariosConectados.delete(socket.id);
+        io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
+    });
+});
 
 // ==========================================
 // 1. DECLARAS LA FUNCIÓN PRIMERO
