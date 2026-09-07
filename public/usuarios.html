@@ -186,7 +186,12 @@ async function cargarListaUsuarios() {
                 <td style="padding: 10px;">${u.id}</td>
                 <td style="padding: 10px; font-weight: bold; color: #38bdf8;">${u.username}</td>
                 <td style="padding: 10px; color: #94a3b8;">${u.email || 'No especificado'}</td>
-                <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 4px; font-size: 0.85em; background: ${u.rol === 'admin' ? '#e10600' : '#475569'}; color: white;">${u.rol.toUpperCase()}</span></td>
+                <td style="padding: 10px;">
+                    <select class="select-rol" data-id="${u.id}" style="background: #0f172a; color: #fff; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                        <option value="user" ${u.rol === 'user' ? 'selected' : ''}>USER</option>
+                        <option value="admin" ${u.rol === 'admin' ? 'selected' : ''}>ADMIN</option>
+                    </select>
+                </td>
                 <td style="padding: 10px; color: #94a3b8; font-size: 0.9em;">${new Date(u.creado_en).toLocaleDateString()}</td>
                 <td style="padding: 10px; text-align: center;">
                     <button onclick="eliminarUsuario(${u.id})" style="background-color: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;" title="Eliminar usuario">
@@ -380,6 +385,33 @@ async function eliminarUsuario(id) {
         console.error('Error de red:', e);
     }
 }
+
+// Escuchador global o por evento para cuando cambien el desplegable
+document.addEventListener('change', async (e) => {
+    if (e.target && e.target.classList.contains('select-rol')) {
+        const userId = e.target.getAttribute('data-id');
+        const nuevoRol = e.target.value;
+
+        try {
+            const res = await fetch(`/api/usuarios/${userId}/rol`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rol: nuevoRol })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                // Opcional: mostrar un aviso sutil o recargar la lista
+                console.log('Rol actualizado con éxito');
+            } else {
+                alert('Error al actualizar el rol: ' + data.error);
+            }
+        } catch (err) {
+            console.error('Error de red:', err);
+        }
+    }
+});
+
     
     
 </script>
