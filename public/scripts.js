@@ -136,5 +136,36 @@ document.addEventListener('click', async (e) => {
     }
 });
 
+async function verificarSesionPagina() {
+    try {
+        // Damos un pequeño respiro para asegurar que el header inyectado ya está en el DOM
+        await new Promise(resolve => setTimeout(resolve, 150));
 
+        const res = await fetch('/api/auth/sesion');
+        const data = await res.json();
+        
+        const seccionFormularios = document.getElementById('seccion-formularios');
+        const panelGestion = document.getElementById('panel-gestion-usuarios');
+        const avisoNoAuth = document.getElementById('aviso-no-autorizado');
+        const btnCerrarSesion = document.getElementById('btn-logout');
+
+        if (data.logueado && data.rol === 'admin') {
+            if (seccionFormularios) seccionFormularios.style.display = 'none';
+            if (panelGestion) panelGestion.style.display = 'block';
+            if (avisoNoAuth) avisoNoAuth.style.display = 'none';
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'inline-block';
+            
+            cargarListaUsuarios();
+        } else {
+            if (seccionFormularios) seccionFormularios.style.display = 'flex';
+            if (panelGestion) panelGestion.style.display = 'none';
+            if (avisoNoAuth) avisoNoAuth.style.display = 'block';
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
+        }
+    } catch (err) {
+        console.error("Error al verificar sesión en la página:", err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', verificarSesionPagina);
 
