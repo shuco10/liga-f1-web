@@ -1039,7 +1039,7 @@ app.get('/api/auth/sesion', (req, res) => {
 });
 
 // 2. Registro de Usuario (POST /api/auth/registro)
-const bcrypt = require('bcrypt'); // Asegúrate de tener esto arriba en tu archivo
+
 
 app.post('/api/auth/registro', async (req, res) => {
     try {
