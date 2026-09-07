@@ -13,59 +13,43 @@ const PORT = process.env.PORT || 3000;
 
 
 
-// ==========================================
-// CONFIGURACIÓN DE MIDDLEWARES Y SESIONES
-// ==========================================
-const session = require('express-session');
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// 1. Guardamos la sesión en una constante para compartirla
-const sessionMiddleware = session({
-    secret: process.env.SESSION_SECRET || 'clave-secreta-cazadores',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-        secure: false,
-        maxAge: 1000 * 60 * 60 * 24
-    }
-});
-
-app.use(sessionMiddleware);
-
-if (!process.env.DATABASE_URL) {
-    console.error("❌ ERROR CRÍTICO: La variable DATABASE_URL no está llegando al servidor.");
-}
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-});
-
-app.use(express.static('public'));
-
-// 2. Socket.io conectado a la sesión de Express
-io.use((socket, next) => {
-    sessionMiddleware(socket.request, {}, next);
-});
-
 // Declaración ÚNICA de usuariosConectados para todo el archivo
 const usuariosConectados = new Map();
 
 io.on('connection', (socket) => {
     const sessionData = socket.request.session;
-    // Apuntamos directamente a sessionData.usuario que es como lo guardas en el login
     const username = sessionData && sessionData.usuario ? sessionData.usuario : 'Anónimo';
     
     usuariosConectados.set(socket.id, username);
-    io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
+    enviarListaConectados(); // Llamamos a una función para limpiar duplicados
 
     socket.on('disconnect', () => {
         usuariosConectados.delete(socket.id);
-        io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
+        enviarListaConectados();
     });
 });
+
+// Función auxiliar para enviar la lista filtrando nombres repetidos
+function enviarListaConectados() {
+    const todosLosValores = Array.from(usuariosConectados.values());
+    const listaUnica = [];
+    const usuariosVistos = new Set();
+
+    todosLosValores.forEach(user => {
+        if (user === 'Anónimo') {
+            // Los anónimos se muestran por cada pestaña abierta
+            listaUnica.push('Anónimo');
+        } else {
+            // Si es un usuario registrado, solo lo añadimos si no estaba ya en la lista
+            if (!usuariosVistos.has(user)) {
+                usuariosVistos.add(user);
+                listaUnica.push(user);
+            }
+        }
+    });
+
+    io.emit('actualizar-conectados', listaUnica);
+}
 // ==========================================
 // 1. DECLARAS LA FUNCIÓN PRIMERO
 // ==========================================
