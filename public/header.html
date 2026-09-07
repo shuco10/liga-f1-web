@@ -70,11 +70,10 @@
 <div class="titulo-liga">🏁 CAZADORES DE CURVAS 🏁</div>
 
 <!-- USUARIOS CONECTADOS A LA WEB -->
-<!-- Contenedor centrado -->
 <div style="text-align: center; width: 100%; margin: 10px 0;">
     <span style="color: #3b82f6;">Usuarios en directo en Cazadores de Curvas:</span> 
     <span style="font-weight: bold; margin-left: 6px;">
-        <span id="bola-estado" style="font-size: 1.2em; margin-right: 4px;">●</span><span id="num-usuarios">1</span>
+        <span id="bola-estado" style="font-size: 1.2em; margin-right: 4px; color: #4ade80;">●</span><span id="num-usuarios" style="color: #4ade80;">1</span>
     </span>
 </div>
 
@@ -89,9 +88,11 @@
             spanNum.innerText = numUsuarios;
         }
 
+        // Forzamos conversión a número por si acaso y aplicamos color
+        const total = Number(numUsuarios);
         if (spanBola && spanNum) {
-            if (numUsuarios > 0) {
-                spanBola.style.color = '#4ade80'; // Verde si hay gente
+            if (total > 0) {
+                spanBola.style.color = '#4ade80'; // Verde si hay 1 o más
                 spanNum.style.color = '#4ade80';
             } else {
                 spanBola.style.color = '#ef4444'; // Rojo si está a 0
