@@ -961,24 +961,58 @@ io.on('connection', (socket) => {
 
 
 
-//////////////////////////////////////////////////////////////////
-///// VISITAS DIARIAS ///////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-// Ruta para obtener las visitas de hoy y el histórico total sumado
-app.get('/api/stats-visitas', async (req, res) => {
+// ==========================================
+// RUTAS DE VISITAS (Coherentes con tu scripts.js)
+// ==========================================
+
+// Registrar visita (POST)
+app.post('/api/visitas/registrar', async (req, res) => {
     try {
-        // Visitas del día actual
-        const resHoy = await pool.query("SELECT total FROM visitas_diarias WHERE fecha = CURRENT_DATE");
-        const hoy = resHoy.rows.length > 0 ? resHoy.rows[0].total : 0;
-
-        // Suma total de todas las filas (Histórico)
-        const resTotal = await pool.query("SELECT SUM(total) as historico FROM visitas_diarias");
-        const total = resTotal.rows[0].historico || 0;
-
-        res.json({ hoy, total });
+        const query = `
+            INSERT INTO visitas_diarias (fecha, total)
+            VALUES (CURRENT_DATE, 1)
+            ON CONFLICT (fecha)
+            DO UPDATE SET total = visitas_diarias.total + 1;
+        `;
+        await pool.query(query);
+        res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+// Obtener datos de visitas para pintar (GET /api/visitas)
+app.get('/api/visitas', async (req, res) => {
+    try {
+        // Visitas de hoy
+        const resHoy = await pool.query("SELECT total FROM visitas_diarias WHERE fecha = CURRENT_DATE");
+        const hoy = resHoy.rows.length > 0 ? resHoy.rows[0].total : 0;
+
+        // Histórico total sumado de todas las fechas
+        const resTotales = await pool.query("SELECT SUM(total) as historico FROM visitas_diarias");
+        const totales = resTotales.rows[0].historico || 0;
+
+        res.json({ hoy, totales });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ==========================================
+// SOCKET.IO (Coherente con 'usuarios-actualizados')
+// ==========================================
+let usuariosConectados = 0;
+
+io.on('connection', (socket) => {
+    usuariosConectados++;
+    
+    // Emite usando exactamente el nombre que espera tu scripts.js
+    io.emit('usuarios-actualizados', usuariosConectados);
+
+    socket.on('disconnect', () => {
+        usuariosConectados = Math.max(0, usuariosConectados - 1);
+        io.emit('usuarios-actualizados', usuariosConectados);
+    });
 });
 
 // ==========================================
