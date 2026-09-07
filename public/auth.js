@@ -214,8 +214,18 @@ async function guardarResolucion() {
     }
 }
 
-// Redirige al panel de gestión de usuarios/admins al pulsar el botón antiguo
-function verificarPass() {
-    window.location.href = '/usuarios.html'; // Cambia '/usuarios.html' por la ruta exacta de tu página de gestión si se llama diferente
-}
-window.verificarPass = verificarPass;
+
+// Comprobación automática en todas las páginas
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const respuesta = await fetch('/api/auth/comprobar'); // O la ruta que use tu backend para ver quién está logueado
+        const datos = await respuesta.json();
+        
+        // Si no hay sesión y estás intentando entrar a una zona protegida, te bota o avisa
+        if (!datos.logueado && window.location.pathname.includes('sanciones')) {
+            console.log("Sesión no iniciada");
+        }
+    } catch (error) {
+        console.error("Error al verificar la sesión:", error);
+    }
+});
