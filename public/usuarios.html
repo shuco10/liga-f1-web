@@ -135,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Verificar la sesión contra el servidor al cargar
     verificarSesionPagina();
+    cargarVisitasWeb();
 });
 
 // Función unificada para comprobar permisos y adaptar la vista
@@ -334,7 +335,27 @@ document.getElementById('btnCerrarSesion').addEventListener('click', async () =>
     }
 });
 
-    
+    // Función para cargar las visitas desde la base de datos
+async function cargarVisitasWeb() {
+    try {
+        // Opcional: registra la visita actual si corresponde
+        await fetch('/api/visitas/registrar', { method: 'POST' });
+        
+        // Pide los totales al servidor
+        const res = await fetch('/api/visitas');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        // Busca los elementos del DOM donde se muestran las visitas
+        const spanHoy = document.getElementById('visitas-hoy') || document.querySelector('.visitas-hoy');
+        const spanTotal = document.getElementById('visitas-total') || document.querySelector('.visitas-total');
+        
+        if (spanHoy) spanHoy.innerText = data.hoy;
+        if (spanTotal) spanTotal.innerText = data.totales;
+    } catch (e) {
+        console.error("Error al cargar las visitas:", e);
+    }
+}
     
 </script>
 
