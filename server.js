@@ -21,33 +21,10 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.static('public'));
 
+// ==========================================
+// 1. DECLARAS LA FUNCIÓN PRIMERO
+// ==========================================
 async function inicializarBaseDeDatos() {
-    try {
-        console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
-
-        // Tabla de escuderías
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS escuderias (
-                id SERIAL PRIMARY KEY,
-                nombre VARCHAR(100) NOT NULL,
-                color_hex VARCHAR(7),
-                estrellas INT DEFAULT 2,
-                mundiales INT DEFAULT 0
-            );
-        `);
-
-        // Tabla para el contador diario de visitas y el histórico
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS visitas_diarias (
-                fecha DATE PRIMARY KEY,
-                total INT DEFAULT 0
-            );
-        `);
-    } catch (error) {
-        console.error("Error al inicializar la base de datos:", error);
-    }
-}
-inicializarBaseDeDatos();
     try {
         console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
 
