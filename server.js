@@ -2,10 +2,11 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const { Pool } = require('pg');
+const session = require('express-session'); // <--- Asegúrate de tener esto requerido
 
 const app = express();
-const server = http.createServer(app); // Creamos el servidor HTTP aquí
-const io = new Server(server);         // Inicializamos Socket.io
+const server = http.createServer(app);
+const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.DATABASE_URL) {
@@ -17,9 +18,19 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+// 1. Middlewares obligatorios primero
 app.use(express.json());
 app.use(express.static('public'));
 
+// 2. Configuración de sesiones (¡Imprescindible para el login y los roles!)
+app.use(session({
+    secret: 'cazadores_curvas_secreto_super_seguro',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+}));
+
+// 3. A partir de aquí van tus rutas (/api/auth/login, /api/usuarios/lista, etc.)
 async function inicializarBaseDeDatos() {
     try {
         console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
@@ -31,6 +42,16 @@ async function inicializarBaseDeDatos() {
                 color_hex VARCHAR(7),
                 estrellas INT DEFAULT 2,
                 mundiales INT DEFAULT 0
+            );
+        `);
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                email VARCHAR(100) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                rol VARCHAR(20) DEFAULT 'user',
+                creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
