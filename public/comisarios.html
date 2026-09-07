@@ -1279,24 +1279,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargamos datos iniciales
     await cargarTodosLosDatos();
     
-    // 2. Definimos elementos
-    const esAdmin = localStorage.getItem('rol') === 'admin';
+    // 2. Definimos elementos y comprobamos el rol usando la función del servidor o global
+    const adminUser = typeof esAdmin === 'function' ? esAdmin() : false;
     const panelAdmin = document.getElementById('panel-admin');
+    const bloqueLogin = document.getElementById('bloqueLogin') || document.getElementById('login-modal'); // Buscamos de forma segura
     
     // 3. Lógica de visibilidad
-    if (esAdmin) {
+    if (adminUser) {
         // Si es admin, cargamos sus herramientas y mostramos el panel
-        await cargarDesplegablesAdmin();
-        aplicarPermisos();
+        if (typeof cargarDesplegablesAdmin === 'function') {
+            await cargarDesplegablesAdmin();
+        }
+        if (typeof aplicarPermisosAdmin === 'function') {
+            aplicarPermisosAdmin();
+        }
         
         if (panelAdmin) panelAdmin.style.display = 'block';
-        irA(null, 'panel-admin');
-        marcarBotonActivo('panel-admin');
+        if (typeof irA === 'function') irA(null, 'panel-admin');
+        if (typeof marcarBotonActivo === 'function') marcarBotonActivo('panel-admin');
     } else {
-
-     // --- SI NO ERES ADMIN ---
-        bloqueLogin.style.display = 'block';   // Muestras el login
-        panelAdmin.style.display = 'none';     // Ocultas el panel
+       // --- SI NO ERES ADMIN ---
+       if (bloqueLogin) bloqueLogin.style.display = 'block';   // Muestras el login de forma segura
+       if (panelAdmin) panelAdmin.style.display = 'none';      // Ocultas el panel
     }
 });
 
