@@ -30,16 +30,18 @@ const pool = new Pool({
 
 app.use(express.static('public'));
 
-// 2. Ahora sí, Socket.io reconoce la variable sessionMiddleware
+// 2. Socket.io conectado a la sesión de Express
 io.use((socket, next) => {
     sessionMiddleware(socket.request, {}, next);
 });
 
+// Declaración ÚNICA de usuariosConectados para todo el archivo
 const usuariosConectados = new Map();
 
 io.on('connection', (socket) => {
     const sessionData = socket.request.session;
-    const username = sessionData && sessionData.user ? sessionData.user.usuario : 'Anónimo';
+    // Apuntamos directamente a sessionData.usuario que es como lo guardas en el login
+    const username = sessionData && sessionData.usuario ? sessionData.usuario : 'Anónimo';
     
     usuariosConectados.set(socket.id, username);
     io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
@@ -49,7 +51,6 @@ io.on('connection', (socket) => {
         io.emit('actualizar-conectados', Array.from(usuariosConectados.values()));
     });
 });
-
 // ==========================================
 // 1. DECLARAS LA FUNCIÓN PRIMERO
 // ==========================================
