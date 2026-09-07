@@ -40,67 +40,44 @@ async function gestionarVisitas() {
 window.addEventListener('DOMContentLoaded', () => {
     gestionarVisitas();
 
-    // 3. Estela del Cursor con control de posición y desvanecimiento al parar
-    const numDots = 8;
-    const dots = [];
-    const tailPos = [];
-    const mouse = { x: 0, y: 0 };
-    let stopTimeout = null;
+    // 3. Efecto de "huellas" estáticas del cursor
+    let lastTime = 0;
 
-    // Crear las partículas de la estela
-    for (let i = 0; i < numDots; i++) {
-        tailPos.push({ x: 0, y: 0 });
-        const dot = document.createElement('div');
-        dot.style.position = 'fixed';
-        dot.style.width = '16px';
-        dot.style.height = '16px';
-        dot.style.backgroundImage = "url('/webimagenes/cursorcdc.png')";
-        dot.style.backgroundSize = 'cover';
-        dot.style.pointerEvents = 'none';
-        dot.style.zIndex = '999999';
-        dot.style.opacity = '0';
-        dot.style.transition = 'opacity 0.4s ease'; // Transición suave de aparición/desaparición
-        document.body.appendChild(dot);
-        dots.push(dot);
-    }
-
-    // Capturar el movimiento del ratón
     window.addEventListener('mousemove', (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
+        const now = Date.now();
+        // Controlamos la frecuencia para dejar una huella cada 50ms (evita saturar el navegador)
+        if (now - lastTime < 50) return;
+        lastTime = now;
 
-        // Mostrar la estela con opacidad gradual al mover
-        dots.forEach((dot, i) => {
-            dot.style.opacity = String((1 - i / numDots) * 0.5);
-        });
+        // Crear la huella estática
+        const huella = document.createElement('div');
+        huella.style.position = 'fixed';
+        // Tamaño exacto de 32x32px (igual que el asset original)
+        huella.style.width = '32px';
+        huella.style.height = '32px';
+        huella.style.backgroundImage = "url('/webimagenes/cursorcdc.png')";
+        huella.style.backgroundSize = 'cover';
+        huella.style.pointerEvents = 'none';
+        huella.style.zIndex = '999999';
+        
+        // Centrar perfectamente restando la mitad del tamaño (16px) a la posición del ratón
+        huella.style.left = `${e.clientX - 16}px`;
+        huella.style.top = `${e.clientY - 16}px`;
+        
+        huella.style.opacity = '0.5'; // Visibilidad inicial de la huella
+        // Transición de desvanecimiento suave de 0.8 segundos
+        huella.style.transition = 'opacity 0.8s ease';
+        
+        document.body.appendChild(huella);
 
-        // Si el usuario para el ratón durante casi 1 segundo, la estela se desvanece
-        clearTimeout(stopTimeout);
-        stopTimeout = setTimeout(() => {
-            dots.forEach(dot => {
-                dot.style.opacity = '0';
-            });
-        }, 700); // 700 milisegundos de margen antes de ocultarse
+        // Iniciar el desvanecimiento casi al instante
+        setTimeout(() => {
+            huella.style.opacity = '0';
+        }, 50);
+
+        // Eliminar el elemento del HTML cuando transcurra el tiempo para no acumular basura en la página
+        setTimeout(() => {
+            huella.remove();
+        }, 850);
     });
-
-    // Bucle de animación fluida de la estela
-    function animateTrail() {
-        let x = mouse.x;
-        let y = mouse.y;
-
-        tailPos.forEach((pos, index) => {
-            pos.x += (x - pos.x) * 0.3;
-            pos.y += (y - pos.y) * 0.3;
-            
-            // Restamos 8px para centrar el icono de 16x16 justo detrás/sobre el cursor
-            dots[index].style.left = `${pos.x - 8}px`;
-            dots[index].style.top = `${pos.y - 8}px`;
-
-            x = pos.x;
-        });
-
-        requestAnimationFrame(animateTrail);
-    }
-
-    requestAnimationFrame(animateTrail);
 });
