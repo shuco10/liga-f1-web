@@ -14,18 +14,6 @@
         body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
     </style>
     <script src="/auth.js"></script>
-    <script>
-        // Si necesitas adaptar algo específico en comisarios según el rol:
-        window.onSesionVerificada = (data) => {
-            const panelComisariosAdmin = document.getElementById('panel-admin-comisarios');
-            
-            if (data.logueado && data.rol === 'admin') {
-                if (panelComisariosAdmin) panelComisariosAdmin.style.display = 'block';
-            } else {
-                if (panelComisariosAdmin) panelComisariosAdmin.style.display = 'none';
-            }
-        };
-    </script>
 </head>
 <body>
 
@@ -1277,36 +1265,26 @@ document.getElementById('form-avisos').addEventListener('submit', async (e) => {
 //----------------------CARGA DE LA PANTALLA  -----------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargamos datos iniciales
-    if (typeof cargarTodosLosDatos === 'function') {
-        await cargarTodosLosDatos();
-    }
+    await cargarTodosLosDatos();
     
-    // 2. Comprobamos si el usuario es administrador mediante la sesión del servidor
-    const adminUser = typeof esAdmin === 'function' ? esAdmin() : false;
+    // 2. Definimos elementos
+    const esAdmin = localStorage.getItem('rol') === 'admin';
+    const panelAdmin = document.getElementById('panel-admin');
     
-    // 3. Si es admin, cargamos las herramientas y mostramos todos los bloques con clase .admin-only o .solo-admin
-    if (adminUser) {
-        if (typeof cargarDesplegablesAdmin === 'function') {
-            await cargarDesplegablesAdmin();
-        }
+    // 3. Lógica de visibilidad
+    if (esAdmin) {
+        // Si es admin, cargamos sus herramientas y mostramos el panel
+        await cargarDesplegablesAdmin();
+        aplicarPermisos();
         
-        // Forzamos la visualización de los bloques de administración en base a tus clases reales
-        const elementosAdmin = document.querySelectorAll('.admin-only, .solo-admin');
-        elementosAdmin.forEach(el => {
-            el.style.display = 'block';
-        });
-
-        if (typeof irA === 'function') irA(null, 'contenido-admin');
-        if (typeof marcarBotonActivo === 'function') marcarBotonActivo('contenido-admin');
+        if (panelAdmin) panelAdmin.style.display = 'block';
+        irA(null, 'panel-admin');
+        marcarBotonActivo('panel-admin');
     } else {
-        // --- SI NO ERES ADMIN: Ocultamos los bloques admin y mostramos el login si procede ---
-        const elementosAdmin = document.querySelectorAll('.admin-only, .solo-admin');
-        elementosAdmin.forEach(el => {
-            el.style.display = 'none';
-        });
 
-        const bloqueLogin = document.getElementById('bloqueLogin') || document.getElementById('login-modal');
-        if (bloqueLogin) bloqueLogin.style.display = 'block';
+     // --- SI NO ERES ADMIN ---
+        bloqueLogin.style.display = 'block';   // Muestras el login
+        panelAdmin.style.display = 'none';     // Ocultas el panel
     }
 });
 
@@ -1439,8 +1417,7 @@ async function asignarMundialEscuderia(btn) {
 
 
 <div id="footer-placeholder"></div>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/scripts.js"></script>
+
         
 </body>
 </html>
