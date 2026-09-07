@@ -1,12 +1,14 @@
 const socket = io();
 
 // 1. Socket.io: Actualizar los usuarios online en tiempo real y pintar la lista
-socket.on('actualizar-conectados', (listaUsuarios) => {
+// Manejador universal para Socket.io (funciona con número o con array)
+function actualizarContadorOnline(datos) {
     const spanNum = document.getElementById('num-usuarios');
     const spanBola = document.getElementById('bola-estado');
     
-    // Actualizamos el número de arriba con la cantidad real de la lista filtrada
-    const total = listaUsuarios.length;
+    // Si llegan datos en forma de lista (array), contamos sus elementos; si es un número, lo usamos tal cual
+    const total = Array.isArray(datos) ? datos.length : Number(datos);
+    
     if (spanNum) spanNum.innerText = total;
     
     if (spanBola && spanNum) {
@@ -18,10 +20,15 @@ socket.on('actualizar-conectados', (listaUsuarios) => {
             spanNum.style.color = '#ef4444';
         }
     }
+}
 
-    // Si estás en la página de administración (o en una vista con la lista de abajo), la actualizamos también:
-    const contenedorListaAbajo = document.getElementById('contenedor-conectados-abajo'); // o el ID que use tu sección de abajo
-    if (contenedorListaAbajo) {
+// Escuchamos ambos nombres de eventos posibles que pueda emitir el servidor
+socket.on('actualizar-conectados', (listaUsuarios) => {
+    actualizarContadorOnline(listaUsuarios);
+
+    // Si estás en la página de administración, actualizamos también la lista de abajo
+    const contenedorListaAbajo = document.getElementById('contenedor-conectados-abajo');
+    if (contenedorListaAbajo && Array.isArray(listaUsuarios)) {
         contenedorListaAbajo.innerHTML = '';
         listaUsuarios.forEach(usuario => {
             const item = document.createElement('div');
@@ -29,6 +36,10 @@ socket.on('actualizar-conectados', (listaUsuarios) => {
             contenedorListaAbajo.appendChild(item);
         });
     }
+});
+
+socket.on('usuarios-actualizados', (numUsuarios) => {
+    actualizarContadorOnline(numUsuarios);
 });
 
 // 2. Control de Visitas: Registrar y pintar contadores
