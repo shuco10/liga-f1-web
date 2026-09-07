@@ -70,8 +70,6 @@
 <div class="titulo-liga">🏁 CAZADORES DE CURVAS 🏁</div>
 
 <!-- USUARIOS CONECTADOS A LA WEB Y VISITAS -->
-<!-- Contenedor general para alinear las dos cajas en la misma línea -->
-<!-- Contenedor general -->
 <div style="text-align: center; width: 100%; margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
     
     <!-- CAJA 1: Usuarios Online -->
@@ -91,39 +89,8 @@
 
 </div>
 
-<!-- Scripts -->
 <script src="/socket.io/socket.io.js"></script>
-<script>
-    const socket = io();
-    socket.on('usuarios-actualizados', (numUsuarios) => {
-        const spanNum = document.getElementById('num-usuarios');
-        const spanBola = document.getElementById('bola-estado');
-        
-        if (spanNum) spanNum.innerText = numUsuarios;
-        const total = Number(numUsuarios);
-        if (spanBola && spanNum) {
-            spanBola.style.color = total > 0 ? '#4ade80' : '#ef4444';
-            spanNum.style.color = total > 0 ? '#4ade80' : '#ef4444';
-        }
-    });
-
-    async function gestionarVisitas() {
-        try {
-            // 1. Registramos la visita al cargar la página
-            await fetch('/api/visitas/registrar', { method: 'POST' });
-
-            // 2. Pedimos los contadores actualizados
-            const respuesta = await fetch('/api/visitas');
-            const datos = await respuesta.json();
-            
-            document.getElementById('visitas-hoy').innerText = datos.hoy;
-            document.getElementById('visitas-totales').innerText = datos.totales;
-        } catch (e) {
-            console.error("Error gestionando las visitas:", e);
-        }
-    }
-    gestionarVisitas();
-</script>
+<script src="/scripts.js"></script>
 
 <nav style="display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
     <a href="/index.html" class="boton-accion"><i class="fa-solid fa-house"></i></a>
