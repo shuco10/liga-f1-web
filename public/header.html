@@ -110,36 +110,9 @@
 <!-- Carga automática de scripts compatibles con inyección dinámica -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts.js?v=2"></script>
-<script> 
-async function verificarSesionPagina() {
-    try {
-        const res = await fetch('/api/auth/sesion');
-        const data = await res.json();
-        
-        const seccionFormularios = document.getElementById('seccion-formularios');
-        const panelGestion = document.getElementById('panel-gestion-usuarios');
-        const avisoNoAuth = document.getElementById('aviso-no-autorizado');
-        const btnCerrarSesion = document.getElementById('btn-logout'); // Apuntando al ID unificado
 
-        if (data.logueado && data.rol === 'admin') {
-            if (seccionFormularios) seccionFormularios.style.display = 'none';
-            if (panelGestion) panelGestion.style.display = 'block';
-            if (avisoNoAuth) avisoNoAuth.style.display = 'none';
-            if (btnCerrarSesion) btnCerrarSesion.style.display = 'inline-block'; // Muestra el botón
-            
-            cargarListaUsuarios();
-        } else {
-            if (seccionFormularios) seccionFormularios.style.display = 'flex';
-            if (panelGestion) panelGestion.style.display = 'none';
-            if (avisoNoAuth) avisoNoAuth.style.display = 'block';
-            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none'; // Oculta el botón
-        }
-    } catch (err) {
-        console.error("Error al verificar sesión en la página:", err);
-    }
-}
-    document.addEventListener('DOMContentLoaded', verificarSesionPagina);
-</script>
+
+
 
 
 
