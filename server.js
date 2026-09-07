@@ -879,6 +879,95 @@ app.delete('/api/resultados/:id', async (req, res) => {
     }
 });
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// editar-resultado - Actualizar posición de un resultado y recalcular puntos fijos y podios     //
+/////////////////////////////////////////////////////////////////////////////////////////////////
+app.put('/api/circuitos/resultado/:id', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const { id } = req.params;
+        const { posicion: nuevaPosicion } = req.body;
+
+        // 1. Obtenemos los datos actuales del resultado antes de cambiarlo
+        const resultadoQuery = await client.query(
+            'SELECT id_piloto, puntos, posicion, pole FROM resultados WHERE id = $1', 
+            [id]
+        );
+        
+        if (resultadoQuery.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: "Resultado no encontrado" });
+        }
+
+        const { id_piloto, puntos: puntosViejos, posicion: posicionVieja, pole } = resultadoQuery.rows[0];
+
+        // 2. Tabla fija de puntos por posición (ajusta los puntos a los de tu liga si cambian)
+        const obtenerPuntosFijos = (pos) => {
+            const tabla = {
+                1: 25,
+                2: 18,
+                3: 15,
+                4: 12,
+                5: 10,
+                6: 8,
+                7: 6,
+                8: 4,
+                9: 2,
+                10: 1
+            };
+            return tabla[parseInt(pos)] || 0; // Si queda fuera del top 10 o no tiene puntos, devuelve 0
+        };
+
+        const puntosNuevos = obtenerPuntosFijos(nuevaPosicion);
+        const diffPuntos = puntosNuevos - (puntosViejos || 0);
+
+        if (id_piloto) {
+            // Calcular diferencias de estadísticas (victorias y podios)
+            const eraVictoriaVieja = (posicionVieja === 1) ? 1 : 0;
+            const esVictoriaNueva = (parseInt(nuevaPosicion) === 1) ? 1 : 0;
+            const diffVictoria = esVictoriaNueva - eraVictoriaVieja;
+
+            const eraPodioViejo = (posicionVieja >= 1 && posicionVieja <= 3) ? 1 : 0;
+            const esPodioNuevo = (parseInt(nuevaPosicion) >= 1 && parseInt(nuevaPosicion) <= 3) ? 1 : 0;
+            const diffPodio = esPodioNuevo - eraPodioViejo;
+
+            // 3. Actualizamos la tabla pilotos aplicando las diferencias (delta)
+            await client.query(
+                `UPDATE pilotos 
+                 SET puntos_totales = puntos_totales + $1, 
+                     victorias = GREATEST(0, victorias + $2),
+                     podios = GREATEST(0, podios + $3)
+                 WHERE id = $4`,
+                [diffPuntos, diffVictoria, diffPodio, id_piloto]
+            );
+        }
+
+        // 4. Actualizamos el resultado con la nueva posición y sus puntos fijos correspondientes
+        const updateResultado = await client.query(
+            `UPDATE resultados 
+             SET posicion = $1, puntos = $2 
+             WHERE id = $3 
+             RETURNING *`,
+            [nuevaPosicion, puntosNuevos, id]
+        );
+
+        await client.query('COMMIT');
+        res.status(200).json({ success: true, data: updateResultado.rows[0] });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("Error al actualizar resultado:", err);
+        res.status(500).json({ error: "Error al actualizar la posición" });
+    } finally {
+        client.release();
+    }
+});
+
+
+
+
+
+
 // Resetear todos los resultados de los Grandes Premios
 app.post('/api/resetear-resultados', async (req, res) => {
     try {
