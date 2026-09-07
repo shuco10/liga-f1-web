@@ -1,6 +1,12 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const { Pool } = require('pg');
+
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
 const PORT = process.env.PORT || 3000;
 
 if (!process.env.DATABASE_URL) {
@@ -16,6 +22,32 @@ app.use(express.json());
 app.use(express.static('public'));
 
 async function inicializarBaseDeDatos() {
+    try {
+        console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
+
+        // Tabla de escuderías
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS escuderias (
+                id SERIAL PRIMARY KEY,
+                nombre VARCHAR(100) NOT NULL,
+                color_hex VARCHAR(7),
+                estrellas INT DEFAULT 2,
+                mundiales INT DEFAULT 0
+            );
+        `);
+
+        // Tabla para el contador diario de visitas y el histórico
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS visitas_diarias (
+                fecha DATE PRIMARY KEY,
+                total INT DEFAULT 0
+            );
+        `);
+    } catch (error) {
+        console.error("Error al inicializar la base de datos:", error);
+    }
+}
+inicializarBaseDeDatos();
     try {
         console.log("--- AJUSTANDO BASE DE DATOS CAZADORES DE CURVAS ---");
 
@@ -930,6 +962,33 @@ app.get('/api/ultimo-gp', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+// ==========================================
+// SOCKET.IO: CONTADOR DE USUARIOS ONLINE
+// ==========================================
+let usuariosConectados = 0;
+
+io.on('connection', (socket) => {
+    usuariosConectados++;
+    io.emit('actualizar-usuarios', usuariosConectados);
+
+    socket.on('disconnect', () => {
+        usuariosConectados = Math.max(0, usuariosConectados - 1);
+        io.emit('actualizar-usuarios', usuariosConectados);
+    });
+});
+
+// ==========================================
+// PONER TODO POR ENCIMA DE ESTO ============
+// ==========================================
+
+// IMPORTANTE: Se usa server.listen en lugar de app.listen para que los sockets funcionen
+server.listen(PORT, () => {
+    console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
+});
+
+
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -938,6 +997,9 @@ app.get('/api/ultimo-gp', async (req, res) => {
 // PONER TODO POR ENCIMA DE ESTO ============
 // ==========================================
 
-app.listen(PORT, () => {
+// ==========================================
+// ARRANQUE DEL SERVIDOR
+// ==========================================
+server.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
