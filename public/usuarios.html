@@ -337,9 +337,52 @@
         }
     });
 
+    // Función que comprueba el estado y adapta la vista de usuarios.html
+async function verificarSesion() {
+    try {
+        const res = await fetch('/api/auth/sesion');
+        const data = await res.json();
+        
+        const seccionFormularios = document.getElementById('seccion-formularios');
+        const accesoRestringido = document.getElementById('acceso-restringido'); // El cuadro rojo de abajo
+
+        if (data.logueado && data.rol === 'admin') {
+            // Si es admin, ocultamos los formularios de login/registro y cargamos la tabla
+            if (seccionFormularios) seccionFormularios.style.display = 'none';
+            if (accesoRestringido) accesoRestringido.style.display = 'none';
+            
+            cargarTablaUsuarios();
+        } else if (data.logueado) {
+            alert("Has iniciado sesión, pero no tienes permisos de administrador.");
+        }
+    } catch (err) {
+        console.error("Error al verificar sesión en la página:", err);
+    }
+}
+
+// Función para pedir la lista al servidor y pintarla en la tabla
+async function cargarTablaUsuarios() {
+    try {
+        const res = await fetch('/api/usuarios/lista');
+        if (res.ok) {
+            const usuarios = await res.json();
+            // Aquí pintas tus usuarios en la tabla HTML que tengas preparada
+            console.log("Usuarios cargados:", usuarios);
+        }
+    } catch (err) {
+        console.error("Error al cargar la lista de usuarios:", err);
+    }
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    verificarSesion();
+});
+
     
 </script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="/auth.js"></script>
 <script src="/scripts.js"></script>
 </body>
 </html>
