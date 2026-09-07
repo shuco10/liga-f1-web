@@ -943,15 +943,6 @@ app.get('/api/ultimo-gp', async (req, res) => {
 // PONER TODO POR ENCIMA DE ESTO ============
 // ==========================================
 
-const http = require('http');
-const { Server } = require('socket.io');
-
-// ... aquí arriba tienes tus rutas normales, la conexión a Neon, etc. ...
-
-// Creamos el servidor HTTP envolviendo tu app de express
-const server = http.createServer(app);
-const io = new Server(server);
-
 let usuariosConectados = 0;
 
 io.on('connection', (socket) => {
@@ -964,8 +955,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Sustituimos el app.listen por server.listen usando tu variable PORT
-const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Servidor Cazadores de Curvas operativo en puerto ${PORT}`);
 });
