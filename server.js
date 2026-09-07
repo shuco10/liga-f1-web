@@ -1039,6 +1039,8 @@ app.get('/api/auth/sesion', (req, res) => {
 });
 
 // 2. Registro de Usuario (POST /api/auth/registro)
+const bcrypt = require('bcrypt'); // Asegúrate de tener esto arriba en tu archivo
+
 app.post('/api/auth/registro', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -1048,12 +1050,18 @@ app.post('/api/auth/registro', async (req, res) => {
             return res.status(400).json({ error: 'El usuario o el correo ya están registrados.' });
         }
 
+        // 1. Ciframos la contraseña antes de insertarla
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         const query = `
             INSERT INTO usuarios (username, email, password, rol, creado_en)
             VALUES ($1, $2, $3, 'user', CURRENT_TIMESTAMP)
             RETURNING id, username, email, rol;
         `;
-        await pool.query(query, [username, email, password]);
+        
+        // 2. Guardamos hashedPassword en lugar de password
+        await pool.query(query, [username, email, hashedPassword]);
         
         res.json({ success: true, message: 'Usuario registrado con éxito' });
     } catch (error) {
