@@ -338,20 +338,22 @@ document.getElementById('btnCerrarSesion').addEventListener('click', async () =>
     // Función para cargar las visitas desde la base de datos
 async function cargarVisitasWeb() {
     try {
-        // Opcional: registra la visita actual si corresponde
         await fetch('/api/visitas/registrar', { method: 'POST' });
         
-        // Pide los totales al servidor
         const res = await fetch('/api/visitas');
         if (!res.ok) return;
         const data = await res.json();
         
-        // Busca los elementos del DOM donde se muestran las visitas
+        // Buscamos con múltiples alternativas por si el ID/clase difiere
         const spanHoy = document.getElementById('visitas-hoy') || document.querySelector('.visitas-hoy');
-        const spanTotal = document.getElementById('visitas-total') || document.querySelector('.visitas-total');
+        const spanTotal = document.getElementById('visitas-total') || document.querySelector('.visitas-total') || document.getElementById('total-visitas');
         
-        if (spanHoy) spanHoy.innerText = data.hoy;
-        if (spanTotal) spanTotal.innerText = data.totales;
+        if (spanHoy) spanHoy.innerText = data.hoy !== undefined ? data.hoy : data.visitasHoy;
+        
+        // Comprobamos todas las propiedades posibles que devuelva tu API para el total (totales, total, count, etc.)
+        const valorTotal = data.totales !== undefined ? data.totales : (data.total !== undefined ? data.total : data.count);
+        if (spanTotal) spanTotal.innerText = valorTotal;
+        
     } catch (e) {
         console.error("Error al cargar las visitas:", e);
     }
