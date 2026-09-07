@@ -1102,7 +1102,7 @@ app.post('/api/auth/logout', (req, res) => {
 });
 
 // Ruta de emergencia para forzar el rol de administrador en la sesión actual
-get('/api/auth/forzar-admin', (req, res) => {
+app.get('/api/auth/forzar-admin', (req, res) => {
     req.session.usuario = { logueado: true, username: 'admin123', rol: 'admin' };
     req.session.save((err) => {
         res.json({ success: true, mensaje: "Sesión forzada a admin123 con éxito", usuario: req.session.usuario });
