@@ -213,3 +213,9 @@ async function guardarResolucion() {
         console.error("Error:", err);
     }
 }
+
+// Redirige al panel de gestión de usuarios/admins al pulsar el botón antiguo
+function verificarPass() {
+    window.location.href = '/usuarios.html'; // Cambia '/usuarios.html' por la ruta exacta de tu página de gestión si se llama diferente
+}
+window.verificarPass = verificarPass;
