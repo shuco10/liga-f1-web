@@ -18,7 +18,7 @@ async function verificarSesion() {
         
         actualizarUIUsuario();
 
-        // Si la página actual tiene una función específica de verificación (ej. panel de usuarios), se ejecuta
+        // Si la página actual tiene una función específica de verificación, se ejecuta
         if (typeof window.onSesionVerificada === 'function') {
             window.onSesionVerificada(data);
         }
@@ -51,7 +51,7 @@ async function cerrarSesion() {
 
 // Adaptar la interfaz globalmente según el rol del usuario (Cabecera, botones, paneles admin)
 function actualizarUIUsuario() {
-    const btnLogout = document.getElementById('btn-cerrar-sesion');
+    const btnLogout = document.getElementById('btn-cerrar-sesion') || document.getElementById('btn-logout');
     if (btnLogout) {
         btnLogout.style.display = usuarioActual.logueado ? 'inline-block' : 'none';
     }
@@ -62,13 +62,23 @@ function actualizarUIUsuario() {
         btnLogin.style.display = usuarioActual.logueado ? 'none' : 'inline-block';
     }
 
-    // Ocultar o mostrar elementos exclusivos para administradores en cualquier página
-    const elementosAdmin = document.querySelectorAll('.solo-admin');
+    // Aplicar permisos a los elementos admin existentes
+    aplicarPermisosAdmin();
+}
+
+// Función global para mostrar u ocultar elementos admin (soporta .solo-admin y .admin-only)
+function aplicarPermisosAdmin() {
     const esAdminUser = esAdmin();
+    const elementosAdmin = document.querySelectorAll('.solo-admin, .admin-only');
+    
     elementosAdmin.forEach(el => {
-        el.style.display = esAdminUser ? 'block' : 'none'; // O 'inline-block' según prefieras, block funciona bien para bloques de administración
+        const esEnLinea = el.tagName === 'SPAN' || el.tagName === 'BUTTON' || el.style.display === 'inline-block';
+        el.style.display = esAdminUser ? (esEnLinea ? 'inline-block' : 'block') : 'none';
     });
 }
+
+// Hacemos que la función esté disponible globalmente para llamarla tras cargar datos dinámicos
+window.aplicarPermisosAdmin = aplicarPermisosAdmin;
 
 // Ejecutar la comprobación al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
