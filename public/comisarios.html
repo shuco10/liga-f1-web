@@ -1277,30 +1277,36 @@ document.getElementById('form-avisos').addEventListener('submit', async (e) => {
 //----------------------CARGA DE LA PANTALLA  -----------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargamos datos iniciales
-    await cargarTodosLosDatos();
+    if (typeof cargarTodosLosDatos === 'function') {
+        await cargarTodosLosDatos();
+    }
     
-    // 2. Definimos elementos y comprobamos el rol usando la función del servidor o global
+    // 2. Comprobamos si el usuario es administrador mediante la sesión del servidor
     const adminUser = typeof esAdmin === 'function' ? esAdmin() : false;
-    const panelAdmin = document.getElementById('panel-admin');
-    const bloqueLogin = document.getElementById('bloqueLogin') || document.getElementById('login-modal'); // Buscamos de forma segura
     
-    // 3. Lógica de visibilidad
+    // 3. Si es admin, cargamos las herramientas y mostramos todos los bloques con clase .admin-only o .solo-admin
     if (adminUser) {
-        // Si es admin, cargamos sus herramientas y mostramos el panel
         if (typeof cargarDesplegablesAdmin === 'function') {
             await cargarDesplegablesAdmin();
         }
-        if (typeof aplicarPermisosAdmin === 'function') {
-            aplicarPermisosAdmin();
-        }
         
-        if (panelAdmin) panelAdmin.style.display = 'block';
-        if (typeof irA === 'function') irA(null, 'panel-admin');
-        if (typeof marcarBotonActivo === 'function') marcarBotonActivo('panel-admin');
+        // Forzamos la visualización de los bloques de administración en base a tus clases reales
+        const elementosAdmin = document.querySelectorAll('.admin-only, .solo-admin');
+        elementosAdmin.forEach(el => {
+            el.style.display = 'block';
+        });
+
+        if (typeof irA === 'function') irA(null, 'contenido-admin');
+        if (typeof marcarBotonActivo === 'function') marcarBotonActivo('contenido-admin');
     } else {
-       // --- SI NO ERES ADMIN ---
-       if (bloqueLogin) bloqueLogin.style.display = 'block';   // Muestras el login de forma segura
-       if (panelAdmin) panelAdmin.style.display = 'none';      // Ocultas el panel
+        // --- SI NO ERES ADMIN: Ocultamos los bloques admin y mostramos el login si procede ---
+        const elementosAdmin = document.querySelectorAll('.admin-only, .solo-admin');
+        elementosAdmin.forEach(el => {
+            el.style.display = 'none';
+        });
+
+        const bloqueLogin = document.getElementById('bloqueLogin') || document.getElementById('login-modal');
+        if (bloqueLogin) bloqueLogin.style.display = 'block';
     }
 });
 
