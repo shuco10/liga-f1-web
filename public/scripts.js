@@ -1,13 +1,14 @@
 socket = io();
 
-// 1. Socket.io: Actualizar los usuarios online en tiempo real
-socket.on('usuarios-actualizados', (numUsuarios) => {
+// 1. Socket.io: Actualizar los usuarios online en tiempo real y pintar la lista
+socket.on('actualizar-conectados', (listaUsuarios) => {
     const spanNum = document.getElementById('num-usuarios');
     const spanBola = document.getElementById('bola-estado');
     
-    if (spanNum) spanNum.innerText = numUsuarios;
+    // Actualizamos el número de arriba con la cantidad real de la lista filtrada
+    const total = listaUsuarios.length;
+    if (spanNum) spanNum.innerText = total;
     
-    const total = Number(numUsuarios);
     if (spanBola && spanNum) {
         if (total > 0) {
             spanBola.style.color = '#4ade80';
@@ -16,6 +17,17 @@ socket.on('usuarios-actualizados', (numUsuarios) => {
             spanBola.style.color = '#ef4444';
             spanNum.style.color = '#ef4444';
         }
+    }
+
+    // Si estás en la página de administración (o en una vista con la lista de abajo), la actualizamos también:
+    const contenedorListaAbajo = document.getElementById('contenedor-conectados-abajo'); // o el ID que use tu sección de abajo
+    if (contenedorListaAbajo) {
+        contenedorListaAbajo.innerHTML = '';
+        listaUsuarios.forEach(usuario => {
+            const item = document.createElement('div');
+            item.textContent = usuario;
+            contenedorListaAbajo.appendChild(item);
+        });
     }
 });
 
