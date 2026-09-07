@@ -100,8 +100,8 @@ async function cargarCircuitos() {
         ];
 
         // Cambiado de editarResultado a abrirModalEdicion para que abra el modal correctamente
-        const renderAcciones = (id) => `
-            <div class="admin-only" style="display:inline-block; margin-left: 5px;">
+const renderAcciones = (id) => `
+            <div class="admin-only" style="margin-left: 5px;">
                 <button onclick="abrirModalEdicion(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
                 <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
             </div>`;
@@ -146,6 +146,10 @@ async function cargarCircuitos() {
                 </div>
             </div>`;
         }).join('');
+        // Añade esto aquí abajo del todo:
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.setProperty('display', 'inline-block', 'important');
+        });
     } catch (e) { console.error("Error al cargar los circuitos:", e); }
 }
 
