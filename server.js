@@ -1262,6 +1262,29 @@ app.put('/api/usuarios/:id/rol', async (req, res) => {
     }
 });
 
+// ==========================================
+// APROBAR / ACTIVAR USUARIO (POST /api/admin/usuarios/:id/activar)
+// ==========================================
+app.post('/api/admin/usuarios/:id/activar', async (req, res) => {
+    try {
+        // Validación de seguridad: comprobamos que esté logueado y sea admin
+        if (!req.session.usuario || req.session.rol !== 'admin') {
+            return res.status(403).json({ error: 'Acceso denegado' });
+        }
+
+        const { id } = req.params;
+
+        // Actualizamos el estado del usuario a activo en la base de datos
+        await pool.query('UPDATE usuarios SET activo = true WHERE id = $1', [id]);
+
+        res.json({ success: true, message: 'Usuario activado con éxito' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
 
 // ==========================================
 // ARRANQUE DEL SERVIDOR
