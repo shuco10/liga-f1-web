@@ -55,7 +55,7 @@
     <div id="msg-registro" style="margin-top: 15px; font-size: 0.9em; text-align: center;"></div>
 </div>
 
-        <!-- LOGIN -->
+<!-- LOGIN -->
         <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); flex: 1; min-width: 280px; max-width: 400px;">
             <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
                 <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
@@ -66,9 +66,35 @@
                 <button type="submit" style="width: 100%; padding: 10px; background-color: #2563eb; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Entrar</button>
             </form>
             <div id="msg-login" style="margin-top: 15px; font-size: 0.9em; text-align: center;"></div>
-        </div>
 
-    </div>
+            <!-- ENLACE Y SECCIÓN DE RECUPERACIÓN DE CONTRASEÑA -->
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="#" id="link-olvido" style="color: #38bdf8; font-size: 0.9em; text-decoration: none;">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <div id="seccion-recuperacion" style="display: none; margin-top: 20px; border-top: 1px dashed #475569; padding-top: 15px;">
+                <h4 style="color: #38bdf8; margin-top: 0; margin-bottom: 10px; font-size: 1em;">Recuperar Contraseña</h4>
+                
+                <!-- Paso 1: Pedir Usuario -->
+                <div id="recup-paso-1">
+                    <input type="text" id="recup-username" placeholder="Introduce tu usuario" style="display: block; width: 100%; padding: 8px; margin-bottom: 10px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 4px; box-sizing: border-box; font-size: 0.9em;">
+                    <button type="button" onclick="obtenerPreguntaSeguridad()" style="width: 100%; padding: 8px; background-color: #0284c7; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9em;">Siguiente</button>
+                </div>
+
+                <!-- Paso 2: Mostrar Pregunta y Cambiar Password -->
+                <div id="recup-paso-2" style="display: none;">
+                    <p id="texto-pregunta-seguridad" style="color: #cbd5e1; font-size: 0.85em; margin-bottom: 10px; font-style: italic;"></p>
+                    <input type="text" id="recup-respuesta" placeholder="Tu respuesta secreta" style="display: block; width: 100%; padding: 8px; margin-bottom: 10px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 4px; box-sizing: border-box; font-size: 0.9em;">
+                    <input type="password" id="recup-nueva-password" placeholder="Nueva contraseña" style="display: block; width: 100%; padding: 8px; margin-bottom: 10px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 4px; box-sizing: border-box; font-size: 0.9em;">
+                    <button type="button" onclick="ejecutarCambioPassword()" style="width: 100%; padding: 8px; background-color: #16a34a; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9em;">Cambiar Contraseña</button>
+                </div>
+
+                <div id="msg-recuperacion" style="margin-top: 10px; font-size: 0.85em; text-align: center;"></div>
+                <div style="text-align: right; margin-top: 8px;">
+                    <a href="#" id="link-volver-login" style="color: #94a3b8; font-size: 0.8em; text-decoration: none;">Volver al login</a>
+                </div>
+            </div>
+        </div>
     <!-- PANEL DE CONTROL / GESTIÓN (Visible solo para administradores o según permisos) -->
     <div id="panel-gestion-usuarios" style="margin-top: 30px; display: none;">
         
@@ -291,27 +317,39 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
     const username = document.getElementById('reg-username').value;
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
+    
+    // 1. Capturamos también los valores de la pregunta y la respuesta
+    const preguntaSeguridad = document.getElementById('reg-pregunta').value;
+    const respuestaSeguridad = document.getElementById('reg-respuesta').value;
+    
     const msg = document.getElementById('msg-registro');
 
     try {
-        const res = await fetch('/api/auth/registro', {
+        const respuesta = await fetch('/api/auth/registro', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
+            body: JSON.stringify({ 
+                username, 
+                email, 
+                password, 
+                preguntaSeguridad, 
+                respuestaSeguridad // 2. Los incluimos aquí para que lleguen al servidor
+            })
         });
-        const data = await res.json();
+
+        const data = await respuesta.json();
         
-        if (res.ok) {
+        if (respuesta.ok) {
             msg.style.color = '#38bdf8';
-            msg.innerText = '¡Registrado con éxito! Tu cuenta está pendiente de aprobación por un administrador.';
+            msg.textContent = data.message;
             document.getElementById('form-registro').reset();
         } else {
             msg.style.color = '#f87171';
-            msg.innerText = data.error || 'Error en el registro';
+            msg.textContent = data.error || 'Hubo un error en el registro.';
         }
-    } catch (err) {
+    } catch (error) {
         msg.style.color = '#f87171';
-        msg.innerText = 'Error de conexión con el servidor';
+        msg.textContent = 'Error de conexión con el servidor.';
     }
 });
 
@@ -415,7 +453,98 @@ document.addEventListener('change', async (e) => {
     }
 });
 
-    
+ // Mostrar / Ocultar el bloque de recuperación desde el enlace del login
+document.getElementById('link-olvido').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('seccion-recuperacion').style.display = 'block';
+    document.getElementById('link-olvido').parentElement.style.display = 'none';
+});
+
+document.getElementById('link-volver-login').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('seccion-recuperacion').style.display = 'none';
+    document.getElementById('link-olvido').parentElement.style.display = 'block';
+    document.getElementById('msg-recuperacion').innerText = '';
+    document.getElementById('recup-paso-1').style.display = 'block';
+    document.getElementById('recup-paso-2').style.display = 'none';
+});
+
+// PASO 1: Consultar la pregunta de seguridad del usuario
+async function obtenerPreguntaSeguridad() {
+    const username = document.getElementById('recup-username').value.trim();
+    const msg = document.getElementById('msg-recuperacion');
+
+    if (!username) {
+        msg.style.color = '#f87171';
+        msg.innerText = 'Por favor, escribe tu nombre de usuario.';
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/auth/obtener-pregunta', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            // Traducimos la clave de la pregunta a un texto legible para mostrarlo
+            let textoPregunta = data.pregunta;
+            if (data.pregunta === 'mascota') textoPregunta = '¿Cómo se llamaba tu primera mascota?';
+            if (data.pregunta === 'ciudad') textoPregunta = '¿En qué ciudad naciste?';
+            if (data.pregunta === 'colegio') textoPregunta = '¿Cómo se llamaba tu primer colegio?';
+
+            document.getElementById('texto-pregunta-seguridad').innerText = 'Pregunta: ' + textoPregunta;
+            document.getElementById('recup-paso-1').style.display = 'none';
+            document.getElementById('recup-paso-2').style.display = 'block';
+            msg.innerText = '';
+        } else {
+            msg.style.color = '#f87171';
+            msg.innerText = data.error || 'Usuario no encontrado.';
+        }
+    } catch (err) {
+        msg.style.color = '#f87171';
+        msg.innerText = 'Error de conexión con el servidor.';
+    }
+}
+
+// PASO 2: Enviar la respuesta y la nueva contraseña
+async function ejecutarCambioPassword() {
+    const username = document.getElementById('recup-username').value.trim();
+    const respuestaSeguridad = document.getElementById('recup-respuesta').value.trim();
+    const nuevaPassword = document.getElementById('recup-nueva-password').value;
+    const msg = document.getElementById('msg-recuperacion');
+
+    if (!respuestaSeguridad || !nuevaPassword) {
+        msg.style.color = '#f87171';
+        msg.innerText = 'Rellena todos los campos.';
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/auth/recuperar-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, respuestaSeguridad, nuevaPassword })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            msg.style.color = '#4ade80';
+            msg.innerText = data.message;
+            setTimeout(() => {
+                location.reload(); // Recarga para volver al login normal
+            }, 2000);
+        } else {
+            msg.style.color = '#f87171';
+            msg.innerText = data.error || 'Respuesta incorrecta.';
+        }
+    } catch (err) {
+        msg.style.color = '#f87171';
+        msg.innerText = 'Error de conexión con el servidor.';
+    }
+}   
     
 </script>
     <!-- CARGAMOS SOCKET.IO AQUÍ ARRIBA PARA QUE EXISTA ANTES DE USARLO -->
