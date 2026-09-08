@@ -65,13 +65,15 @@
 
 async function cargarCircuitos() {
     try {
+        // Primero comprobamos la sesión real antes de pintar nada
+        const esAdmin = await verificarSesion();
+
         const res = await fetch('/api/circuitos');
         const circuitosRaw = await res.json();
         const resResultados = await fetch('/api/todos-los-resultados');
         const resultados = await resResultados.json();
         const contenedor = document.getElementById('lista-circuitos');
         
-        // Lista maestra con el orden, fechas y códigos de bandera para cada país
         const listaMaestra = [
             { nombre: "Melbourne", archivo: "melburne", round: 1, fecha: "24 SEP", bandera: "au" },
             { nombre: "Shanghái", archivo: "sangai", round: 2, fecha: "01 OCT", bandera: "cn" },
@@ -99,12 +101,12 @@ async function cargarCircuitos() {
             { nombre: "Abu Dabi", archivo: "abudabi", round: 24, fecha: "01 APR", bandera: "ae" }
         ];
 
-        // Cambiado de editarResultado a abrirModalEdicion para que abra el modal correctamente
-const renderAcciones = (id) => `
-            <div class="admin-only" style="margin-left: 5px;">
+        // Si es admin los dibuja; si no, devuelve un texto vacío y ni se crean en el HTML
+        const renderAcciones = (id) => esAdmin ? `
+            <div class="admin-only" style="margin-left: 5px; display: inline-block;">
                 <button onclick="abrirModalEdicion(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
                 <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
-            </div>`;
+            </div>` : '';
 
         contenedor.innerHTML = listaMaestra.map(item => {
             const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
@@ -117,10 +119,8 @@ const renderAcciones = (id) => `
             
             return `
             <div class="circuito-card" style="position: relative; overflow: hidden;">
-                <!-- Bandera de fondo con baja opacidad -->
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://flagcdn.com/w640/${item.bandera}.png'); background-size: cover; background-position: center; opacity: 0.08; pointer-events: none; z-index: 0;"></div>
 
-                <!-- Contenido de la tarjeta -->
                 <div style="position: relative; z-index: 1;">
                     <div style="display: flex; justify-content: space-between; align-items: center; font-size: 24px; color: #ff4444; font-weight: bold; margin-bottom: 10px;">
                         <span style="font-size: 22px; letter-spacing: 1px;">ROUND ${item.round}</span>
@@ -146,10 +146,6 @@ const renderAcciones = (id) => `
                 </div>
             </div>`;
         }).join('');
-        // Añade esto aquí abajo del todo:
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.setProperty('display', 'inline-block', 'important');
-        });
     } catch (e) { console.error("Error al cargar los circuitos:", e); }
 }
 
@@ -166,45 +162,33 @@ async function verificarSesion() {
     
     let adminStatus = false;
 
-    // Consultamos directamente al servidor para obtener el estado real de la sesión y el rol
     try {
         const res = await fetch('/api/auth/sesion');
         const data = await res.json();
         
         if (data.logueado && data.rol === 'admin') {
             adminStatus = true;
-            localStorage.setItem('rol', 'admin'); // Sincronizamos por si acaso
+            localStorage.setItem('rol', 'admin');
         } else {
             localStorage.removeItem('rol');
         }
     } catch (err) {
         console.error("Error al verificar sesión en la base de datos:", err);
-        // Fallback al localStorage si falla la red
         adminStatus = (localStorage.getItem('rol') === 'admin');
     }
 
-    // Gestionar botones de la cabecera
     if (btnLogin && btnLogout) {
         btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
         btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
     }
     
-    // Gestionar contenedor de reseteo general
     if (adminResetContainer) {
         adminResetContainer.style.display = adminStatus ? 'block' : 'none';
     }
 
-    // Gestionar TODOS los elementos con clase admin-only (lápices, cruces, modales, etc.)
-    const elementosAdmin = document.querySelectorAll('.admin-only');
-    elementosAdmin.forEach(el => {
-        if (adminStatus) {
-            el.style.setProperty('display', 'inline-block', 'important');
-        } else {
-            el.style.setProperty('display', 'none', 'important');
-        }
-    });
+    // Devolvemos el estado real para que otras funciones lo usen al pintar
+    return adminStatus;
 }
-
         async function enviarContacto() {
             const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
             const nombre = document.getElementById('nombre-contacto').value;
