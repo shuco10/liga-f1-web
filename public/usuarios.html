@@ -265,8 +265,8 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
         const data = await res.json();
         
         if (res.ok) {
-            msg.style.color = '#4ade80';
-            msg.innerText = '¡Registrado con éxito! Ya puedes iniciar sesión.';
+            msg.style.color = '#38bdf8'; // Color azulado informativo
+            msg.innerText = '¡Registrado con éxito! Tu cuenta está pendiente de aprobación por un administrador.';
             document.getElementById('form-registro').reset();
         } else {
             msg.style.color = '#f87171';
