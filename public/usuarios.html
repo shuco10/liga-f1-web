@@ -67,23 +67,24 @@
             <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
                 <i class="fa-solid fa-list"></i> Lista de Usuarios Registrados
             </h3>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 0.95em;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #475569; color: #facc15;">
-                            <th style="padding: 10px;">ID</th>
-                            <th style="padding: 10px;">Usuario</th>
-                            <th style="padding: 10px;">Email</th>
-                            <th style="padding: 10px;">Rol</th>
-                            <th style="padding: 10px;">Fecha Registro</th>
-                            <th style="padding: 10px; text-align: center;">X</th> <!-- Columna nueva -->
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-usuarios-body">
-                        <!-- Los usuarios se cargarán dinámicamente aquí -->
-                    </tbody>
-                </table>
-            </div>
+<div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 0.9em;">
+        <thead>
+            <tr style="border-bottom: 2px solid #475569; color: #facc15;">
+                <th style="padding: 8px 10px;">ID</th>
+                <th style="padding: 8px 10px;">Usuario</th>
+                <th style="padding: 8px 10px;">Email</th>
+                <th style="padding: 8px 10px;">Rol</th>
+                <th style="padding: 8px 10px;">Estado</th>
+                <th style="padding: 8px 10px;">Fecha Registro</th>
+                <th style="padding: 8px 10px; text-align: center;">X</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-usuarios-body">
+            <!-- Los usuarios se cargarán dinámicamente aquí -->
+        </tbody>
+    </table>
+</div>
         </div>
 
         <!-- Visor de usuarios conectados en tiempo real -->
@@ -182,25 +183,25 @@ async function cargarListaUsuarios() {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #334155';
 
-            // Comprobamos si está activo o pendiente
+            // <--- PEGALO AQUÍ ---//
             const estadoBadge = u.activo 
-                ? '<span style="color: #4ade80; font-weight: bold;">✔ Activo</span>' 
-                : `<button onclick="activarUsuario(${u.id})" style="background: linear-gradient(135deg, #22c55e, #15803d); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85em;">⏳ Aprobar</button>`;
+                ? '<span style="color: #4ade80; font-weight: bold; font-size: 0.9em;">✔ Activo</span>' 
+                : `<button onclick="activarUsuario(${u.id})" style="background: #22c55e; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8em;"><i class="fa-solid fa-check"></i> Aprobar</button>`;
 
             tr.innerHTML = `
-                <td style="padding: 10px;">${u.id}</td>
-                <td style="padding: 10px; font-weight: bold; color: #38bdf8;">${u.username}</td>
-                <td style="padding: 10px; color: #94a3b8;">${u.email || 'No especificado'}</td>
-                <td style="padding: 10px;">
-                    <select class="select-rol" data-id="${u.id}" style="background: #0f172a; color: #fff; border: 1px solid #475569; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                <td style="padding: 8px 10px;">${u.id}</td>
+                <td style="padding: 8px 10px; font-weight: bold; color: #38bdf8;">${u.username}</td>
+                <td style="padding: 8px 10px; color: #94a3b8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${u.email || 'No especificado'}</td>
+                <td style="padding: 8px 10px;">
+                    <select class="select-rol" data-id="${u.id}" style="background: #0f172a; color: #fff; border: 1px solid #475569; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
                         <option value="user" ${u.rol === 'user' ? 'selected' : ''}>USER</option>
                         <option value="admin" ${u.rol === 'admin' ? 'selected' : ''}>ADMIN</option>
                     </select>
                 </td>
-                <td style="padding: 10px; color: #94a3b8;">${estadoBadge}</td>
-                <td style="padding: 10px; color: #94a3b8; font-size: 0.9em;">${new Date(u.creado_en).toLocaleDateString()}</td>
-                <td style="padding: 10px; text-align: center;">
-                    <button onclick="eliminarUsuario(${u.id})" style="background-color: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;" title="Eliminar usuario">
+                <td style="padding: 8px 10px;">${estadoBadge}</td>
+                <td style="padding: 8px 10px; color: #94a3b8; font-size: 0.85em;">${new Date(u.creado_en).toLocaleDateString()}</td>
+                <td style="padding: 8px 10px; text-align: center;">
+                    <button onclick="eliminarUsuario(${u.id})" style="background-color: #ef4444; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 0.85em;" title="Eliminar usuario">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </td>
