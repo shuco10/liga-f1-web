@@ -1215,6 +1215,33 @@ app.get('/api/usuarios/lista', async (req, res) => {
     }
 });
 
+
+// ==========================================
+// CONFIGURACIÓN DE SOCKET.IO (Tiempo Real)
+// ==========================================
+let usuariosConectados = [];
+
+io.on('connection', (socket) => {
+    // Cuando el cliente se conecta y manda su información de sesión
+    socket.on('registrar_usuario', (userData) => {
+        socket.user = userData;
+        // Evitamos duplicados si abre varias pestañas
+        if (!usuariosConectados.some(u => u.username === userData.username)) {
+            usuariosConectados.push(userData);
+        }
+        // Reenviamos la lista actualizada a todo el mundo
+        io.emit('usuarios_conectados', usuariosConectados);
+    });
+
+    // Cuando se desconecta el usuario
+    socket.on('disconnect', () => {
+        if (socket.user) {
+            usuariosConectados = usuariosConectados.filter(u => u.username !== socket.user.username);
+            io.emit('usuarios_conectados', usuariosConectados);
+        }
+    });
+});
+
 // ==========================================
 // CERRAR SESIÓN (POST /api/auth/logout)
 // ==========================================
