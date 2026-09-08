@@ -122,8 +122,10 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////
 // Este escucha cualquier clic en el botón de logout, aunque el header se cargue más tarde
+/// CERRAR SESION
+/////////////////////////////////////////////////////////////////////////////////////////
 document.addEventListener('click', async (e) => {
     if (e.target && e.target.id === 'btn-logout') {
         try {
@@ -131,13 +133,18 @@ document.addEventListener('click', async (e) => {
             const data = await response.json();
             if (data.success) {
                 localStorage.removeItem('rol');
-                window.location.href = '/'; 
+                window.location.reload(); 
             }
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
         }
     }
 });
+
+
+
+
+
 
 async function verificarSesionPagina() {
     try {
