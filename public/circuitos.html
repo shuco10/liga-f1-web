@@ -69,7 +69,7 @@
 
 async function cargarCircuitos() {
     try {
-        // Primero comprobamos la sesión real antes de pintar nada
+        // ¡OBLIGATORIO EL AWAIT AQUÍ! Para que se espere a saber si eres admin antes de mapear las tarjetas
         const esAdmin = await verificarSesion();
 
         const res = await fetch('/api/circuitos');
@@ -106,11 +106,11 @@ async function cargarCircuitos() {
         ];
 
         // Si es admin los dibuja; si no, devuelve un texto vacío y ni se crean en el HTML
-const renderAcciones = (id) => `
+const renderAcciones = (id) => esAdmin ? `
     <div class="admin-only" style="margin-left: 5px; display: inline-block;">
         <button onclick="abrirModalEdicion(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
         <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
-    </div>`;
+    </div>` : '';
 
         contenedor.innerHTML = listaMaestra.map(item => {
             const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
