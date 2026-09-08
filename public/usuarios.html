@@ -189,6 +189,11 @@ async function verificarSesionPagina() {
                 if (btnCerrarSesion) btnCerrarSesion.style.display = 'block';
             }, 300);
             
+            // 👉 AVISAR AL SOCKET QUE ESTÁS CONECTADO
+            if (typeof socket !== 'undefined') {
+                socket.emit('registrar_usuario', { username: data.usuario, rol: data.rol });
+            }
+            
             cargarListaUsuarios();
         } else {
             if (seccionFormularios) seccionFormularios.style.display = 'flex';
@@ -521,29 +526,47 @@ async function ejecutarCambioPassword() {
 }
 
     // Escuchar los usuarios conectados en tiempo real
-socket.on('usuarios_conectados', (usuarios) => {
-    const contador = document.getElementById('contador-online');
-    const lista = document.getElementById('lista-conectados-rt');
-    
-    if (contador) contador.innerText = usuarios.length;
-    if (lista) {
-        lista.innerHTML = '';
-        if (usuarios.length === 0) {
-            lista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">Esperando conexiones...</li>';
+// Conectar al socket (si usas la CDN por defecto, ya viene global o como io())
+const socket = io();
+
+// Escuchar la lista de usuarios conectados que manda el servidor
+socket.on('actualizar-conectados', (listaUsuarios) => {
+    // 1. Actualizar el número total en el span del contador
+    const contadorSpan = document.getElementById('contador-online');
+    if (contadorSpan) {
+        contadorSpan.textContent = listaUsuarios.length;
+    }
+
+    // 2. Pintar la lista en el HTML
+    const listaUl = document.getElementById('lista-conectados-rt');
+    if (listaUl) {
+        listaUl.innerHTML = ''; // Limpiar lo anterior ("Esperando conexiones...")
+        
+        if (listaUsuarios.length === 0) {
+            listaUl.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay nadie conectado...</li>';
             return;
         }
-        
-        usuarios.forEach(u => {
+
+        // Recorrer los usuarios y crear los elementos de la lista
+        listaUsuarios.forEach(username => {
             const li = document.createElement('li');
-            li.style.cssText = 'padding: 6px 10px; margin-bottom: 4px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; font-size: 0.9em;';
+            li.style.padding = '6px 0';
+            li.style.borderBottom = '1px solid #334155';
+            li.style.display = 'flex';
+            li.style.alignItems = 'center';
+            li.style.gap = '8px';
+            
+            // Icono verde indicador y nombre
             li.innerHTML = `
-                <span><i class="fa-solid fa-circle" style="color: #4ade80; font-size: 0.6em; margin-right: 8px;"></i> <strong style="color: #38bdf8;">${u.username}</strong></span>
-                <span style="color: #64748b; font-size: 0.8em;">${u.rol.toUpperCase()}</span>
+                <i class="fa-solid fa-circle" style="font-size: 8px; color: #10b981;"></i>
+                <span style="color: #f8fafc; font-weight: 500;">${username}</span>
             `;
-            lista.appendChild(li);
+            listaUl.appendChild(li);
         });
     }
 });
+
+    
 </script>
 </body>
 </html>
