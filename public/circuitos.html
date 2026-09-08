@@ -172,7 +172,7 @@ async function verificarSesion() {
         
         if (data.logueado && data.rol === 'admin') {
             adminStatus = true;
-            localStorage.setItem('rol', 'admin');
+            localStorage.setItem('rol', 'admin'); // Forzamos que se guarde aquí sí o sí
         } else {
             localStorage.removeItem('rol');
         }
@@ -190,7 +190,6 @@ async function verificarSesion() {
         adminResetContainer.style.display = adminStatus ? 'block' : 'none';
     }
 
-    // Devolvemos el estado real para que otras funciones lo usen al pintar
     return adminStatus;
 }
 
