@@ -191,18 +191,10 @@ document.addEventListener('DOMContentLoaded', verificarSesionPagina);
 document.addEventListener('click', async (e) => {
     if (e.target && e.target.id === 'btnAbrirLogin') {
         e.preventDefault();
-        
-        // Comprobamos si la función ya está disponible; si no, damos un margen de 100ms
         if (typeof window.abrirModalAuth === 'function') {
             window.abrirModalAuth();
         } else {
-            setTimeout(() => {
-                if (typeof window.abrirModalAuth === 'function') {
-                    window.abrirModalAuth();
-                } else {
-                    console.error("La función abrirModalAuth sigue sin estar disponible. Revisa el orden o la ruta de tu archivo iniciar-sesion.js");
-                }
-            }, 100);
+            console.error("La función abrirModalAuth no está disponible.");
         }
     }
 
