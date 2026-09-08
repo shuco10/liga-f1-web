@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Función unificada para comprobar permisos y adaptar la vista
+// Función unificada para comprobar permisos y adaptar la vista
 async function verificarSesionPagina() {
     try {
         const res = await fetch('/api/auth/sesion');
@@ -183,10 +184,25 @@ async function verificarSesionPagina() {
             if (panelGestion) panelGestion.style.display = 'block';
             if (avisoNoAuth) avisoNoAuth.style.display = 'none';
             
-            // Esperar un instante a que el header cargue del todo para mostrar el botón de cerrar sesión
+            // Esperar un instante a que el header cargue del todo para mostrar y activar el botón
             setTimeout(() => {
-                const btnCerrarSesion = document.getElementById('btn-logout'); // 👈 CORREGIDO AQUÍ CON EL ID CORRECTO
-                if (btnCerrarSesion) btnCerrarSesion.style.display = 'block';
+                const btnCerrarSesion = document.getElementById('btn-logout');
+                if (btnCerrarSesion) {
+                    btnCerrarSesion.style.display = 'block';
+                    
+                    // Asignar la acción de cerrar sesión al hacer clic
+                    btnCerrarSesion.onclick = async () => {
+                        try {
+                            const logoutRes = await fetch('/api/auth/logout', { method: 'POST' });
+                            const logoutData = await logoutRes.json();
+                            if (logoutData.success) {
+                                window.location.href = '/'; // Redirige al inicio tras salir
+                            }
+                        } catch (err) {
+                            console.error("Error al cerrar sesión:", err);
+                        }
+                    };
+                }
             }, 300);
             
             cargarListaUsuarios();
