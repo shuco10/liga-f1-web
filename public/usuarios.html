@@ -196,7 +196,7 @@ async function verificarSesionPagina() {
                             const logoutRes = await fetch('/api/auth/logout', { method: 'POST' });
                             const logoutData = await logoutRes.json();
                             if (logoutData.success) {
-                                window.location.href = '/'; // Redirige al inicio tras salir
+                                window.location.reload(); // Recarga la página actual manteniendo la ruta
                             }
                         } catch (err) {
                             console.error("Error al cerrar sesión:", err);
