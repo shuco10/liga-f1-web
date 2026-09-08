@@ -28,6 +28,8 @@
     <button onclick="resetearResultadosTemporada()" style="background-color: #ff3333; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer;">
         🗑️ RESETEAR TODOS LOS RESULTADOS
     </button>
+    <!-- Nuevo botón para forzar la aparición de los lápices y cruces al instante -->
+    <button onclick="activarModoEdicion()" class="btn btn-warning" style="margin-left: 10px;">✏️ Activar Edición</button>
 </div>
     <main id="lista-circuitos"></main>
 
@@ -189,6 +191,12 @@ async function verificarSesion() {
     // Devolvemos el estado real para que otras funciones lo usen al pintar
     return adminStatus;
 }
+
+function activarModoEdicion() {
+    // Vuelve a cargar los circuitos para que coja el rol actual y pinte los botones
+    cargarCircuitos();
+}
+        
         async function enviarContacto() {
             const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
             const nombre = document.getElementById('nombre-contacto').value;
