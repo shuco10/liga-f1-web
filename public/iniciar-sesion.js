@@ -49,11 +49,12 @@
         .auth-form-group label {
             display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px;
         }
-        .auth-form-group input {
+        .auth-form-group input, .auth-form-group select {
             width: 100%; padding: 10px; background: #0f172a;
             border: 1px solid #475569; border-radius: 6px; color: #fff; font-size: 0.95rem;
+            box-sizing: border-box;
         }
-        .auth-form-group input:focus {
+        .auth-form-group input:focus, .auth-form-group select:focus {
             outline: none; border-color: #38bdf8;
         }
         .auth-btn-submit {
@@ -110,8 +111,13 @@
                         <input type="password" id="regPass" required placeholder="••••••••">
                     </div>
                     <div class="auth-form-group">
-                        <label>Pregunta de Seguridad (ej. Tu mascota)</label>
-                        <input type="text" id="regPregunta" required placeholder="Pregunta secreta">
+                        <label>Pregunta de Seguridad</label>
+                        <select id="regPregunta" required>
+                            <option value="" disabled selected>Elige una pregunta de seguridad...</option>
+                            <option value="mascota">¿Cómo se llamaba tu primera mascota?</option>
+                            <option value="ciudad">¿En qué ciudad naciste?</option>
+                            <option value="colegio">¿Cómo se llamaba tu primer colegio?</option>
+                        </select>
                     </div>
                     <div class="auth-form-group">
                         <label>Respuesta de Seguridad</label>
