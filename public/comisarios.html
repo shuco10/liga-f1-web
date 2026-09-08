@@ -1441,10 +1441,16 @@ async function asignarMundialEscuderia(btn) {
 
 
 <div id="footer-placeholder"></div>
-<script src="/ruta-a-tu-archivo/auth-global.js"></script>
-<script src="/verificador-admin.js" defer></script>
+
+<!-- 1. Cargar dependencias externas primero -->
 <script src="/socket.io/socket.io.js"></script>
-<script src="/scripts.js"></script>
+
+<!-- 2. Cargar tu lógica de la modal de registro/login -->
+<script src="/ruta-a-tu-archivo/iniciar-sesion.js"></script>
+
+<!-- 3. Cargar el script general y de verificación al final con defer o asegurando el orden -->
+<script src="/verificador-admin.js" defer></script>
+<script src="/scripts.js" defer></script>
         
 </body>
 </html>
