@@ -154,60 +154,31 @@ async function verificarSesionPagina() {
         const panelGestion = document.getElementById('panel-gestion-usuarios');
         const avisoNoAuth = document.getElementById('aviso-no-autorizado');
 
-        // Comprobamos si hay sesión activa (sea admin o user normal)
-        const estaLogueado = data.logueado || data.autenticado; // Por si el backend devuelve una u otra clave
+        const estaLogueado = data.logueado || data.autenticado;
         const esAdmin = estaLogueado && data.rol === 'admin';
 
         if (esAdmin) {
             if (seccionFormularios) seccionFormularios.style.display = 'none';
             if (panelGestion) panelGestion.style.display = 'block';
             if (avisoNoAuth) avisoNoAuth.style.display = 'none';
-            if (typeof cargarListaUsuarios === 'function') {
-                cargarListaUsuarios();
-            }
+            if (typeof cargarListaUsuarios === 'function') cargarListaUsuarios();
         } else {
             if (seccionFormularios) seccionFormularios.style.display = 'flex';
             if (panelGestion) panelGestion.style.display = 'none';
             if (avisoNoAuth) avisoNoAuth.style.display = 'block';
         }
 
-        // Gestionar botones del Header de forma segura (con retardo por si el header se inyecta dinámicamente)
-        setTimeout(() => {
-            const btnCerrarSesion = document.getElementById('btn-logout');
-            const btnIniciarSesion = document.getElementById('btnAbrirLogin'); // O el ID que uses para abrir la modal
+        // Mostrar u ocultar botones según la sesión de forma inmediata y segura
+        const btnCerrarSesion = document.getElementById('btn-logout');
+        const btnIniciarSesion = document.getElementById('btnAbrirLogin');
 
-            if (estaLogueado) {
-                // Usuario dentro: Mostrar Cerrar Sesión, Ocultar Iniciar Sesión
-                if (btnCerrarSesion) {
-                    btnCerrarSesion.style.display = 'inline-block';
-                    btnCerrarSesion.onclick = async (e) => {
-                        e.preventDefault();
-                        try {
-                            const logoutRes = await fetch('/api/auth/logout', { method: 'POST' });
-                            const logoutData = await logoutRes.json();
-                            if (logoutRes.ok || logoutData.success) {
-                                window.location.reload();
-                            }
-                        } catch (err) {
-                            console.error("Error al cerrar sesión:", err);
-                        }
-                    };
-                }
-                if (btnIniciarSesion) btnIniciarSesion.style.display = 'none';
-            } else {
-                // Usuario fuera: Ocultar Cerrar Sesión, Mostrar Iniciar Sesión
-                if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
-                if (btnIniciarSesion) {
-                    btnIniciarSesion.style.display = 'inline-block';
-                    btnIniciarSesion.onclick = (e) => {
-                        e.preventDefault();
-                        if (typeof window.abrirModalAuth === 'function') {
-                            window.abrirModalAuth();
-                        }
-                    };
-                }
-            }
-        }, 200);
+        if (estaLogueado) {
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'inline-block';
+            if (btnIniciarSesion) btnIniciarSesion.style.display = 'none';
+        } else {
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
+            if (btnIniciarSesion) btnIniciarSesion.style.display = 'inline-block';
+        }
 
     } catch (err) {
         console.error("Error al verificar sesión en la página:", err);
@@ -216,3 +187,29 @@ async function verificarSesionPagina() {
 
 document.addEventListener('DOMContentLoaded', verificarSesionPagina);
 
+// 2. GESTIÓN GLOBAL DE CLICS (Independiente de si el botón se carga tarde)
+document.addEventListener('click', async (e) => {
+    // Si pinchan en el botón de Iniciar Sesión
+    if (e.target && e.target.id === 'btnAbrirLogin') {
+        e.preventDefault();
+        if (typeof window.abrirModalAuth === 'function') {
+            window.abrirModalAuth();
+        } else {
+            console.error("La función abrirModalAuth no está disponible todavía.");
+        }
+    }
+
+    // Si pinchan en el botón de Cerrar Sesión
+    if (e.target && e.target.id === 'btn-logout') {
+        e.preventDefault();
+        try {
+            const logoutRes = await fetch('/api/auth/logout', { method: 'POST' });
+            const logoutData = await logoutRes.json();
+            if (logoutRes.ok || logoutData.success) {
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error("Error al cerrar sesión:", err);
+        }
+    }
+});
