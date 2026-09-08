@@ -36,6 +36,8 @@
     <div id="footer-placeholder"></div>
 
     <script>
+        let modoAdminForzado = true; // Como eres tú siempre el admin en esta vista, lo dejamos en true
+        
         document.addEventListener('DOMContentLoaded', () => {
             // 1. Cargar Header (con Banner Instant Gaming)
             fetch('/header.html')
@@ -104,11 +106,11 @@ async function cargarCircuitos() {
         ];
 
         // Si es admin los dibuja; si no, devuelve un texto vacío y ni se crean en el HTML
-        const renderAcciones = (id) => esAdmin ? `
-            <div class="admin-only" style="margin-left: 5px; display: inline-block;">
-                <button onclick="abrirModalEdicion(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
-                <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
-            </div>` : '';
+const renderAcciones = (id) => `
+    <div class="admin-only" style="margin-left: 5px; display: inline-block;">
+        <button onclick="abrirModalEdicion(${id})" style="background:none; border:none; cursor:pointer;">✏️</button>
+        <button onclick="eliminarResultado(${id})" style="background:none; border:none; cursor:pointer; color:#ff4444;">❌</button>
+    </div>`;
 
         contenedor.innerHTML = listaMaestra.map(item => {
             const c = circuitosRaw.find(x => x.nombre === item.nombre || (item.nombre === "Sakhir" && x.nombre === "Bahrein"));
