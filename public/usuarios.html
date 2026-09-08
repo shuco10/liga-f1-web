@@ -185,14 +185,9 @@ async function verificarSesionPagina() {
             
             // Esperar un instante a que el header cargue del todo para mostrar el botón de cerrar sesión
             setTimeout(() => {
-                const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+                const btnCerrarSesion = document.getElementById('btn-logout'); // 👈 CORREGIDO AQUÍ CON EL ID CORRECTO
                 if (btnCerrarSesion) btnCerrarSesion.style.display = 'block';
             }, 300);
-            
-            // 👉 AVISAR AL SOCKET QUE ESTÁS CONECTADO
-            if (typeof socket !== 'undefined') {
-                socket.emit('registrar_usuario', { username: data.usuario, rol: data.rol });
-            }
             
             cargarListaUsuarios();
         } else {
