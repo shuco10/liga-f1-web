@@ -1283,7 +1283,47 @@ app.post('/api/admin/usuarios/:id/activar', async (req, res) => {
     }
 });
 
+// ==========================================
+// CAMBIAR CONTRASEÑA
+// ==========================================
 
+
+app.post('/api/usuarios/cambiar-password', async (req, res) => {
+    try {
+        // Verificar que el usuario haya iniciado sesión
+        if (!req.session || !req.session.usuarioId) {
+            return res.status(401).json({ success: false, error: 'No autorizado' });
+        }
+
+        const { passwordActual, passwordNueva } = req.body;
+        const usuarioId = req.session.usuarioId;
+
+        // 1. Buscar al usuario en la base de datos para obtener su hash actual
+        const resultado = await pool.query('SELECT password FROM usuarios WHERE id = $1', [usuarioId]);
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+        }
+
+        const usuario = resultado.rows[0];
+
+        // 2. Comprobar que la contraseña actual sea correcta
+        const esCorrecta = await bcrypt.compare(passwordActual, usuario.password);
+        if (!esCorrecta) {
+            return res.status(400).json({ success: false, error: 'La contraseña actual no es correcta' });
+        }
+
+        // 3. Hashear la nueva contraseña
+        const saltRounds = 10;
+        const nuevoHash = await bcrypt.hash(passwordNueva, saltRounds);
+
+        // 4. Actualizar en la base de datos
+        await pool.query('UPDATE usuarios SET password = $1 WHERE id = $2', [nuevoHash, usuarioId]);
+
+        res.json({ success: true, message: 'Contraseña actualizada con éxito' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 
 // ==========================================
