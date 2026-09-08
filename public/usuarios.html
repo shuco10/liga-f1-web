@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adm. Usuarios | Cazadores de Curvas</title>
     <!-- Enlace al archivo de estilos compartido -->
     <link rel="stylesheet" href="estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-
     
     <style>
         /* Estilo base para el fondo de esta página */
@@ -22,40 +19,39 @@
 <body>
     <div id="header-placeholder"></div>
 
-
 <main class="caja-contenido">
-
 
     <div class="titulo-liga">🗝️ USUARIOS: GESTIÓN 🗝️</div>
     <h3 class="subtitulo-principal">🔐 Plataforma para la creación y el mantenimiento de usuarios 🔐</h3>
-<!-- CONTENEDOR DE FORMULARIOS (LOGIN / REGISTRO) -->
+
+    <!-- CONTENEDOR DE FORMULARIOS (LOGIN / REGISTRO) -->
     <div id="seccion-formularios" style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; margin-bottom: 30px;">
         
-<!-- REGISTRO -->
-<div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); flex: 1; min-width: 280px; max-width: 400px;">
-    <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
-        <i class="fa-solid fa-user-plus"></i> Crear Cuenta
-    </h3>
-    <form id="form-registro" style="margin-top: 15px;">
-        <input type="text" id="reg-username" placeholder="Nombre de usuario" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
-        <input type="email" id="reg-email" placeholder="Correo electrónico" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
-        <input type="password" id="reg-password" placeholder="Contraseña" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
-        
-        <!-- Pregunta de seguridad -->
-        <select id="reg-pregunta" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box; font-size: 0.9em;">
-            <option value="" disabled selected>Elige una pregunta de seguridad...</option>
-            <option value="mascota">¿Cómo se llamaba tu primera mascota?</option>
-            <option value="ciudad">¿En qué ciudad naciste?</option>
-            <option value="colegio">¿Cómo se llamaba tu primer colegio?</option>
-        </select>
-        <input type="text" id="reg-respuesta" placeholder="Respuesta de seguridad" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+        <!-- REGISTRO -->
+        <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); flex: 1; min-width: 280px; max-width: 400px;">
+            <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
+                <i class="fa-solid fa-user-plus"></i> Crear Cuenta
+            </h3>
+            <form id="form-registro" style="margin-top: 15px;">
+                <input type="text" id="reg-username" placeholder="Nombre de usuario" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+                <input type="email" id="reg-email" placeholder="Correo electrónico" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+                <input type="password" id="reg-password" placeholder="Contraseña" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+                
+                <!-- Pregunta de seguridad -->
+                <select id="reg-pregunta" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box; font-size: 0.9em;">
+                    <option value="" disabled selected>Elige una pregunta de seguridad...</option>
+                    <option value="mascota">¿Cómo se llamaba tu primera mascota?</option>
+                    <option value="ciudad">¿En qué ciudad naciste?</option>
+                    <option value="colegio">¿Cómo se llamaba tu primer colegio?</option>
+                </select>
+                <input type="text" id="reg-respuesta" placeholder="Respuesta de seguridad" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
 
-        <button type="submit" style="width: 100%; padding: 10px; background-color: #e10600; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Registrarse</button>
-    </form>
-    <div id="msg-registro" style="margin-top: 15px; font-size: 0.9em; text-align: center;"></div>
-</div>
+                <button type="submit" style="width: 100%; padding: 10px; background-color: #e10600; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Registrarse</button>
+            </form>
+            <div id="msg-registro" style="margin-top: 15px; font-size: 0.9em; text-align: center;"></div>
+        </div>
 
-<!-- LOGIN -->
+        <!-- LOGIN -->
         <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); flex: 1; min-width: 280px; max-width: 400px;">
             <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
                 <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
@@ -95,32 +91,34 @@
                 </div>
             </div>
         </div>
-    <!-- PANEL DE CONTROL / GESTIÓN (Visible solo para administradores o según permisos) -->
+    </div>
+
+    <!-- PANEL DE CONTROL / GESTIÓN (Visible solo para administradores) -->
     <div id="panel-gestion-usuarios" style="margin-top: 30px; display: none;">
         
-<!-- Tarjeta de listado de usuarios -->
+        <!-- Tarjeta de listado de usuarios -->
         <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); margin-bottom: 30px;">
             <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
                 <i class="fa-solid fa-list"></i> Lista de Usuarios Registrados
             </h3>
-<div style="overflow-x: hidden;">
-    <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 0.9em;">
-        <thead>
-            <tr style="border-bottom: 2px solid #475569; color: #facc15;">
-                <th style="padding: 8px 6px; width: 6%;">ID</th>
-                <th style="padding: 8px 6px; width: 18%;">Usuario</th>
-                <th style="padding: 8px 6px; width: 34%;">Email</th>
-                <th style="padding: 8px 6px; width: 14%;">Rol</th>
-                <th style="padding: 8px 6px; width: 14%;">Estado</th>
-                <th style="padding: 8px 6px; width: 10%;">Fecha</th>
-                <th style="padding: 8px 6px; width: 4%; text-align: center;">X</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-usuarios-body">
-            <!-- Los usuarios se cargarán dinámicamente aquí -->
-        </tbody>
-    </table>
-</div>
+            <div style="overflow-x: hidden;">
+                <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 0.9em;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #475569; color: #facc15;">
+                            <th style="padding: 8px 6px; width: 6%;">ID</th>
+                            <th style="padding: 8px 6px; width: 18%;">Usuario</th>
+                            <th style="padding: 8px 6px; width: 34%;">Email</th>
+                            <th style="padding: 8px 6px; width: 14%;">Rol</th>
+                            <th style="padding: 8px 6px; width: 14%;">Estado</th>
+                            <th style="padding: 8px 6px; width: 10%;">Fecha</th>
+                            <th style="padding: 8px 6px; width: 4%; text-align: center;">X</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios-body">
+                        <!-- Los usuarios se cargarán dinámicamente aquí -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Visor de usuarios conectados en tiempo real -->
@@ -132,7 +130,6 @@
                 <li style="color: #94a3b8; font-style: italic;">Esperando conexiones...</li>
             </ul>
         </div>
-
     </div>
 
     <!-- MENSAJE PARA USUARIOS NO AUTORIZADOS -->
@@ -143,15 +140,11 @@
 
 </main>
 
+<div id="footer-placeholder"></div>
 
-
-    <div id="footer-placeholder"></div>
-
-
-    <!-- CARGAMOS SOCKET.IO AQUÍ ARRIBA PARA QUE EXISTA ANTES DE USARLO -->
-    <script src="/socket.io/socket.io.js"></script>    
+<!-- SCRIPTS -->
+<script src="/socket.io/socket.io.js"></script>    
 <script>
-   
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Cargar Header, Footer y Modal
     fetch('/header.html')
@@ -170,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
     fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
 
-    // 2. Verificar la sesión contra el servidor al cargar
+    // 2. Verificar la sesión contra el servidor al cargar de forma segura cuando el DOM está listo
     verificarSesionPagina();
     cargarVisitasWeb();
 });
@@ -184,20 +177,20 @@ async function verificarSesionPagina() {
         const seccionFormularios = document.getElementById('seccion-formularios');
         const panelGestion = document.getElementById('panel-gestion-usuarios');
         const avisoNoAuth = document.getElementById('aviso-no-autorizado');
-        const btnCerrarSesion = document.getElementById('btnCerrarSesion'); // Referencia al botón
+        const btnCerrarSesion = document.getElementById('btnCerrarSesion');
 
         if (data.logueado && data.rol === 'admin') {
             if (seccionFormularios) seccionFormularios.style.display = 'none';
             if (panelGestion) panelGestion.style.display = 'block';
             if (avisoNoAuth) avisoNoAuth.style.display = 'none';
-            if (btnCerrarSesion) btnCerrarSesion.style.display = 'block'; // Muestra el botón si es admin
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'block';
             
             cargarListaUsuarios();
         } else {
             if (seccionFormularios) seccionFormularios.style.display = 'flex';
             if (panelGestion) panelGestion.style.display = 'none';
             if (avisoNoAuth) avisoNoAuth.style.display = 'block';
-            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none'; // Oculta el botón si no lo es
+            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
         }
     } catch (err) {
         console.error("Error al verificar sesión en la página:", err);
@@ -219,7 +212,6 @@ async function cargarListaUsuarios() {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #334155';
 
-            // <--- PEGALO AQUÍ ---//
             const estadoBadge = u.activo 
                 ? '<span style="color: #4ade80; font-weight: bold; font-size: 0.9em;">✔ Activo</span>' 
                 : `<button onclick="activarUsuario(${u.id})" style="background: #22c55e; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8em;"><i class="fa-solid fa-check"></i> Aprobar</button>`;
@@ -248,9 +240,6 @@ async function cargarListaUsuarios() {
         console.error("Error al cargar la lista de usuarios:", e);
     }
 }
-
-
-    
 
 // Envío de Formulario de Contacto por Discord
 async function enviarContacto() {
@@ -295,7 +284,6 @@ async function enviarContacto() {
     }
 }
 
-
 // Función para activar / aprobar un usuario pendiente
 async function activarUsuario(id) {
     try {
@@ -311,14 +299,13 @@ async function activarUsuario(id) {
     }
 }    
 
-// Manejar Registro (actualizado para mostrar aviso de cuenta pendiente)
+// Manejar Registro
 document.getElementById('form-registro').addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('reg-username').value;
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
     
-    // 1. Capturamos también los valores de la pregunta y la respuesta
     const preguntaSeguridad = document.getElementById('reg-pregunta').value;
     const respuestaSeguridad = document.getElementById('reg-respuesta').value;
     
@@ -328,13 +315,7 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
         const respuesta = await fetch('/api/auth/registro', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                username, 
-                email, 
-                password, 
-                preguntaSeguridad, 
-                respuestaSeguridad // 2. Los incluimos aquí para que lleguen al servidor
-            })
+            body: JSON.stringify({ username, email, password, preguntaSeguridad, respuestaSeguridad })
         });
 
         const data = await respuesta.json();
@@ -352,8 +333,6 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
         msg.textContent = 'Error de conexión con el servidor.';
     }
 });
-
-// 1. Inicializamos Socket.io al principio para que esté disponible siempre
 
 // Manejar Login
 document.getElementById('form-login').addEventListener('submit', async (e) => {
@@ -384,10 +363,7 @@ document.getElementById('form-login').addEventListener('submit', async (e) => {
     }
 });
 
-// Manejar Cerrar Sesión
-
-
-    // Función para cargar las visitas desde la base de datos
+// Función para cargar las visitas desde la base de datos
 async function cargarVisitasWeb() {
     try {
         await fetch('/api/visitas/registrar', { method: 'POST' });
@@ -397,7 +373,7 @@ async function cargarVisitasWeb() {
         const data = await res.json();
         
         const spanHoy = document.getElementById('visitas-hoy');
-        const spanTotal = document.getElementById('visitas-totales'); // <-- Apuntando al ID correcto del header
+        const spanTotal = document.getElementById('visitas-totales');
         
         if (spanHoy) spanHoy.innerText = data.hoy;
         if (spanTotal) spanTotal.innerText = data.totales;
@@ -412,13 +388,10 @@ async function eliminarUsuario(id) {
     if (!confirm('¿Estás seguro de que quieres eliminar este usuario?')) return;
 
     try {
-        const res = await fetch(`/api/usuarios/${id}`, {
-            method: 'DELETE'
-        });
-        
+        const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
         const data = await res.json();
         if (res.ok) {
-            cargarListaUsuarios(); // Recarga la tabla al instante
+            cargarListaUsuarios();
         } else {
             alert('Error al eliminar: ' + data.error);
         }
@@ -427,7 +400,7 @@ async function eliminarUsuario(id) {
     }
 }
 
-// Escuchador global o por evento para cuando cambien el desplegable
+// Escuchador global para cuando cambien el desplegable de rol
 document.addEventListener('change', async (e) => {
     if (e.target && e.target.classList.contains('select-rol')) {
         const userId = e.target.getAttribute('data-id');
@@ -442,7 +415,6 @@ document.addEventListener('change', async (e) => {
 
             const data = await res.json();
             if (data.success) {
-                // Opcional: mostrar un aviso sutil o recargar la lista
                 console.log('Rol actualizado con éxito');
             } else {
                 alert('Error al actualizar el rol: ' + data.error);
@@ -453,7 +425,7 @@ document.addEventListener('change', async (e) => {
     }
 });
 
- // Mostrar / Ocultar el bloque de recuperación desde el enlace del login
+// Mostrar / Ocultar el bloque de recuperación desde el enlace del login
 document.getElementById('link-olvido').addEventListener('click', (e) => {
     e.preventDefault();
     document.getElementById('seccion-recuperacion').style.display = 'block';
@@ -489,7 +461,6 @@ async function obtenerPreguntaSeguridad() {
         const data = await res.json();
 
         if (res.ok) {
-            // Traducimos la clave de la pregunta a un texto legible para mostrarlo
             let textoPregunta = data.pregunta;
             if (data.pregunta === 'mascota') textoPregunta = '¿Cómo se llamaba tu primera mascota?';
             if (data.pregunta === 'ciudad') textoPregunta = '¿En qué ciudad naciste?';
@@ -534,7 +505,7 @@ async function ejecutarCambioPassword() {
             msg.style.color = '#4ade80';
             msg.innerText = data.message;
             setTimeout(() => {
-                location.reload(); // Recarga para volver al login normal
+                location.reload();
             }, 2000);
         } else {
             msg.style.color = '#f87171';
@@ -544,12 +515,7 @@ async function ejecutarCambioPassword() {
         msg.style.color = '#f87171';
         msg.innerText = 'Error de conexión con el servidor.';
     }
-}   
-    
+}
 </script>
-    <!-- CARGAMOS SOCKET.IO AQUÍ ARRIBA PARA QUE EXISTA ANTES DE USARLO -->
-    <script src="/socket.io/socket.io.js"></script>
-<script src="/auth.js"></script>
-<script src="/scripts.js"></script>
 </body>
 </html>
