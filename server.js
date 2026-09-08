@@ -1137,12 +1137,10 @@ app.get('/api/auth/sesion', (req, res) => {
     }
 });
 
-// 2. Registro de Usuario (POST /api/auth/registro)
-
-
+// 2. Registro de Usuario (POST /api/auth/registro) - MODIFICADO
 app.post('/api/auth/registro', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, preguntaSeguridad, respuestaSeguridad } = req.body;
         
         const existe = await pool.query('SELECT * FROM usuarios WHERE username = $1 OR email = $2', [username, email]);
         if (existe.rows.length > 0) {
@@ -1151,15 +1149,17 @@ app.post('/api/auth/registro', async (req, res) => {
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
+        
+        // Encriptamos también la respuesta de seguridad para mayor protección
+        const hashedRespuesta = await bcrypt.hash(respuestaSeguridad.toLowerCase().trim(), saltRounds);
 
-        // OJO AQUÍ: Añadimos 'activo' con valor false (0) para que nazca pendiente de aprobación
         const query = `
-            INSERT INTO usuarios (username, email, password, rol, activo, creado_en)
-            VALUES ($1, $2, $3, 'user', false, CURRENT_TIMESTAMP)
+            INSERT INTO usuarios (username, email, password, pregunta_seguridad, respuesta_seguridad, rol, activo, creado_en)
+            VALUES ($1, $2, $3, $4, $5, 'user', false, CURRENT_TIMESTAMP)
             RETURNING id, username, email, rol;
         `;
         
-        await pool.query(query, [username, email, hashedPassword]);
+        await pool.query(query, [username, email, hashedPassword, preguntaSeguridad, hashedRespuesta]);
         
         res.json({ success: true, message: 'Usuario registrado con éxito. Pendiente de aprobación.' });
     } catch (error) {
@@ -1284,47 +1284,55 @@ app.post('/api/admin/usuarios/:id/activar', async (req, res) => {
 });
 
 // ==========================================
-// CAMBIAR CONTRASEÑA
+// RECUPERACIÓN DE CONTRASEÑA (PASO 1: Obtener Pregunta)
 // ==========================================
-
-
-app.post('/api/usuarios/cambiar-password', async (req, res) => {
+app.post('/api/auth/obtener-pregunta', async (req, res) => {
     try {
-        // Verificar que el usuario haya iniciado sesión
-        if (!req.session || !req.session.usuarioId) {
-            return res.status(401).json({ success: false, error: 'No autorizado' });
+        const { username } = req.body;
+        
+        const resultado = await pool.query('SELECT pregunta_seguridad FROM usuarios WHERE username = $1', [username]);
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
         }
 
-        const { passwordActual, passwordNueva } = req.body;
-        const usuarioId = req.session.usuarioId;
+        res.json({ success: true, pregunta: resultado.rows[0].pregunta_seguridad });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
-        // 1. Buscar al usuario en la base de datos para obtener su hash actual
-        const resultado = await pool.query('SELECT password FROM usuarios WHERE id = $1', [usuarioId]);
+// ==========================================
+// RECUPERACIÓN DE CONTRASEÑA (PASO 2: Validar y Cambiar)
+// ==========================================
+app.post('/api/auth/recuperar-password', async (req, res) => {
+    try {
+        const { username, respuestaSeguridad, nuevaPassword } = req.body;
+
+        const resultado = await pool.query('SELECT * FROM usuarios WHERE username = $1', [username]);
         if (resultado.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
         }
 
         const usuario = resultado.rows[0];
 
-        // 2. Comprobar que la contraseña actual sea correcta
-        const esCorrecta = await bcrypt.compare(passwordActual, usuario.password);
-        if (!esCorrecta) {
-            return res.status(400).json({ success: false, error: 'La contraseña actual no es correcta' });
+        // Validar la respuesta de seguridad usando bcrypt
+        const respuestaValida = await bcrypt.compare(respuestaSeguridad.toLowerCase().trim(), usuario.respuesta_seguridad);
+        if (!respuestaValida) {
+            return res.status(400).json({ error: 'La respuesta de seguridad es incorrecta.' });
         }
 
-        // 3. Hashear la nueva contraseña
+        // Hashear la nueva contraseña
         const saltRounds = 10;
-        const nuevoHash = await bcrypt.hash(passwordNueva, saltRounds);
+        const hashedPassword = await bcrypt.hash(nuevaPassword, saltRounds);
 
-        // 4. Actualizar en la base de datos
-        await pool.query('UPDATE usuarios SET password = $1 WHERE id = $2', [nuevoHash, usuarioId]);
+        // Actualizar la contraseña en la base de datos
+        await pool.query('UPDATE usuarios SET password = $1 WHERE id = $2', [hashedPassword, usuario.id]);
 
-        res.json({ success: true, message: 'Contraseña actualizada con éxito' });
+        res.json({ success: true, message: 'Contraseña restablecida con éxito. Ya puedes iniciar sesión.' });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
-
 
 // ==========================================
 // ARRANQUE DEL SERVIDOR
