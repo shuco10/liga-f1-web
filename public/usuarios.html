@@ -31,19 +31,29 @@
 <!-- CONTENEDOR DE FORMULARIOS (LOGIN / REGISTRO) -->
     <div id="seccion-formularios" style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; margin-bottom: 30px;">
         
-        <!-- REGISTRO -->
-        <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); flex: 1; min-width: 280px; max-width: 400px;">
-            <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
-                <i class="fa-solid fa-user-plus"></i> Crear Cuenta
-            </h3>
-            <form id="form-registro" style="margin-top: 15px;">
-                <input type="text" id="reg-username" placeholder="Nombre de usuario" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
-                <input type="email" id="reg-email" placeholder="Correo electrónico" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
-                <input type="password" id="reg-password" placeholder="Contraseña" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
-                <button type="submit" style="width: 100%; padding: 10px; background-color: #e10600; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Registrarse</button>
-            </form>
-            <div id="msg-registro" style="margin-top: 15px; font-size: 0.9em; text-align: center;"></div>
-        </div>
+<!-- REGISTRO -->
+<div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); flex: 1; min-width: 280px; max-width: 400px;">
+    <h3 style="margin-top: 0; color: #38bdf8; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
+        <i class="fa-solid fa-user-plus"></i> Crear Cuenta
+    </h3>
+    <form id="form-registro" style="margin-top: 15px;">
+        <input type="text" id="reg-username" placeholder="Nombre de usuario" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+        <input type="email" id="reg-email" placeholder="Correo electrónico" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+        <input type="password" id="reg-password" placeholder="Contraseña" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+        
+        <!-- Pregunta de seguridad -->
+        <select id="reg-pregunta" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box; font-size: 0.9em;">
+            <option value="" disabled selected>Elige una pregunta de seguridad...</option>
+            <option value="mascota">¿Cómo se llamaba tu primera mascota?</option>
+            <option value="ciudad">¿En qué ciudad naciste?</option>
+            <option value="colegio">¿Cómo se llamaba tu primer colegio?</option>
+        </select>
+        <input type="text" id="reg-respuesta" placeholder="Respuesta de seguridad" required style="display: block; width: 100%; padding: 10px; margin-bottom: 15px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 5px; box-sizing: border-box;">
+
+        <button type="submit" style="width: 100%; padding: 10px; background-color: #e10600; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Registrarse</button>
+    </form>
+    <div id="msg-registro" style="margin-top: 15px; font-size: 0.9em; text-align: center;"></div>
+</div>
 
         <!-- LOGIN -->
         <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid #3b82f6; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); flex: 1; min-width: 280px; max-width: 400px;">
