@@ -114,9 +114,9 @@
                         <label>Pregunta de Seguridad</label>
                         <select id="regPregunta" required>
                             <option value="" disabled selected>Elige una pregunta de seguridad...</option>
-                            <option value="mascota">¿Cómo se llamaba tu primera mascota?</option>
-                            <option value="ciudad">¿En qué ciudad naciste?</option>
-                            <option value="colegio">¿Cómo se llamaba tu primer colegio?</option>
+                            <option value="¿Cómo se llamaba tu primera mascota?">¿Cómo se llamaba tu primera mascota?</option>
+                            <option value="¿En qué ciudad naciste?">¿En qué ciudad naciste?</option>
+                            <option value="¿Cómo se llamaba tu primer colegio?">¿Cómo se llamaba tu primer colegio?</option>
                         </select>
                     </div>
                     <div class="auth-form-group">
@@ -174,6 +174,11 @@
 
     function cerrarModal() {
         overlay.style.display = 'none';
+        // Limpiar mensajes y restablecer pasos de recuperación al cerrar
+        document.querySelectorAll('.auth-msg').forEach(m => m.textContent = '');
+        document.getElementById('paso1Recuperar').style.display = 'block';
+        document.getElementById('paso2Recuperar').style.display = 'none';
+        document.getElementById('formRecuperar').reset();
     }
 
     cerrarBtn.onclick = cerrarModal;
@@ -287,6 +292,9 @@
     // Recuperación (Paso 2: Enviar respuesta y nueva pass)
     document.getElementById('formRecuperar').onsubmit = async (e) => {
         e.preventDefault();
+        // Si el usuario da Enter en el paso 1 antes de avanzar, evitamos que ejecute el cambio de pass
+        if (document.getElementById('paso1Recuperar').style.display !== 'none') return;
+
         const respuesta = document.getElementById('recRespuesta').value;
         const nuevaPassword = document.getElementById('recNuevaPass').value;
         const msg = document.getElementById('msgRec');
