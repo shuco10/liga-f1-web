@@ -187,19 +187,25 @@ async function verificarSesionPagina() {
 
 document.addEventListener('DOMContentLoaded', verificarSesionPagina);
 
-// 2. GESTIÓN GLOBAL DE CLICS (Independiente de si el botón se carga tarde)
+// 2. // GESTIÓN GLOBAL DE CLICS
 document.addEventListener('click', async (e) => {
-    // Si pinchan en el botón de Iniciar Sesión
     if (e.target && e.target.id === 'btnAbrirLogin') {
         e.preventDefault();
+        
+        // Comprobamos si la función ya está disponible; si no, damos un margen de 100ms
         if (typeof window.abrirModalAuth === 'function') {
             window.abrirModalAuth();
         } else {
-            console.error("La función abrirModalAuth no está disponible todavía.");
+            setTimeout(() => {
+                if (typeof window.abrirModalAuth === 'function') {
+                    window.abrirModalAuth();
+                } else {
+                    console.error("La función abrirModalAuth sigue sin estar disponible. Revisa el orden o la ruta de tu archivo iniciar-sesion.js");
+                }
+            }, 100);
         }
     }
 
-    // Si pinchan en el botón de Cerrar Sesión
     if (e.target && e.target.id === 'btn-logout') {
         e.preventDefault();
         try {
