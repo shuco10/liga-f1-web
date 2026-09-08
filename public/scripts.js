@@ -145,21 +145,8 @@ document.addEventListener('click', async (e) => {
 
 
 
-async function verificarSesionPagina(intentos = 0) {
+async function verificarSesionPagina() {
     try {
-        const btnCerrarSesion = document.getElementById('btn-logout');
-        const btnIniciarSesion = document.getElementById('btnAbrirLogin');
-
-        // Si no encuentra los botones, reintentamos (ampliamos a 20 intentos = 2 segundos)
-        if ((!btnCerrarSesion && !btnIniciarSesion) && intentos < 20) {
-            setTimeout(() => verificarSesionPagina(intentos + 1), 100);
-            return;
-        }
-
-        if (!btnCerrarSesion && !btnIniciarSesion) {
-            console.warn("Aviso: No se encontraron los botones de sesión en el DOM tras varios reintentos.");
-        }
-
         const res = await fetch('/api/auth/sesion');
         const data = await res.json();
         
@@ -181,7 +168,10 @@ async function verificarSesionPagina(intentos = 0) {
             if (avisoNoAuth) avisoNoAuth.style.display = 'block';
         }
 
-        // Forzamos el despliegue del botón que toque
+        // Mostrar u ocultar botones según la sesión de forma inmediata y segura
+        const btnCerrarSesion = document.getElementById('btn-logout');
+        const btnIniciarSesion = document.getElementById('btnAbrirLogin');
+
         if (estaLogueado) {
             if (btnCerrarSesion) btnCerrarSesion.style.display = 'inline-block';
             if (btnIniciarSesion) btnIniciarSesion.style.display = 'none';
