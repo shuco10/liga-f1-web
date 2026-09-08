@@ -69,17 +69,17 @@
             </h3>
 <div style="overflow-x: auto;">
     <table style="width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 0.9em;">
-        <thead>
-            <tr style="border-bottom: 2px solid #475569; color: #facc15;">
-                <th style="padding: 8px 10px;">ID</th>
-                <th style="padding: 8px 10px;">Usuario</th>
-                <th style="padding: 8px 10px;">Email</th>
-                <th style="padding: 8px 10px;">Rol</th>
-                <th style="padding: 8px 10px;">Estado</th>
-                <th style="padding: 8px 10px;">Fecha Registro</th>
-                <th style="padding: 8px 10px; text-align: center;">X</th>
-            </tr>
-        </thead>
+<thead>
+    <tr style="border-bottom: 2px solid #475569; color: #facc15;">
+        <th style="padding: 8px 10px; width: 5%;">ID</th>
+        <th style="padding: 8px 10px; width: 20%;">Usuario</th>
+        <th style="padding: 8px 10px; width: 30%;">Email</th>
+        <th style="padding: 8px 10px; width: 15%;">Rol</th>
+        <th style="padding: 8px 10px; width: 15%;">Estado</th>
+        <th style="padding: 8px 10px; width: 15%;">Fecha</th>
+        <th style="padding: 8px 10px; width: 5%; text-align: center;">X</th>
+    </tr>
+</thead>
         <tbody id="tabla-usuarios-body">
             <!-- Los usuarios se cargarán dinámicamente aquí -->
         </tbody>
@@ -190,8 +190,8 @@ async function cargarListaUsuarios() {
 
             tr.innerHTML = `
                 <td style="padding: 8px 10px;">${u.id}</td>
-                <td style="padding: 8px 10px; font-weight: bold; color: #38bdf8;">${u.username}</td>
-                <td style="padding: 8px 10px; color: #94a3b8; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${u.email || 'No especificado'}</td>
+                <td style="padding: 8px 10px; font-weight: bold; color: #38bdf8; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${u.username}</td>
+                <td style="padding: 8px 10px; color: #94a3b8; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${u.email || 'No especificado'}</td>
                 <td style="padding: 8px 10px;">
                     <select class="select-rol" data-id="${u.id}" style="background: #0f172a; color: #fff; border: 1px solid #475569; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
                         <option value="user" ${u.rol === 'user' ? 'selected' : ''}>USER</option>
