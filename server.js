@@ -1149,20 +1149,19 @@ app.post('/api/auth/registro', async (req, res) => {
             return res.status(400).json({ error: 'El usuario o el correo ya están registrados.' });
         }
 
-        // 1. Ciframos la contraseña antes de insertarla
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+        // OJO AQUÍ: Añadimos 'activo' con valor false (0) para que nazca pendiente de aprobación
         const query = `
-            INSERT INTO usuarios (username, email, password, rol, creado_en)
-            VALUES ($1, $2, $3, 'user', CURRENT_TIMESTAMP)
+            INSERT INTO usuarios (username, email, password, rol, activo, creado_en)
+            VALUES ($1, $2, $3, 'user', false, CURRENT_TIMESTAMP)
             RETURNING id, username, email, rol;
         `;
         
-        // 2. Guardamos hashedPassword en lugar de password
         await pool.query(query, [username, email, hashedPassword]);
         
-        res.json({ success: true, message: 'Usuario registrado con éxito' });
+        res.json({ success: true, message: 'Usuario registrado con éxito. Pendiente de aprobación.' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -1182,10 +1181,14 @@ app.post('/api/auth/login', async (req, res) => {
 
         const usuario = resultado.rows[0];
 
-        // Compara la contraseña introducida con el hash de la base de datos
         const passwordValida = await bcrypt.compare(password, usuario.password);
         if (!passwordValida) {
             return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+
+        // NUEVO: Comprobamos si el administrador ha aprobado la cuenta
+        if (usuario.activo === false || usuario.activo === 0) {
+            return res.status(403).json({ error: 'Tu cuenta está pendiente de aprobación por un administrador.' });
         }
 
         req.session.usuario = usuario.username;
