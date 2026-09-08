@@ -1208,7 +1208,7 @@ app.get('/api/usuarios/lista', async (req, res) => {
             return res.status(403).json({ error: 'Acceso denegado' });
         }
 
-        const resultado = await pool.query('SELECT id, username, email, rol, creado_en FROM usuarios ORDER BY id ASC');
+        const resultado = await pool.query('SELECT id, username, email, rol, activo, creado_en FROM usuarios ORDER BY id ASC');
         res.json(resultado.rows);
     } catch (error) {
         res.status(500).json({ error: error.message });
