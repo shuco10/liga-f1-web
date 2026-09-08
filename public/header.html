@@ -84,6 +84,11 @@
 <!-- USUARIOS CONECTADOS A LA WEB Y VISITAS -->
 <div style="text-align: center; width: 100%; margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
     
+    <!-- BOTÓN INICIAR SESIÓN (A la izquierda) -->
+    <button id="btnAbrirLogin" class="btn-login" style="display: none; background-color: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(14, 165, 233, 0.4); transition: background 0.2s;">
+        🔐 Iniciar Sesión
+    </button>
+
     <!-- CAJA 1: Usuarios Online -->
     <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-family: inherit;">
         <span style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4);">Usuarios online:</span> 
@@ -92,7 +97,7 @@
         </span>
     </div>
 
-<!-- CAJA 2: Visitas (Hoy y Totales) -->
+    <!-- CAJA 2: Visitas (Hoy y Totales) -->
     <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-size: 0.9em; color: #94a3b8; text-align: center;">
         <div style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4); margin-bottom: 2px;">Visitas</div>
         <div>
@@ -102,15 +107,16 @@
         </div>
     </div>
     
-<button id="btn-logout" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-bottom: 15px;">
-    Cerrar Sesión
-</button>
+    <!-- BOTÓN CERRAR SESIÓN (A la derecha) -->
+    <button id="btn-logout" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);">
+        🚪 Cerrar Sesión
+    </button>
 </div>
 
 <!-- Carga automática de scripts compatibles con inyección dinámica -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="/scripts.js?v=2"></script>
-
+<script src="/ruta/a/tu/iniciar-sesion.js"></script>
 
 
 
