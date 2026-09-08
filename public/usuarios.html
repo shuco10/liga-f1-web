@@ -177,20 +177,23 @@ async function verificarSesionPagina() {
         const seccionFormularios = document.getElementById('seccion-formularios');
         const panelGestion = document.getElementById('panel-gestion-usuarios');
         const avisoNoAuth = document.getElementById('aviso-no-autorizado');
-        const btnCerrarSesion = document.getElementById('btnCerrarSesion');
 
         if (data.logueado && data.rol === 'admin') {
             if (seccionFormularios) seccionFormularios.style.display = 'none';
             if (panelGestion) panelGestion.style.display = 'block';
             if (avisoNoAuth) avisoNoAuth.style.display = 'none';
-            if (btnCerrarSesion) btnCerrarSesion.style.display = 'block';
+            
+            // Esperar un instante a que el header cargue del todo para mostrar el botón de cerrar sesión
+            setTimeout(() => {
+                const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+                if (btnCerrarSesion) btnCerrarSesion.style.display = 'block';
+            }, 300);
             
             cargarListaUsuarios();
         } else {
             if (seccionFormularios) seccionFormularios.style.display = 'flex';
             if (panelGestion) panelGestion.style.display = 'none';
             if (avisoNoAuth) avisoNoAuth.style.display = 'block';
-            if (btnCerrarSesion) btnCerrarSesion.style.display = 'none';
         }
     } catch (err) {
         console.error("Error al verificar sesión en la página:", err);
@@ -516,6 +519,31 @@ async function ejecutarCambioPassword() {
         msg.innerText = 'Error de conexión con el servidor.';
     }
 }
+
+    // Escuchar los usuarios conectados en tiempo real
+socket.on('usuarios_conectados', (usuarios) => {
+    const contador = document.getElementById('contador-online');
+    const lista = document.getElementById('lista-conectados-rt');
+    
+    if (contador) contador.innerText = usuarios.length;
+    if (lista) {
+        lista.innerHTML = '';
+        if (usuarios.length === 0) {
+            lista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">Esperando conexiones...</li>';
+            return;
+        }
+        
+        usuarios.forEach(u => {
+            const li = document.createElement('li');
+            li.style.cssText = 'padding: 6px 10px; margin-bottom: 4px; background: #0f172a; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; font-size: 0.9em;';
+            li.innerHTML = `
+                <span><i class="fa-solid fa-circle" style="color: #4ade80; font-size: 0.6em; margin-right: 8px;"></i> <strong style="color: #38bdf8;">${u.username}</strong></span>
+                <span style="color: #64748b; font-size: 0.8em;">${u.rol.toUpperCase()}</span>
+            `;
+            lista.appendChild(li);
+        });
+    }
+});
 </script>
 </body>
 </html>
