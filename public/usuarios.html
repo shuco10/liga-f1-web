@@ -181,6 +181,12 @@ async function cargarListaUsuarios() {
         usuarios.forEach(u => {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #334155';
+
+            // Comprobamos si está activo o pendiente
+            const estadoBadge = u.activo 
+                ? '<span style="color: #4ade80; font-weight: bold;">✔ Activo</span>' 
+                : `<button onclick="activarUsuario(${u.id})" style="background: linear-gradient(135deg, #22c55e, #15803d); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.85em;">⏳ Aprobar</button>`;
+
             tr.innerHTML = `
                 <td style="padding: 10px;">${u.id}</td>
                 <td style="padding: 10px; font-weight: bold; color: #38bdf8;">${u.username}</td>
@@ -191,6 +197,7 @@ async function cargarListaUsuarios() {
                         <option value="admin" ${u.rol === 'admin' ? 'selected' : ''}>ADMIN</option>
                     </select>
                 </td>
+                <td style="padding: 10px; color: #94a3b8;">${estadoBadge}</td>
                 <td style="padding: 10px; color: #94a3b8; font-size: 0.9em;">${new Date(u.creado_en).toLocaleDateString()}</td>
                 <td style="padding: 10px; text-align: center;">
                     <button onclick="eliminarUsuario(${u.id})" style="background-color: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;" title="Eliminar usuario">
@@ -204,6 +211,9 @@ async function cargarListaUsuarios() {
         console.error("Error al cargar la lista de usuarios:", e);
     }
 }
+
+
+    
 
 // Envío de Formulario de Contacto por Discord
 async function enviarContacto() {
@@ -248,7 +258,23 @@ async function enviarContacto() {
     }
 }
 
-// Manejar Registro
+
+// Función para activar / aprobar un usuario pendiente
+async function activarUsuario(id) {
+    try {
+        const res = await fetch(`/api/admin/usuarios/${id}/activar`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+            cargarListaUsuarios();
+        } else {
+            alert('Error al activar: ' + (data.error || 'Desconocido'));
+        }
+    } catch (e) {
+        console.error('Error de red al activar:', e);
+    }
+}    
+
+// Manejar Registro (actualizado para mostrar aviso de cuenta pendiente)
 document.getElementById('form-registro').addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('reg-username').value;
@@ -265,7 +291,7 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
         const data = await res.json();
         
         if (res.ok) {
-            msg.style.color = '#38bdf8'; // Color azulado informativo
+            msg.style.color = '#38bdf8';
             msg.innerText = '¡Registrado con éxito! Tu cuenta está pendiente de aprobación por un administrador.';
             document.getElementById('form-registro').reset();
         } else {
