@@ -112,7 +112,7 @@
                     </div>
                     <div class="auth-form-group">
                         <label>Pregunta de Seguridad</label>
-                        <select id="regPregunta" required>
+                        <select id="regPreguntaSeguridad" required>
                             <option value="" disabled selected>Elige una pregunta de seguridad...</option>
                             <option value="¿Cómo se llamaba tu primera mascota?">¿Cómo se llamaba tu primera mascota?</option>
                             <option value="¿En qué ciudad naciste?">¿En qué ciudad naciste?</option>
@@ -121,7 +121,7 @@
                     </div>
                     <div class="auth-form-group">
                         <label>Respuesta de Seguridad</label>
-                        <input type="text" id="regRespuesta" required placeholder="Respuesta secreta">
+                        <input type="text" id="regRespuestaSeguridad" required placeholder="Respuesta secreta">
                     </div>
                     <button type="submit" class="auth-btn-submit">Registrarse</button>
                     <div id="msgReg" class="auth-msg"></div>
@@ -143,7 +143,7 @@
                         </div>
                         <div class="auth-form-group">
                             <label>Tu Respuesta</label>
-                            <input type="text" id="recRespuesta" placeholder="Respuesta">
+                            <input type="text" id="recRespuestaSeguridad" placeholder="Respuesta">
                         </div>
                         <div class="auth-form-group">
                             <label>Nueva Contraseña</label>
@@ -166,7 +166,6 @@
     const tabBtns = document.querySelectorAll('.auth-tab-btn');
     const forms = document.querySelectorAll('.auth-form');
 
-    // Función global para que el Header pueda abrir la modal fácilmente
     window.abrirModalAuth = function(pestanaIndex = 0) {
         overlay.style.display = 'flex';
         cambiarPestaña(pestanaIndex);
@@ -174,7 +173,6 @@
 
     function cerrarModal() {
         overlay.style.display = 'none';
-        // Limpiar mensajes y restablecer pasos de recuperación al cerrar
         document.querySelectorAll('.auth-msg').forEach(m => m.textContent = '');
         document.getElementById('paso1Recuperar').style.display = 'block';
         document.getElementById('paso2Recuperar').style.display = 'none';
@@ -195,7 +193,7 @@
         btn.onclick = () => cambiarPestaña(i);
     });
 
-    // 4. Conexión con los endpoints del Backend (Fetch)
+    // 4. Conexión con los endpoints del Backend
 
     // A. Login
     document.getElementById('formLogin').onsubmit = async (e) => {
@@ -225,26 +223,26 @@
         }
     };
 
-    // B. Registro
+    // B. Registro (Envía exactamente 'preguntaSeguridad' y 'respuestaSeguridad')
     document.getElementById('formRegistro').onsubmit = async (e) => {
         e.preventDefault();
         const username = document.getElementById('regUser').value;
         const email = document.getElementById('regEmail').value;
         const password = document.getElementById('regPass').value;
-        const pregunta = document.getElementById('regPregunta').value;
-        const respuesta = document.getElementById('regRespuesta').value;
+        const preguntaSeguridad = document.getElementById('regPreguntaSeguridad').value;
+        const respuestaSeguridad = document.getElementById('regRespuestaSeguridad').value;
         const msg = document.getElementById('msgReg');
 
         try {
             const res = await fetch('/api/auth/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password, pregunta, respuesta })
+                body: JSON.stringify({ username, email, password, preguntaSeguridad, respuestaSeguridad })
             });
             const data = await res.json();
             if (res.ok) {
                 msg.style.color = '#4ade80';
-                msg.textContent = '¡Registrado! Cuenta pendiente de aprobación por un admin.';
+                msg.textContent = data.message || '¡Registrado! Cuenta pendiente de aprobación.';
                 e.target.reset();
             } else {
                 msg.style.color = '#f87171';
@@ -289,13 +287,12 @@
         }
     };
 
-    // Recuperación (Paso 2: Enviar respuesta y nueva pass)
+    // Recuperación (Paso 2: Envía 'respuestaSeguridad' y 'nuevaPassword')
     document.getElementById('formRecuperar').onsubmit = async (e) => {
         e.preventDefault();
-        // Si el usuario da Enter en el paso 1 antes de avanzar, evitamos que ejecute el cambio de pass
         if (document.getElementById('paso1Recuperar').style.display !== 'none') return;
 
-        const respuesta = document.getElementById('recRespuesta').value;
+        const respuestaSeguridad = document.getElementById('recRespuestaSeguridad').value;
         const nuevaPassword = document.getElementById('recNuevaPass').value;
         const msg = document.getElementById('msgRec');
 
@@ -303,7 +300,11 @@
             const res = await fetch('/api/auth/recuperar-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: usuarioRecuperacion, respuesta, nuevaPassword })
+                body: JSON.stringify({ 
+                    username: usuarioRecuperacion, 
+                    respuestaSeguridad, 
+                    nuevaPassword 
+                })
             });
             const data = await res.json();
             if (res.ok) {
