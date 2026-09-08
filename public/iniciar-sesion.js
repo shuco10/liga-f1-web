@@ -1,5 +1,5 @@
 (function () {
-    // 1. Inyectar los estilos CSS de la modal de forma limpia y encapsulada
+    // 1. Inyectar los estilos CSS actualizados
     const estilosModal = document.createElement('style');
     estilosModal.innerHTML = `
         .modal-auth-overlay {
@@ -31,17 +31,16 @@
             cursor: pointer;
         }
         .modal-auth-close:hover { color: #fff; }
-        .auth-tabs {
-            display: flex; gap: 10px; margin-bottom: 20px;
-            border-bottom: 1px solid #334155; padding-bottom: 10px;
-        }
-        .auth-tab-btn {
-            background: none; border: none; color: #94a3b8;
-            cursor: pointer; font-size: 0.9rem; font-weight: bold; padding: 5px 10px;
-            transition: color 0.2s;
-        }
-        .auth-tab-btn.active {
-            color: #38bdf8; border-bottom: 2px solid #38bdf8;
+        .auth-header-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
         }
         .auth-form-group {
             margin-bottom: 15px;
@@ -66,93 +65,124 @@
         .auth-msg {
             margin-top: 12px; font-size: 0.85rem; text-align: center;
         }
+        .auth-links {
+            margin-top: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid #334155;
+            padding-top: 15px;
+        }
+        .auth-links a {
+            color: #38bdf8;
+            font-size: 0.85rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
     `;
     document.head.appendChild(estilosModal);
 
-    // 2. Inyectar la estructura HTML de la modal en el body
+    // 2. Inyectar la estructura HTML con el nuevo layout
     const modalHTML = `
         <div id="modalAuthOverlay" class="modal-auth-overlay">
             <div class="modal-auth-content">
                 <button id="cerrarModalAuth" class="modal-auth-close"><i class="fa-solid fa-xmark"></i></button>
                 
-                <!-- Pestañas de navegación interna -->
-                <div class="auth-tabs">
-                    <button class="auth-tab-btn active" data-target="formLogin">Iniciar Sesión</button>
-                    <button class="auth-tab-btn" data-target="formRegistro">Crear Cuenta</button>
-                    <button class="auth-tab-btn" data-target="formRecuperar">Recuperar</button>
+                <!-- Vista 1: Iniciar Sesión (Principal) -->
+                <div id="vistaLogin" class="auth-vista">
+                    <div class="auth-header-title"><i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión</div>
+                    <form id="formLogin">
+                        <div class="auth-form-group">
+                            <label>Usuario</label>
+                            <input type="text" id="loginUser" required placeholder="Tu usuario">
+                        </div>
+                        <div class="auth-form-group">
+                            <label>Contraseña</label>
+                            <input type="password" id="loginPass" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="auth-btn-submit">Entrar</button>
+                        <div id="msgLogin" class="auth-msg"></div>
+                    </form>
+                    <div class="auth-links">
+                        <a id="linkIrRegistro">¿No tienes cuenta? Regístrate</a>
+                        <a id="linkIrRecuperar">¿Olvidaste tu contraseña?</a>
+                    </div>
                 </div>
 
-                <!-- Formulario 1: Login -->
-                <form id="formLogin" class="auth-form">
-                    <div class="auth-form-group">
-                        <label>Usuario o Email</label>
-                        <input type="text" id="loginUser" required placeholder="Tu usuario">
+                <!-- Vista 2: Registro -->
+                <div id="vistaRegistro" class="auth-vista" style="display: none;">
+                    <div class="auth-header-title"><i class="fa-solid fa-user-plus"></i> Crear Cuenta</div>
+                    <form id="formRegistro">
+                        <div class="auth-form-group">
+                            <label>Usuario</label>
+                            <input type="text" id="regUser" required placeholder="Elige un usuario">
+                        </div>
+                        <div class="auth-form-group">
+                            <label>Email</label>
+                            <input type="email" id="regEmail" required placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="auth-form-group">
+                            <label>Contraseña</label>
+                            <input type="password" id="regPass" required placeholder="••••••••">
+                        </div>
+                        <div class="auth-form-group">
+                            <label>Pregunta de Seguridad</label>
+                            <select id="regPreguntaSeguridad" required>
+                                <option value="" disabled selected>Elige una pregunta...</option>
+                                <option value="¿Cómo se llamaba tu primera mascota?">¿Cómo se llamaba tu primera mascota?</option>
+                                <option value="¿En qué ciudad naciste?">¿En qué ciudad naciste?</option>
+                                <option value="¿Cómo se llamaba tu primer colegio?">¿Cómo se llamaba tu primer colegio?</option>
+                            </select>
+                        </div>
+                        <div class="auth-form-group">
+                            <label>Respuesta de Seguridad</label>
+                            <input type="text" id="regRespuestaSeguridad" required placeholder="Respuesta secreta">
+                        </div>
+                        <button type="submit" class="auth-btn-submit">Registrarse</button>
+                        <div id="msgReg" class="auth-msg"></div>
+                    </form>
+                    <div class="auth-links">
+                        <a id="linkVolverLoginReg">¿Ya tienes cuenta? Inicia sesión</a>
                     </div>
-                    <div class="auth-form-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="loginPass" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="auth-btn-submit">Entrar</button>
-                    <div id="msgLogin" class="auth-msg"></div>
-                </form>
+                </div>
 
-                <!-- Formulario 2: Registro -->
-                <form id="formRegistro" class="auth-form" style="display: none;">
-                    <div class="auth-form-group">
-                        <label>Usuario</label>
-                        <input type="text" id="regUser" required placeholder="Elige un usuario">
+                <!-- Vista 3: Recuperar Contraseña -->
+                <div id="vistaRecuperar" class="auth-vista" style="display: none;">
+                    <div class="auth-header-title"><i class="fa-solid fa-key"></i> Recuperar Contraseña</div>
+                    <form id="formRecuperar">
+                        <div id="paso1Recuperar">
+                            <div class="auth-form-group">
+                                <label>Introduce tu usuario</label>
+                                <input type="text" id="recUser" placeholder="Tu usuario">
+                            </div>
+                            <button type="button" id="btnBuscarPregunta" class="auth-btn-submit">Siguiente</button>
+                        </div>
+                        <div id="paso2Recuperar" style="display: none;">
+                            <div class="auth-form-group">
+                                <label>Pregunta de seguridad:</label>
+                                <p id="txtPreguntaSecreta" style="color: #38bdf8; font-weight: bold; margin-bottom: 10px;"></p>
+                            </div>
+                            <div class="auth-form-group">
+                                <label>Tu Respuesta</label>
+                                <input type="text" id="recRespuestaSeguridad" placeholder="Respuesta">
+                            </div>
+                            <div class="auth-form-group">
+                                <label>Nueva Contraseña</label>
+                                <input type="password" id="recNuevaPass" placeholder="Nueva contraseña">
+                            </div>
+                            <button type="submit" class="auth-btn-submit">Cambiar Contraseña</button>
+                        </div>
+                        <div id="msgRec" class="auth-msg"></div>
+                    </form>
+                    <div class="auth-links">
+                        <a id="linkVolverLoginRec">Volver a Iniciar Sesión</a>
                     </div>
-                    <div class="auth-form-group">
-                        <label>Email</label>
-                        <input type="email" id="regEmail" required placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="auth-form-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="regPass" required placeholder="••••••••">
-                    </div>
-                    <div class="auth-form-group">
-                        <label>Pregunta de Seguridad</label>
-                        <select id="regPreguntaSeguridad" required>
-                            <option value="" disabled selected>Elige una pregunta de seguridad...</option>
-                            <option value="¿Cómo se llamaba tu primera mascota?">¿Cómo se llamaba tu primera mascota?</option>
-                            <option value="¿En qué ciudad naciste?">¿En qué ciudad naciste?</option>
-                            <option value="¿Cómo se llamaba tu primer colegio?">¿Cómo se llamaba tu primer colegio?</option>
-                        </select>
-                    </div>
-                    <div class="auth-form-group">
-                        <label>Respuesta de Seguridad</label>
-                        <input type="text" id="regRespuestaSeguridad" required placeholder="Respuesta secreta">
-                    </div>
-                    <button type="submit" class="auth-btn-submit">Registrarse</button>
-                    <div id="msgReg" class="auth-msg"></div>
-                </form>
+                </div>
 
-                <!-- Formulario 3: Recuperar Contraseña -->
-                <form id="formRecuperar" class="auth-form" style="display: none;">
-                    <div id="paso1Recuperar">
-                        <div class="auth-form-group">
-                            <label>Introduce tu usuario</label>
-                            <input type="text" id="recUser" placeholder="Tu usuario">
-                        </div>
-                        <button type="button" id="btnBuscarPregunta" class="auth-btn-submit">Siguiente</button>
-                    </div>
-                    <div id="paso2Recuperar" style="display: none;">
-                        <div class="auth-form-group">
-                            <label>Pregunta de seguridad:</label>
-                            <p id="txtPreguntaSecreta" style="color: #38bdf8; font-weight: bold; margin-bottom: 10px;"></p>
-                        </div>
-                        <div class="auth-form-group">
-                            <label>Tu Respuesta</label>
-                            <input type="text" id="recRespuestaSeguridad" placeholder="Respuesta">
-                        </div>
-                        <div class="auth-form-group">
-                            <label>Nueva Contraseña</label>
-                            <input type="password" id="recNuevaPass" placeholder="Nueva contraseña">
-                        </div>
-                        <button type="submit" class="auth-btn-submit">Cambiar Contraseña</button>
-                    </div>
-                    <div id="msgRec" class="auth-msg"></div>
-                </form>
             </div>
         </div>
     `;
@@ -160,38 +190,51 @@
     divContenedor.innerHTML = modalHTML;
     document.body.appendChild(divContenedor);
 
-    // 3. Lógica de interacción (Abrir/Cerrar y Pestañas)
+    // 3. Lógica de navegación entre vistas
     const overlay = document.getElementById('modalAuthOverlay');
     const cerrarBtn = document.getElementById('cerrarModalAuth');
-    const tabBtns = document.querySelectorAll('.auth-tab-btn');
-    const forms = document.querySelectorAll('.auth-form');
+    
+    const vistaLogin = document.getElementById('vistaLogin');
+    const vistaRegistro = document.getElementById('vistaRegistro');
+    const vistaRecuperar = document.getElementById('vistaRecuperar');
 
-    window.abrirModalAuth = function(pestanaIndex = 0) {
+    function cambiarVista(vistaDestino) {
+        vistaLogin.style.display = 'none';
+        vistaRegistro.style.display = 'none';
+        vistaRecuperar.style.display = 'none';
+        
+        vistaDestino.style.display = 'block';
+        
+        // Limpiar mensajes y resetear formularios al cambiar
+        document.querySelectorAll('.auth-msg').forEach(m => m.textContent = '');
+    }
+
+    window.abrirModalAuth = function() {
+        cambiarVista(vistaLogin);
         overlay.style.display = 'flex';
-        cambiarPestaña(pestanaIndex);
     };
 
     function cerrarModal() {
         overlay.style.display = 'none';
-        document.querySelectorAll('.auth-msg').forEach(m => m.textContent = '');
         document.getElementById('paso1Recuperar').style.display = 'block';
         document.getElementById('paso2Recuperar').style.display = 'none';
         document.getElementById('formRecuperar').reset();
+        document.getElementById('formRegistro').reset();
     }
 
     cerrarBtn.onclick = cerrarModal;
     overlay.onclick = (e) => { if (e.target === overlay) cerrarModal(); };
 
-    function cambiarPestaña(index) {
-        tabBtns.forEach((btn, i) => {
-            btn.classList.toggle('active', i === index);
-            forms[i].style.display = (i === index) ? 'block' : 'none';
-        });
-    }
-
-    tabBtns.forEach((btn, i) => {
-        btn.onclick = () => cambiarPestaña(i);
-    });
+    // Enlaces de navegación inferior
+    document.getElementById('linkIrRegistro').onclick = () => cambiarVista(vistaRegistro);
+    document.getElementById('linkIrRecuperar').onclick = () => cambiarVista(vistaRecuperar);
+    document.getElementById('linkVolverLoginReg').onclick = () => cambiarVista(vistaLogin);
+    document.getElementById('linkVolverLoginRec').onclick = () => {
+        document.getElementById('paso1Recuperar').style.display = 'block';
+        document.getElementById('paso2Recuperar').style.display = 'none';
+        document.getElementById('formRecuperar').reset();
+        cambiarVista(vistaLogin);
+    };
 
     // 4. Conexión con los endpoints del Backend
 
@@ -223,7 +266,7 @@
         }
     };
 
-    // B. Registro (Envía exactamente 'preguntaSeguridad' y 'respuestaSeguridad')
+    // B. Registro
     document.getElementById('formRegistro').onsubmit = async (e) => {
         e.preventDefault();
         const username = document.getElementById('regUser').value;
@@ -254,7 +297,7 @@
         }
     };
 
-    // C. Recuperación de Contraseña (Paso 1: Obtener pregunta)
+    // C. Recuperación (Paso 1)
     let usuarioRecuperacion = '';
     document.getElementById('btnBuscarPregunta').onclick = async () => {
         usuarioRecuperacion = document.getElementById('recUser').value;
@@ -287,7 +330,7 @@
         }
     };
 
-    // Recuperación (Paso 2: Envía 'respuestaSeguridad' y 'nuevaPassword')
+    // Recuperación (Paso 2)
     document.getElementById('formRecuperar').onsubmit = async (e) => {
         e.preventDefault();
         if (document.getElementById('paso1Recuperar').style.display !== 'none') return;
@@ -309,8 +352,13 @@
             const data = await res.json();
             if (res.ok) {
                 msg.style.color = '#4ade80';
-                msg.textContent = '¡Contraseña cambiada con éxito! Ya puedes iniciar sesión.';
-                setTimeout(() => cambiarPestaña(0), 2000);
+                msg.textContent = '¡Contraseña cambiada con éxito!';
+                setTimeout(() => {
+                    document.getElementById('paso1Recuperar').style.display = 'block';
+                    document.getElementById('paso2Recuperar').style.display = 'none';
+                    document.getElementById('formRecuperar').reset();
+                    cambiarVista(vistaLogin);
+                }, 2000);
             } else {
                 msg.style.color = '#f87171';
                 msg.textContent = data.error || 'Respuesta incorrecta';
