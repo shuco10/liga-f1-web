@@ -446,6 +446,22 @@ app.delete('/api/noticias/:id', async (req, res) => {
     res.json({ success: true });
 });
 
+// Actualizar una noticia existente
+app.put('/api/noticias/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { titulo, contenido } = req.body;
+        await pool.query(
+            "UPDATE noticias SET titulo = $1, contenido = $2 WHERE id = $3",
+            [titulo, contenido, id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Error al actualizar la noticia:", err);
+        res.status(500).json({ error: "Error al actualizar la noticia" });
+    }
+});
+
 app.get('/api/resoluciones', async (req, res) => {
     try {
         const { rows } = await pool.query("SELECT * FROM resoluciones ORDER BY fecha DESC");
