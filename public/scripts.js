@@ -173,11 +173,7 @@ document.addEventListener('click', async (e) => {
 /// TELETIPOS
 ///////////////////////////////////////////////
 
-let currentIndex = 0;
-let elementosTicker = [];
-let intervalId = null;
-
-async function cargarBannerTicker() {
+async function iniciarBannerSecuencial() {
     try {
         const [resNoticias, resResoluciones, resUsuarios] = await Promise.all([
             fetch('/api/noticias').then(r => r.json()),
@@ -185,51 +181,71 @@ async function cargarBannerTicker() {
             fetch('/api/usuarios/aprobados').then(r => r.json())
         ]);
 
-        elementosTicker = [];
+        // Preparamos los bloques de datos
+        const bloques = [];
 
-        // Añadir noticias
-        resNoticias.forEach(n => {
-            elementosTicker.push(`📰 <b>NOTICIA:</b> ${n.titulo}`);
-        });
-
-        // Añadir resoluciones
-        resResoluciones.forEach(r => {
-            elementosTicker.push(`⚖️ <b>RESOLUCIÓN:</b> Sanción a ${r.reclamado} (${r.sancion})`);
-        });
-
-        // Añadir nuevos pilotos aprobados
-        resUsuarios.forEach(u => {
-            elementosTicker.push(`🏁 <b>NUEVO PILOTO:</b> ¡Bienvenido a la parrilla, ${u.username}!`);
-        });
-
-        const contenedor = document.getElementById('ticker-content');
-        
-        if (elementosTicker.length > 0) {
-            // Generamos los divs ocultos para cada mensaje
-            contenedor.innerHTML = elementosTicker.map((texto, index) => `
-                <div class="ticker-item ${index === 0 ? 'active' : ''}">${texto}</div>
-            `).join('');
-
-            // Si ya habia un intervalo corriendo, lo limpiamos
-            if (intervalId) clearInterval(intervalId);
-
-            // Rotar cada 4.5 segundos
-            intervalId = setInterval(() => {
-                const items = contenedor.querySelectorAll('.ticker-item');
-                if (items.length === 0) return;
-
-                items[currentIndex].classList.remove('active');
-                currentIndex = (currentIndex + 1) % items.length;
-                items[currentIndex].classList.add('active');
-            }, 4500);
-
-        } else {
-            contenedor.innerHTML = `<div class="ticker-item active">🏁 Bienvenidos a Cazadores de Curvas - Centro de Control Activo.</div>`;
+        if (resNoticias.length > 0) {
+            bloques.push({
+                titulo: "📰 Noticias",
+                items: resNoticias.map(n => `<b>${n.titulo}</b>`)
+            });
         }
 
+        if (resResoluciones.length > 0) {
+            bloques.push({
+                titulo: "⚖️ Resoluciones",
+                items: resResoluciones.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
+            });
+        }
+
+        if (resUsuarios.length > 0) {
+            bloques.push({
+                titulo: "🏁 Nuevos Pilotos",
+                items: resUsuarios.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
+            });
+        }
+
+        if (bloques.length === 0) {
+            document.getElementById('ticker-content').innerHTML = "Bienvenidos a Cazadores de Curvas.";
+            return;
+        }
+
+        let indiceBloque = 0;
+        const etiquetaElemento = document.getElementById('ticker-title');
+        const contenidoElemento = document.getElementById('ticker-content');
+
+        function mostrarSiguienteBloque() {
+            const bloqueActual = bloques[indiceBloque];
+            
+            // Actualizamos la etiqueta lateral
+            etiquetaElemento.innerText = bloqueActual.titulo;
+
+            // Unimos los elementos del bloque
+            const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
+            contenidoElemento.innerHTML = textoBloque;
+
+            // Calculamos la duración de la animación en base a la longitud del texto para que vaya fluido (aprox 40-50 px por segundo)
+            const longitudAprox = textoBloque.length * 8; 
+            const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40)); // Entre 15s y 40s
+
+            // Aplicamos la animación dinámicamente
+            contenidoElemento.style.animation = 'none';
+            void contenidoElemento.offsetWidth; // Forzar reflow
+            contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
+
+            // Programamos el salto al siguiente bloque justo cuando termine esta vuelta (+ 1 segundo de pausa)
+            setTimeout(() => {
+                indiceBloque = (indiceBloque + 1) % bloques.length;
+                mostrarSiguienteBloque();
+            }, duracionSegundos * 1000 + 1000); // Duración exacta + 1 segundo de respiro
+        }
+
+        // Arrancamos el ciclo
+        mostrarSiguienteBloque();
+
     } catch (err) {
-        console.error("Error al cargar el panel de avisos:", err);
+        console.error("Error al cargar el banner secuencial:", err);
     }
 }
 
-document.addEventListener('DOMContentLoaded', cargarBannerTicker);
+document.addEventListener('DOMContentLoaded', iniciarBannerSecuencial);
