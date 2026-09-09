@@ -38,9 +38,9 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 /* --- SECCIÓN SPONSORS --- */
 .seccion-patrocinadores { 
-    max-width: 520px; /* Reducido de 650px para que no sobre tanto a los lados */
+    max-width: 540px; /* Un pelín más de margen para que respiren sin romperse */
     margin: 15px auto; 
-    padding: 10px 15px; /* Menos espacio arriba/abajo y a los lados por dentro */
+    padding: 10px 15px; 
     background: #1a1a1a; 
     border-radius: 10px; 
     border-left: 4px solid #ff4444; 
@@ -65,7 +65,7 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 45px; /* Espacio mayor entre los logos */
+    gap: 25px; /* Reducido de 45px a 25px para que quepan los tres en fila perfectamente */
     flex-wrap: wrap;
 }
 
