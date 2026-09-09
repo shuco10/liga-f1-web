@@ -147,10 +147,10 @@ document.addEventListener('click', async (e) => {
 /////////////////////////////////////////////////////////////////////////////
 
 async function iniciarBannerSecuencial() {
-    const selectElemento = document.getElementById('ticker-select');
+    const tituloElemento = document.getElementById('ticker-titulo');
     const contenidoElemento = document.getElementById('ticker-content');
 
-    if (!contenidoElemento) {
+    if (!contenidoElemento || !tituloElemento) {
         setTimeout(iniciarBannerSecuencial, 500);
         return;
     }
@@ -164,64 +164,32 @@ async function iniciarBannerSecuencial() {
 
         let bloquesGlobales = [];
 
-        // 1. NOTICIAS (Usa la columna 'fecha')
+        // 1. NOTICIAS (Carga todas)
         if (Array.isArray(resNoticias) && resNoticias.length > 0) {
-            resNoticias.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-            const ultimaFechaNoticia = (resNoticias[0].fecha || '').split('T')[0];
-            
-            const noticiasUltimoDia = resNoticias.filter(n => {
-                const fechaN = (n.fecha || '').split('T')[0];
-                return fechaN === ultimaFechaNoticia;
+            bloquesGlobales.push({
+                titulo: "📰 NOTICIAS",
+                items: resNoticias.map(n => `<b>${n.titulo}</b>`)
             });
-
-            if (noticiasUltimoDia.length > 0) {
-                bloquesGlobales.push({
-                    key: "noticias",
-                    titulo: "📰 Noticias",
-                    items: noticiasUltimoDia.map(n => `<b>${n.titulo}</b>`)
-                });
-            }
         }
 
-        // 2. RESOLUCIONES (Usa la columna 'fecha')
+        // 2. RESOLUCIONES (Carga todas)
         if (Array.isArray(resResoluciones) && resResoluciones.length > 0) {
-            resResoluciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-            const ultimaFechaRes = (resResoluciones[0].fecha || '').split('T')[0];
-            
-            const resolucionesUltimoDia = resResoluciones.filter(r => {
-                const fechaR = (r.fecha || '').split('T')[0];
-                return fechaR === ultimaFechaRes;
+            bloquesGlobales.push({
+                titulo: "⚖️ RESOLUCIONES",
+                items: resResoluciones.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
             });
-
-            if (resolucionesUltimoDia.length > 0) {
-                bloquesGlobales.push({
-                    key: "resoluciones",
-                    titulo: "⚖️ Resoluciones",
-                    items: resolucionesUltimoDia.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
-                });
-            }
         }
 
-        // 3. USUARIOS / PILOTOS (Usa la columna 'creado_en')
+        // 3. USUARIOS / PILOTOS (Carga todos)
         if (Array.isArray(resUsuarios) && resUsuarios.length > 0) {
-            resUsuarios.sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en));
-            const ultimaFechaUser = (resUsuarios[0].creado_en || '').split('T')[0];
-            
-            const usuariosUltimoDia = resUsuarios.filter(u => {
-                const fechaU = (u.creado_en || '').split('T')[0];
-                return fechaU === ultimaFechaUser;
+            bloquesGlobales.push({
+                titulo: "👤 NUEVOS PILOTOS",
+                items: resUsuarios.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
             });
-
-            if (usuariosUltimoDia.length > 0) {
-                bloquesGlobales.push({
-                    key: "usuarios",
-                    titulo: "🏁 Nuevos Pilotos",
-                    items: usuariosUltimoDia.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
-                });
-            }
         }
 
         if (bloquesGlobales.length === 0) {
+            tituloElemento.innerHTML = "🚨 AVISO";
             contenidoElemento.innerHTML = "Bienvenidos a Cazadores de Curvas.";
             return;
         }
@@ -229,64 +197,40 @@ async function iniciarBannerSecuencial() {
         let timerBloque = null;
         let indiceBloqueActual = 0;
 
-        function mostrarBloque(index, forzado = false) {
+        function mostrarBloque(index) {
             if (timerBloque) clearTimeout(timerBloque);
 
             const bloqueActual = bloquesGlobales[index];
-            if (selectElemento && !forzado) {
-                selectElemento.value = bloqueActual.key;
-            }
+            
+            // Actualiza el título rojo dinámicamente
+            tituloElemento.innerHTML = bloqueActual.titulo;
 
             const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
             contenidoElemento.innerHTML = textoBloque;
 
+            // Calcula la velocidad según la longitud del texto
             const longitudAprox = textoBloque.length * 8; 
-            const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40));
+            const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 50));
 
             contenidoElemento.style.animation = 'none';
             void contenidoElemento.offsetWidth; 
             contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
 
-            if (!forzado && (!selectElemento || selectElemento.value === 'auto')) {
-                timerBloque = setTimeout(() => {
-                    indiceBloqueActual = (indiceBloqueActual + 1) % bloquesGlobales.length;
-                    mostrarBloque(indiceBloqueActual, false);
-                }, duracionSegundos * 1000 + 1000);
-            }
+            // Salta automáticamente al siguiente bloque cuando termine de desfilar
+            timerBloque = setTimeout(() => {
+                indiceBloqueActual = (indiceBloqueActual + 1) % bloquesGlobales.length;
+                mostrarBloque(indiceBloqueActual);
+            }, duracionSegundos * 1000 + 1000);
         }
 
-        if (selectElemento) {
-            selectElemento.removeEventListener('change', window.tickerChangeHandler);
-            window.tickerChangeHandler = (e) => {
-                const seleccion = e.target.value;
-                if (timerBloque) clearTimeout(timerBloque);
-
-                if (seleccion === 'auto') {
-                    mostrarBloque(indiceBloqueActual, false);
-                } else {
-                    const bloqueEncontrado = bloquesGlobales.find(b => b.key === seleccion);
-                    if (bloqueEncontrado) {
-                        const textoBloque = bloqueEncontrado.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
-                        contenidoElemento.innerHTML = textoBloque;
-
-                        const longitudAprox = textoBloque.length * 8; 
-                        const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40));
-
-                        contenidoElemento.style.animation = 'none';
-                        void contenidoElemento.offsetWidth;
-                        contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
-                    }
-                }
-            };
-            selectElemento.addEventListener('change', window.tickerChangeHandler);
-        }
-
-        mostrarBloque(indiceBloqueActual, false);
+        mostrarBloque(indiceBloqueActual);
 
     } catch (err) {
-        console.error("Error al filtrar el banner por última fecha:", err);
+        console.error("Error al cargar el banner automático:", err);
     }
 }
+
+
 
 /////////////////////////////////////////////////
 //NO ELIMINAR ESTO DE AQUI//////////////////
