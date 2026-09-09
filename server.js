@@ -1352,6 +1352,18 @@ app.post('/api/auth/recuperar-password', async (req, res) => {
     }
 });
 
+// Obtener últimos usuarios aprobados para el banner
+app.get('/api/usuarios/aprobados', async (req, res) => {
+    try {
+        const { rows } = await pool.query("SELECT username FROM usuarios WHERE activo = true ORDER BY creado_en DESC LIMIT 5");
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: "Error al cargar usuarios aprobados" });
+    }
+});
+
+
+
 // ==========================================
 // ARRANQUE DEL SERVIDOR
 // ==========================================
