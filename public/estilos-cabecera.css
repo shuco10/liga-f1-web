@@ -54,7 +54,7 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-size: 1.5rem; 
+    font-size: 1.5rem; /* Mantenemos el tamaño del título para que no compita con el logo principal */
     margin-top: 10px;
     margin-bottom: 20px;
     text-align: center; 
@@ -74,17 +74,18 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     object-fit: contain;
 }
 
-/* Tamaños proporcionales independientes para compensar sus formas */
+/* --- AUMENTO GENERAL DE TAMAÑO (Nuevos valores en px) --- */
+
 .logo-musica {
-    height: 32px; 
+    height: 45px; /* Subido de 32px a 45px */
 }
 
 .logo-taxibus {
-    height: 24px; /* Al ser un logotipo alargado de texto, se ajusta para encajar ópticamente con los demás */
+    height: 35px; /* Subido de 24px a 35px. Mantiene la proporción para no dominar */
 }
 
 .logo-krv {
-    height: 38px; 
+    height: 55px; /* Subido de 38px a 55px */
 }
 
 /* --- SECCIÓN SPONSORS --- */
