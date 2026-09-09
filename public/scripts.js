@@ -146,10 +146,6 @@ document.addEventListener('click', async (e) => {
 /// TELETIPOS (Formato por bloques secuenciales: Noticias -> Resoluciones -> Pilotos)
 /////////////////////////////////////////////////////////////////////////////
 
-let timerBloque = null;
-let bloquesGlobales = [];
-let indiceBloqueActual = 0;
-
 async function iniciarBannerSecuencial() {
     try {
         const [resNoticias, resResoluciones, resUsuarios] = await Promise.all([
@@ -158,48 +154,47 @@ async function iniciarBannerSecuencial() {
             fetch('/api/usuarios/aprobados').then(r => r.json()).catch(() => [])
         ]);
 
-        bloquesGlobales = [];
+        const bloques = [];
 
         if (Array.isArray(resNoticias) && resNoticias.length > 0) {
-            bloquesGlobales.push({
-                key: "noticias",
+            bloques.push({
                 titulo: "📰 Noticias",
                 items: resNoticias.map(n => `<b>${n.titulo}</b>`)
             });
         }
 
         if (Array.isArray(resResoluciones) && resResoluciones.length > 0) {
-            bloquesGlobales.push({
-                key: "resoluciones",
+            bloques.push({
                 titulo: "⚖️ Resoluciones",
                 items: resResoluciones.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
             });
         }
 
         if (Array.isArray(resUsuarios) && resUsuarios.length > 0) {
-            bloquesGlobales.push({
-                key: "usuarios",
+            bloques.push({
                 titulo: "🏁 Nuevos Pilotos",
                 items: resUsuarios.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
             });
         }
 
-        const selectElemento = document.getElementById('ticker-select');
+        const etiquetaElemento = document.getElementById('ticker-title');
         const contenidoElemento = document.getElementById('ticker-content');
 
         if (!contenidoElemento) return;
 
-        if (bloquesGlobales.length === 0) {
+        if (bloques.length === 0) {
+            if (etiquetaElemento) etiquetaElemento.innerText = "🏁 Info";
             contenidoElemento.innerHTML = "Bienvenidos a Cazadores de Curvas.";
             return;
         }
 
-        function mostrarBloque(index, forzado = false) {
-            if (timerBloque) clearTimeout(timerBloque);
+        let indiceBloque = 0;
 
-            const bloqueActual = bloquesGlobales[index];
-            if (selectElemento && !forzado) {
-                selectElemento.value = bloqueActual.key;
+        function mostrarSiguienteBloque() {
+            const bloqueActual = bloques[indiceBloque];
+            
+            if (etiquetaElemento) {
+                etiquetaElemento.innerText = bloqueActual.titulo;
             }
 
             const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
@@ -209,47 +204,25 @@ async function iniciarBannerSecuencial() {
             const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40));
 
             contenidoElemento.style.animation = 'none';
-            void contenidoElemento.offsetWidth; 
+            void contenidoElemento.offsetWidth; // Forzar reflow
             contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
 
-            // Si está en modo automático, programamos el siguiente bloque
-            if (!forzado && selectElemento.value === 'auto') {
-                timerBloque = setTimeout(() => {
-                    indiceBloqueActual = (indiceBloqueActual + 1) % bloquesGlobales.length;
-                    mostrarBloque(indiceBloqueActual, false);
-                }, duracionSegundos * 1000 + 1000);
-            }
+            setTimeout(() => {
+                indiceBloque = (indiceBloque + 1) % bloques.length;
+                mostrarSiguienteBloque();
+            }, duracionSegundos * 1000 + 1000);
         }
 
-        // Listener para cuando el usuario cambia manualmente el desplegable
-        if (selectElemento) {
-            selectElemento.addEventListener('change', (e) => {
-                const seleccion = e.target.value;
-                if (timerBloque) clearTimeout(timerBloque);
-
-                if (seleccion === 'auto') {
-                    mostrarBloque(indiceBloqueActual, false);
-                } else {
-                    const bloqueEncontrado = bloquesGlobales.find(b => b.key === seleccion);
-                    if (bloqueEncontrado) {
-                        const textoBloque = bloqueEncontrado.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
-                        contenidoElemento.innerHTML = textoBloque;
-
-                        const longitudAprox = textoBloque.length * 8; 
-                        const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40));
-
-                        contenidoElemento.style.animation = 'none';
-                        void contenidoElemento.offsetWidth;
-                        contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
-                    }
-                }
-            });
-        }
-
-        // Arrancamos el ciclo automático inicial
-        mostrarBloque(indiceBloqueActual, false);
+        mostrarSiguienteBloque();
 
     } catch (err) {
-        console.error("Error al cargar el banner interactivo:", err);
+        console.error("Error al cargar el banner secuencial:", err);
     }
 }
+
+// Inicialización general al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    verificarSesionPagina();
+    gestionarVisitas();
+    iniciarBannerSecuencial();
+});
