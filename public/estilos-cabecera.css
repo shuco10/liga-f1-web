@@ -7,23 +7,23 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 /* --- CONTENEDORES --- */
 .contenedor-jaula { 
     width: 100%; 
-    max-width: 800px; 
-    /* Cambia height por min-height y reduce el valor drásticamente */
+    max-width: 900px; /* Ampliamos un poco el contenedor para que quepa bien el logo grande */
     min-height: 50px; 
-    margin: 0 auto; 
-    /* Elimina o reduce el margen si sigue habiendo espacio */
+    margin: 0 auto; /* Esto centra la caja entera en la pantalla */
     margin-top: 10px; 
     margin-bottom: 10px; 
     overflow: hidden; 
     position: relative; 
+    text-align: center; /* Asegura que todo lo de dentro se centre */
 }
 
 .logo-main { 
-    max-width: 500px; /* Prueba a subir o bajar este número según lo grande que lo quieras */
-    width: 100%;       /* Para que se adapte bien en móviles */
-    height: auto;      /* Mantiene la proporción perfecta */
+    max-width: 500px; 
+    width: 100%;        
+    height: auto;       
+    display: inline-block; /* Evita comportamientos extraños de alineación */
+    margin: 0 auto;
 }
-
 /* --- TÍTULO DE LIGA --- */
 .titulo-liga {
     font-family: 'Rajdhani', sans-serif !important;
