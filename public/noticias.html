@@ -93,7 +93,7 @@
         document.getElementById('form-noticia-admin').style.display = 'block';
     }
 
-// 2. Cargar Noticias
+// 1. Cargar Noticias
 async function cargarNoticias() {
     const contenedor = document.getElementById('lista-noticias');
     if (!contenedor) return; // Protección por si no existe en esta página
@@ -114,7 +114,6 @@ async function cargarNoticias() {
             div.className = 'noticia-item noticia-destacada-amarilla'; 
             div.style.marginBottom = "20px";
             
-            // Usamos un botón con un identificador limpio y un listener seguro en lugar de inyectar el texto en el onclick
             const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
                 <div style="margin-top: 10px; display: flex; gap: 10px;">
                     <button class="btn-editar-noticia" data-id="${noticia.id}" 
@@ -133,7 +132,7 @@ async function cargarNoticias() {
             `;
             contenedor.appendChild(div);
 
-            // Si es admin, asignamos el evento de editar de forma segura pasando el objeto completo por memoria
+            // Asignamos el evento de editar de forma segura por memoria
             if (typeof esAdmin === 'function' && esAdmin()) {
                 const btnEditar = div.querySelector('.btn-editar-noticia');
                 if (btnEditar) {
@@ -149,43 +148,7 @@ async function cargarNoticias() {
     }
 }
 
-    // 3. Acciones Admin
-async function publicarNoticia() {
-    const tituloInput = document.getElementById('nueva-noticia-titulo');
-    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
-
-    const res = await fetch('/api/noticias', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ titulo: tituloInput.value, contenido: contenidoInput.value })
-    });
-    
-    if (res.ok) { 
-        // Limpiamos los campos
-        tituloInput.value = '';
-        contenidoInput.value = '';
-
-            if (res.ok) {
-        // 1. Llamamos a la función de Discord antes de recargar la página
-        await notificarDiscord(titulo, contenido);
-        
-        // 2. Alert y recarga
-        alert("Noticia publicada correctamente y enviada a Discord");
-        location.reload(); 
-    }
-        
-        cargarNoticias(); 
-        alert("Publicado"); 
-    }
-}
-
-
-
-
-
-
-    
-
+// 2. Publicar Noticia (Versión única y limpia)
 async function publicarNoticia() {
     const tituloInput = document.getElementById('nueva-noticia-titulo');
     const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
@@ -207,21 +170,22 @@ async function publicarNoticia() {
         });
         
         if (res.ok) { 
-            // 1. Notificamos a Discord usando los valores de los inputs
-            await notificarDiscord(tituloInput.value, contenidoInput.value);
+            // Notificamos a Discord si la función existe
+            if (typeof notificarDiscord === 'function') {
+                await notificarDiscord(tituloInput.value, contenidoInput.value);
+            }
             
-            // 2. Limpiamos los campos
+            // Limpiamos los campos
             tituloInput.value = '';
             contenidoInput.value = '';
 
-            // 3. Feedback al usuario
             alert("Noticia publicada correctamente y enviada a Discord.");
             
-            // 4. Actualizamos la lista sin recargar toda la página (es más rápido)
+            // Actualizamos la lista sin recargar
             if (typeof cargarNoticias === 'function') {
                 cargarNoticias();
             } else {
-                location.reload(); // Si no existe la función, recargamos
+                location.reload();
             }
         } else {
             alert("Error al publicar la noticia.");
@@ -232,9 +196,7 @@ async function publicarNoticia() {
     }
 }
 
-
-
-// --- FUNCIÓN PARA ELIMINAR ---
+// 3. Eliminar Noticia
 async function eliminarNoticia(id) {
     if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
         const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
@@ -242,24 +204,34 @@ async function eliminarNoticia(id) {
     }
 }
 
+// 4. Editar Noticia
 async function editarNoticia(id, tituloActual, contenidoActual) {
     const nuevoTitulo = prompt("Edita el título:", tituloActual);
+    if (nuevoTitulo === null) return;
+
     const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
-    if (nuevoTitulo !== null && nuevoContenido !== null) {
+    if (nuevoContenido === null) return;
+
+    try {
         const res = await fetch(`/api/noticias/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
         });
-        if (res.ok) location.reload();
-        else alert("Error al actualizar la noticia.");
+        
+        if (res.ok) {
+            location.reload();
+        } else {
+            alert("Error al actualizar la noticia.");
+        }
+    } catch (err) {
+        console.error("Error al editar:", err);
+        alert("Error de conexión al actualizar la noticia.");
     }
 }
 
-
-    
-    document.addEventListener('DOMContentLoaded', cargarNoticias);
-
+// Inicialización al cargar la página
+document.addEventListener('DOMContentLoaded', cargarNoticias);
 
     // Esta función vivirá ahora permanentemente en noticias.html
 async function verificarSesion() {
