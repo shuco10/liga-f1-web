@@ -93,7 +93,7 @@
         document.getElementById('form-noticia-admin').style.display = 'block';
     }
 
-    // 2. Cargar Noticias
+// 2. Cargar Noticias
 async function cargarNoticias() {
     const contenedor = document.getElementById('lista-noticias');
     if (!contenedor) return; // Protección por si no existe en esta página
@@ -114,9 +114,10 @@ async function cargarNoticias() {
             div.className = 'noticia-item noticia-destacada-amarilla'; 
             div.style.marginBottom = "20px";
             
+            // Usamos un botón con un identificador limpio y un listener seguro en lugar de inyectar el texto en el onclick
             const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
                 <div style="margin-top: 10px; display: flex; gap: 10px;">
-                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
+                    <button class="btn-editar-noticia" data-id="${noticia.id}" 
                             style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
                     <button onclick="eliminarNoticia(${noticia.id})" 
                             style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
@@ -131,6 +132,16 @@ async function cargarNoticias() {
                 ${botonesAdmin}
             `;
             contenedor.appendChild(div);
+
+            // Si es admin, asignamos el evento de editar de forma segura pasando el objeto completo por memoria
+            if (typeof esAdmin === 'function' && esAdmin()) {
+                const btnEditar = div.querySelector('.btn-editar-noticia');
+                if (btnEditar) {
+                    btnEditar.addEventListener('click', () => {
+                        editarNoticia(noticia.id, noticia.titulo, noticia.contenido);
+                    });
+                }
+            }
         });
     } catch (error) {
         console.error("Error cargando noticias:", error);
