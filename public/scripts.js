@@ -167,3 +167,50 @@ document.addEventListener('click', async (e) => {
         }
     }
 });
+
+async function cargarBannerTicker() {
+    try {
+        // Hacemos fetch a las tres fuentes en paralelo
+        const [resNoticias, resResoluciones, resUsuarios] = await Promise.all([
+            fetch('/api/noticias').then(r => r.json()),
+            fetch('/api/resoluciones').then(r => r.json()),
+            fetch('/api/usuarios/aprobados').then(r => r.json())
+        ]);
+
+        let elementosTicker = [];
+
+        // Añadir noticias
+        resNoticias.forEach(n => {
+            elementosTicker.push(`📰 <b>Noticia:</b> ${n.titulo}`);
+        });
+
+        // Añadir resoluciones de última hora
+        if (resResoluciones.length > 0) {
+            const ultimaRes = resResoluciones[0]; // Cogemos la más reciente
+            elementosTicker.push(`⚖️ <b>Resolución Oficial:</b> Sanción a ${ultimaRes.reclamado} (${ultimaRes.sancion})`);
+        }
+
+        // Añadir nuevos pilotos aprobados
+        resUsuarios.forEach(u => {
+            elementosTicker.push(`🏁 <b>Nuevo Piloto en Parrilla:</b> ¡Bienvenido a ${u.username}!`);
+        });
+
+        // Si hay elementos, los unimos con un separador y los metemos en el ticker
+        if (elementosTicker.length > 0) {
+            const contenedor = document.getElementById('ticker-content');
+            // Duplicamos el array para que el bucle visual sea más fluido si hay pocos elementos
+            contenedor.innerHTML = elementosTicker.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ' + elementosTicker.join(' &nbsp;&bull;&nbsp; ');
+        } else {
+            document.getElementById('ticker-content').innerHTML = "🏁 Bienvenidos a Cazadores de Curvas - Mantente al día con la competición.";
+        }
+
+    } catch (err) {
+        console.error("Error al cargar el banner de noticias:", err);
+    }
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', cargarBannerTicker);
+
+
+
