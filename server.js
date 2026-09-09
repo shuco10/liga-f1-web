@@ -1352,10 +1352,22 @@ app.post('/api/auth/recuperar-password', async (req, res) => {
     }
 });
 
-// Obtener últimos usuarios aprobados para el banner
+// Obtener los pilotos registrados en el último día con actividad
 app.get('/api/usuarios/aprobados', async (req, res) => {
     try {
-        const { rows } = await pool.query("SELECT username FROM usuarios WHERE activo = true ORDER BY creado_en DESC LIMIT 5");
+        const { rows } = await pool.query(`
+            SELECT username, creado_en 
+            FROM usuarios 
+            WHERE activo = true 
+              AND DATE(creado_en) = (
+                  SELECT DATE(creado_en) 
+                  FROM usuarios 
+                  WHERE activo = true 
+                  ORDER BY creado_en DESC 
+                  LIMIT 1
+              )
+            ORDER BY creado_en DESC
+        `);
         res.json(rows);
     } catch (err) {
         res.status(500).json({ error: "Error al cargar usuarios aprobados" });
