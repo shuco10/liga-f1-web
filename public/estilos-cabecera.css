@@ -1537,6 +1537,7 @@ table {
 }
 
 */
+/* Contenedor principal acotado al 70% de la página y centrado */
 .ticker-container {
     display: flex;
     background: #111;
@@ -1548,8 +1549,9 @@ table {
     overflow: hidden;
     border-radius: 4px;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-    max-width: 100%;
-    margin: 0 auto 15px auto;
+    width: 70%;          /* Ocupa exactamente el 70% del ancho */
+    max-width: 1200px;   /* Límite máximo para pantallas gigantes */
+    margin: 0 auto 15px auto; /* Centrado automático a los lados */
 }
 
 /* Caja roja lateral restaurada y bien alineada */
