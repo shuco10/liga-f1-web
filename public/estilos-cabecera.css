@@ -38,9 +38,9 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 /* --- SECCIÓN SPONSORS --- */
 .seccion-patrocinadores { 
-    max-width: 600px; 
+    max-width: 650px; /* Un poco más de ancho para que respire bien */
     margin: 20px auto; 
-    padding: 15px 20px; 
+    padding: 20px; 
     background: #1a1a1a; 
     border-radius: 10px; 
     border-left: 4px solid #ff4444; 
@@ -54,9 +54,9 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-size: 1.5rem; /* Mantenemos el tamaño del título para que no compita con el logo principal */
+    font-size: 1.5rem; 
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     text-align: center; 
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
@@ -65,7 +65,7 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px; 
+    gap: 45px; /* Espacio mayor entre los logos */
     flex-wrap: wrap;
 }
 
@@ -74,19 +74,19 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     object-fit: contain;
 }
 
-/* --- AUMENTO GENERAL DE TAMAÑO (Nuevos valores en px) --- */
+/* --- TAMAÑOS DOBLES Y PROPORCIONALES --- */
 
 .logo-musica {
-    height: 45px; /* Subido de 32px a 45px */
+    height: 90px; /* Duplicado de 45px */
 }
 
 .logo-taxibus {
-    height: 35px; /* Subido de 24px a 35px. Mantiene la proporción para no dominar */
+    height: 70px; /* Duplicado de 35px */
 }
 
 .logo-krv {
-    height: 55px; /* Subido de 38px a 55px */
-}
+    height: 110px; /* Duplicado de 55px */
+}}
 
 /* --- SECCIÓN SPONSORS --- */
 
