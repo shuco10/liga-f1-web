@@ -147,6 +147,14 @@ document.addEventListener('click', async (e) => {
 /////////////////////////////////////////////////////////////////////////////
 
 async function iniciarBannerSecuencial() {
+    const selectElemento = document.getElementById('ticker-select');
+    const contenidoElemento = document.getElementById('ticker-content');
+
+    if (!contenidoElemento) {
+        setTimeout(iniciarBannerSecuencial, 500);
+        return;
+    }
+
     try {
         const [resNoticias, resResoluciones, resUsuarios] = await Promise.all([
             fetch('/api/noticias').then(r => r.json()).catch(() => []),
@@ -154,47 +162,79 @@ async function iniciarBannerSecuencial() {
             fetch('/api/usuarios/aprobados').then(r => r.json()).catch(() => [])
         ]);
 
-        const bloques = [];
+        let bloquesGlobales = [];
 
+        // 1. NOTICIAS (Usa la columna 'fecha')
         if (Array.isArray(resNoticias) && resNoticias.length > 0) {
-            bloques.push({
-                titulo: "📰 Noticias",
-                items: resNoticias.map(n => `<b>${n.titulo}</b>`)
+            resNoticias.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            const ultimaFechaNoticia = (resNoticias[0].fecha || '').split('T')[0];
+            
+            const noticiasUltimoDia = resNoticias.filter(n => {
+                const fechaN = (n.fecha || '').split('T')[0];
+                return fechaN === ultimaFechaNoticia;
             });
+
+            if (noticiasUltimoDia.length > 0) {
+                bloquesGlobales.push({
+                    key: "noticias",
+                    titulo: "📰 Noticias",
+                    items: noticiasUltimoDia.map(n => `<b>${n.titulo}</b>`)
+                });
+            }
         }
 
+        // 2. RESOLUCIONES (Usa la columna 'fecha')
         if (Array.isArray(resResoluciones) && resResoluciones.length > 0) {
-            bloques.push({
-                titulo: "⚖️ Resoluciones",
-                items: resResoluciones.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
+            resResoluciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            const ultimaFechaRes = (resResoluciones[0].fecha || '').split('T')[0];
+            
+            const resolucionesUltimoDia = resResoluciones.filter(r => {
+                const fechaR = (r.fecha || '').split('T')[0];
+                return fechaR === ultimaFechaRes;
             });
+
+            if (resolucionesUltimoDia.length > 0) {
+                bloquesGlobales.push({
+                    key: "resoluciones",
+                    titulo: "⚖️ Resoluciones",
+                    items: resolucionesUltimoDia.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
+                });
+            }
         }
 
+        // 3. USUARIOS / PILOTOS (Usa la columna 'creado_en')
         if (Array.isArray(resUsuarios) && resUsuarios.length > 0) {
-            bloques.push({
-                titulo: "🏁 Nuevos Pilotos",
-                items: resUsuarios.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
+            resUsuarios.sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en));
+            const ultimaFechaUser = (resUsuarios[0].creado_en || '').split('T')[0];
+            
+            const usuariosUltimoDia = resUsuarios.filter(u => {
+                const fechaU = (u.creado_en || '').split('T')[0];
+                return fechaU === ultimaFechaUser;
             });
+
+            if (usuariosUltimoDia.length > 0) {
+                bloquesGlobales.push({
+                    key: "usuarios",
+                    titulo: "🏁 Nuevos Pilotos",
+                    items: usuariosUltimoDia.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
+                });
+            }
         }
 
-        const etiquetaElemento = document.getElementById('ticker-title');
-        const contenidoElemento = document.getElementById('ticker-content');
-
-        if (!contenidoElemento) return;
-
-        if (bloques.length === 0) {
-            if (etiquetaElemento) etiquetaElemento.innerText = "🏁 Info";
+        if (bloquesGlobales.length === 0) {
             contenidoElemento.innerHTML = "Bienvenidos a Cazadores de Curvas.";
             return;
         }
 
-        let indiceBloque = 0;
+        let timerBloque = null;
+        let indiceBloqueActual = 0;
 
-        function mostrarSiguienteBloque() {
-            const bloqueActual = bloques[indiceBloque];
-            
-            if (etiquetaElemento) {
-                etiquetaElemento.innerText = bloqueActual.titulo;
+        function mostrarBloque(index, forzado = false) {
+            if (timerBloque) clearTimeout(timerBloque);
+
+            const bloqueActual = bloquesGlobales[index];
+            if (selectElemento && !forzado) {
+                selectElemento.value = bloqueActual.key;
             }
 
             const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
@@ -204,22 +244,52 @@ async function iniciarBannerSecuencial() {
             const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40));
 
             contenidoElemento.style.animation = 'none';
-            void contenidoElemento.offsetWidth; // Forzar reflow
+            void contenidoElemento.offsetWidth; 
             contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
 
-            setTimeout(() => {
-                indiceBloque = (indiceBloque + 1) % bloques.length;
-                mostrarSiguienteBloque();
-            }, duracionSegundos * 1000 + 1000);
+            if (!forzado && (!selectElemento || selectElemento.value === 'auto')) {
+                timerBloque = setTimeout(() => {
+                    indiceBloqueActual = (indiceBloqueActual + 1) % bloquesGlobales.length;
+                    mostrarBloque(indiceBloqueActual, false);
+                }, duracionSegundos * 1000 + 1000);
+            }
         }
 
-        mostrarSiguienteBloque();
+        if (selectElemento) {
+            selectElemento.removeEventListener('change', window.tickerChangeHandler);
+            window.tickerChangeHandler = (e) => {
+                const seleccion = e.target.value;
+                if (timerBloque) clearTimeout(timerBloque);
+
+                if (seleccion === 'auto') {
+                    mostrarBloque(indiceBloqueActual, false);
+                } else {
+                    const bloqueEncontrado = bloquesGlobales.find(b => b.key === seleccion);
+                    if (bloqueEncontrado) {
+                        const textoBloque = bloqueEncontrado.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
+                        contenidoElemento.innerHTML = textoBloque;
+
+                        const longitudAprox = textoBloque.length * 8; 
+                        const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40));
+
+                        contenidoElemento.style.animation = 'none';
+                        void contenidoElemento.offsetWidth;
+                        contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
+                    }
+                }
+            };
+            selectElemento.addEventListener('change', window.tickerChangeHandler);
+        }
+
+        mostrarBloque(indiceBloqueActual, false);
 
     } catch (err) {
-        console.error("Error al cargar el banner secuencial:", err);
+        console.error("Error al filtrar el banner por última fecha:", err);
     }
 }
 
+/////////////////////////////////////////////////
+//NO ELIMINAR ESTO DE AQUI//////////////////
 // Inicialización general al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
     verificarSesionPagina();
