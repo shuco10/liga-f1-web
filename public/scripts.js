@@ -164,32 +164,62 @@ async function iniciarBannerSecuencial() {
 
         let bloquesGlobales = [];
 
-        // 1. NOTICIAS (Carga todas)
+        // 1. NOTICIAS: Filtradas estrictamente al último día con noticias
         if (Array.isArray(resNoticias) && resNoticias.length > 0) {
-            bloquesGlobales.push({
-                titulo: "📰 NOTICIAS",
-                items: resNoticias.map(n => `<b>${n.titulo}</b>`)
+            resNoticias.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            const ultimaFechaNoticia = (resNoticias[0].fecha || '').split('T')[0].split(' ')[0];
+            
+            const noticiasUltimoDia = resNoticias.filter(n => {
+                const fechaN = (n.fecha || '').split('T')[0].split(' ')[0];
+                return fechaN === ultimaFechaNoticia;
             });
+
+            if (noticiasUltimoDia.length > 0) {
+                bloquesGlobales.push({
+                    titulo: "📰 NOTICIAS",
+                    items: noticiasUltimoDia.map(n => `<b>${n.titulo}</b>`)
+                });
+            }
         }
 
-        // 2. RESOLUCIONES (Carga todas)
+        // 2. RESOLUCIONES: Filtradas estrictamente al último día con resoluciones
         if (Array.isArray(resResoluciones) && resResoluciones.length > 0) {
-            bloquesGlobales.push({
-                titulo: "⚖️ RESOLUCIONES",
-                items: resResoluciones.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
+            resResoluciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            const ultimaFechaRes = (resResoluciones[0].fecha || '').split('T')[0].split(' ')[0];
+            
+            const resolucionesUltimoDia = resResoluciones.filter(r => {
+                const fechaR = (r.fecha || '').split('T')[0].split(' ')[0];
+                return fechaR === ultimaFechaRes;
             });
+
+            if (resolucionesUltimoDia.length > 0) {
+                bloquesGlobales.push({
+                    titulo: "⚖️ RESOLUCIONES",
+                    items: resolucionesUltimoDia.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
+                });
+            }
         }
 
-        // 3. USUARIOS / PILOTOS (Carga todos)
+        // 3. PILOTOS: Filtrados estrictamente al último día de registro
         if (Array.isArray(resUsuarios) && resUsuarios.length > 0) {
-            bloquesGlobales.push({
-                titulo: "👤 NUEVOS PILOTOS",
-                items: resUsuarios.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
+            resUsuarios.sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en));
+            const ultimaFechaUser = (resUsuarios[0].creado_en || '').split('T')[0].split(' ')[0];
+            
+            const usuariosUltimoDia = resUsuarios.filter(u => {
+                const fechaU = (u.creado_en || '').split('T')[0].split(' ')[0];
+                return fechaU === ultimaFechaUser;
             });
+
+            if (usuariosUltimoDia.length > 0) {
+                bloquesGlobales.push({
+                    titulo: "🏁 NUEVOS PILOTOS",
+                    items: usuariosUltimoDia.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
+                });
+            }
         }
 
         if (bloquesGlobales.length === 0) {
-            tituloElemento.innerHTML = "🚨 AVISO";
+            tituloElemento.innerHTML = "🏁 AVISO";
             contenidoElemento.innerHTML = "Bienvenidos a Cazadores de Curvas.";
             return;
         }
@@ -202,21 +232,19 @@ async function iniciarBannerSecuencial() {
 
             const bloqueActual = bloquesGlobales[index];
             
-            // Actualiza el título rojo dinámicamente
+            // Asigna el título con icono perfectamente integrado en la caja roja
             tituloElemento.innerHTML = bloqueActual.titulo;
 
             const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
             contenidoElemento.innerHTML = textoBloque;
 
-            // Calcula la velocidad según la longitud del texto
             const longitudAprox = textoBloque.length * 8; 
-            const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 50));
+            const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 45));
 
             contenidoElemento.style.animation = 'none';
             void contenidoElemento.offsetWidth; 
             contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
 
-            // Salta automáticamente al siguiente bloque cuando termine de desfilar
             timerBloque = setTimeout(() => {
                 indiceBloqueActual = (indiceBloqueActual + 1) % bloquesGlobales.length;
                 mostrarBloque(indiceBloqueActual);
@@ -229,7 +257,6 @@ async function iniciarBannerSecuencial() {
         console.error("Error al cargar el banner automático:", err);
     }
 }
-
 
 
 /////////////////////////////////////////////////
