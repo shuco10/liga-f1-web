@@ -38,9 +38,9 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 /* --- SECCIÓN SPONSORS --- */
 .seccion-patrocinadores { 
-    max-width: 650px; /* Un poco más de ancho para que respire bien */
-    margin: 20px auto; 
-    padding: 20px; 
+    max-width: 520px; /* Reducido de 650px para que no sobre tanto a los lados */
+    margin: 15px auto; 
+    padding: 10px 15px; /* Menos espacio arriba/abajo y a los lados por dentro */
     background: #1a1a1a; 
     border-radius: 10px; 
     border-left: 4px solid #ff4444; 
