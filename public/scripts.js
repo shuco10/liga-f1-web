@@ -1,15 +1,15 @@
 const socket = io();
+
 // Si esta página no tiene esta función, evitamos que rompa el script global
 if (typeof cargarListaUsuarios !== 'function') {
     window.cargarListaUsuarios = function() {};
 }
+
 // 1. Socket.io: Actualizar los usuarios online en tiempo real y pintar la lista
-// Manejador universal para Socket.io (funciona con número o con array)
 function actualizarContadorOnline(datos) {
     const spanNum = document.getElementById('num-usuarios');
     const spanBola = document.getElementById('bola-estado');
     
-    // Si llegan datos en forma de lista (array), contamos sus elementos; si es un número, lo usamos tal cual
     const total = Array.isArray(datos) ? datos.length : Number(datos);
     
     if (spanNum) spanNum.innerText = total;
@@ -25,18 +25,14 @@ function actualizarContadorOnline(datos) {
     }
 }
 
-// Escuchamos ambos nombres de eventos posibles que pueda emitir el servidor
-// Socket.io para conectados en tiempo real (seguro para cualquier página)
 socket.on('actualizar-conectados', (listaConectados) => {
-    // 1. Actualizar contador superior (si existe en la página actual)
     const contadorSpan = document.getElementById('num-usuarios') || document.getElementById('contador-online');
     if (contadorSpan) {
         contadorSpan.innerText = listaConectados.length;
     }
 
-    // 2. Actualizar lista detallada inferior (solo si la página tiene el contenedor)
     const contenedorLista = document.getElementById('lista-conectados-rt');
-    if (!contenedorLista) return; // Si no estamos en la página de gestión, salimos sin error
+    if (!contenedorLista) return;
 
     contenedorLista.innerHTML = '';
 
@@ -53,54 +49,33 @@ socket.on('actualizar-conectados', (listaConectados) => {
     });
 });
 
-
 socket.on('usuarios-actualizados', (numUsuarios) => {
     actualizarContadorOnline(numUsuarios);
 });
 
-// 2. Control de Visitas: Registrar y pintar contadores
+// 2. Control de Visitas (Aislado y con manejo de errores para que no se quede colgado en "...")
 async function gestionarVisitas() {
     try {
         await fetch('/api/visitas/registrar', { method: 'POST' });
         const respuesta = await fetch('/api/visitas');
+        if (!respuesta.ok) throw new Error('Error al obtener visitas');
         const datos = await respuesta.json();
         
-        const elHoy = document.getElementById('visitas-hoy');
-        const elTotal = document.getElementById('visitas-totales');
+        const elHoy = document.getElementById('visitas-hoy') || document.getElementById('visitas-h');
+        const elTotal = document.getElementById('visitas-totales') || document.getElementById('visitas-t');
 
-        if (elHoy) elHoy.innerText = datos.hoy;
-        if (elTotal) elTotal.innerText = datos.totales;
+        if (elHoy) elHoy.innerText = datos.hoy ?? 0;
+        if (elTotal) elTotal.innerText = datos.totales ?? datos.total ?? 0;
     } catch (e) {
         console.error("Error gestionando las visitas:", e);
+        const elHoy = document.getElementById('visitas-hoy');
+        const elTotal = document.getElementById('visitas-totales');
+        if (elHoy) elHoy.innerText = "-";
+        if (elTotal) elTotal.innerText = "-";
     }
 }
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// Este escucha cualquier clic en el botón de logout, aunque el header se cargue más tarde
-/// CERRAR SESION
-/////////////////////////////////////////////////////////////////////////////////////////
-document.addEventListener('click', async (e) => {
-    if (e.target && e.target.id === 'btn-logout') {
-        try {
-            const response = await fetch('/api/auth/logout', { method: 'POST' });
-            const data = await response.json();
-            if (data.success) {
-                localStorage.removeItem('rol');
-                window.location.reload(); 
-            }
-        } catch (error) {
-            console.error('Error al cerrar sesión:', error);
-        }
-    }
-});
-
-
-
-
-
+// 3. Verificación de Sesión
 async function verificarSesionPagina() {
     try {
         const res = await fetch('/api/auth/sesion');
@@ -124,7 +99,6 @@ async function verificarSesionPagina() {
             if (avisoNoAuth) avisoNoAuth.style.display = 'block';
         }
 
-        // Mostrar u ocultar botones según la sesión de forma inmediata y segura
         const btnCerrarSesion = document.getElementById('btn-logout');
         const btnIniciarSesion = document.getElementById('btnAbrirLogin');
 
@@ -141,9 +115,7 @@ async function verificarSesionPagina() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', verificarSesionPagina);
-
-// 2. // GESTIÓN GLOBAL DE CLICS
+// 4. GESTIÓN GLOBAL DE CLICS (Login / Logout)
 document.addEventListener('click', async (e) => {
     if (e.target && e.target.id === 'btnAbrirLogin') {
         e.preventDefault();
@@ -160,6 +132,7 @@ document.addEventListener('click', async (e) => {
             const logoutRes = await fetch('/api/auth/logout', { method: 'POST' });
             const logoutData = await logoutRes.json();
             if (logoutRes.ok || logoutData.success) {
+                localStorage.removeItem('rol');
                 window.location.reload();
             }
         } catch (err) {
@@ -170,77 +143,76 @@ document.addEventListener('click', async (e) => {
 
 
 /////////////////////////////////////////////////////////////////////////////
-/// TELETIPOS
-///////////////////////////////////////////////
+/// TELETIPOS (Formato por bloques secuenciales: Noticias -> Resoluciones -> Pilotos)
+/////////////////////////////////////////////////////////////////////////////
 
 async function iniciarBannerSecuencial() {
     try {
         const [resNoticias, resResoluciones, resUsuarios] = await Promise.all([
-            fetch('/api/noticias').then(r => r.json()),
-            fetch('/api/resoluciones').then(r => r.json()),
-            fetch('/api/usuarios/aprobados').then(r => r.json())
+            fetch('/api/noticias').then(r => r.json()).catch(() => []),
+            fetch('/api/resoluciones').then(r => r.json()).catch(() => []),
+            fetch('/api/usuarios/aprobados').then(r => r.json()).catch(() => [])
         ]);
 
-        // Preparamos los bloques de datos
         const bloques = [];
 
-        if (resNoticias.length > 0) {
+        if (Array.isArray(resNoticias) && resNoticias.length > 0) {
             bloques.push({
                 titulo: "📰 Noticias",
                 items: resNoticias.map(n => `<b>${n.titulo}</b>`)
             });
         }
 
-        if (resResoluciones.length > 0) {
+        if (Array.isArray(resResoluciones) && resResoluciones.length > 0) {
             bloques.push({
                 titulo: "⚖️ Resoluciones",
                 items: resResoluciones.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
             });
         }
 
-        if (resUsuarios.length > 0) {
+        if (Array.isArray(resUsuarios) && resUsuarios.length > 0) {
             bloques.push({
                 titulo: "🏁 Nuevos Pilotos",
                 items: resUsuarios.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
             });
         }
 
+        const etiquetaElemento = document.getElementById('ticker-title');
+        const contenidoElemento = document.getElementById('ticker-content');
+
+        if (!contenidoElemento) return;
+
         if (bloques.length === 0) {
-            document.getElementById('ticker-content').innerHTML = "Bienvenidos a Cazadores de Curvas.";
+            if (etiquetaElemento) etiquetaElemento.innerText = "🏁 Info";
+            contenidoElemento.innerHTML = "Bienvenidos a Cazadores de Curvas.";
             return;
         }
 
         let indiceBloque = 0;
-        const etiquetaElemento = document.getElementById('ticker-title');
-        const contenidoElemento = document.getElementById('ticker-content');
 
         function mostrarSiguienteBloque() {
             const bloqueActual = bloques[indiceBloque];
             
-            // Actualizamos la etiqueta lateral
-            etiquetaElemento.innerText = bloqueActual.titulo;
+            if (etiquetaElemento) {
+                etiquetaElemento.innerText = bloqueActual.titulo;
+            }
 
-            // Unimos los elementos del bloque
             const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
             contenidoElemento.innerHTML = textoBloque;
 
-            // Calculamos la duración de la animación en base a la longitud del texto para que vaya fluido (aprox 40-50 px por segundo)
             const longitudAprox = textoBloque.length * 8; 
-            const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40)); // Entre 15s y 40s
+            const duracionSegundos = Math.max(15, Math.min(longitudAprox / 45, 40));
 
-            // Aplicamos la animación dinámicamente
             contenidoElemento.style.animation = 'none';
             void contenidoElemento.offsetWidth; // Forzar reflow
             contenidoElemento.style.animation = `ticker ${duracionSegundos}s linear infinite`;
 
-            // Programamos el salto al siguiente bloque justo cuando termine esta vuelta (+ 1 segundo de pausa)
             setTimeout(() => {
                 indiceBloque = (indiceBloque + 1) % bloques.length;
                 mostrarSiguienteBloque();
-            }, duracionSegundos * 1000 + 1000); // Duración exacta + 1 segundo de respiro
+            }, duracionSegundos * 1000 + 1000);
         }
 
-        // Arrancamos el ciclo
         mostrarSiguienteBloque();
 
     } catch (err) {
@@ -248,4 +220,9 @@ async function iniciarBannerSecuencial() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', iniciarBannerSecuencial);
+// Inicialización general al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    verificarSesionPagina();
+    gestionarVisitas();
+    iniciarBannerSecuencial();
+});
