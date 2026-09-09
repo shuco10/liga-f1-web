@@ -38,9 +38,9 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
 
 /* --- SECCIÓN SPONSORS --- */
 .seccion-patrocinadores { 
-    max-width: 540px; /* Un pelín más de margen para que respiren sin romperse */
+    max-width: 540px; 
     margin: 15px auto; 
-    padding: 10px 15px; 
+    padding: 6px 15px 10px 15px; /* Relleno ajustado al mínimo arriba y abajo */
     background: #1a1a1a; 
     border-radius: 10px; 
     border-left: 4px solid #ff4444; 
@@ -55,8 +55,8 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     text-transform: uppercase;
     letter-spacing: 2px;
     font-size: 1.5rem; 
-    margin-top: 10px;
-    margin-bottom: 25px;
+    margin-top: 2px;    /* Casi pegado al borde superior del cajón */
+    margin-bottom: 4px; /* Pegado justo arriba de los logos */
     text-align: center; 
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
@@ -65,29 +65,35 @@ body { background-color: #121212; color: #ffffff; font-family: sans-serif; }
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 25px; /* Reducido de 45px a 25px para que quepan los tres en fila perfectamente */
+    gap: 20px; /* Reducido un pelín para igualar la distancia de los huecos */
     flex-wrap: wrap;
+}
+
+/* Alineación para enlaces e imágenes internas */
+.contenedor-logos a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .logo-patrocinador {
     width: auto;
     object-fit: contain;
+    display: block;
 }
 
-/* --- TAMAÑOS DOBLES Y PROPORCIONALES --- */
-
+/* --- TAMAÑOS DE LOGOS (SE MANTIENEN IGUAL) --- */
 .logo-musica {
-    height: 90px; /* Duplicado de 45px */
+    height: 90px; 
 }
 
 .logo-taxibus {
-    height: 70px; /* Duplicado de 35px */
+    height: 70px; 
 }
 
 .logo-krv {
-    height: 110px; /* Duplicado de 55px */
+    height: 110px; 
 }
-
 /* --- SECCIÓN SPONSORS --- */
 
 .seccion-topcabecera {
