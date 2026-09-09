@@ -168,49 +168,68 @@ document.addEventListener('click', async (e) => {
     }
 });
 
+
+/////////////////////////////////////////////////////////////////////////////
+/// TELETIPOS
+///////////////////////////////////////////////
+
+let currentIndex = 0;
+let elementosTicker = [];
+let intervalId = null;
+
 async function cargarBannerTicker() {
     try {
-        // Hacemos fetch a las tres fuentes en paralelo
         const [resNoticias, resResoluciones, resUsuarios] = await Promise.all([
             fetch('/api/noticias').then(r => r.json()),
             fetch('/api/resoluciones').then(r => r.json()),
             fetch('/api/usuarios/aprobados').then(r => r.json())
         ]);
 
-        let elementosTicker = [];
+        elementosTicker = [];
 
         // Añadir noticias
         resNoticias.forEach(n => {
-            elementosTicker.push(`📰 <b>Noticia:</b> ${n.titulo}`);
+            elementosTicker.push(`📰 <b>NOTICIA:</b> ${n.titulo}`);
         });
 
-        // Añadir resoluciones de última hora
-        if (resResoluciones.length > 0) {
-            const ultimaRes = resResoluciones[0]; // Cogemos la más reciente
-            elementosTicker.push(`⚖️ <b>Resolución Oficial:</b> Sanción a ${ultimaRes.reclamado} (${ultimaRes.sancion})`);
-        }
+        // Añadir resoluciones
+        resResoluciones.forEach(r => {
+            elementosTicker.push(`⚖️ <b>RESOLUCIÓN:</b> Sanción a ${r.reclamado} (${r.sancion})`);
+        });
 
         // Añadir nuevos pilotos aprobados
         resUsuarios.forEach(u => {
-            elementosTicker.push(`🏁 <b>Nuevo Piloto en Parrilla:</b> ¡Bienvenido a ${u.username}!`);
+            elementosTicker.push(`🏁 <b>NUEVO PILOTO:</b> ¡Bienvenido a la parrilla, ${u.username}!`);
         });
 
-        // Si hay elementos, los unimos con un separador y los metemos en el ticker
+        const contenedor = document.getElementById('ticker-content');
+        
         if (elementosTicker.length > 0) {
-            const contenedor = document.getElementById('ticker-content');
-            // Duplicamos el array para que el bucle visual sea más fluido si hay pocos elementos
-            contenedor.innerHTML = elementosTicker.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ' + elementosTicker.join(' &nbsp;&bull;&nbsp; ');
+            // Generamos los divs ocultos para cada mensaje
+            contenedor.innerHTML = elementosTicker.map((texto, index) => `
+                <div class="ticker-item ${index === 0 ? 'active' : ''}">${texto}</div>
+            `).join('');
+
+            // Si ya habia un intervalo corriendo, lo limpiamos
+            if (intervalId) clearInterval(intervalId);
+
+            // Rotar cada 4.5 segundos
+            intervalId = setInterval(() => {
+                const items = contenedor.querySelectorAll('.ticker-item');
+                if (items.length === 0) return;
+
+                items[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % items.length;
+                items[currentIndex].classList.add('active');
+            }, 4500);
+
         } else {
-            document.getElementById('ticker-content').innerHTML = "🏁 Bienvenidos a Cazadores de Curvas - Mantente al día con la competición.";
+            contenedor.innerHTML = `<div class="ticker-item active">🏁 Bienvenidos a Cazadores de Curvas - Centro de Control Activo.</div>`;
         }
 
     } catch (err) {
-        console.error("Error al cargar el banner de noticias:", err);
+        console.error("Error al cargar el panel de avisos:", err);
     }
 }
 
-// Ejecutar al cargar la página
 document.addEventListener('DOMContentLoaded', cargarBannerTicker);
-
-
-
