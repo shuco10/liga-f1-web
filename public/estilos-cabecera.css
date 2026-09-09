@@ -1537,5 +1537,48 @@ table {
 }
 
 */
+.ticker-container {
+    display: flex;
+    background: #111;
+    color: #fff;
+    overflow: hidden;
+    height: 40px;
+    align-items: center;
+    border-bottom: 2px solid #e10600; /* Estilo F1 */
+    font-family: sans-serif;
+}
 
+.ticker-label {
+    background: #e10600;
+    color: white;
+    padding: 0 15px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 2;
+}
+
+.ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ticker-move {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker 35s linear infinite;
+    font-size: 14px;
+}
+
+.ticker-move span {
+    margin-right: 50px;
+}
+
+@keyframes ticker {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
 
