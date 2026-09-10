@@ -7,90 +7,166 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
- /* ==========================================================
-   OPCIÓN 1: RADIAL DEEP BLUE (Elegante y con profundidad)
-   Saca partido al logo central iluminando sutilmente el centro 
-   y fundiéndose en negro hacia los bordes.
-   ========================================================== */
-body.fondo-radial {
-    background: radial-gradient(circle at 50% 15%, #1e293b 0%, #090d16 65%, #020408 100%);
-    background-attachment: fixed;
-}
+        /* Estilos base de la barra de control de prueba */
+        .selector-barra {
+            background: #000;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #333;
+        }
+        .selector-barra button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .selector-barra button:hover { background: #1d4ed8; }
 
-/* ==========================================================
-   OPCIÓN 2: PATRÓN DE TELEMETRÍA / BOXES F1 (Técnico e industrial)
-   Una rejilla milimétrica muy fina que imita las pantallas 
-   de monitorización de un muro de boxes.
-   ========================================================== */
-body.fondo-telemetria {
-    background-color: #0b0f17;
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 30px 30px;
-    background-attachment: fixed;
-}
+        body { 
+            margin: 0; 
+            padding-bottom: 50px; 
+            font-family: sans-serif; 
+            transition: background 0.3s ease; 
+            background-color: #0b0f17; /* Fondo negro por defecto */
+            color: #f8fafc;
+        }
+        
+        .caja-contenido {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
 
-/* ==========================================================
-   OPCIÓN 3: HAZ DE LUZ DINÁMICO (Animación de neón sutil)
-   Un fondo oscuro que desplaza lentamente un haz de luz cenital 
-   en tonos azulados para dar sensación de movimiento continuo.
-   ========================================================== */
-@keyframes moverLuz {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+        .titulo-liga {
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
 
-body.fondo-dinamico-luz {
-    background: linear-gradient(120deg, #050811 0%, #0f172a 35%, #1e1b4b 50%, #0f172a 65%, #050811 100%);
-    background-size: 300% 300%;
-    animation: moverLuz 15s ease infinite;
-    background-attachment: fixed;
-}
+        .subtitulo-principal {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: normal;
+            color: #94a3b8;
+        }
 
-/* ==========================================================
-   OPCIÓN 4: PULSO DE RADAR / DRIFT SCANS (Efecto tecnológico vivo)
-   Un fondo con un sutil gradiente animado que simula la 
-   atmósfera de una retransmisión de simracing nocturna.
-   ========================================================== */
-@keyframes pulsoFondo {
-    0% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
-    50% { background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, #020617 80%); }
-    100% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
-}
+        .tarjeta-demo {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid #334155;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 25px;
+        }
 
-body.fondo-dinamico-pulso {
-    animation: pulsoFondo 10s ease-in-out infinite;
-    background-attachment: fixed;
-}
+        .input-demo {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: white;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button.btn-accion {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #e10600;
+            color: white;
+        }
+
+        /* ==========================================================
+           OPCIÓN 1: RADIAL DEEP BLUE (Elegante y con profundidad)
+           ========================================================== */
+        body.fondo-radial {
+            background: radial-gradient(circle at 50% 15%, #1e293b 0%, #090d16 65%, #020408 100%);
+            background-attachment: fixed;
+        }
+
+        /* ==========================================================
+           OPCIÓN 2: PATRÓN DE TELEMETRÍA / BOXES F1 (Técnico e industrial)
+           ========================================================== */
+        body.fondo-telemetria {
+            background-color: #0b0f17;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-attachment: fixed;
+        }
+
+        /* ==========================================================
+           OPCIÓN 3: HAZ DE LUZ DINÁMICO (Animación de neón sutil)
+           ========================================================== */
+        @keyframes moverLuz {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body.fondo-dinamico-luz {
+            background: linear-gradient(120deg, #050811 0%, #0f172a 35%, #1e1b4b 50%, #0f172a 65%, #050811 100%);
+            background-size: 300% 300%;
+            animation: moverLuz 15s ease infinite;
+            background-attachment: fixed;
+        }
+
+        /* ==========================================================
+           OPCIÓN 4: PULSO DE RADAR / DRIFT SCANS (Efecto tecnológico vivo)
+           ========================================================== */
+        @keyframes pulsoFondo {
+            0% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
+            50% { background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, #020617 80%); }
+            100% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
+        }
+
+        body.fondo-dinamico-pulso {
+            animation: pulsoFondo 10s ease-in-out infinite;
+            background-attachment: fixed;
+        }
     </style>
 </head>
-<body class="estilo-neon">
+<body>
 
     <!-- BARRA PARA CAMBIAR DE ESTILO EN VIVO -->
     <div class="selector-barra">
-        <span style="color: white; margin-right: 15px; font-weight: bold;">Cambiar estilo de prueba:</span>
-<button onclick="cambiarEstilo('fondo-radial')">1. Radial Profundo</button>
-<button onclick="cambiarEstilo('fondo-telemetria')">2. Rejilla Telemetría</button>
-<button onclick="cambiarEstilo('fondo-dinamico-luz')">3. Dinámico (Haz de Luz)</button>
-<button onclick="cambiarEstilo('fondo-dinamico-pulso')">4. Dinámico (Pulso)</button>
+        <span style="color: white; margin-right: 15px; font-weight: bold;">Fondo:</span>
+        <button onclick="cambiarEstilo('fondo-radial')">1. Radial Profundo</button>
+        <button onclick="cambiarEstilo('fondo-telemetria')">2. Rejilla Telemetría</button>
+        <button onclick="cambiarEstilo('fondo-dinamico-luz')">3. Haz de Luz Dinámico</button>
+        <button onclick="cambiarEstilo('fondo-dinamico-pulso')">4. Pulso Dinámico</button>
     </div>
 
     <main class="caja-contenido">
-        <div class="titulo-liga">🗝️ USUARIOS: GESTIÓN 🗝️</div>
-        <h3 class="subtitulo-principal">🔐 Plataforma para la creación y el mantenimiento de usuarios 🔐</h3>
+        <div class="titulo-liga">🗝️ CAZADORES DE CURVAS 🗝️</div>
+        <h3 class="subtitulo-principal">🔐 Previsualización de Fondos para la Web 🔐</h3>
 
         <!-- TARJETA DE EJEMPLO -->
         <div class="tarjeta-demo">
             <h3 style="margin-top: 0; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-                <i class="fa-solid fa-user-plus"></i> Vista Previa de Contenedor
+                <i class="fa-solid fa-flag-checkered"></i> Contenedor de Prueba
             </h3>
-            <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 20px;">Así es como se verán los formularios y paneles de administración con este fondo y gama cromática.</p>
+            <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 20px;">Prueba los diferentes botones superiores para ver cómo resalta el fondo detrás de las cajas e interfaz de la web.</p>
             
-            <input type="text" class="input-demo" placeholder="Nombre de usuario de ejemplo...">
+            <input type="text" class="input-demo" placeholder="Campo de texto de ejemplo...">
             <input type="password" class="input-demo" placeholder="Contraseña...">
-            <button class="btn-accion">Ejecutar Acción</button>
+            <button class="btn-accion">Botón de Competición</button>
         </div>
     </main>
 
