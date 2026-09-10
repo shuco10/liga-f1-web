@@ -7,146 +7,63 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* Estilos base del selector de prueba */
-        .selector-barra {
-            background: #000;
-            padding: 15px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 2px solid #333;
-        }
-        .selector-barra button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            margin: 0 5px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .selector-barra button:hover { background: #1d4ed8; }
+ /* ==========================================================
+   OPCIÓN 1: RADIAL DEEP BLUE (Elegante y con profundidad)
+   Saca partido al logo central iluminando sutilmente el centro 
+   y fundiéndose en negro hacia los bordes.
+   ========================================================== */
+body.fondo-radial {
+    background: radial-gradient(circle at 50% 15%, #1e293b 0%, #090d16 65%, #020408 100%);
+    background-attachment: fixed;
+}
 
-        body { margin: 0; padding-bottom: 50px; font-family: sans-serif; transition: background 0.3s ease; }
-        
-        .caja-contenido {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 20px;
-        }
+/* ==========================================================
+   OPCIÓN 2: PATRÓN DE TELEMETRÍA / BOXES F1 (Técnico e industrial)
+   Una rejilla milimétrica muy fina que imita las pantallas 
+   de monitorización de un muro de boxes.
+   ========================================================== */
+body.fondo-telemetria {
+    background-color: #0b0f17;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    background-attachment: fixed;
+}
 
-        .titulo-liga {
-            text-align: center;
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+/* ==========================================================
+   OPCIÓN 3: HAZ DE LUZ DINÁMICO (Animación de neón sutil)
+   Un fondo oscuro que desplaza lentamente un haz de luz cenital 
+   en tonos azulados para dar sensación de movimiento continuo.
+   ========================================================== */
+@keyframes moverLuz {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        .subtitulo-principal {
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: normal;
-        }
+body.fondo-dinamico-luz {
+    background: linear-gradient(120deg, #050811 0%, #0f172a 35%, #1e1b4b 50%, #0f172a 65%, #050811 100%);
+    background-size: 300% 300%;
+    animation: moverLuz 15s ease infinite;
+    background-attachment: fixed;
+}
 
-        /* ==========================================================
-           OPCIÓN 1: ASFALTO NOCTURNO & NEÓN (Vibra Simracing / Cockpit)
-           ========================================================== */
-        body.estilo-neon {
-            background: radial-gradient(circle at 50% 10%, #1e293b 0%, #090d16 75%);
-            background-attachment: fixed;
-            color: #f8fafc;
-        }
-        body.estilo-neon .tarjeta-demo {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid #38bdf8;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2);
-            backdrop-filter: blur(12px);
-            border-radius: 12px;
-            padding: 25px;
-        }
-        body.estilo-neon .titulo-liga, body.estilo-neon h3 {
-            color: #38bdf8;
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-        }
-        body.estilo-neon button.btn-accion {
-            background-color: #e10600;
-            color: white;
-            box-shadow: 0 0 10px rgba(225, 6, 0, 0.4);
-        }
+/* ==========================================================
+   OPCIÓN 4: PULSO DE RADAR / DRIFT SCANS (Efecto tecnológico vivo)
+   Un fondo con un sutil gradiente animado que simula la 
+   atmósfera de una retransmisión de simracing nocturna.
+   ========================================================== */
+@keyframes pulsoFondo {
+    0% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
+    50% { background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, #020617 80%); }
+    100% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
+}
 
-        /* ==========================================================
-           OPCIÓN 2: TELEMETRÍA Y BOXES F1 (Estilo Técnico / Industrial)
-           ========================================================== */
-        body.estilo-telemetria {
-            background-color: #12161f;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: #e2e8f0;
-        }
-        body.estilo-telemetria .tarjeta-demo {
-            background: rgba(22, 28, 38, 0.95);
-            border: 1px solid #334155;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            border-radius: 6px;
-            padding: 25px;
-        }
-        body.estilo-telemetria .titulo-liga, body.estilo-telemetria h3 {
-            color: #34d399;
-        }
-        body.estilo-telemetria button.btn-accion {
-            background-color: #059669;
-            color: white;
-        }
-
-        /* ==========================================================
-           OPCIÓN 3: ATARDECER CINEMATOGRÁFICO (Vibra Pit Lane / Nocturno)
-           ========================================================== */
-        body.estilo-cinematico {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #090d16 100%);
-            background-attachment: fixed;
-            color: #f1f5f9;
-        }
-        body.estilo-cinematico .tarjeta-demo {
-            background: rgba(30, 27, 75, 0.45);
-            border: 1px solid rgba(168, 85, 247, 0.4);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(168, 85, 247, 0.05);
-            backdrop-filter: blur(16px);
-            border-radius: 14px;
-            padding: 25px;
-        }
-        body.estilo-cinematico .titulo-liga, body.estilo-cinematico h3 {
-            color: #c084fc;
-            text-shadow: 0 0 10px rgba(192, 132, 252, 0.3);
-        }
-        body.estilo-cinematico button.btn-accion {
-            background-color: #9333ea;
-            color: white;
-        }
-
-        /* Elementos comunes de la tarjeta simulada */
-        .input-demo {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #0f172a;
-            border: 1px solid #475569;
-            color: white;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        button.btn-accion {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+body.fondo-dinamico-pulso {
+    animation: pulsoFondo 10s ease-in-out infinite;
+    background-attachment: fixed;
+}
     </style>
 </head>
 <body class="estilo-neon">
@@ -154,9 +71,10 @@
     <!-- BARRA PARA CAMBIAR DE ESTILO EN VIVO -->
     <div class="selector-barra">
         <span style="color: white; margin-right: 15px; font-weight: bold;">Cambiar estilo de prueba:</span>
-        <button onclick="cambiarEstilo('estilo-neon')">1. Asfalto y Neón</button>
-        <button onclick="cambiarEstilo('estilo-telemetria')">2. Telemetría F1</button>
-        <button onclick="cambiarEstilo('estilo-cinematico')">3. Cinematográfico</button>
+<button onclick="cambiarEstilo('fondo-radial')">1. Radial Profundo</button>
+<button onclick="cambiarEstilo('fondo-telemetria')">2. Rejilla Telemetría</button>
+<button onclick="cambiarEstilo('fondo-dinamico-luz')">3. Dinámico (Haz de Luz)</button>
+<button onclick="cambiarEstilo('fondo-dinamico-pulso')">4. Dinámico (Pulso)</button>
     </div>
 
     <main class="caja-contenido">
