@@ -480,6 +480,22 @@ app.post('/api/noticias', async (req, res) => {
         res.status(500).json({ error: "Error al publicar la noticia" });
     }
 });
+
+// Obtener todas las noticias
+app.get('/api/noticias', async (req, res) => {
+    try {
+        const resultado = await pool.query("SELECT * FROM noticias ORDER BY fecha DESC");
+        res.json(resultado.rows);
+    } catch (err) {
+        console.error("Error al obtener las noticias:", err);
+        res.status(500).json({ error: "Error al obtener las noticias" });
+    }
+});
+
+
+
+
+
 app.get('/api/resoluciones', async (req, res) => {
     try {
         const { rows } = await pool.query("SELECT * FROM resoluciones ORDER BY fecha DESC");
