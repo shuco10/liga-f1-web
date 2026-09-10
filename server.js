@@ -1390,6 +1390,72 @@ app.get('/api/usuarios/aprobados', async (req, res) => {
     }
 });
 
+// ==========================================
+// ENVIAR CONTACTO DE FORMA SEGURA (POST /api/contacto)
+// ==========================================
+app.post('/api/contacto', async (req, res) => {
+    try {
+        // 1. Verificar que el usuario haya iniciado sesión
+        if (!req.session || !req.session.userId) {
+            return res.status(401).json({ error: 'Debes iniciar sesión para enviar mensajes.' });
+        }
+
+        const userId = req.session.userId;
+        const { nombre, asunto, mensaje } = req.body;
+
+        if (!nombre || !asunto || !mensaje) {
+            return res.status(400).json({ error: 'Por favor, rellena todos los campos.' });
+        }
+
+        // 2. Consultar en Neon si el usuario realmente está activo (true)
+        const resultado = await pool.query('SELECT activo FROM usuarios WHERE id = $1', [userId]);
+        
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
+        }
+
+        const usuario = resultado.rows[0];
+
+        // 3. Bloquear si la cuenta no ha sido aprobada por el admin
+        if (usuario.activo !== true) {
+            return res.status(403).json({ error: 'Tu cuenta aún no está activa para enviar mensajes.' });
+        }
+
+        // 4. URL del webhook protegida en el servidor
+        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x';
+
+        const payload = {
+            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
+            embeds: [{
+                title: "📩 Nuevo mensaje de contacto",
+                color: 3447003,
+                fields: [
+                    { name: "Nombre", value: nombre, inline: true },
+                    { name: "Asunto", value: asunto, inline: true },
+                    { name: "Mensaje", value: mensaje }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        // 5. Enviar la notificación a Discord de forma interna
+        const discordRes = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!discordRes.ok) {
+            return res.status(500).json({ error: 'Error al comunicar con Discord.' });
+        }
+
+        res.json({ success: true, message: '¡Mensaje enviado correctamente!' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 
 
 // ==========================================
