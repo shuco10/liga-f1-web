@@ -430,38 +430,56 @@ app.put('/api/escuderias/:id/estrellas', async (req, res) => {
 // ==========================================
 // RESTO DE RUTAS (Noticias, Sanciones, Resultados, etc.)
 // ==========================================
-app.get('/api/noticias', async (req, res) => {
-    const result = await pool.query("SELECT * FROM noticias ORDER BY fecha DESC");
-    res.json(result.rows);
-});
-
 app.post('/api/noticias', async (req, res) => {
-    const { titulo, contenido } = req.body;
-    await pool.query("INSERT INTO noticias (titulo, contenido) VALUES ($1, $2)", [titulo, contenido]);
-    res.json({ success: true });
-});
-
-app.delete('/api/noticias/:id', async (req, res) => {
-    await pool.query("DELETE FROM noticias WHERE id = $1", [req.params.id]);
-    res.json({ success: true });
-});
-
-// Actualizar una noticia existente
-app.put('/api/noticias/:id', async (req, res) => {
     try {
-        const { id } = req.params;
+        // 1. Validar que el usuario esté logueado y sea administrador
+        if (!req.session || req.session.rol !== 'admin') {
+            return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de administrador.' });
+        }
+
         const { titulo, contenido } = req.body;
-        await pool.query(
-            "UPDATE noticias SET titulo = $1, contenido = $2 WHERE id = $3",
-            [titulo, contenido, id]
-        );
-        res.json({ success: true });
+
+        if (!titulo || !contenido) {
+            return res.status(400).json({ error: 'El título y el contenido son obligatorios.' });
+        }
+
+        // 2. Guardar la noticia en Neon (respetando tu estructura actual)
+        await pool.query("INSERT INTO noticias (titulo, contenido) VALUES ($1, $2)", [titulo, contenido]);
+
+        // 3. URL del webhook de noticias protegida en el servidor
+        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517917019813449829/bngxTpKb_bo1EARKD_tNv1uztT95BCQQFqIVH6Wb-8veI8PxGNuiSnYf-SLcAApD61vn';
+        const webUrl = "https://cazadores-de-curvas.onrender.com/";
+
+        const payload = {
+            content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
+            embeds: [{
+                title: titulo,
+                description: `${contenido}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
+                color: 16711680,
+                author: {
+                    name: `**- ${req.session.usuario || 'Administración'} -**`
+                },
+                timestamp: new Date().toISOString()
+            }]
+        };
+
+        // 4. Enviar la notificación a Discord desde el servidor de forma oculta
+        const discordRes = await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!discordRes.ok) {
+            console.error('Error al enviar la notificación a Discord desde el servidor.');
+        }
+
+        res.json({ success: true, message: 'Noticia publicada correctamente.' });
     } catch (err) {
-        console.error("Error al actualizar la noticia:", err);
-        res.status(500).json({ error: "Error al actualizar la noticia" });
+        console.error("Error al publicar la noticia:", err);
+        res.status(500).json({ error: "Error al publicar la noticia" });
     }
 });
-
 app.get('/api/resoluciones', async (req, res) => {
     try {
         const { rows } = await pool.query("SELECT * FROM resoluciones ORDER BY fecha DESC");
