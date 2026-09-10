@@ -1422,7 +1422,7 @@ app.post('/api/contacto', async (req, res) => {
         }
 
         // 4. URL del webhook protegida en el servidor
-        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x';
+        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1547509219941421107/FdLCnt4ckUiJxWDP-Chmho3Y2Z1DND2GBb-kS4yF3ANQbTv5cPBY6_ejOdnIq7R4rxfU';
 
         const payload = {
             content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
