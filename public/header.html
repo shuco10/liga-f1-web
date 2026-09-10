@@ -1,3 +1,5 @@
+
+
 <style>
     /* Cursor personalizado con el logo de la liga */
     body {
@@ -5,41 +7,33 @@
     }
 </style>
 
-<!-- CABECERA DE TRES COLUMNAS (Espacio limpio, sin solapamientos) -->
-<div class="seccion-topcabecera" style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; box-sizing: border-box; background: transparent;">
-    
-    <!-- COLUMNA IZQUIERDA: Botones de Oficina y Contacto -->
-    <div id="auth-controls" class="boton-login-blur" style="display: flex; gap: 10px; align-items: center; position: static; transform: none;">
-        <a href="info.html" class="boton-header-blur">
-            <i class="fa-solid fa-building"></i>
-        </a>
-        <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
-            <i class="fa-solid fa-envelope"></i>
-        </button>
-    </div>
 
-    <!-- COLUMNA CENTRAL: Logo principal de la liga -->
-    <div style="display: flex; justify-content: center; flex: 1;">
-        <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer" style="display: flex; justify-content: center;">
-            <img src="/webimagenes/logonuevoweb.png" alt="Cazadores de Curvas" class="logo-main">
-        </a>
-    </div>
 
-    <!-- COLUMNA DERECHA: Widget de Twitch limpio -->
-    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <a href="https://www.twitch.tv/donfrias" target="_blank" style="display: flex; align-items: center; text-decoration: none;">
-                <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="height: 50px; width: auto; border-radius: 50%;">
-            </a>
-            <a href="https://www.twitch.tv/subs/donfrias" target="_blank" style="background: #a855f7; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); white-space: nowrap;">
-                <i class="fa-solid fa-star"></i> Suscribirse
-            </a>
-        </div>
-        <h4 style="color: #fff; font-size: 0.65em; margin: 0; text-align: right; letter-spacing: 0.5px; white-space: nowrap; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
-            <i class="fa-brands fa-twitch" style="color: #a855f7;"></i> CANAL DE RETRANSMISIÓN OFICIAL <i class="fa-brands fa-twitch" style="color: #a855f7;"></i>
-        </h4>
-    </div>
+
+<div class="seccion-topcabecera">
+    <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer">
+        <img src="/webimagenes/logonuevoweb.png" alt="Cazadores de Curvas" class="logo-main">
+    </a>
 </div>
+
+<div id="auth-controls" class="boton-login-blur">
+    
+    <a href="info.html" class="boton-header-blur">
+        <i class="fa-solid fa-building"></i>
+    </a>
+<!-- iniciar / cerrar sesion 
+    <button id="btn-login" class="boton-login-blur" onclick="seguridadAbrirModal()">
+        <i class="fa-solid fa-key"></i>
+    </button>
+    <button id="btn-logout" class="boton-login-blur" onclick="cerrarSesion()" style="display: none;">
+        <i class="fa-solid fa-door-open"></i>
+    </button>
+    -->
+    <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
+        <i class="fa-solid fa-envelope"></i>
+    </button>
+</div>
+
 
 <div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
     <h3 style="margin-top: 0;">Formulario de Contacto</h3>
@@ -51,7 +45,6 @@
         <button onclick="document.getElementById('modal-contacto').style.display='none'" style="padding: 10px 20px; background-color: #444; color: white; border: none; cursor: pointer; border-radius: 5px;">Cancelar</button>
     </div>
 </div>
-
 <!-- PATROCINADORES -->
 <div class="seccion-patrocinadores">
     <h2 class="titulo-partners">Nuestros Sponsors</h2>
@@ -62,10 +55,31 @@
     </div>
 </div>
 
+<!-- DONFRIAS -->
+
+<div class="twitch-container">
+    <a href="https://www.twitch.tv/donfrias" target="_blank" class="twitch-link">
+        <img src="/webimagenes/donfrias_trans.png" alt="Twitch">
+    </a>
+    
+    <a href="https://www.twitch.tv/subs/donfrias" target="_blank" class="btn-sub">
+        <i class="fa-solid fa-star"></i> Suscribirse
+    </a>
+    <h4 class="twitch-titulo-pequeno">
+    <i class="fa-brands fa-twitch"></i> CANAL DE RETRANSMISIÓN OFICIAL <i class="fa-brands fa-twitch"></i>
+</h4>
+</div>
+
+
+
+<!-- DONFRIAS -->
+
 <!-- BANNER -->
 <div class="contenedor-jaula">
     <div class="my-banner"></div>
 </div>
+<!-- BANNER -->
+<div class="titulo-liga">🏁 CAZADORES DE CURVAS 🏁</div>
 
 <!-- USUARIOS CONECTADOS A LA WEB Y VISITAS -->
 <div style="text-align: center; width: 100%; margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
