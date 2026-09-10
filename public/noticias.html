@@ -214,29 +214,32 @@ async function editarNoticia(id, tituloActual, contenidoActual) {
 
 // Esta función vivirá ahora permanentemente en noticias.html
 async function verificarSesion() {
-    console.log("DEBUG: Ejecutando verificación...");
+    console.log("DEBUG: Ejecutando verificación con el servidor...");
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     const formAdmin = document.getElementById('form-noticia-admin');
     
-    // 1. Comprobación local inicial (método tradicional / llave)
-    let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
+    // Forzamos que de entrada esté oculto hasta tener respuesta real del servidor
+    if (formAdmin) formAdmin.style.display = 'none';
+
+    let adminStatus = false;
     
-    // 2. Si localmente no consta, consultamos la base de datos a través de la API del servidor
-    if (!adminStatus) {
-        try {
-            const res = await fetch('/api/auth/sesion');
-            const data = await res.json();
-            
-            if (data.logueado && data.rol === 'admin') {
-                adminStatus = true;
-                localStorage.setItem('rol', 'admin'); // Sincronizamos localmente
-            }
-        } catch (err) {
-            console.error("DEBUG: Error al contrastar sesión con la base de datos:", err);
+    // Consultamos directamente al servidor para validar la sesión real
+    try {
+        const res = await fetch('/api/auth/sesion');
+        const data = await res.json();
+        
+        if (data.logueado && data.rol === 'admin') {
+            adminStatus = true;
+            localStorage.setItem('rol', 'admin');
+        } else {
+            localStorage.removeItem('rol'); // Limpiamos si la sesión expiró o no es admin
         }
+    } catch (err) {
+        console.error("DEBUG: Error al contrastar sesión con la base de datos:", err);
     }
     
+    // Gestionar visibilidad según el estado real devuelto por el servidor
     if (btnLogin && btnLogout) {
         if (adminStatus === true) {
             btnLogin.style.display = 'none';
@@ -248,10 +251,19 @@ async function verificarSesion() {
             if (formAdmin) formAdmin.style.display = 'none';
         }
     } else {
-        console.warn("DEBUG: Botones no encontrados todavía.");
-        if (formAdmin) {
-            formAdmin.style.display = (adminStatus === true) ? 'block' : 'none';
-        }
+        console.warn("DEBUG: Botones del header aún no disponibles, reintentando...");
+        // Pequeño reintento por si el header tarda un poco más en renderizar
+        setTimeout(() => {
+            const btnLoginRetry = document.getElementById('btn-login');
+            const btnLogoutRetry = document.getElementById('btn-logout');
+            if (btnLoginRetry && btnLogoutRetry) {
+                btnLoginRetry.style.display = adminStatus ? 'none' : 'inline-block';
+                btnLogoutRetry.style.display = adminStatus ? 'inline-block' : 'none';
+            }
+            if (formAdmin) {
+                formAdmin.style.display = adminStatus ? 'block' : 'none';
+            }
+        }, 300);
     }
 }
 
