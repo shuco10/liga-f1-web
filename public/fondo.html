@@ -3,176 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Previsualizador de Estilos - Cazadores de Curvas</title>
+    <title>Previsualizador Real - Cazadores de Curvas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* Estilos base de la barra de control de prueba */
+        /* Barra de control superior */
         .selector-barra {
             background: #000;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid #222;
         }
         .selector-barra button {
-            background: #2563eb;
+            background: #e10600;
             color: white;
             border: none;
-            padding: 8px 15px;
-            margin: 0 5px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            margin: 3px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 0.85em;
         }
-        .selector-barra button:hover { background: #1d4ed8; }
+        .selector-barra button:hover { background: #b90500; }
 
         body { 
             margin: 0; 
             padding-bottom: 50px; 
-            font-family: sans-serif; 
-            transition: background 0.3s ease; 
-            background-color: #0b0f17; /* Fondo negro por defecto */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            transition: background 0.4s ease; 
+            background-color: #0b0f17; 
             color: #f8fafc;
         }
         
-        .caja-contenido {
-            max-width: 900px;
-            margin: 30px auto;
+        /* Contenedor principal imitando la estructura de la web */
+        .web-container {
+            max-width: 1100px;
+            margin: 0 auto;
             padding: 20px;
         }
 
-        .titulo-liga {
+        /* Cabecera y Logo simulados */
+        .cabecera-simulada {
             text-align: center;
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #ffffff;
+            padding: 20px 0;
         }
-
-        .subtitulo-principal {
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: normal;
-            color: #94a3b8;
-        }
-
-        .tarjeta-demo {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid #334155;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(12px);
+        .logo-caja {
+            background: linear-gradient(145deg, #161b22, #0d1117);
+            border: 2px solid #e10600;
+            display: inline-block;
+            padding: 15px 30px;
             border-radius: 12px;
-            padding: 25px;
+            box-shadow: 0 0 25px rgba(225, 6, 0, 0.3);
         }
-
-        .input-demo {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #0f172a;
-            border: 1px solid #475569;
-            color: white;
-            border-radius: 5px;
-            box-sizing: border-box;
+        .logo-caja h1 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 1.8em;
+            letter-spacing: 1px;
         }
-
-        button.btn-accion {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
+        .logo-caja span {
+            color: #e10600;
+            font-size: 0.8em;
             font-weight: bold;
-            cursor: pointer;
-            background-color: #e10600;
+            letter-spacing: 2px;
+        }
+
+        /* Barra de navegación roja tipo F1 */
+        .nav-f1 {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            background: #111;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border: 1px solid #222;
+        }
+        .nav-btn {
+            background: #e10600;
             color: white;
+            border: none;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 0.85em;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* Tarjeta de contenido genérica */
+        .tarjeta-web {
+            background: rgba(13, 17, 23, 0.85);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
         }
 
         /* ==========================================================
-           OPCIÓN 1: RADIAL DEEP BLUE (Elegante y con profundidad)
+           NUEVAS OPCIONES DE FONDO
            ========================================================== */
-        body.fondo-radial {
-            background: radial-gradient(circle at 50% 15%, #1e293b 0%, #090d16 65%, #020408 100%);
-            background-attachment: fixed;
-        }
 
-        /* ==========================================================
-           OPCIÓN 2: PATRÓN DE TELEMETRÍA / BOXES F1 (Técnico e industrial)
-           ========================================================== */
-        body.fondo-telemetria {
-            background-color: #0b0f17;
+        /* OPCIÓN A: Carbono Técnico Oscuro (Inspirado en piezas de F1) */
+        body.fondo-carbono {
+            background-color: #0c0e12;
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+                radial-gradient(ellipse at top, #1a2332 0%, #0c0e12 70%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0, rgba(255,255,255,0.01) 2px, transparent 0, transparent 4px);
             background-attachment: fixed;
         }
 
-        /* ==========================================================
-           OPCIÓN 3: HAZ DE LUZ DINÁMICO (Animación de neón sutil)
-           ========================================================== */
-        @keyframes moverLuz {
+        /* OPCIÓN B: Asfalto Húmedo & Reflejos Azules (Vibra Simracing Nocturno) */
+        body.fondo-asfalto-mojado {
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(14, 116, 144, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(225, 6, 0, 0.08) 0%, transparent 40%),
+                linear-gradient(180deg, #07090e 0%, #0b0f17 100%);
+            background-attachment: fixed;
+        }
+
+        /* OPCIÓN C: Haz Láser Dinámico (Movimiento muy sutil y elegante) */
+        @keyframes laserMove {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
-        body.fondo-dinamico-luz {
-            background: linear-gradient(120deg, #050811 0%, #0f172a 35%, #1e1b4b 50%, #0f172a 65%, #050811 100%);
-            background-size: 300% 300%;
-            animation: moverLuz 15s ease infinite;
+        body.fondo-laser-dinamico {
+            background: linear-gradient(125deg, #05070b 0%, #0e1626 30%, #170d1c 50%, #0e1626 70%, #05070b 100%);
+            background-size: 250% 250%;
+            animation: laserMove 18s ease infinite;
             background-attachment: fixed;
         }
 
-        /* ==========================================================
-           OPCIÓN 4: PULSO DE RADAR / DRIFT SCANS (Efecto tecnológico vivo)
-           ========================================================== */
-        @keyframes pulsoFondo {
-            0% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
-            50% { background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, #020617 80%); }
-            100% { background: radial-gradient(circle at 50% 20%, #172554 0%, #020617 70%); }
-        }
-
-        body.fondo-dinamico-pulso {
-            animation: pulsoFondo 10s ease-in-out infinite;
+        /* OPCIÓN D: Malla de Pista / Circuit Grid (Líneas geométricas sutiles) */
+        body.fondo-circuit-grid {
+            background-color: #080b10;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
             background-attachment: fixed;
         }
     </style>
 </head>
-<body>
+<body class="fondo-asfalto-mojado">
 
-    <!-- BARRA PARA CAMBIAR DE ESTILO EN VIVO -->
+    <!-- BARRA DE PRUEBAS -->
     <div class="selector-barra">
-        <span style="color: white; margin-right: 15px; font-weight: bold;">Fondo:</span>
-        <button onclick="cambiarEstilo('fondo-radial')">1. Radial Profundo</button>
-        <button onclick="cambiarEstilo('fondo-telemetria')">2. Rejilla Telemetría</button>
-        <button onclick="cambiarEstilo('fondo-dinamico-luz')">3. Haz de Luz Dinámico</button>
-        <button onclick="cambiarEstilo('fondo-dinamico-pulso')">4. Pulso Dinámico</button>
+        <span style="color: white; margin-right: 10px; font-weight: bold;">Probar Fondos:</span>
+        <button onclick="cambiarFondo('fondo-carbono')">A. Carbono Técnico</button>
+        <button onclick="cambiarFondo('fondo-asfalto-mojado')">B. Asfalto Nocturno (Recomendado)</button>
+        <button onclick="cambiarFondo('fondo-laser-dinamico')">C. Láser Dinámico</button>
+        <button onclick="cambiarFondo('fondo-circuit-grid')">D. Malla Circuit Grid</button>
     </div>
 
-    <main class="caja-contenido">
-        <div class="titulo-liga">🗝️ CAZADORES DE CURVAS 🗝️</div>
-        <h3 class="subtitulo-principal">🔐 Previsualización de Fondos para la Web 🔐</h3>
+    <!-- ESTRUCTURA SIMULADA DE LA WEB -->
+    <div class="web-container">
+        
+        <!-- Cabecera y Logo -->
+        <header class="cabecera-simulada">
+            <div class="logo-caja">
+                <h1>CAZADORES DE CURVAS</h1>
+                <span>SIM RACING LEAGUE</span>
+            </div>
+        </header>
 
-        <!-- TARJETA DE EJEMPLO -->
-        <div class="tarjeta-demo">
-            <h3 style="margin-top: 0; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-                <i class="fa-solid fa-flag-checkered"></i> Contenedor de Prueba
+        <!-- Barra de Navegación Roja -->
+        <nav class="nav-f1">
+            <button class="nav-btn"><i class="fa-solid fa-house"></i> INICIO</button>
+            <button class="nav-btn"><i class="fa-solid fa-newspaper"></i> NOTICIAS</button>
+            <button class="nav-btn"><i class="fa-solid fa-users"></i> PILOTOS</button>
+            <button class="nav-btn"><i class="fa-solid fa-car"></i> CONSTRUCTORES</button>
+            <button class="nav-btn"><i class="fa-solid fa-stopwatch"></i> TIEMPOS</button>
+            <button class="nav-btn"><i class="fa-solid fa-flag"></i> CIRCUITOS</button>
+            <button class="nav-btn"><i class="fa-solid fa-gavel"></i> SANCIONES</button>
+        </nav>
+
+        <!-- Contenedor / Tarjeta de ejemplo idéntico al de usuarios/noticias -->
+        <section class="tarjeta-web">
+            <h3 style="margin-top: 0; color: #ff3333; border-bottom: 1px solid #30363d; padding-bottom: 10px;">
+                <i class="fa-solid fa-circle-info"></i> Comprobación de Estética Visual
             </h3>
-            <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 20px;">Prueba los diferentes botones superiores para ver cómo resalta el fondo detrás de las cajas e interfaz de la web.</p>
-            
-            <input type="text" class="input-demo" placeholder="Campo de texto de ejemplo...">
-            <input type="password" class="input-demo" placeholder="Contraseña...">
-            <button class="btn-accion">Botón de Competición</button>
-        </div>
-    </main>
+            <p style="color: #94a3b8; font-size: 0.95em;">
+                Fíjate en cómo contrasta este fondo con los botones rojos de la barra de navegación y las tarjetas oscuras. Al eliminar el negro liso total, la web gana tridimensionalidad y resalta mucho más el espíritu de competición de la liga.
+            </p>
+        </section>
+
+    </div>
 
     <script>
-        function cambiarEstilo(claseEstilo) {
-            document.body.className = claseEstilo;
+        function cambiarFondo(claseFondo) {
+            document.body.className = claseFondo;
         }
     </script>
 </body>
