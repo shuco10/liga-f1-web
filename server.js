@@ -516,7 +516,37 @@ app.delete('/api/noticias/:id', async (req, res) => {
     }
 });
 
+// Editar / Actualizar Noticia
+app.put('/api/noticias/:id', async (req, res) => {
+    try {
+        // 1. Validar que el usuario esté logueado y sea administrador
+        if (!req.session || req.session.rol !== 'admin') {
+            return res.status(403).json({ error: 'Acceso denegado. Se requiere rol de administrador.' });
+        }
 
+        const { id } = req.params;
+        const { titulo, contenido } = req.body;
+
+        if (!titulo || !contenido) {
+            return res.status(400).json({ error: 'El título y el contenido son obligatorios.' });
+        }
+
+        // 2. Actualizar la noticia en la base de datos (Neon)
+        const resultado = await pool.query(
+            "UPDATE noticias SET titulo = $1, contenido = $2 WHERE id = $3",
+            [titulo, contenido, id]
+        );
+
+        if (resultado.rowCount === 0) {
+            return res.status(404).json({ error: 'Noticia no encontrada.' });
+        }
+
+        res.json({ success: true, message: 'Noticia actualizada correctamente.' });
+    } catch (err) {
+        console.error("Error al actualizar la noticia:", err);
+        res.status(500).json({ error: "Error al actualizar la noticia" });
+    }
+});
 
 app.get('/api/resoluciones', async (req, res) => {
     try {
