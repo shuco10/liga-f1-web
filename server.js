@@ -457,7 +457,7 @@ app.post('/api/noticias', async (req, res) => {
                 description: `${contenido}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
                 color: 16711680,
                 author: {
-                    name: `**- ${req.session.usuario || 'Administración'} -**`
+                    name: "**- Administración -**"
                 },
                 timestamp: new Date().toISOString()
             }]
