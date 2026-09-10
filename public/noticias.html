@@ -22,7 +22,7 @@
     <div id="header-placeholder"></div>
     <div id="modal-container"></div>
     
-    <div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
+<div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
 
 <div id="form-noticia-admin" class="form-noticia" style="display: none; border: 1px solid #444; padding: 20px; margin: 20px auto; background: #222; max-width: 500px; border-radius: 10px;">
     <h3 style="margin-top: 0; text-align: center;">Publicar Nueva Noticia</h3>
@@ -30,13 +30,6 @@
     <textarea id="nueva-noticia-cuerpo" placeholder="Cuerpo de la noticia..." rows="4" style="width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;"></textarea>
     <button onclick="publicarNoticia()" style="background: #ff3333; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; width: 100%;">Publicar</button>
 </div>
-
-<script>
-    // Mostrar el formulario solo si es admin
-    if (typeof esAdmin === 'function' && esAdmin()) {
-        document.getElementById('form-noticia-admin').style.display = 'block';
-    }
-</script>
 
 <main class="caja-contenido" id="lista-noticias">
     </main>
@@ -87,11 +80,6 @@
         // Cargar las noticias
         cargarNoticias();
     });
-
-// 1. Mostrar form si es admin
-    if (typeof esAdmin === 'function' && esAdmin()) {
-        document.getElementById('form-noticia-admin').style.display = 'block';
-    }
 
 // 1. Cargar Noticias
 async function cargarNoticias() {
@@ -148,7 +136,6 @@ async function cargarNoticias() {
     }
 }
 
-// 2. Publicar Noticia (Versión única y limpia)
 // 2. Publicar Noticia (Versión limpia y segura sin webhooks en el front)
 async function publicarNoticia() {
     const tituloInput = document.getElementById('nueva-noticia-titulo');
@@ -225,14 +212,12 @@ async function editarNoticia(id, tituloActual, contenidoActual) {
     }
 }
 
-// Inicialización al cargar la página
-document.addEventListener('DOMContentLoaded', cargarNoticias);
-
-    // Esta función vivirá ahora permanentemente en noticias.html
+// Esta función vivirá ahora permanentemente en noticias.html
 async function verificarSesion() {
     console.log("DEBUG: Ejecutando verificación...");
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
+    const formAdmin = document.getElementById('form-noticia-admin');
     
     // 1. Comprobación local inicial (método tradicional / llave)
     let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
@@ -256,23 +241,26 @@ async function verificarSesion() {
         if (adminStatus === true) {
             btnLogin.style.display = 'none';
             btnLogout.style.display = 'inline-block';
+            if (formAdmin) formAdmin.style.display = 'block';
         } else {
             btnLogin.style.display = 'inline-block';
             btnLogout.style.display = 'none';
+            if (formAdmin) formAdmin.style.display = 'none';
         }
     } else {
         console.warn("DEBUG: Botones no encontrados todavía.");
+        if (formAdmin) {
+            formAdmin.style.display = (adminStatus === true) ? 'block' : 'none';
+        }
     }
 }
 
-    // Esta función también la movemos aquí para que sea 100% accesible
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) modal.style.display = 'block';
-    }
+// Esta función también la movemos aquí para que sea 100% accesible
+function seguridadAbrirModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) modal.style.display = 'block';
+}
 
-
-   
 async function enviarContacto() {
     const nombre = document.getElementById('nombre-contacto').value;
     const asunto = document.getElementById('asunto-contacto').value;
@@ -305,9 +293,6 @@ async function enviarContacto() {
         alert("Hubo un error de conexión.");
     }
 }
-
-    
-    
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
