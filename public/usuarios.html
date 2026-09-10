@@ -527,45 +527,6 @@ async function ejecutarCambioPassword() {
     }
 }
 
-    // Escuchar los usuarios conectados en tiempo real
-// Conectar al socket (si usas la CDN por defecto, ya viene global o como io())
-const socket = io();
-
-// Escuchar la lista de usuarios conectados que manda el servidor
-socket.on('actualizar-conectados', (listaUsuarios) => {
-    // 1. Actualizar el número total en el span del contador
-    const contadorSpan = document.getElementById('contador-online');
-    if (contadorSpan) {
-        contadorSpan.textContent = listaUsuarios.length;
-    }
-
-    // 2. Pintar la lista en el HTML
-    const listaUl = document.getElementById('lista-conectados-rt');
-    if (listaUl) {
-        listaUl.innerHTML = ''; // Limpiar lo anterior ("Esperando conexiones...")
-        
-        if (listaUsuarios.length === 0) {
-            listaUl.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay nadie conectado...</li>';
-            return;
-        }
-
-        // Recorrer los usuarios y crear los elementos de la lista
-        listaUsuarios.forEach(username => {
-            const li = document.createElement('li');
-            li.style.padding = '6px 0';
-            li.style.borderBottom = '1px solid #334155';
-            li.style.display = 'flex';
-            li.style.alignItems = 'center';
-            li.style.gap = '8px';
-            
-            // Icono verde indicador y nombre
-            li.innerHTML = `
-                <i class="fa-solid fa-circle" style="font-size: 8px; color: #10b981;"></i>
-                <span style="color: #f8fafc; font-weight: 500;">${username}</span>
-            `;
-            listaUl.appendChild(li);
-        });
-    }
 });
 
     
