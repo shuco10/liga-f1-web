@@ -7,61 +7,13 @@
     }
 </style>
 
-
-
-
-<div class="seccion-topcabecera">
-    <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer">
+<div class="seccion-topcabecera" style="position: relative; width: 100%;">
+    <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer" style="display: flex; justify-content: center;">
         <img src="/webimagenes/logonuevoweb.png" alt="Cazadores de Curvas" class="logo-main">
     </a>
-</div>
 
-<div id="auth-controls" class="boton-login-blur">
-    
-    <a href="info.html" class="boton-header-blur">
-        <i class="fa-solid fa-building"></i>
-    </a>
-<!-- iniciar / cerrar sesion 
-    <button id="btn-login" class="boton-login-blur" onclick="seguridadAbrirModal()">
-        <i class="fa-solid fa-key"></i>
-    </button>
-    <button id="btn-logout" class="boton-login-blur" onclick="cerrarSesion()" style="display: none;">
-        <i class="fa-solid fa-door-open"></i>
-    </button>
-    -->
-    <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
-        <i class="fa-solid fa-envelope"></i>
-    </button>
-</div>
-
-
-<div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-    <h3 style="margin-top: 0;">Formulario de Contacto</h3>
-    <input type="text" id="nombre-contacto" placeholder="Tu Nombre" style="display:block; margin-bottom:15px; width:100%; padding: 8px; box-sizing: border-box;">
-    <input type="text" id="asunto-contacto" placeholder="Asunto" style="display:block; margin-bottom:15px; width:100%; padding: 8px; box-sizing: border-box;">
-    <textarea id="mensaje-contacto" placeholder="Tu mensaje..." style="display:block; margin-bottom:15px; width:100%; height: 150px; padding: 8px; resize: vertical; box-sizing: border-box;"></textarea>
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
-        <button onclick="enviarContacto()" style="padding: 10px 20px; background-color: #e10600; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;">Enviar Mensaje</button>
-        <button onclick="document.getElementById('modal-contacto').style.display='none'" style="padding: 10px 20px; background-color: #444; color: white; border: none; cursor: pointer; border-radius: 5px;">Cancelar</button>
-    </div>
-</div>
-<!-- PATROCINADORES -->
-<div class="seccion-patrocinadores">
-    <h2 class="titulo-partners">Nuestros Sponsors</h2>
-    <div class="contenedor-logos">
-        <a href="https://musicanueva.es/" target="_blank"><img src="/webimagenes/musica.png" class="logo-patrocinador logo-musica"></a>
-        <a href="https://taxibustenerife.com/" target="_blank"><img src="/webimagenes/taxibus.png" class="logo-patrocinador logo-taxibus"></a>
-        <img src="/webimagenes/krv.png" class="logo-patrocinador logo-krv">
-    </div>
-</div>
-
-<!-- DONFRIAS -->
-
-<div class="header-superior-container" style="position: relative; display: flex; justify-content: center; align-items: center; width: 100%; padding: 15px 0;">
-
-
-    <!-- Widget de Twitch anclado arriba del todo en la esquina derecha -->
-    <div class="twitch-container" style="position: absolute; right: 25px; top: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(0, 0, 0, 0.5); padding: 8px 12px; border-radius: 8px; border: 1px solid #444; z-index: 10;">
+    <!-- WIDGET DE TWITCH ANCLADO ARRIBA A LA DERECHA DE LA CABECERA -->
+    <div class="twitch-container" style="position: absolute; right: 25px; top: 15px; display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(0, 0, 0, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid #444; z-index: 10;">
         <a href="https://www.twitch.tv/donfrias" target="_blank" class="twitch-link">
             <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="width: 40px; height: 40px; border-radius: 50%;">
         </a>
@@ -74,19 +26,44 @@
             <i class="fa-brands fa-twitch" style="color: #9146FF;"></i> CANAL OFICIAL <i class="fa-brands fa-twitch" style="color: #9146FF;"></i>
         </h4>
     </div>
-
 </div>
 
+<div id="auth-controls" class="boton-login-blur">
+    <a href="info.html" class="boton-header-blur">
+        <i class="fa-solid fa-building"></i>
+    </a>
+    <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
+        <i class="fa-solid fa-envelope"></i>
+    </button>
+</div>
 
+<div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    <h3 style="margin-top: 0;">Formulario de Contacto</h3>
+    <input type="text" id="nombre-contacto" placeholder="Tu Nombre" style="display:block; margin-bottom:15px; width:100%; padding: 8px; box-sizing: border-box;">
+    <input type="text" id="asunto-contacto" placeholder="Asunto" style="display:block; margin-bottom:15px; width:100%; padding: 8px; box-sizing: border-box;">
+    <textarea id="mensaje-contacto" placeholder="Tu mensaje..." style="display:block; margin-bottom:15px; width:100%; height: 150px; padding: 8px; resize: vertical; box-sizing: border-box;"></textarea>
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button onclick="enviarContacto()" style="padding: 10px 20px; background-color: #e10600; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold;">Enviar Mensaje</button>
+        <button onclick="document.getElementById('modal-contacto').style.display='none'" style="padding: 10px 20px; background-color: #444; color: white; border: none; cursor: pointer; border-radius: 5px;">Cancelar</button>
+    </div>
+</div>
 
-<!-- DONFRIAS -->
+<!-- PATROCINADORES -->
+<div class="seccion-patrocinadores">
+    <h2 class="titulo-partners">Nuestros Sponsors</h2>
+    <div class="contenedor-logos">
+        <a href="https://musicanueva.es/" target="_blank"><img src="/webimagenes/musica.png" class="logo-patrocinador logo-musica"></a>
+        <a href="https://taxibustenerife.com/" target="_blank"><img src="/webimagenes/taxibus.png" class="logo-patrocinador logo-taxibus"></a>
+        <img src="/webimagenes/krv.png" class="logo-patrocinador logo-krv">
+    </div>
+</div>
 
 <!-- BANNER -->
 <div class="contenedor-jaula">
     <div class="my-banner"></div>
 </div>
-<!-- BANNER -->
-<div class="titulo-liga">🏁 CAZADORES DE CURVAS 🏁</div>
+
+<!-- (Título repetido eliminado de aquí) -->
 
 <!-- USUARIOS CONECTADOS A LA WEB Y VISITAS -->
 <div style="text-align: center; width: 100%; margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
