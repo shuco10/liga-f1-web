@@ -1654,3 +1654,36 @@ table {
     0% { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(-100%, 0, 0); }
 }
+
+/* ==========================================================
+   CORRECCIÓN RESPONSIVE: HEADER, BOTONES Y TWITCH EN MÓVIL
+   ========================================================== */
+@media screen and (max-width: 768px) {
+    /* Asegurar que la barra superior o contenedor de botones apile los elementos */
+    .header-acciones-flex, 
+    .contenedor-botones-superior {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    /* Forzar que los botones de iniciar sesión / oficinas ocupen todo el ancho táctil cómodamente */
+    .header-acciones-flex button,
+    .contenedor-botones-superior a,
+    .contenedor-botones-superior button {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    /* Adaptar el widget de Twitch para que no desborde la pantalla del móvil */
+    .twitch-widget-container, 
+    iframe[src*="twitch.tv"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 220px !important; /* Altura compacta ideal para móvil */
+    }
+}
+
+
