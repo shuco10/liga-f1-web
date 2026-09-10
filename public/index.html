@@ -133,7 +133,7 @@ async function enviarContacto() {
     }
 
     try {
-        const res = await fetch('enviar_contacto.php', {
+        const res = await fetch('/api/contacto', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, asunto, mensaje })
@@ -142,7 +142,7 @@ async function enviarContacto() {
         const data = await res.json();
 
         if (res.ok && data.success) {
-            alert("¡Mensaje enviado correctamente!");
+            alert(data.message);
             document.getElementById('modal-contacto').style.display = 'none';
             document.getElementById('nombre-contacto').value = '';
             document.getElementById('asunto-contacto').value = '';
