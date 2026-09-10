@@ -12,11 +12,14 @@
     </a>
 </div>
 
-<!-- 2. BARRA INFERIOR: Botones a la izquierda y Twitch a la derecha en la misma línea -->
-<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 30px; box-sizing: border-box; margin-bottom: 10px;">
+<!-- 2. BARRA INFERIOR: Botones en el centro y Twitch a la derecha -->
+<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; padding: 10px 30px; box-sizing: border-box; margin-bottom: 10px;">
     
-    <!-- Botones de Oficina y Contacto (Izquierda) -->
-    <div id="auth-controls" class="boton-login-blur" style="display: flex; gap: 10px; align-items: center; position: static; transform: none;">
+    <!-- Columna 1 (Izquierda vacía para equilibrar el espacio) -->
+    <div></div>
+
+    <!-- Columna 2 (Centro: Botones de Oficina y Contacto) -->
+    <div id="auth-controls" class="boton-login-blur" style="display: flex; gap: 10px; align-items: center; justify-content: center; position: static; transform: none;">
         <a href="info.html" class="boton-header-blur">
             <i class="fa-solid fa-building"></i>
         </a>
@@ -25,8 +28,8 @@
         </button>
     </div>
 
-    <!-- Bloque de Twitch (Derecha del todo, en la misma línea) -->
-    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+    <!-- Columna 3 (Derecha: Bloque de Twitch pegado al borde derecho) -->
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; justify-self: end;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="https://www.twitch.tv/donfrias" target="_blank" class="twitch-link">
                 <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="height: 45px; width: auto;">
