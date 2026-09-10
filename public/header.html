@@ -7,30 +7,28 @@
 
 <div class="seccion-topcabecera" style="position: relative; width: 100%; display: flex; justify-content: center; align-items: center; padding: 25px 0;">
     
-    <!-- Logo principal intacto a su tamaño original -->
+    <!-- Logo principal de la liga intacto -->
     <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer" style="display: flex; justify-content: center;">
         <img src="/webimagenes/logonuevoweb.png" alt="Cazadores de Curvas" class="logo-main">
     </a>
 
-    <!-- WIDGET DE TWITCH AJUSTADO: A la derecha, logo más grande, botón más pequeño y texto sutil -->
-    <div class="twitch-container" style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(0, 0, 0, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid #444; z-index: 10;">
+    <!-- WIDGET DE TWITCH LIMPIO (Sin fondo, posición absoluta arriba a la derecha) -->
+    <div class="twitch-container" style="position: absolute; right: 30px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 10;">
         
-        <!-- Logo de DonFrías un poco más grande -->
-        <a href="https://www.twitch.tv/donfrias" target="_blank" class="twitch-link">
-            <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="width: 55px; height: 55px; border-radius: 50%; border: 2px solid #9146FF;">
-        </a>
+        <!-- Fila superior: Logo de DonFrías y Botón de Suscribirse uno al lado del otro -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <a href="https://www.twitch.tv/donfrias" target="_blank" class="twitch-link" style="display: flex; align-items: center;">
+                <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="width: 50px; height: 50px; border-radius: 50%;">
+            </a>
+            
+            <a href="https://www.twitch.tv/subs/donfrias" target="_blank" class="btn-sub" style="background: #a855f7; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.85em; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                <i class="fa-solid fa-star"></i> Suscribirse
+            </a>
+        </div>
         
-        <!-- Botón de Suscribirse más compacto -->
-        <a href="https://www.twitch.tv/subs/donfrias" target="_blank" class="btn-sub" style="background: #9146FF; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.68em; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 4px;">
-            <i class="fa-solid fa-star"></i> Suscribirse
-        </a>
-        
-        <!-- Línea separadora sutil -->
-        <hr style="width: 100%; border: none; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 2px 0;">
-
-        <!-- Letras de canal oficial más pequeñas -->
-        <h4 class="twitch-titulo-pequeno" style="color: #bbb; font-size: 0.5em; margin: 0; text-align: center; letter-spacing: 0.5px; white-space: nowrap;">
-            <i class="fa-brands fa-twitch" style="color: #9146FF;"></i> CANAL OFICIAL DE RETRANSMISIÓN <i class="fa-brands fa-twitch" style="color: #9146FF;"></i>
+        <!-- Texto inferior de canal oficial -->
+        <h4 class="twitch-titulo-pequeno" style="color: #fff; font-size: 0.7em; margin: 2px 0 0 0; text-align: center; letter-spacing: 0.5px; white-space: nowrap; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
+            <i class="fa-brands fa-twitch" style="color: #a855f7;"></i> CANAL DE RETRANSMISIÓN OFICIAL <i class="fa-brands fa-twitch" style="color: #a855f7;"></i>
         </h4>
     </div>
 </div>
