@@ -17,16 +17,22 @@
             z-index: 1000;
             border-bottom: 2px solid #222;
         }
+        .selector-barra div {
+            margin-bottom: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
         .selector-barra button {
             background: #e10600;
             color: white;
             border: none;
-            padding: 6px 12px;
-            margin: 3px;
+            padding: 6px 10px;
+            margin: 2px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.85em;
+            font-size: 0.75em;
         }
         .selector-barra button:hover { background: #b90500; }
 
@@ -110,10 +116,10 @@
         }
 
         /* ==========================================================
-           NUEVAS OPCIONES DE FONDO
+           ESTILOS DE FONDO (INCLUYENDO LOS LÁSERES DINÁMICOS)
            ========================================================== */
 
-        /* OPCIÓN A: Carbono Técnico Oscuro (Inspirado en piezas de F1) */
+        /* OPCIÓN A: Carbono Técnico */
         body.fondo-carbono {
             background-color: #0c0e12;
             background-image: 
@@ -122,7 +128,7 @@
             background-attachment: fixed;
         }
 
-        /* OPCIÓN B: Asfalto Húmedo & Reflejos Azules (Vibra Simracing Nocturno) */
+        /* OPCIÓN B: Asfalto Nocturno */
         body.fondo-asfalto-mojado {
             background: 
                 radial-gradient(circle at 20% 20%, rgba(14, 116, 144, 0.15) 0%, transparent 40%),
@@ -131,7 +137,7 @@
             background-attachment: fixed;
         }
 
-        /* OPCIÓN C: Haz Láser Dinámico (Movimiento muy sutil y elegante) */
+        /* OPCIÓN C: Láser Dinámico Original */
         @keyframes laserMove {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -144,26 +150,71 @@
             background-attachment: fixed;
         }
 
-        /* OPCIÓN D: Malla de Pista / Circuit Grid (Líneas geométricas sutiles) */
-        body.fondo-circuit-grid {
-            background-color: #080b10;
-            background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 40px 40px;
+        /* OPCIÓN E: Láser Cian / Azul Eléctrico */
+        @keyframes laserCian {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body.fondo-laser-cian {
+            background: linear-gradient(135deg, #030712 0%, #082f49 35%, #164e63 50%, #082f49 65%, #030712 100%);
+            background-size: 250% 250%;
+            animation: laserCian 15s ease infinite;
+            background-attachment: fixed;
+        }
+
+        /* OPCIÓN F: Ámbar Nocturno / 24h */
+        @keyframes laserAmbar {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body.fondo-laser-ambar {
+            background: linear-gradient(120deg, #09090b 0%, #18181b 30%, #451a03 50%, #18181b 70%, #090d16 100%);
+            background-size: 250% 250%;
+            animation: laserAmbar 20s ease infinite;
+            background-attachment: fixed;
+        }
+
+        /* OPCIÓN G: Neón Púrpura / Synthwave */
+        @keyframes laserPurpura {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body.fondo-laser-purpura {
+            background: linear-gradient(140deg, #050508 0%, #3b0764 35%, #581c87 50%, #1e1b4b 75%, #030305 100%);
+            background-size: 300% 300%;
+            animation: laserPurpura 16s ease infinite;
+            background-attachment: fixed;
+        }
+
+        /* OPCIÓN H: Estela Multicolor */
+        @keyframes laserMulticolor {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body.fondo-laser-multicolor {
+            background: linear-gradient(110deg, #04060b 0%, #0f172a 25%, #02233b 50%, #2e1065 75%, #04060b 100%);
+            background-size: 300% 300%;
+            animation: laserMulticolor 22s ease infinite;
             background-attachment: fixed;
         }
     </style>
 </head>
-<body class="fondo-asfalto-mojado">
+<body class="fondo-laser-dinamico">
 
     <!-- BARRA DE PRUEBAS -->
     <div class="selector-barra">
-        <span style="color: white; margin-right: 10px; font-weight: bold;">Probar Fondos:</span>
-        <button onclick="cambiarFondo('fondo-carbono')">A. Carbono Técnico</button>
-        <button onclick="cambiarFondo('fondo-asfalto-mojado')">B. Asfalto Nocturno (Recomendado)</button>
-        <button onclick="cambiarFondo('fondo-laser-dinamico')">C. Láser Dinámico</button>
-        <button onclick="cambiarFondo('fondo-circuit-grid')">D. Malla Circuit Grid</button>
+        <div>Selecciona un fondo dinámico para probar:</div>
+        <button onclick="cambiarFondo('fondo-carbono')">Carbono</button>
+        <button onclick="cambiarFondo('fondo-asfalto-mojado')">Asfalto</button>
+        <button onclick="cambiarFondo('fondo-laser-dinamico')">Láser Original</button>
+        <button onclick="cambiarFondo('fondo-laser-cian')">Láser Cian</button>
+        <button onclick="cambiarFondo('fondo-laser-ambar')">Ámbar 24h</button>
+        <button onclick="cambiarFondo('fondo-laser-purpura')">Neón Púrpura</button>
+        <button onclick="cambiarFondo('fondo-laser-multicolor')">Multicolor</button>
     </div>
 
     <!-- ESTRUCTURA SIMULADA DE LA WEB -->
@@ -181,20 +232,20 @@
         <nav class="nav-f1">
             <button class="nav-btn"><i class="fa-solid fa-house"></i> INICIO</button>
             <button class="nav-btn"><i class="fa-solid fa-newspaper"></i> NOTICIAS</button>
-            <button class="nav-btn"><i class="fa-solid fa-users"></i> PILOTOS</button>
+            <button class="nav-btn"><i class="fa-solid fa-users"></i> PILOTES</button>
             <button class="nav-btn"><i class="fa-solid fa-car"></i> CONSTRUCTORES</button>
             <button class="nav-btn"><i class="fa-solid fa-stopwatch"></i> TIEMPOS</button>
             <button class="nav-btn"><i class="fa-solid fa-flag"></i> CIRCUITOS</button>
             <button class="nav-btn"><i class="fa-solid fa-gavel"></i> SANCIONES</button>
         </nav>
 
-        <!-- Contenedor / Tarjeta de ejemplo idéntico al de usuarios/noticias -->
+        <!-- Contenedor / Tarjeta de ejemplo -->
         <section class="tarjeta-web">
             <h3 style="margin-top: 0; color: #ff3333; border-bottom: 1px solid #30363d; padding-bottom: 10px;">
-                <i class="fa-solid fa-circle-info"></i> Comprobación de Estética Visual
+                <i class="fa-solid fa-circle-info"></i> Previsualización de Interfaz
             </h3>
             <p style="color: #94a3b8; font-size: 0.95em;">
-                Fíjate en cómo contrasta este fondo con los botones rojos de la barra de navegación y las tarjetas oscuras. Al eliminar el negro liso total, la web gana tridimensionalidad y resalta mucho más el espíritu de competición de la liga.
+                Usa los botones superiores para cambiar entre los diferentes efectos de láser y tonalidades. El movimiento sutil del fondo le da vida a la página sin restar protagonismo a los menús de navegación rojos ni a las tarjetas de contenido.
             </p>
         </section>
 
