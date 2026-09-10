@@ -5,41 +5,40 @@
     }
 </style>
 
-<div class="seccion-topcabecera" style="position: relative; width: 100%; display: flex; justify-content: center; align-items: center; padding: 25px 0; min-height: 120px;">
+<!-- CABECERA DE TRES COLUMNAS (Espacio limpio, sin solapamientos) -->
+<div class="seccion-topcabecera" style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; box-sizing: border-box; background: transparent;">
     
-    <!-- Logo principal de la liga centrado -->
-    <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer" style="display: flex; justify-content: center;">
-        <img src="/webimagenes/logonuevoweb.png" alt="Cazadores de Curvas" class="logo-main">
-    </a>
+    <!-- COLUMNA IZQUIERDA: Botones de Oficina y Contacto -->
+    <div id="auth-controls" class="boton-login-blur" style="display: flex; gap: 10px; align-items: center; position: static; transform: none;">
+        <a href="info.html" class="boton-header-blur">
+            <i class="fa-solid fa-building"></i>
+        </a>
+        <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
+            <i class="fa-solid fa-envelope"></i>
+        </button>
+    </div>
 
-    <!-- WIDGET DE TWITCH EN LA ESQUINITA DERECHA -->
-    <div style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 10; margin: 0; padding: 0; background: transparent; border: none;">
-        
-        <!-- Fila superior: Logo y Botón de Suscribirse -->
+    <!-- COLUMNA CENTRAL: Logo principal de la liga -->
+    <div style="display: flex; justify-content: center; flex: 1;">
+        <a href="https://discord.gg/JCJG7My9Rm" target="_blank" rel="noopener noreferrer" style="display: flex; justify-content: center;">
+            <img src="/webimagenes/logonuevoweb.png" alt="Cazadores de Curvas" class="logo-main">
+        </a>
+    </div>
+
+    <!-- COLUMNA DERECHA: Widget de Twitch limpio -->
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="https://www.twitch.tv/donfrias" target="_blank" style="display: flex; align-items: center; text-decoration: none;">
-                <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="height: 55px; width: auto; border-radius: 50%; transition: transform 0.2s;">
+                <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="height: 50px; width: auto; border-radius: 50%;">
             </a>
-            
             <a href="https://www.twitch.tv/subs/donfrias" target="_blank" style="background: #a855f7; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.8em; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); white-space: nowrap;">
                 <i class="fa-solid fa-star"></i> Suscribirse
             </a>
         </div>
-        
-        <!-- Texto inferior -->
-        <h4 style="color: #fff; font-size: 0.65em; margin: 2px 0 0 0; text-align: center; letter-spacing: 0.5px; white-space: nowrap; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
+        <h4 style="color: #fff; font-size: 0.65em; margin: 0; text-align: right; letter-spacing: 0.5px; white-space: nowrap; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
             <i class="fa-brands fa-twitch" style="color: #a855f7;"></i> CANAL DE RETRANSMISIÓN OFICIAL <i class="fa-brands fa-twitch" style="color: #a855f7;"></i>
         </h4>
     </div>
-</div>
-
-<div id="auth-controls" class="boton-login-blur">
-    <a href="info.html" class="boton-header-blur">
-        <i class="fa-solid fa-building"></i>
-    </a>
-    <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
-        <i class="fa-solid fa-envelope"></i>
-    </button>
 </div>
 
 <div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
