@@ -1656,33 +1656,48 @@ table {
 }
 
 /* ==========================================================
-   CORRECCIÓN RESPONSIVE: HEADER, BOTONES Y TWITCH EN MÓVIL
+   ADAPTACIÓN RESPONSIVE DE LA BARRA SUPERIOR (LOGIN / OFICINAS / TWITCH)
    ========================================================== */
-@media screen and (max-width: 768px) {
-    /* Asegurar que la barra superior o contenedor de botones apile los elementos */
-    .header-acciones-flex, 
-    .contenedor-botones-superior {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
+@media screen and (max-width: 900px) {
+    /* Desactivamos el layout absoluto para que los elementos fluyan en vertical */
+    div[style*="position: relative; display: flex; align-items: center; justify-content: center; width: 100%"] {
+        position: static !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        padding: 10px 15px !important;
     }
 
-    /* Forzar que los botones de iniciar sesión / oficinas ocupen todo el ancho táctil cómodamente */
-    .header-acciones-flex button,
-    .contenedor-botones-superior a,
-    .contenedor-botones-superior button {
-        width: 100%;
-        text-align: center;
-        box-sizing: border-box;
-    }
-
-    /* Adaptar el widget de Twitch para que no desborde la pantalla del móvil */
-    .twitch-widget-container, 
-    iframe[src*="twitch.tv"] {
+    /* Bloque izquierdo (Login/Logout) pasa a ocupar el ancho central */
+    div[style*="position: absolute; left: 30px"] {
+        position: static !important;
         width: 100% !important;
-        max-width: 100% !important;
-        height: 220px !important; /* Altura compacta ideal para móvil */
+        justify-content: center !important;
+    }
+
+    /* Botones de iniciar/cerrar sesión a ancho completo para facilitar el toque táctil */
+    div[style*="position: absolute; left: 30px"] button {
+        width: 100% !important;
+        max-width: 250px;
+    }
+
+    /* Centro (Oficinas y Contacto) */
+    #auth-controls {
+        position: static !important;
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Bloque derecho (Twitch) pasa al centro, ordenado y sin desbordar */
+    div[style*="position: absolute; right: 30px"] {
+        position: static !important;
+        width: 100% !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Alinear el título de Twitch y el contenido interior al centro en móvil */
+    div[style*="position: absolute; right: 30px"] h4 {
+        text-align: center !important;
     }
 }
 
