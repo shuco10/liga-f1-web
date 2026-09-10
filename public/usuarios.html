@@ -262,7 +262,6 @@ async function cargarListaUsuarios() {
 
 // Envío de Formulario de Contacto por Discord
 async function enviarContacto() {
-    const webhookUrl = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; 
     const nombre = document.getElementById('nombre-contacto').value;
     const asunto = document.getElementById('asunto-contacto').value;
     const mensaje = document.getElementById('mensaje-contacto').value;
@@ -272,34 +271,26 @@ async function enviarContacto() {
         return;
     }
 
-    const payload = {
-        content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-        embeds: [{
-            title: "📩 Nuevo mensaje de contacto",
-            color: 3447003,
-            fields: [
-                { name: "Nombre", value: nombre, inline: true },
-                { name: "Asunto", value: asunto, inline: true },
-                { name: "Mensaje", value: mensaje }
-            ],
-            timestamp: new Date().toISOString()
-        }]
-    };
+    try {
+        const res = await fetch('/api/contacto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, asunto, mensaje })
+        });
 
-    const res = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+        const data = await res.json();
 
-    if (res.ok) {
-        alert("¡Mensaje enviado correctamente!");
-        document.getElementById('modal-contacto').style.display = 'none';
-        document.getElementById('nombre-contacto').value = '';
-        document.getElementById('asunto-contacto').value = '';
-        document.getElementById('mensaje-contacto').value = '';
-    } else {
-        alert("Error al enviar el mensaje.");
+        if (res.ok && data.success) {
+            alert(data.message);
+            document.getElementById('modal-contacto').style.display = 'none';
+            document.getElementById('nombre-contacto').value = '';
+            document.getElementById('asunto-contacto').value = '';
+            document.getElementById('mensaje-contacto').value = '';
+        } else {
+            alert(data.error || "Error al enviar el mensaje.");
+        }
+    } catch (error) {
+        alert("Hubo un error de conexión.");
     }
 }
 
