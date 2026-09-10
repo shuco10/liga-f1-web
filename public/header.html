@@ -79,6 +79,25 @@
     <div class="my-banner"></div>
 </div>
 
+    <!-- CAJA 1: Usuarios Online -->
+    <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-family: inherit;">
+        <span style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4);">Usuarios online:</span> 
+        <span style="font-weight: bold; margin-left: 6px; font-size: 0.95em;">
+            <span id="bola-estado" style="font-size: 1.1em; margin-right: 4px; color: #4ade80;">●</span><span id="num-usuarios" style="color: #4ade80;">1</span>
+        </span>
+    </div>
+
+    <!-- CAJA 2: Visitas (Hoy y Totales) -->
+    <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-size: 0.9em; color: #94a3b8; text-align: center;">
+        <div style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4); margin-bottom: 2px;">Visitas</div>
+        <div>
+            📅 Hoy: <span id="visitas-hoy" style="color: #4ade80; font-weight: bold;">...</span> 
+            <span style="margin: 0 6px; color: #3b82f6;">|</span> 
+            📊 Total: <span id="visitas-totales" style="color: #facc15; font-weight: bold;">...</span>
+        </div>
+    </div>
+
+
 <!-- Carga automática de scripts compatibles con inyección dinámica -->
 <script src="/iniciar-sesion.js"></script>
 <script src="/socket.io/socket.io.js"></script>
