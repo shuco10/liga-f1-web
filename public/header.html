@@ -12,11 +12,18 @@
     </a>
 </div>
 
-<!-- 2. BARRA INFERIOR: Botones en el centro y Twitch a la derecha con marco neón -->
-<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; padding: 10px 30px; box-sizing: border-box; margin-bottom: 10px;">
+<!-- 2. BARRA PRINCIPAL: Iniciar/Cerrar sesión (Izq) | Oficina y Contacto (Centro) | Twitch (Der) -->
+<div style="display: grid; grid-template-columns: auto 1fr auto; align-items: center; width: 100%; padding: 10px 30px; box-sizing: border-box; margin-bottom: 10px; gap: 15px;">
     
-    <!-- Columna 1 (Izquierda vacía para equilibrar el espacio) -->
-    <div></div>
+    <!-- Columna 1 (Izquierda: Botones de Iniciar y Cerrar Sesión) -->
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button id="btnAbrirLogin" class="btn-login" style="display: none; background-color: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(14, 165, 233, 0.4); transition: background 0.2s;">
+            🔐 Iniciar Sesión
+        </button>
+        <button id="btn-logout" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);">
+            🚪 Cerrar Sesión
+        </button>
+    </div>
 
     <!-- Columna 2 (Centro: Botones de Oficina y Contacto) -->
     <div id="auth-controls" class="boton-login-blur" style="display: flex; gap: 10px; align-items: center; justify-content: center; position: static; transform: none;">
@@ -45,6 +52,7 @@
 
 </div>
 
+<!-- MODAL DE CONTACTO -->
 <div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
     <h3 style="margin-top: 0;">Formulario de Contacto</h3>
     <input type="text" id="nombre-contacto" placeholder="Tu Nombre" style="display:block; margin-bottom:15px; width:100%; padding: 8px; box-sizing: border-box;">
@@ -69,39 +77,6 @@
 <!-- BANNER -->
 <div class="contenedor-jaula">
     <div class="my-banner"></div>
-</div>
-
-
-<!-- USUARIOS CONECTADOS A LA WEB Y VISITAS -->
-<div style="text-align: center; width: 100%; margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
-    
-    <!-- BOTÓN INICIAR SESIÓN (A la izquierda) -->
-    <button id="btnAbrirLogin" class="btn-login" style="display: none; background-color: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(14, 165, 233, 0.4); transition: background 0.2s;">
-        🔐 Iniciar Sesión
-    </button>
-
-    <!-- CAJA 1: Usuarios Online -->
-    <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-family: inherit;">
-        <span style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4);">Usuarios online:</span> 
-        <span style="font-weight: bold; margin-left: 6px; font-size: 0.95em;">
-            <span id="bola-estado" style="font-size: 1.1em; margin-right: 4px; color: #4ade80;">●</span><span id="num-usuarios" style="color: #4ade80;">1</span>
-        </span>
-    </div>
-
-    <!-- CAJA 2: Visitas (Hoy y Totales) -->
-    <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-size: 0.9em; color: #94a3b8; text-align: center;">
-        <div style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4); margin-bottom: 2px;">Visitas</div>
-        <div>
-            📅 Hoy: <span id="visitas-hoy" style="color: #4ade80; font-weight: bold;">...</span> 
-            <span style="margin: 0 6px; color: #3b82f6;">|</span> 
-            📊 Total: <span id="visitas-totales" style="color: #facc15; font-weight: bold;">...</span>
-        </div>
-    </div>
-    
-    <!-- BOTÓN CERRAR SESIÓN (A la derecha) -->
-    <button id="btn-logout" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);">
-        🚪 Cerrar Sesión
-    </button>
 </div>
 
 <!-- Carga automática de scripts compatibles con inyección dinámica -->
