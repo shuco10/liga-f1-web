@@ -169,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Función unificada para comprobar permisos y adaptar la vista
-// Función unificada para comprobar permisos y adaptar la vista
 async function verificarSesionPagina() {
     try {
         const res = await fetch('/api/auth/sesion');
@@ -526,15 +525,10 @@ async function ejecutarCambioPassword() {
         msg.innerText = 'Error de conexión con el servidor.';
     }
 }
-
-});
-
-    
 </script>
 
 <!-- Carga automática de scripts compatibles con inyección dinámica -->
 <script src="/iniciar-sesion.js"></script>
-<script src="/socket.io/socket.io.js"></script>
 <script src="/scripts.js?v=2" defer></script>
     
 </body>
