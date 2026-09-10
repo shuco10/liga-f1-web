@@ -116,7 +116,7 @@
         }
 
         /* ==========================================================
-           ESTILOS DE FONDO (INCLUYENDO LOS LÁSERES DINÁMICOS)
+           ESTILOS DE FONDO 
            ========================================================== */
 
         /* OPCIÓN A: Carbono Técnico */
@@ -150,71 +150,32 @@
             background-attachment: fixed;
         }
 
-        /* OPCIÓN E: Láser Cian / Azul Eléctrico */
-        @keyframes laserCian {
+        /* ==========================================================
+           NUEVA OPCIÓN: LÁSER OFICIAL ESCUDERÍAS F1 (Ferrari, Mercedes, Red Bull, McLaren, Aston Martin)
+           ========================================================== */
+        @keyframes laserEscuderias {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        body.fondo-laser-cian {
-            background: linear-gradient(135deg, #030712 0%, #082f49 35%, #164e63 50%, #082f49 65%, #030712 100%);
-            background-size: 250% 250%;
-            animation: laserCian 15s ease infinite;
-            background-attachment: fixed;
-        }
-
-        /* OPCIÓN F: Ámbar Nocturno / 24h */
-        @keyframes laserAmbar {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        body.fondo-laser-ambar {
-            background: linear-gradient(120deg, #09090b 0%, #18181b 30%, #451a03 50%, #18181b 70%, #090d16 100%);
-            background-size: 250% 250%;
-            animation: laserAmbar 20s ease infinite;
-            background-attachment: fixed;
-        }
-
-        /* OPCIÓN G: Neón Púrpura / Synthwave */
-        @keyframes laserPurpura {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        body.fondo-laser-purpura {
-            background: linear-gradient(140deg, #050508 0%, #3b0764 35%, #581c87 50%, #1e1b4b 75%, #030305 100%);
-            background-size: 300% 300%;
-            animation: laserPurpura 16s ease infinite;
-            background-attachment: fixed;
-        }
-
-        /* OPCIÓN H: Estela Multicolor */
-        @keyframes laserMulticolor {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        body.fondo-laser-multicolor {
-            background: linear-gradient(110deg, #04060b 0%, #0f172a 25%, #02233b 50%, #2e1065 75%, #04060b 100%);
-            background-size: 300% 300%;
-            animation: laserMulticolor 22s ease infinite;
+        body.fondo-escuderias-f1 {
+            /* Transición fluida combinando rojo Ferrari, azul eléctrico Red Bull, plata Mercedes, papaya McLaren y verde Aston Martin */
+            background: linear-gradient(120deg, #04060b 0%, #dc0000 20%, #1e41ff 40%, #00d2be 60%, #ff8700 80%, #006f62 95%, #04060b 100%);
+            background-size: 400% 400%;
+            animation: laserEscuderias 25s ease infinite;
             background-attachment: fixed;
         }
     </style>
 </head>
-<body class="fondo-laser-dinamico">
+<body class="fondo-escuderias-f1">
 
     <!-- BARRA DE PRUEBAS -->
     <div class="selector-barra">
-        <div>Selecciona un fondo dinámico para probar:</div>
+        <div>Selecciona el fondo (¡Prueba el nuevo de Escuderías F1!):</div>
         <button onclick="cambiarFondo('fondo-carbono')">Carbono</button>
         <button onclick="cambiarFondo('fondo-asfalto-mojado')">Asfalto</button>
         <button onclick="cambiarFondo('fondo-laser-dinamico')">Láser Original</button>
-        <button onclick="cambiarFondo('fondo-laser-cian')">Láser Cian</button>
-        <button onclick="cambiarFondo('fondo-laser-ambar')">Ámbar 24h</button>
-        <button onclick="cambiarFondo('fondo-laser-purpura')">Neón Púrpura</button>
-        <button onclick="cambiarFondo('fondo-laser-multicolor')">Multicolor</button>
+        <button onclick="cambiarFondo('fondo-escuderias-f1')" style="background: #1e41ff; border: 1px solid #fff;">🏎️ Escuderías F1</button>
     </div>
 
     <!-- ESTRUCTURA SIMULADA DE LA WEB -->
@@ -232,7 +193,7 @@
         <nav class="nav-f1">
             <button class="nav-btn"><i class="fa-solid fa-house"></i> INICIO</button>
             <button class="nav-btn"><i class="fa-solid fa-newspaper"></i> NOTICIAS</button>
-            <button class="nav-btn"><i class="fa-solid fa-users"></i> PILOTES</button>
+            <button class="nav-btn"><i class="fa-solid fa-users"></i> PILOTOS</button>
             <button class="nav-btn"><i class="fa-solid fa-car"></i> CONSTRUCTORES</button>
             <button class="nav-btn"><i class="fa-solid fa-stopwatch"></i> TIEMPOS</button>
             <button class="nav-btn"><i class="fa-solid fa-flag"></i> CIRCUITOS</button>
@@ -242,10 +203,10 @@
         <!-- Contenedor / Tarjeta de ejemplo -->
         <section class="tarjeta-web">
             <h3 style="margin-top: 0; color: #ff3333; border-bottom: 1px solid #30363d; padding-bottom: 10px;">
-                <i class="fa-solid fa-circle-info"></i> Previsualización de Interfaz
+                <i class="fa-solid fa-flag-checkered"></i> Estilo Dinámico de Escuderías Oficiales
             </h3>
             <p style="color: #94a3b8; font-size: 0.95em;">
-                Usa los botones superiores para cambiar entre los diferentes efectos de láser y tonalidades. El movimiento sutil del fondo le da vida a la página sin restar protagonismo a los menús de navegación rojos ni a las tarjetas de contenido.
+                Este nuevo fondo mezcla de forma muy sutil y elegante los colores representativos del paddock de la F1 (el rojo Ferrari, azul Red Bull, cian Mercedes, naranja McLaren y verde Aston Martin) en un haz de luz en movimiento lento.
             </p>
         </section>
 
