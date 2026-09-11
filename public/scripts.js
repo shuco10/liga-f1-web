@@ -260,6 +260,7 @@ async function iniciarBannerSecuencial() {
 
 let currentIndex = 0;
 let clipsData = [];
+let isTransitioning = false; // Bloqueo de seguridad para evitar spam de clics en la transición
 
 async function cargarCarruselClips() {
     try {
@@ -325,16 +326,6 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 
     const items = container.children;
-    const totalClips = clipsData.length;
-
-    // Control de límites para el salto invisible entre bloques
-    if (currentIndex < totalClips) {
-        currentIndex += totalClips;
-        posicionarInstantaneo();
-    } else if (currentIndex >= totalClips * 2) {
-        currentIndex -= totalClips;
-        posicionarInstantaneo();
-    }
 
     // Actualizar clases activas y estilos
     for (let i = 0; i < items.length; i++) {
@@ -351,7 +342,7 @@ function actualizarPosicionCarrusel(animar = true) {
         }
     }
 
-    // Centrar el elemento activo
+    // Centrar el elemento activo matemáticamente
     const activeItem = items[currentIndex];
     if (activeItem) {
         const containerWidth = container.parentElement.offsetWidth;
@@ -363,27 +354,29 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 }
 
-function posicionarInstantaneo() {
-    const container = document.getElementById('twitchCarousel');
-    const items = container.children;
-    container.style.transition = 'none';
-    
-    const activeItem = items[currentIndex];
-    if (activeItem) {
-        const containerWidth = container.parentElement.offsetWidth;
-        const itemLeft = activeItem.offsetLeft;
-        const itemWidth = activeItem.offsetWidth;
-        const scrollTarget = itemLeft - (containerWidth / 2) + (itemWidth / 2);
-        container.style.transform = `translateX(${-scrollTarget}px)`;
-    }
-}
-
-// Inicialización al cargar la página
+// Inicialización al cargar la página y escucha del fin de transición para el bucle invisible
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
+
+    const container = document.getElementById('twitchCarousel');
+    if (container) {
+        container.addEventListener('transitionend', () => {
+            const totalClips = clipsData.length;
+            
+            // Si la animación terminó y estamos en un bloque extremo, reubicamos de forma instantánea y oculta
+            if (currentIndex < totalClips) {
+                currentIndex += totalClips;
+                actualizarPosicionCarrusel(false);
+            } else if (currentIndex >= totalClips * 2) {
+                currentIndex -= totalClips;
+                actualizarPosicionCarrusel(false);
+            }
+            isTransitioning = false; // Liberamos el carrusel para aceptar nuevos clics
+        });
+    }
 });
 
-// Delegación global de eventos para las flechas
+// Control de flechas por Delegación Global optimizado con control de animación
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
     const prevBtn = e.target.closest('#prevClip');
@@ -391,7 +384,9 @@ document.addEventListener('click', (e) => {
     if (nextBtn) {
         e.preventDefault();
         e.stopPropagation();
-        if (clipsData.length === 0) return;
+        if (clipsData.length === 0 || isTransitioning) return;
+        
+        isTransitioning = true;
         currentIndex++;
         actualizarPosicionCarrusel(true);
     }
@@ -399,7 +394,9 @@ document.addEventListener('click', (e) => {
     if (prevBtn) {
         e.preventDefault();
         e.stopPropagation();
-        if (clipsData.length === 0) return;
+        if (clipsData.length === 0 || isTransitioning) return;
+        
+        isTransitioning = true;
         currentIndex--;
         actualizarPosicionCarrusel(true);
     }
