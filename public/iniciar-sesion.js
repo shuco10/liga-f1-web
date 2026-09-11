@@ -83,6 +83,13 @@
         .auth-links a:hover {
             text-decoration: underline;
         }
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+        .nav-icon-only i, .nav-icon-only svg {
+            pointer-events: none;
+        }
+        
     `;
     document.head.appendChild(estilosModal);
 
