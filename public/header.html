@@ -124,11 +124,27 @@
         <a href="/draft.html" class="boton-accion"><i class="fa-solid fa-dice"></i> DRAFT TEMP. 4</a>
     </div>
 
-    <div class="nav-actions-group">
-        <a href="/perfil.html" class="boton-accion nav-icon-only" title="Usuario"><i class="fa-solid fa-user"></i></a>
-        <a href="/oficinas.html" class="boton-accion nav-icon-only" title="Oficinas"><i class="fa-solid fa-building"></i></a>
-        <a href="/contacto.html" class="boton-accion nav-icon-only" title="Contacto"><i class="fa-solid fa-envelope"></i></a>
-    </div>
+<div class="nav-actions-group">
+    <!-- Botón de Iniciar Sesión (mantiene su ID original) -->
+    <button id="btnAbrirLogin" class="boton-accion nav-icon-only" style="display: none;" title="Iniciar Sesión">
+        <i class="fa-solid fa-user"></i>
+    </button>
+    
+    <!-- Botón de Cerrar Sesión (mantiene su ID original y la puerta de salida) -->
+    <button id="btn-logout" class="boton-accion nav-icon-only" style="display: none;" title="Cerrar Sesión">
+        <i class="fa-solid fa-door-open"></i>
+    </button>
+
+    <!-- Botón de Oficinas -->
+    <a href="/oficinas.html" class="boton-accion nav-icon-only" title="Oficinas">
+        <i class="fa-solid fa-building"></i>
+    </a>
+
+    <!-- Botón de Contacto -->
+    <button class="boton-accion nav-icon-only" onclick="document.getElementById('modal-contacto').style.display='block'" title="Contacto">
+        <i class="fa-solid fa-envelope"></i>
+    </button>
+</div>
 </nav>
 
 <!-- Sección del Carrusel de Clips -->
