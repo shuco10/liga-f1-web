@@ -125,19 +125,22 @@
     </div>
 
 <div class="nav-actions-group">
-    <!-- Le quitamos el display: none para forzar que se vea y ver si el JS lo controla bien -->
-    <button id="btnAbrirLogin" class="boton-accion nav-icon-only" title="Iniciar Sesión">
+    <!-- Botón de Iniciar Sesión (El script lo muestra si estás fuera) -->
+    <button id="btnAbrirLogin" class="boton-accion nav-icon-only" style="display: none;" title="Iniciar Sesión">
         <i class="fa-solid fa-user"></i>
     </button>
     
-    <button id="btn-logout" class="boton-accion nav-icon-only" title="Cerrar Sesión">
+    <!-- Botón de Cerrar Sesión (El script lo muestra si estás dentro) -->
+    <button id="btn-logout" class="boton-accion nav-icon-only" style="display: none;" title="Cerrar Sesión">
         <i class="fa-solid fa-door-open"></i>
     </button>
 
+    <!-- Botón de Oficinas -->
     <a href="/oficinas.html" class="boton-accion nav-icon-only" title="Oficinas">
         <i class="fa-solid fa-building"></i>
     </a>
 
+    <!-- Botón de Contacto -->
     <button class="boton-accion nav-icon-only" onclick="document.getElementById('modal-contacto').style.display='block'" title="Contacto">
         <i class="fa-solid fa-envelope"></i>
     </button>
