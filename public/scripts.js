@@ -393,11 +393,6 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 }
 
-// Inicialización automática
-document.addEventListener('DOMContentLoaded', () => {
-    cargarCarruselClips();
-});
-
 // Control global de eventos (Flechas del carrusel + Apertura/Cierre de la Modal)
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
@@ -450,21 +445,20 @@ document.addEventListener('click', (e) => {
         }
         isTransitioning = false;
     }, 400);
-
+}); // <-- ¡Esta llave cerraba el addEventListener y faltaba!
 
 
 
 
 
 /////////////////////////////////////////////////
-//NO ELIMINAR ESTO DE AQUI//////////////////
-// Inicialización general al cargar el DOM
+// Inicialización general al cargar el DOM (Respetando tus funciones obligatorias)
 document.addEventListener('DOMContentLoaded', () => {
     verificarSesionPagina();
     gestionarVisitas();
     iniciarBannerSecuencial();
+    cargarCarruselClips(); // <-- Aquí arrancamos el carrusel y el modal de forma segura
 });
-
 
 
 
