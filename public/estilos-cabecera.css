@@ -1703,15 +1703,23 @@ table {
 
 /* Tarjeta principal con el estilo de la web y borde lateral morado Twitch (#9146FF) */
 .twitch-admin-card {
-    background-color: #181a1b; /* Fondo oscuro acorde a tu diseño */
+    background-color: #181a1b;
     border-radius: 8px;
     padding: 20px;
-    margin: 20px 0;
-    position: relative;
-    border-left: 5px solid #9146FF; /* El toque morado neón corporativo de Twitch */
-    box-shadow: 0 4px 15px rgba(145, 70, 255, 0.15); /* Sutil brillo neón */
+    margin: 20px auto;
+    width: 50%;
+    max-width: 50%;
+    box-sizing: border-box;
+    border-left: 5px solid #9146FF;
+    box-shadow: 0 4px 15px rgba(145, 70, 255, 0.15);
 }
 
+@media (max-width: 768px) {
+    .twitch-admin-card {
+        width: 90% !important;
+        margin: 20px auto;
+    }
+}
 .twitch-card-header {
     display: flex;
     align-items: center;
