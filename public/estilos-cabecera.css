@@ -1702,89 +1702,136 @@ table {
 }
 
 /* Tarjeta principal con el estilo de la web y borde lateral morado Twitch (#9146FF) */
-.twitch-admin-card {
-    background-color: #181a1b;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px auto;
-    width: 50%;
-    max-width: 50%;
+.twitch-card-donfrias {
+    background-color: #0f1115;
+    border: 2px solid #9146FF;
+    border-radius: 16px;
+    padding: 25px;
+    margin: 30px auto;
+    width: 65%;
+    max-width: 1000px;
+    box-shadow: 0 0 20px rgba(145, 70, 255, 0.3), inset 0 0 15px rgba(145, 70, 255, 0.1);
     box-sizing: border-box;
-    border-left: 5px solid #9146FF;
-    box-shadow: 0 4px 15px rgba(145, 70, 255, 0.15);
 }
 
-@media (max-width: 768px) {
-    .twitch-admin-card {
-        width: 90% !important;
-        margin: 20px auto;
-    }
-}
-.twitch-card-header {
+.twitch-card-header-df {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #2a2d2e;
-    padding-bottom: 12px;
+    gap: 12px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(145, 70, 255, 0.3);
+    padding-bottom: 15px;
 }
 
-.twitch-card-header h3 {
+.twitch-card-header-df h3 {
     color: #ffffff;
-    font-family: inherit;
     font-size: 18px;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     margin: 0;
+    font-family: inherit;
 }
 
-.twitch-form .form-group {
-    margin-bottom: 15px;
+.twitch-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    align-items: stretch;
 }
 
-.twitch-form label {
-    display: block;
+.twitch-form-col, .twitch-preview-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.twitch-form-group {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.twitch-form-group label, .twitch-preview-col > label {
     color: #b3b3b3;
     font-size: 13px;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-weight: 500;
 }
 
-.twitch-form input[type="text"],
-.twitch-form textarea {
+.twitch-form-col input[type="text"],
+.twitch-form-col textarea {
     width: 100%;
-    background-color: #111213;
+    background-color: #181a1b;
     border: 1px solid #333;
-    border-radius: 4px;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 12px;
     color: #fff;
     font-size: 14px;
     box-sizing: border-box;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
 }
 
-.twitch-form input[type="text"]:focus,
-.twitch-form textarea:focus {
-    border-color: #9146FF; /* Se ilumina en morado al escribir */
+.twitch-form-col input[type="text"]:focus,
+.twitch-form-col textarea:focus {
+    border-color: #9146FF;
+    box-shadow: 0 0 8px rgba(145, 70, 255, 0.4);
     outline: none;
 }
 
-.btn-twitch-guardar {
-    background-color: #9146FF;
+.btn-twitch-neon {
+    background: linear-gradient(135deg, #9146FF, #772ce8);
     color: white;
     border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
+    border-radius: 8px;
+    padding: 12px 20px;
     font-weight: bold;
     cursor: pointer;
     width: 100%;
-    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-top: auto;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(145, 70, 255, 0.3);
 }
 
-.btn-twitch-guardar:hover {
-    background-color: #772ce8;
-    box-shadow: 0 0 10px rgba(145, 70, 255, 0.5); /* Efecto brillo neón al pasar el ratón */
+.btn-twitch-neon:hover {
+    background: linear-gradient(135deg, #a45eff, #9146FF);
+    box-shadow: 0 0 15px rgba(145, 70, 255, 0.6);
 }
 
+.twitch-preview-box {
+    flex-grow: 1;
+    background-color: #141619;
+    border: 2px dashed #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    min-height: 160px;
+    overflow: hidden;
+    position: relative;
+}
+
+.preview-placeholder-text {
+    color: #666;
+    font-size: 12px;
+    text-align: center;
+    padding: 0 15px;
+}
+
+.twitch-preview-box iframe {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 180px;
+    border-radius: 6px;
+}
+
+@media (max-width: 900px) {
+    .twitch-grid-container {
+        grid-template-columns: 1fr;
+    }
+    .twitch-card-donfrias {
+        width: 90%;
+    }
+}
 
 
 
