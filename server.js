@@ -1567,6 +1567,18 @@ app.post('/api/videos', async (req, res) => {
     }
 });
 
+// Obtener todos los clips guardados
+app.get('/api/videos', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM videos_twitch ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al recuperar los clips:', error);
+        res.status(500).json({ error: 'Error interno al obtener los clips' });
+    }
+});
+
+
 
 // ==========================================
 // ARRANQUE DEL SERVIDOR
