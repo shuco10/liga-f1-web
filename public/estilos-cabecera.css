@@ -1659,6 +1659,31 @@ table {
     0% { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(-100%, 0, 0); }
 }
+
+/* Adaptación responsive para móviles */
+@media (max-width: 900px) {
+    /* Convierte la barra superior en una columna vertical apilada */
+    div[style*="position: relative; display: flex"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        padding: 10px 15px !important;
+    }
+    
+    /* Hace que el ticker ocupe todo el ancho disponible en móvil */
+    .ticker-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Centra o ajusta los bloques de los extremos para que no desentonen */
+    div[style*="border: 1px solid #facc15"],
+    div[style*="border: 1px solid #a855f7"] {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+    }
+}
 /* ==========================================================
    ADAPTACIÓN RESPONSIVE DE LA BARRA SUPERIOR (LOGIN / OFICINAS / TWITCH)
    ========================================================== */
