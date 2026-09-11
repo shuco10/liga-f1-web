@@ -209,24 +209,33 @@
         document.querySelectorAll('.auth-msg').forEach(m => m.textContent = '');
     }
 
-window.abrirModalAuth = function() {
-    const overlay = document.getElementById('modalAuthOverlay');
-    const vistaLogin = document.getElementById('vistaLogin');
-    
-    if (overlay && vistaLogin) {
-        // Ocultamos las demás vistas por seguridad y mostramos el login
-        const vistaRegistro = document.getElementById('vistaRegistro');
-        const vistaRecuperar = document.getElementById('vistaRecuperar');
+    window.abrirModalAuth = function() {
+        const overlay = document.getElementById('modalAuthOverlay');
+        const vistaLogin = document.getElementById('vistaLogin');
         
-        if (vistaRegistro) vistaRegistro.style.display = 'none';
-        if (vistaRecuperar) vistaRecuperar.style.display = 'none';
-        
-        vistaLogin.style.display = 'block';
-        overlay.style.display = 'flex';
-    } else {
-        console.error("No se encontró el HTML de la modal de autenticación.");
+        if (overlay && vistaLogin) {
+            // Ocultamos las demás vistas por seguridad y mostramos el login
+            const vistaRegistro = document.getElementById('vistaRegistro');
+            const vistaRecuperar = document.getElementById('vistaRecuperar');
+            
+            if (vistaRegistro) vistaRegistro.style.display = 'none';
+            if (vistaRecuperar) vistaRecuperar.style.display = 'none';
+            
+            vistaLogin.style.display = 'block';
+            overlay.style.display = 'flex';
+        } else {
+            console.error("No se encontró el HTML de la modal de autenticación.");
+        }
+    };
+
+    // Vincular el nuevo botón del header para abrir la modal automáticamente
+    const btnLoginNuevo = document.getElementById('btnAbrirLogin');
+    if (btnLoginNuevo) {
+        btnLoginNuevo.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.abrirModalAuth();
+        });
     }
-};
 
     function cerrarModal() {
         overlay.style.display = 'none';
