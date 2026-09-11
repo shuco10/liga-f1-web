@@ -2053,3 +2053,64 @@ table {
         gap: 15px;
     }
 }
+
+
+/* --- Contenedor general de la barra de navegación --- */
+.nav-bar-cazadores {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 20px auto;
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 1400px;
+    background: rgba(18, 20, 28, 0.85);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+.nav-links-group, 
+.nav-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* --- El botón de acción (Estilo minimalista con rojo eléctrico) --- */
+.boton-accion {
+    background: rgba(18, 20, 28, 0.6);
+    border: 1px solid rgba(239, 68, 68, 0.4); /* Reborde rojo eléctrico elegante */
+    color: #cbd5e1; /* Texto gris claro limpio */
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.25s ease;
+}
+
+/* Variante específica para los botones que solo llevan icono a la derecha */
+.nav-icon-only {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+}
+
+/* --- Efecto al pasar el ratón (Hover con rojo difuminado) --- */
+.boton-accion:hover {
+    background: rgba(239, 68, 68, 0.15); /* Fondo rojo muy suave */
+    border-color: #ef4444; /* Rojo eléctrico vivo */
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.35); /* Halo difuminado rojo */
+    transform: translateY(-1px);
+}
+
+
