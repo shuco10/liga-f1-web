@@ -1841,7 +1841,7 @@ table {
     width: 100%;
     max-width: 950px;
     margin: 25px auto;
-    overflow: hidden;
+    overflow: visible; /* <-- CAMBIADO: Permite que las flechas respiren y reciban los clics sin bloqueo */
     padding: 10px 40px;
     box-sizing: border-box;
 }
@@ -1870,7 +1870,7 @@ table {
 .carousel-clip-item.active {
     border-color: #9146FF;
     opacity: 1;
-    transform: scale(1.05);
+    transform: scale(1.1); /* <-- El centro más grande y destacado */
     box-shadow: 0 0 20px rgba(145, 70, 255, 0.4);
     z-index: 2;
 }
@@ -1879,7 +1879,7 @@ table {
     width: 100% !important;
     height: 140px !important;
     border-radius: 6px;
-    pointer-events: none; /* Evita que el ratón interfiera con el iframe al arrastrar o pulsar */
+    pointer-events: auto !important; /* <-- CAMBIADO: Devuelve el control del ratón al iframe para poder reproducir */
 }
 
 .carousel-clip-title {
@@ -1893,26 +1893,28 @@ table {
 }
 
 .carousel-btn {
-    background-color: rgba(145, 70, 255, 0.3);
-    border: 1px solid #9146FF;
+    background-color: rgba(145, 70, 255, 0.4);
+    border: 2px solid #9146FF;
     color: #fff;
     font-size: 18px;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border-radius: 50%;
     position: absolute;
-    z-index: 10;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100; /* <-- CAMBIADO: Prioridad máxima por encima de todo para que las flechas respondan al primer toque */
     transition: background 0.3s, transform 0.2s;
 }
 
 .carousel-btn:hover {
     background-color: #9146FF;
-    transform: scale(1.1);
+    transform: translateY(-50%) scale(1.1);
 }
 
-.prev-btn { left: 0; }
-.next-btn { right: 0; }
+.prev-btn { left: -5px; } /* Ligeramente fuera para mayor comodidad de clic */
+.next-btn { right: -5px; }
