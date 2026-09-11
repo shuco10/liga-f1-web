@@ -371,29 +371,30 @@ function posicionarInstantaneo() {
     }
 }
 
-// Vinculación de los botones de las flechas
+// Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
+});
 
-    const nextBtn = document.getElementById('nextClip');
-    const prevBtn = document.getElementById('prevClip');
+// Control de flechas por Delegación Global (Infalible ante cargas asíncronas)
+document.addEventListener('click', (e) => {
+    const nextBtn = e.target.closest('#nextClip');
+    const prevBtn = e.target.closest('#prevClip');
 
     if (nextBtn) {
-        nextBtn.onclick = (e) => {
-            e.preventDefault();
-            if (clipsData.length === 0) return;
-            currentIndex++;
-            actualizarPosicionCarrusel(true);
-        };
+        e.preventDefault();
+        e.stopPropagation();
+        if (clipsData.length === 0) return;
+        currentIndex++;
+        actualizarPosicionCarrusel(true);
     }
 
     if (prevBtn) {
-        prevBtn.onclick = (e) => {
-            e.preventDefault();
-            if (clipsData.length === 0) return;
-            currentIndex--;
-            actualizarPosicionCarrusel(true);
-        };
+        e.preventDefault();
+        e.stopPropagation();
+        if (clipsData.length === 0) return;
+        currentIndex--;
+        actualizarPosicionCarrusel(true);
     }
 });
 
