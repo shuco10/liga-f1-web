@@ -161,24 +161,22 @@ document.addEventListener('DOMContentLoaded', () => {
 <main>
     
     <div id="contenido-admin" style="display: none;">
-        <div class="twitch-admin-card">
-    <div class="twitch-card-header">
-        <span class="twitch-icon">🎥</span> <h3>GESTIÓN DE CLIPS DE TWITCH</h3> <span class="twitch-icon">🎮</span>
-    </div>
-    
-    <form id="formVideoTwitch" class="twitch-form">
-        <div class="form-group">
-            <label for="tituloVideo">Título del Clip:</label>
-            <input type="text" id="tituloVideo" placeholder="Ej: Adelantamiento en la última vuelta..." required>
+<div class="admin-bloque" style="border-left: 5px solid #9146FF;">
+    <h3 style="text-align: center;">🎥 GESTIÓN DE CLIPS DE TWITCH 🎮</h3>
+    <form id="formVideoTwitch">
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="tituloVideo" style="display: block; margin-bottom: 5px;">Título del Clip:</label>
+            <input type="text" id="tituloVideo" class="form-control" placeholder="Ej: Adelantamiento en la última vuelta..." style="width: 100%; box-sizing: border-box;" required>
         </div>
         
-        <div class="form-group">
-            <label for="embedVideo">Código o enlace de Embed de Twitch:</label>
-            <textarea id="embedVideo" placeholder="Pega aquí el código del iframe de Twitch..." rows="3" required></textarea>
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label for="embedVideo" style="display: block; margin-bottom: 5px;">Código o enlace de Embed de Twitch:</label>
+            <textarea id="embedVideo" class="form-control" placeholder="Pega aquí el código del iframe de Twitch..." rows="3" style="width: 100%; box-sizing: border-box;" required></textarea>
         </div>
         
-        <button type="submit" class="btn-twitch-guardar">Guardar Clip</button>
+        <button type="submit" class="btn-admin" style="width: 100%; background: linear-gradient(135deg, #9146FF, #6441A5); color: white; font-weight: bold; margin-top: 5px;">Guardar Clip</button>
     </form>
+</div>
 </div>
 
         <div class="caja-resultados">
