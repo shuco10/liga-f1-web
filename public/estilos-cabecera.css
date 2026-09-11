@@ -1998,7 +1998,7 @@ table {
     background: #12141c;
     border: 2px solid #9146FF;
     border-radius: 12px;
-    width: 90%;
+    width: 95%;
     max-width: 800px;
     max-height: 85vh;
     display: flex;
@@ -2012,23 +2012,24 @@ table {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 12px 15px;
     border-bottom: 1px solid #2a2e3d;
 }
 
 .twitch-modal-header h3 {
     color: #fff;
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
 }
 
-/* Botón de cerrar (X) */
+/* Botón de cerrar (X) - Área táctil más grande para móviles */
 .twitch-modal-close {
     background: transparent;
     border: none;
     color: #fff;
-    font-size: 22px;
+    font-size: 26px;
     cursor: pointer;
+    padding: 0 8px;
     transition: color 0.2s;
 }
 
@@ -2036,11 +2037,19 @@ table {
     color: #9146FF;
 }
 
-/* Parrilla interior con scroll vertical */
+/* Parrilla interior con scroll vertical adaptada a pantallas estrechas */
 .twitch-modal-grid {
-    padding: 20px;
+    padding: 15px;
     overflow-y: auto;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+@media (min-width: 600px) {
+    .twitch-modal-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        padding: 20px;
+        gap: 15px;
+    }
 }
