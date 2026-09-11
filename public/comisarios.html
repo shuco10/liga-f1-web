@@ -161,6 +161,25 @@ document.addEventListener('DOMContentLoaded', () => {
 <main>
     
     <div id="contenido-admin" style="display: none;">
+        <div class="twitch-admin-card">
+    <div class="twitch-card-header">
+        <span class="twitch-icon">🎥</span> <h3>GESTIÓN DE CLIPS DE TWITCH</h3> <span class="twitch-icon">🎮</span>
+    </div>
+    
+    <form id="formVideoTwitch" class="twitch-form">
+        <div class="form-group">
+            <label for="tituloVideo">Título del Clip:</label>
+            <input type="text" id="tituloVideo" placeholder="Ej: Adelantamiento en la última vuelta..." required>
+        </div>
+        
+        <div class="form-group">
+            <label for="embedVideo">Código o enlace de Embed de Twitch:</label>
+            <textarea id="embedVideo" placeholder="Pega aquí el código del iframe de Twitch..." rows="3" required></textarea>
+        </div>
+        
+        <button type="submit" class="btn-twitch-guardar">Guardar Clip</button>
+    </form>
+</div>
 
         <div class="caja-resultados">
             <h2 class="titulo-caja">📊 Gestión de Resultados 📊</h2>
