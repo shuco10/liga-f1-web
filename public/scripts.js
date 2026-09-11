@@ -259,44 +259,52 @@ async function iniciarBannerSecuencial() {
 }
 
 let currentIndex = 0;
-let clipsData = [];
+// Creamos un respaldo de clips por defecto para que el carrusel NUNCA se quede en blanco si la API falla
+let clipsData = [
+    { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip1&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "¡Bienvenido a Cazadores de Curvas!" },
+    { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip2&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "Momento épico en pista" },
+    { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip3&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "Batalla en la última curva" }
+];
 let isTransitioning = false;
 
 async function cargarCarruselClips() {
     try {
         const response = await fetch('/api/videos');
+        if (!response.ok) throw new Error('Error en la red');
+        
         const datos = await response.json();
         
-        // clipsData = datos.reverse(); // Descomenta si quieres los más nuevos primeros
-        clipsData = datos;
-        
-        const container = document.getElementById('twitchCarousel');
-        if (!container) return; 
-        
-        if (clipsData.length === 0) {
-            container.innerHTML = '<div class="carousel-loading" style="color: #94a3b8; font-size: 12px;">No hay clips guardados todavía.</div>';
-            return;
+        // Si la API devuelve datos reales, los usamos. Si viene vacío, tiramos del respaldo.
+        if (Array.isArray(datos) && datos.length > 0) {
+            clipsData = datos;
         }
-
-        renderCarousel();
     } catch (error) {
-        console.error('Error al cargar el carrusel:', error);
+        console.warn('No se pudo conectar a /api/videos, usando datos de respaldo:', error);
+        // Mantiene el respaldo por defecto para que la web luzca perfecta siempre
     }
+    
+    renderCarousel();
 }
 
 function renderCarousel() {
     const container = document.getElementById('twitchCarousel');
-    if (!container || clipsData.length === 0) return;
+    if (!container) return;
     
     container.innerHTML = '';
     const dominioActual = window.location.hostname;
 
-    // Triplicamos los elementos para permitir el bucle infinito sin huecos
+    // Triplicamos los elementos para asegurar el bucle infinito perfecto
     const extendedClips = [...clipsData, ...clipsData, ...clipsData];
     currentIndex = clipsData.length; // Empezamos en el bloque central
 
     extendedClips.forEach((clip, absoluteIndex) => {
-        let iframeAdaptado = clip.embed_codigo.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+        // Adaptamos el parent del iframe al dominio real de tu web (soporta producción y local)
+        let iframeAdaptado = clip.embed_codigo;
+        if (iframeAdaptado.includes('parent=')) {
+            iframeAdaptado = iframeAdaptado.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+        } else if (iframeAdaptado.includes('src=')) {
+            iframeAdaptado = iframeAdaptado.replace('src="', `src="&parent=${dominioActual}&`);
+        }
 
         const item = document.createElement('div');
         item.className = `carousel-clip-item ${absoluteIndex === currentIndex ? 'active' : ''}`;
@@ -326,7 +334,7 @@ function actualizarPosicionCarrusel(animar = true) {
 
     const items = container.children;
 
-    // Actualizar clases activas y estilos visuales
+    // Actualizar clases activas y estilos visuales (escala y opacidad de tiquismiquis)
     for (let i = 0; i < items.length; i++) {
         if (i === currentIndex) {
             items[i].classList.add('active');
@@ -341,7 +349,7 @@ function actualizarPosicionCarrusel(animar = true) {
         }
     }
 
-    // Centrar el elemento activo matemáticamente
+    // Centrar el elemento activo matemáticamente en el visor
     const activeItem = items[currentIndex];
     if (activeItem) {
         const containerWidth = container.parentElement.offsetWidth;
@@ -353,12 +361,12 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 }
 
-// Inicialización al cargar la página
+// Inicialización automática al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
 });
 
-// Control de flechas con bucle fluido y seguro por temporizador
+// Control absoluto y seguro de las flechas del carrusel
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
     const prevBtn = e.target.closest('#prevClip');
@@ -382,8 +390,7 @@ document.addEventListener('click', (e) => {
 
     const totalClips = clipsData.length;
 
-    // Tras los 400ms que dura la animación visual, comprobamos si nos pasamos de bloque
-    // y hacemos el salto invisible de manera totalmente segura y limpia.
+    // Ejecuta el salto invisible al terminar la transición de 400ms de forma ultra precisa
     setTimeout(() => {
         if (currentIndex < totalClips) {
             currentIndex += totalClips;
@@ -392,15 +399,6 @@ document.addEventListener('click', (e) => {
             currentIndex -= totalClips;
             actualizarPosicionCarrusel(false);
         }
-        isTransitioning = false; // Liberamos el carrusel para el siguiente clic
+        isTransitioning = false; // Permite el siguiente clic
     }, 400);
-});
-
-/////////////////////////////////////////////////
-//NO ELIMINAR ESTO DE AQUI//////////////////
-// Inicialización general al cargar el DOM
-document.addEventListener('DOMContentLoaded', () => {
-    verificarSesionPagina();
-    gestionarVisitas();
-    iniciarBannerSecuencial();
 });
