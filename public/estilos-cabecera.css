@@ -1833,16 +1833,23 @@ table {
     }
 }
 
-.twitch-carousel-wrapper {
+.twitch-carousel-section {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    gap: 15px; /* Espacio limpio entre flechas y caja de vídeos */
     width: 100%;
     max-width: 950px;
     margin: 25px auto;
-    overflow: visible; /* <-- CAMBIADO: Permite que las flechas respiren y reciban los clics sin bloqueo */
-    padding: 10px 40px;
+    box-sizing: border-box;
+}
+
+.twitch-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 820px;
+    overflow: hidden; /* Aquí se ocultan los vídeos laterales que no tocan */
+    padding: 10px 0;
     box-sizing: border-box;
 }
 
@@ -1870,7 +1877,7 @@ table {
 .carousel-clip-item.active {
     border-color: #9146FF;
     opacity: 1;
-    transform: scale(1.1); /* <-- El centro más grande y destacado */
+    transform: scale(1.08); /* Destaca el del centro más grande */
     box-shadow: 0 0 20px rgba(145, 70, 255, 0.4);
     z-index: 2;
 }
@@ -1879,7 +1886,7 @@ table {
     width: 100% !important;
     height: 140px !important;
     border-radius: 6px;
-    pointer-events: auto !important; /* <-- CAMBIADO: Devuelve el control del ratón al iframe para poder reproducir */
+    pointer-events: auto !important; /* Permite interactuar y reproducir el vídeo sin bloqueos */
 }
 
 .carousel-clip-title {
@@ -1892,29 +1899,25 @@ table {
     text-overflow: ellipsis;
 }
 
+/* Botones fuera de la caja de vídeos, interactivos al 100% */
 .carousel-btn {
     background-color: rgba(145, 70, 255, 0.4);
     border: 2px solid #9146FF;
     color: #fff;
     font-size: 18px;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 100; /* <-- CAMBIADO: Prioridad máxima por encima de todo para que las flechas respondan al primer toque */
+    flex-shrink: 0;
+    z-index: 10;
     transition: background 0.3s, transform 0.2s;
 }
 
 .carousel-btn:hover {
     background-color: #9146FF;
-    transform: translateY(-50%) scale(1.1);
+    transform: scale(1.1);
 }
-
-.prev-btn { left: -5px; } /* Ligeramente fuera para mayor comodidad de clic */
-.next-btn { right: -5px; }
