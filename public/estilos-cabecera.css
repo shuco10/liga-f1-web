@@ -1701,4 +1701,84 @@ table {
     }
 }
 
+/* Tarjeta principal con el estilo de la web y borde lateral morado Twitch (#9146FF) */
+.twitch-admin-card {
+    background-color: #181a1b; /* Fondo oscuro acorde a tu diseño */
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    position: relative;
+    border-left: 5px solid #9146FF; /* El toque morado neón corporativo de Twitch */
+    box-shadow: 0 4px 15px rgba(145, 70, 255, 0.15); /* Sutil brillo neón */
+}
+
+.twitch-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #2a2d2e;
+    padding-bottom: 12px;
+}
+
+.twitch-card-header h3 {
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 18px;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.twitch-form .form-group {
+    margin-bottom: 15px;
+}
+
+.twitch-form label {
+    display: block;
+    color: #b3b3b3;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.twitch-form input[type="text"],
+.twitch-form textarea {
+    width: 100%;
+    background-color: #111213;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 10px;
+    color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.twitch-form input[type="text"]:focus,
+.twitch-form textarea:focus {
+    border-color: #9146FF; /* Se ilumina en morado al escribir */
+    outline: none;
+}
+
+.btn-twitch-guardar {
+    background-color: #9146FF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.btn-twitch-guardar:hover {
+    background-color: #772ce8;
+    box-shadow: 0 0 10px rgba(145, 70, 255, 0.5); /* Efecto brillo neón al pasar el ratón */
+}
+
+
+
+
+
 
