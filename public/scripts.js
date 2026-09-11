@@ -260,15 +260,14 @@ async function iniciarBannerSecuencial() {
 
 let currentIndex = 0;
 let clipsData = [];
-let isTransitioning = false; // Bloqueo de seguridad para evitar spam de clics en la transición
+let isTransitioning = false;
 
 async function cargarCarruselClips() {
     try {
         const response = await fetch('/api/videos');
         const datos = await response.json();
         
-        // Si quieres que los más nuevos aparezcan primeros, descomenta la siguiente línea:
-        // clipsData = datos.reverse();
+        // clipsData = datos.reverse(); // Descomenta si quieres los más nuevos primeros
         clipsData = datos;
         
         const container = document.getElementById('twitchCarousel');
@@ -292,7 +291,7 @@ function renderCarousel() {
     container.innerHTML = '';
     const dominioActual = window.location.hostname;
 
-    // Triplicamos los elementos para permitir el bucle infinito sin huecos a los lados
+    // Triplicamos los elementos para permitir el bucle infinito sin huecos
     const extendedClips = [...clipsData, ...clipsData, ...clipsData];
     currentIndex = clipsData.length; // Empezamos en el bloque central
 
@@ -327,7 +326,7 @@ function actualizarPosicionCarrusel(animar = true) {
 
     const items = container.children;
 
-    // Actualizar clases activas y estilos
+    // Actualizar clases activas y estilos visuales
     for (let i = 0; i < items.length; i++) {
         if (i === currentIndex) {
             items[i].classList.add('active');
@@ -354,52 +353,47 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 }
 
-// Inicialización al cargar la página y escucha del fin de transición para el bucle invisible
+// Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
-
-    const container = document.getElementById('twitchCarousel');
-    if (container) {
-        container.addEventListener('transitionend', () => {
-            const totalClips = clipsData.length;
-            
-            // Si la animación terminó y estamos en un bloque extremo, reubicamos de forma instantánea y oculta
-            if (currentIndex < totalClips) {
-                currentIndex += totalClips;
-                actualizarPosicionCarrusel(false);
-            } else if (currentIndex >= totalClips * 2) {
-                currentIndex -= totalClips;
-                actualizarPosicionCarrusel(false);
-            }
-            isTransitioning = false; // Liberamos el carrusel para aceptar nuevos clics
-        });
-    }
 });
 
-// Control de flechas por Delegación Global optimizado con control de animación
+// Control de flechas con bucle fluido y seguro por temporizador
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
     const prevBtn = e.target.closest('#prevClip');
 
+    if (!nextBtn && !prevBtn) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (clipsData.length === 0 || isTransitioning) return;
+    
+    isTransitioning = true;
+
     if (nextBtn) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (clipsData.length === 0 || isTransitioning) return;
-        
-        isTransitioning = true;
         currentIndex++;
-        actualizarPosicionCarrusel(true);
+    } else if (prevBtn) {
+        currentIndex--;
     }
 
-    if (prevBtn) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (clipsData.length === 0 || isTransitioning) return;
-        
-        isTransitioning = true;
-        currentIndex--;
-        actualizarPosicionCarrusel(true);
-    }
+    actualizarPosicionCarrusel(true);
+
+    const totalClips = clipsData.length;
+
+    // Tras los 400ms que dura la animación visual, comprobamos si nos pasamos de bloque
+    // y hacemos el salto invisible de manera totalmente segura y limpia.
+    setTimeout(() => {
+        if (currentIndex < totalClips) {
+            currentIndex += totalClips;
+            actualizarPosicionCarrusel(false);
+        } else if (currentIndex >= totalClips * 2) {
+            currentIndex -= totalClips;
+            actualizarPosicionCarrusel(false);
+        }
+        isTransitioning = false; // Liberamos el carrusel para el siguiente clic
+    }, 400);
 });
 
 /////////////////////////////////////////////////
