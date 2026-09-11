@@ -267,10 +267,10 @@ async function cargarCarruselClips() {
         clipsData = await response.json();
         
         const container = document.getElementById('twitchCarousel');
-        if (!container) return; // Si no estamos en la página que tiene el carrusel, no hace nada
+        if (!container) return; 
         
         if (clipsData.length === 0) {
-            container.innerHTML = '<div class="carousel-loading">No hay clips guardados todavía.</div>';
+            container.innerHTML = '<div class="carousel-loading" style="color: #94a3b8; font-size: 12px;">No hay clips guardados todavía.</div>';
             return;
         }
 
@@ -298,9 +298,20 @@ function renderCarousel() {
         `;
         container.appendChild(item);
     });
+
+    // Desplazamiento automático para mantener el clip activo siempre centrado
+    const activeItem = container.children[currentIndex];
+    if (activeItem) {
+        const containerWidth = container.offsetWidth;
+        const itemLeft = activeItem.offsetLeft;
+        const itemWidth = activeItem.offsetWidth;
+        const scrollTarget = itemLeft - (containerWidth / 2) + (itemWidth / 2);
+        
+        container.style.transform = `translateX(${-scrollTarget}px)`;
+    }
 }
 
-// Vinculamos los botones si existen en la vista actual
+// Vinculación segura de los botones de navegación
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
 
@@ -308,19 +319,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prevClip');
 
     if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
+        // Removemos eventos previos duplicados si los hubiera y asignamos el nuevo
+        nextBtn.onclick = () => {
             if (clipsData.length === 0) return;
             currentIndex = (currentIndex + 1) % clipsData.length;
             renderCarousel();
-        });
+        };
     }
 
     if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
+        prevBtn.onclick = () => {
             if (clipsData.length === 0) return;
             currentIndex = (currentIndex - 1 + clipsData.length) % clipsData.length;
             renderCarousel();
-        });
+        };
     }
 });
 
