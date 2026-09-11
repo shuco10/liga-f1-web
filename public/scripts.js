@@ -258,6 +258,72 @@ async function iniciarBannerSecuencial() {
     }
 }
 
+let currentIndex = 0;
+let clipsData = [];
+
+async function cargarCarruselClips() {
+    try {
+        const response = await fetch('/api/videos');
+        clipsData = await response.json();
+        
+        const container = document.getElementById('twitchCarousel');
+        if (!container) return; // Si no estamos en la página que tiene el carrusel, no hace nada
+        
+        if (clipsData.length === 0) {
+            container.innerHTML = '<div class="carousel-loading">No hay clips guardados todavía.</div>';
+            return;
+        }
+
+        renderCarousel();
+    } catch (error) {
+        console.error('Error al cargar el carrusel:', error);
+    }
+}
+
+function renderCarousel() {
+    const container = document.getElementById('twitchCarousel');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    const dominioActual = window.location.hostname;
+
+    clipsData.forEach((clip, index) => {
+        let iframeAdaptado = clip.embed_codigo.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+
+        const item = document.createElement('div');
+        item.className = `carousel-clip-item ${index === currentIndex ? 'active' : ''}`;
+        item.innerHTML = `
+            ${iframeAdaptado}
+            <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Vinculamos los botones si existen en la vista actual
+document.addEventListener('DOMContentLoaded', () => {
+    cargarCarruselClips();
+
+    const nextBtn = document.getElementById('nextClip');
+    const prevBtn = document.getElementById('prevClip');
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (clipsData.length === 0) return;
+            currentIndex = (currentIndex + 1) % clipsData.length;
+            renderCarousel();
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (clipsData.length === 0) return;
+            currentIndex = (currentIndex - 1 + clipsData.length) % clipsData.length;
+            renderCarousel();
+        });
+    }
+});
+
 
 /////////////////////////////////////////////////
 //NO ELIMINAR ESTO DE AQUI//////////////////
