@@ -260,12 +260,15 @@ async function iniciarBannerSecuencial() {
 
 let currentIndex = 0;
 let clipsData = [];
-const VISIBLE_ITEMS_BUFFER = 2; // Margen de seguridad para el bucle
 
 async function cargarCarruselClips() {
     try {
         const response = await fetch('/api/videos');
-        clipsData = await response.json();
+        const datos = await response.json();
+        
+        // Si quieres que los más nuevos aparezcan primeros, descomenta la siguiente línea:
+        // clipsData = datos.reverse();
+        clipsData = datos;
         
         const container = document.getElementById('twitchCarousel');
         if (!container) return; 
@@ -288,19 +291,23 @@ function renderCarousel() {
     container.innerHTML = '';
     const dominioActual = window.location.hostname;
 
-    // Duplicamos los elementos al principio y al final para permitir rotación infinita sin huecos vacíos
+    // Triplicamos los elementos para permitir el bucle infinito sin huecos a los lados
     const extendedClips = [...clipsData, ...clipsData, ...clipsData];
-    currentIndex = clipsData.length; // Empezamos en el bloque central para poder ir a ambos lados libremente
+    currentIndex = clipsData.length; // Empezamos en el bloque central
 
     extendedClips.forEach((clip, absoluteIndex) => {
         let iframeAdaptado = clip.embed_codigo.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
 
         const item = document.createElement('div');
         item.className = `carousel-clip-item ${absoluteIndex === currentIndex ? 'active' : ''}`;
+        
         item.innerHTML = `
-            ${iframeAdaptado}
+            <div style="position: relative;">
+                ${iframeAdaptado}
+            </div>
             <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
         `;
+        
         container.appendChild(item);
     });
 
@@ -314,13 +321,13 @@ function actualizarPosicionCarrusel(animar = true) {
     if (!animar) {
         container.style.transition = 'none';
     } else {
-        container.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);';
+        container.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
     }
 
     const items = container.children;
     const totalClips = clipsData.length;
 
-    // Control de límites para el bucle infinito transparente
+    // Control de límites para el salto invisible entre bloques
     if (currentIndex < totalClips) {
         currentIndex += totalClips;
         posicionarInstantaneo();
@@ -329,7 +336,7 @@ function actualizarPosicionCarrusel(animar = true) {
         posicionarInstantaneo();
     }
 
-    // Actualizar clases activas
+    // Actualizar clases activas y estilos
     for (let i = 0; i < items.length; i++) {
         if (i === currentIndex) {
             items[i].classList.add('active');
@@ -376,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
 });
 
-// Control de flechas por Delegación Global (Infalible ante cargas asíncronas)
+// Delegación global de eventos para las flechas
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
     const prevBtn = e.target.closest('#prevClip');
@@ -397,7 +404,6 @@ document.addEventListener('click', (e) => {
         actualizarPosicionCarrusel(true);
     }
 });
-
 
 /////////////////////////////////////////////////
 //NO ELIMINAR ESTO DE AQUI//////////////////
