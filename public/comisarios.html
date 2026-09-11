@@ -1406,11 +1406,14 @@ async function asignarMundialEscuderia(btn) {
 // Script para actualizar la previsualización en tiempo real al pegar el iframe
 document.getElementById('embedVideo').addEventListener('input', function() {
     const previewBox = document.getElementById('twitchPreviewBox');
-    // Limpiamos los saltos de línea para que lea el iframe entero de golpe
-    const valorInput = this.value.trim().replace(/(\r\n|\n|\r)/gm, " ");
+    let valorInput = this.value.trim();
 
     if (valorInput.includes('<iframe') && valorInput.includes('src=')) {
-        previewBox.innerHTML = valorInput;
+        // Actualizamos automáticamente el parámetro parent para que coincida con tu dominio actual
+        const dominioActual = window.location.hostname;
+        let iframeLimpio = valorInput.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+        
+        previewBox.innerHTML = iframeLimpio;
     } else if (valorInput.length > 0) {
         previewBox.innerHTML = `<span class="preview-placeholder-text" style="color: #9146FF; font-weight: bold;">Detectando código de Twitch...</span>`;
     } else {
