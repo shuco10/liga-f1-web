@@ -1541,7 +1541,31 @@ app.post('/api/contacto', async (req, res) => {
     }
 });
 
+// Obtener todos los vídeos de Twitch ordenados del más reciente al más antiguo
+app.get('/api/videos', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM videos_twitch ORDER BY fecha DESC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error al obtener los vídeos de Twitch:", err);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
 
+// Guardar un nuevo clip de Twitch (Protegido para admins o desde el panel)
+app.post('/api/videos', async (req, res) => {
+    const { embed_codigo, titulo } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO videos_twitch (embed_codigo, titulo) VALUES ($1, $2) RETURNING *',
+            [embed_codigo, titulo]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error("Error al guardar el vídeo de Twitch:", err);
+        res.status(500).json({ error: "Error al guardar el vídeo" });
+    }
+});
 
 
 // ==========================================
