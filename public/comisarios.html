@@ -1403,16 +1403,14 @@ async function asignarMundialEscuderia(btn) {
     }
 }
 
-// Script para actualizar la previsualización en tiempo real al pegar el iframe
+// 1. Previsualización en tiempo real
 document.getElementById('embedVideo').addEventListener('input', function() {
     const previewBox = document.getElementById('twitchPreviewBox');
     let valorInput = this.value.trim();
 
     if (valorInput.includes('<iframe') && valorInput.includes('src=')) {
-        // Actualizamos automáticamente el parámetro parent para que coincida con tu dominio actual
         const dominioActual = window.location.hostname;
         let iframeLimpio = valorInput.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
-        
         previewBox.innerHTML = iframeLimpio;
     } else if (valorInput.length > 0) {
         previewBox.innerHTML = `<span class="preview-placeholder-text" style="color: #9146FF; font-weight: bold;">Detectando código de Twitch...</span>`;
@@ -1421,6 +1419,39 @@ document.getElementById('embedVideo').addEventListener('input', function() {
     }
 });
 
+// 2. Lógica para guardar el clip en la base de datos al enviar el formulario
+document.getElementById('formVideoTwitch').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const titulo = document.getElementById('tituloVideo').value.trim();
+    const embed_codigo = document.getElementById('embedVideo').value.trim();
+
+    if (!titulo || !embed_codigo) {
+        alert('Por favor, completa todos los campos.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/videos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ titulo, embed_codigo })
+        });
+
+        if (response.ok) {
+            alert('¡Clip guardado correctamente en la base de datos!');
+            this.reset(); // Limpia el formulario
+            document.getElementById('twitchPreviewBox').innerHTML = `<span class="preview-placeholder-text">Pega un código de embed válido para previsualizar el clip</span>`;
+        } else {
+            alert('Error al guardar el clip en el servidor.');
+        }
+    } catch (error) {
+        console.error('Error de red:', error);
+        alert('Hubo un problema de conexión con el servidor.');
+    }
+});
     
     
 </script>
