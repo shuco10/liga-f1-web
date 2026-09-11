@@ -262,8 +262,8 @@ async function iniciarBannerSecuencial() {
 //////////////////////////// 
 
 let currentIndex = 0;
-let clipsData = []; // Guardará todos los clips de la BD
-let clipsCarrusel = []; // Guardará solo los 5 más nuevos para el carrusel principal
+let clipsData = []; 
+let clipsCarrusel = []; 
 let isTransitioning = false;
 
 async function cargarCarruselClips() {
@@ -275,8 +275,7 @@ async function cargarCarruselClips() {
         
         if (Array.isArray(datos) && datos.length > 0) {
             clipsData = datos;
-            // Limitamos el carrusel principal estrictamente a los 5 más nuevos (asumiendo que vienen ordenados por fecha)
-            clipsCarrusel = clipsData.slice(0, 5);
+            clipsCarrusel = clipsData.slice(0, 5); // Solo los 5 más nuevos para el carrusel
         }
     } catch (error) {
         console.warn('No se pudo conectar a /api/videos, usando respaldo:', error);
@@ -303,9 +302,8 @@ function renderCarousel() {
         return;
     }
 
-    // Triplicamos solo los 5 clips del carrusel principal para mantener el bucle fluido
     const extendedClips = [...clipsCarrusel, ...clipsCarrusel, ...clipsCarrusel];
-    currentIndex = clipsCarrusel.length; // Empezamos en el bloque central
+    currentIndex = clipsCarrusel.length;
 
     extendedClips.forEach((clip, absoluteIndex) => {
         let iframeAdaptado = clip.embed_codigo;
@@ -331,7 +329,6 @@ function renderCarousel() {
     actualizarPosicionCarrusel(false);
 }
 
-// Función para rellenar la rejilla del modal con TODOS los vídeos y su previsualización
 function poblarModalClips() {
     const modalGrid = document.getElementById('modalClipsGrid');
     if (!modalGrid) return;
@@ -396,40 +393,34 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 }
 
-// Inicialización y eventos globales
+// Inicialización automática
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
-
-    // Lógica para abrir y cerrar el Modal de "Ver todos"
-    const modal = document.getElementById('allClipsModal');
-    const openBtn = document.getElementById('openAllClipsModal');
-    const closeBtn = document.getElementById('closeAllClipsModal');
-
-    if (openBtn && modal) {
-        openBtn.addEventListener('click', () => {
-            modal.style.display = 'flex';
-        });
-    }
-
-    if (closeBtn && modal) {
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-    }
-
-    // Cerrar modal si pinchan fuera de la ventana flotante
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
 });
 
-// Control de flechas del carrusel principal
+// Control global de eventos (Flechas del carrusel + Apertura/Cierre de la Modal)
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
     const prevBtn = e.target.closest('#prevClip');
+    const openModalBtn = e.target.closest('#openAllClipsModal');
+    const closeModalBtn = e.target.closest('#closeAllClipsModal');
+    const modalOverlay = document.getElementById('allClipsModal');
 
+    // 1. Abrir Modal
+    if (openModalBtn) {
+        e.preventDefault();
+        if (modalOverlay) modalOverlay.style.display = 'flex';
+        return;
+    }
+
+    // 2. Cerrar Modal (por botón 'X' o clic fuera de la caja)
+    if (closeModalBtn || (modalOverlay && e.target === modalOverlay)) {
+        e.preventDefault();
+        if (modalOverlay) modalOverlay.style.display = 'none';
+        return;
+    }
+
+    // 3. Control de flechas del carrusel
     if (!nextBtn && !prevBtn) return;
     
     e.preventDefault();
@@ -459,7 +450,6 @@ document.addEventListener('click', (e) => {
         }
         isTransitioning = false;
     }, 400);
-});
 
 
 
