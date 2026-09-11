@@ -1921,3 +1921,37 @@ table {
     background-color: #9146FF;
     transform: scale(1.1);
 }
+
+
+/* Estilos para las tarjetas dentro del modal con miniatura / previsualización */
+.modal-clip-card {
+    background: #0f1115;
+    border: 1px solid #2a2e3d;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.modal-clip-card:hover {
+    border-color: #9146FF;
+    transform: translateY(-2px);
+}
+
+.modal-clip-card iframe {
+    width: 100% !important;
+    height: 120px !important;
+    border-radius: 4px;
+}
+
+.modal-clip-card span {
+    color: #fff;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
