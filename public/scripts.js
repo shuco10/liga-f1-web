@@ -260,6 +260,7 @@ async function iniciarBannerSecuencial() {
 
 let currentIndex = 0;
 let clipsData = [];
+const VISIBLE_ITEMS_BUFFER = 2; // Margen de seguridad para el bucle
 
 async function cargarCarruselClips() {
     try {
@@ -287,52 +288,63 @@ function renderCarousel() {
     container.innerHTML = '';
     const dominioActual = window.location.hostname;
 
-    // Duplicamos los elementos virtualmente para asegurar el bucle continuo sin huecos vacíos
-    // Renderizamos la lista principal
-    clipsData.forEach((clip, index) => {
-        container.appendChild(crearElementoClip(clip, index));
-    });
-}
+    // Duplicamos los elementos al principio y al final para permitir rotación infinita sin huecos vacíos
+    const extendedClips = [...clipsData, ...clipsData, ...clipsData];
+    currentIndex = clipsData.length; // Empezamos en el bloque central para poder ir a ambos lados libremente
 
-function crearElementoClip(clip, index) {
-    const dominioActual = window.location.hostname;
-    let iframeAdaptado = clip.embed_codigo.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+    extendedClips.forEach((clip, absoluteIndex) => {
+        let iframeAdaptado = clip.embed_codigo.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
 
-    const item = document.createElement('div');
-    item.className = `carousel-clip-item ${index === currentIndex ? 'active' : ''}`;
-    item.innerHTML = `
-        ${iframeAdaptado}
-        <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
-    `;
-    
-    // Permitir hacer clic directamente en una tarjeta lateral para seleccionarla y traerla al centro
-    item.addEventListener('click', () => {
-        currentIndex = index;
-        actualizarPosicionCarrusel();
+        const item = document.createElement('div');
+        item.className = `carousel-clip-item ${absoluteIndex === currentIndex ? 'active' : ''}`;
+        item.innerHTML = `
+            ${iframeAdaptado}
+            <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
+        `;
+        container.appendChild(item);
     });
 
-    return item;
+    actualizarPosicionCarrusel(false);
 }
 
-function actualizarPosicionCarrusel() {
+function actualizarPosicionCarrusel(animar = true) {
     const container = document.getElementById('twitchCarousel');
-    if (!container) return;
+    if (!container || clipsData.length === 0) return;
 
-    // Actualizamos las clases 'active' visuales
+    if (!animar) {
+        container.style.transition = 'none';
+    } else {
+        container.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);';
+    }
+
     const items = container.children;
+    const totalClips = clipsData.length;
+
+    // Control de límites para el bucle infinito transparente
+    if (currentIndex < totalClips) {
+        currentIndex += totalClips;
+        posicionarInstantaneo();
+    } else if (currentIndex >= totalClips * 2) {
+        currentIndex -= totalClips;
+        posicionarInstantaneo();
+    }
+
+    // Actualizar clases activas
     for (let i = 0; i < items.length; i++) {
         if (i === currentIndex) {
             items[i].classList.add('active');
             items[i].style.transform = 'scale(1.05)';
             items[i].style.opacity = '1';
+            items[i].style.zIndex = '2';
         } else {
             items[i].classList.remove('active');
             items[i].style.transform = 'scale(0.85)';
             items[i].style.opacity = '0.4';
+            items[i].style.zIndex = '1';
         }
     }
 
-    // Calculamos el desplazamiento exacto para dejar el clip activo en el centro
+    // Centrar el elemento activo
     const activeItem = items[currentIndex];
     if (activeItem) {
         const containerWidth = container.parentElement.offsetWidth;
@@ -344,7 +356,22 @@ function actualizarPosicionCarrusel() {
     }
 }
 
-// Vinculación segura de los botones de navegación con bucle circular infinito
+function posicionarInstantaneo() {
+    const container = document.getElementById('twitchCarousel');
+    const items = container.children;
+    container.style.transition = 'none';
+    
+    const activeItem = items[currentIndex];
+    if (activeItem) {
+        const containerWidth = container.parentElement.offsetWidth;
+        const itemLeft = activeItem.offsetLeft;
+        const itemWidth = activeItem.offsetWidth;
+        const scrollTarget = itemLeft - (containerWidth / 2) + (itemWidth / 2);
+        container.style.transform = `translateX(${-scrollTarget}px)`;
+    }
+}
+
+// Vinculación de los botones de las flechas
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
 
@@ -355,9 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBtn.onclick = (e) => {
             e.preventDefault();
             if (clipsData.length === 0) return;
-            // Bucle circular hacia adelante
-            currentIndex = (currentIndex + 1) % clipsData.length;
-            actualizarPosicionCarrusel();
+            currentIndex++;
+            actualizarPosicionCarrusel(true);
         };
     }
 
@@ -365,9 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
         prevBtn.onclick = (e) => {
             e.preventDefault();
             if (clipsData.length === 0) return;
-            // Bucle circular hacia atrás (evita negativos sumando la longitud)
-            currentIndex = (currentIndex - 1 + clipsData.length) % clipsData.length;
-            actualizarPosicionCarrusel();
+            currentIndex--;
+            actualizarPosicionCarrusel(true);
         };
     }
 });
