@@ -282,27 +282,60 @@ async function cargarCarruselClips() {
 
 function renderCarousel() {
     const container = document.getElementById('twitchCarousel');
-    if (!container) return;
+    if (!container || clipsData.length === 0) return;
     
     container.innerHTML = '';
     const dominioActual = window.location.hostname;
 
+    // Duplicamos los elementos virtualmente para asegurar el bucle continuo sin huecos vacíos
+    // Renderizamos la lista principal
     clipsData.forEach((clip, index) => {
-        let iframeAdaptado = clip.embed_codigo.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+        container.appendChild(crearElementoClip(clip, index));
+    });
+}
 
-        const item = document.createElement('div');
-        item.className = `carousel-clip-item ${index === currentIndex ? 'active' : ''}`;
-        item.innerHTML = `
-            ${iframeAdaptado}
-            <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
-        `;
-        container.appendChild(item);
+function crearElementoClip(clip, index) {
+    const dominioActual = window.location.hostname;
+    let iframeAdaptado = clip.embed_codigo.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+
+    const item = document.createElement('div');
+    item.className = `carousel-clip-item ${index === currentIndex ? 'active' : ''}`;
+    item.innerHTML = `
+        ${iframeAdaptado}
+        <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
+    `;
+    
+    // Permitir hacer clic directamente en una tarjeta lateral para seleccionarla y traerla al centro
+    item.addEventListener('click', () => {
+        currentIndex = index;
+        actualizarPosicionCarrusel();
     });
 
-    // Desplazamiento automático para mantener el clip activo siempre centrado
-    const activeItem = container.children[currentIndex];
+    return item;
+}
+
+function actualizarPosicionCarrusel() {
+    const container = document.getElementById('twitchCarousel');
+    if (!container) return;
+
+    // Actualizamos las clases 'active' visuales
+    const items = container.children;
+    for (let i = 0; i < items.length; i++) {
+        if (i === currentIndex) {
+            items[i].classList.add('active');
+            items[i].style.transform = 'scale(1.05)';
+            items[i].style.opacity = '1';
+        } else {
+            items[i].classList.remove('active');
+            items[i].style.transform = 'scale(0.85)';
+            items[i].style.opacity = '0.4';
+        }
+    }
+
+    // Calculamos el desplazamiento exacto para dejar el clip activo en el centro
+    const activeItem = items[currentIndex];
     if (activeItem) {
-        const containerWidth = container.offsetWidth;
+        const containerWidth = container.parentElement.offsetWidth;
         const itemLeft = activeItem.offsetLeft;
         const itemWidth = activeItem.offsetWidth;
         const scrollTarget = itemLeft - (containerWidth / 2) + (itemWidth / 2);
@@ -311,7 +344,7 @@ function renderCarousel() {
     }
 }
 
-// Vinculación segura de los botones de navegación
+// Vinculación segura de los botones de navegación con bucle circular infinito
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
 
@@ -319,19 +352,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prevClip');
 
     if (nextBtn) {
-        // Removemos eventos previos duplicados si los hubiera y asignamos el nuevo
-        nextBtn.onclick = () => {
+        nextBtn.onclick = (e) => {
+            e.preventDefault();
             if (clipsData.length === 0) return;
+            // Bucle circular hacia adelante
             currentIndex = (currentIndex + 1) % clipsData.length;
-            renderCarousel();
+            actualizarPosicionCarrusel();
         };
     }
 
     if (prevBtn) {
-        prevBtn.onclick = () => {
+        prevBtn.onclick = (e) => {
+            e.preventDefault();
             if (clipsData.length === 0) return;
+            // Bucle circular hacia atrás (evita negativos sumando la longitud)
             currentIndex = (currentIndex - 1 + clipsData.length) % clipsData.length;
-            renderCarousel();
+            actualizarPosicionCarrusel();
         };
     }
 });
