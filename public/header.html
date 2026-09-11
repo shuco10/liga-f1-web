@@ -12,31 +12,39 @@
     </a>
 </div>
 
-<!-- 2. BARRA PRINCIPAL: Distribución simétrica real -->
-<div style="position: relative; display: flex; align-items: center; justify-content: center; width: 100%; padding: 10px 30px; box-sizing: border-box; margin-bottom: 10px;">
+<!-- 2. BARRA PRINCIPAL: Distribución simétrica de 3 columnas -->
+<div style="position: relative; display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 30px; box-sizing: border-box; margin-bottom: 10px;">
     
-    <!-- Izquierda: Botones de Iniciar / Cerrar Sesión 
-    <div style="position: absolute; left: 30px; display: flex; gap: 10px; align-items: center;">
-        <button id="btnAbrirLogin" class="btn-login" style="display: none; background-color: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);">
-            🔐 Iniciar Sesión
-        </button>
-        <button id="btn-logout" class="btn-logout" style="display: none; background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);">
-            🚪 Cerrar Sesión
-        </button>
+    <!-- Izquierda: Bloque de Usuarios Online y Visitas con marco neón amarillo -->
+    <div style="display: flex; align-items: center; gap: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid #facc15; padding: 8px 14px; border-radius: 10px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35);">
+        
+        <!-- Usuarios Online -->
+        <div style="display: flex; align-items: center; gap: 6px; font-family: inherit;">
+            <span style="color: #3b82f6; font-size: 0.85em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4);">Online:</span> 
+            <span style="font-weight: bold; font-size: 0.9em;">
+                <span id="bola-estado" style="font-size: 1em; margin-right: 2px; color: #4ade80;">●</span><span id="num-usuarios" style="color: #4ade80;">1</span>
+            </span>
+        </div>
+
+        <span style="color: #475569;">|</span>
+
+        <!-- Visitas (Hoy y Totales) -->
+        <div style="font-size: 0.85em; color: #94a3b8; text-align: center;">
+            <div>
+                📅 <span id="visitas-hoy" style="color: #4ade80; font-weight: bold;">...</span> 
+                <span style="margin: 0 4px; color: #3b82f6;">|</span> 
+                📊 <span id="visitas-totales" style="color: #facc15; font-weight: bold;">...</span>
+            </div>
+        </div>
     </div>
--->
-    <!-- Centro: Botones de Oficina y Contacto (Centrados geométricamente) 
-    <div id="auth-controls" class="boton-login-blur" style="display: flex; gap: 10px; align-items: center; justify-content: center;">
-        <a href="info.html" class="boton-header-blur">
-            <i class="fa-solid fa-building"></i>
-        </a>
-        <button class="boton-header-blur" onclick="document.getElementById('modal-contacto').style.display='block'">
-            <i class="fa-solid fa-envelope"></i>
-        </button>
+
+    <!-- Centro: Espacio libre / Logotipo o elementos centrales si los hubiera -->
+    <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+        <!-- Si quieres meter aquí los botones de oficina/contacto u otros, puedes descomentarlos -->
     </div>
--->
+
     <!-- Derecha: Bloque de Twitch con marco neón morado -->
-    <div style="position: absolute; right: 30px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; background: rgba(15, 23, 42, 0.85); border: 1px solid #a855f7; padding: 10px 14px; border-radius: 10px; box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);">
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; background: rgba(15, 23, 42, 0.85); border: 1px solid #a855f7; padding: 10px 14px; border-radius: 10px; box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="https://www.twitch.tv/donfrias" target="_blank" class="twitch-link">
                 <img src="/webimagenes/donfrias_trans.png" alt="Twitch" style="height: 45px; width: auto;">
@@ -50,6 +58,7 @@
         </h4>
     </div>
 
+</div>
 </div>
 
 <!-- MODAL DE CONTACTO -->
@@ -79,28 +88,7 @@
     <div class="my-banner"></div>
 </div>
 
-<!-- CONTENEDOR CENTRADO PARA USUARIOS ONLINE Y VISITAS -->
-<div style="text-align: center; width: 100%; margin: 15px 0; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
-    
-    <!-- CAJA 1: Usuarios Online -->
-    <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-family: inherit;">
-        <span style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4);">Usuarios online:</span> 
-        <span style="font-weight: bold; margin-left: 6px; font-size: 0.95em;">
-            <span id="bola-estado" style="font-size: 1.1em; margin-right: 4px; color: #4ade80;">●</span><span id="num-usuarios" style="color: #4ade80;">1</span>
-        </span>
-    </div>
 
-    <!-- CAJA 2: Visitas (Hoy y Totales) -->
-    <div style="display: inline-block; background-color: rgba(15, 23, 42, 0.9); border: 1px solid #facc15; padding: 8px 16px; border-radius: 8px; box-shadow: 0 0 12px rgba(250, 204, 21, 0.35); font-size: 0.9em; color: #94a3b8; text-align: center;">
-        <div style="color: #3b82f6; font-size: 0.9em; text-shadow: 0 0 4px rgba(59, 130, 246, 0.4); margin-bottom: 2px;">Visitas</div>
-        <div>
-            📅 Hoy: <span id="visitas-hoy" style="color: #4ade80; font-weight: bold;">...</span> 
-            <span style="margin: 0 6px; color: #3b82f6;">|</span> 
-            📊 Total: <span id="visitas-totales" style="color: #facc15; font-weight: bold;">...</span>
-        </div>
-    </div>
-
-</div>
 
 <!-- Carga automática de scripts compatibles con inyección dinámica -->
 <script src="/iniciar-sesion.js"></script>
