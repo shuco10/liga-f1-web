@@ -162,6 +162,43 @@ document.addEventListener('DOMContentLoaded', () => {
     
     <div id="contenido-admin" style="display: none;">
 
+        
+      <!-- SUBIDA DE VIDEOS DE TWITCH -->
+        <div class="twitch-card-donfrias">
+    <div class="twitch-card-header-df">
+        <span class="twitch-icon">🎥</span>
+        <h3>GESTIÓN DE CLIPS DE TWITCH</h3>
+        <span class="twitch-icon">🎮</span>
+    </div>
+
+    <div class="twitch-grid-container">
+        <!-- Columna Izquierda: Formulario -->
+        <div class="twitch-form-col">
+            <form id="formVideoTwitch">
+                <div class="twitch-form-group">
+                    <label for="tituloVideo">Título del Clip:</label>
+                    <input type="text" id="tituloVideo" placeholder="Ej: Adelantamiento en la última vuelta..." required>
+                </div>
+                
+                <div class="twitch-form-group">
+                    <label for="embedVideo">Código o enlace de Embed de Twitch:</label>
+                    <textarea id="embedVideo" placeholder="Pega aquí el código del iframe..." rows="3" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-twitch-neon">Guardar Clip</button>
+            </form>
+        </div>
+
+        <!-- Columna Derecha: Previsualización -->
+        <div class="twitch-preview-col">
+            <label>Previsualización en directo:</label>
+            <div id="twitchPreviewBox" class="twitch-preview-box">
+                <span class="preview-placeholder-text">Pega un código de embed válido para previsualizar el clip</span>
+            </div>
+        </div>
+    </div>
+</div>
+      <!-- SUBIDA DE VIDEOS DE TWITCH -->
         <div class="caja-resultados">
             <h2 class="titulo-caja">📊 Gestión de Resultados 📊</h2>
 
@@ -1365,6 +1402,22 @@ async function asignarMundialEscuderia(btn) {
         alert("Error de conexión con el servidor.");
     }
 }
+
+// Script para actualizar la previsualización en tiempo real al pegar el iframe
+document.getElementById('embedVideo').addEventListener('input', function() {
+    const previewBox = document.getElementById('twitchPreviewBox');
+    const valorInput = this.value.trim();
+
+    if (valorInput.includes('<iframe') || valorInput.includes('src=')) {
+        previewBox.innerHTML = valorInput;
+    } else if (valorInput.length > 0) {
+        previewBox.innerHTML = `<span class="preview-placeholder-text" style="color: #9146FF;">Código introducido (Texto detectado)</span>`;
+    } else {
+        previewBox.innerHTML = `<span class="preview-placeholder-text">Pega un código de embed válido para previsualizar el clip</span>`;
+    }
+});
+
+    
     
 </script>
 
