@@ -1600,27 +1600,30 @@ table {
 
 */
 /* Contenedor principal integrado en la columna central */
+/* Contenedor principal del banner */
 .ticker-container {
     display: flex;
     background: rgba(15, 23, 42, 0.85);
     color: #fff;
-    height: 38px;
+    height: 42px;
     align-items: center;
-    border: 1px solid #38bdf8; /* Borde azul eléctrico a juego con los iconos */
+    border: 1px solid #38bdf8; /* Neón azul eléctrico */
     font-family: inherit;
     overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
-    flex: 1;               /* Hace que ocupe todo el espacio central disponible entre los dos bloques */
-    max-width: 600px;      /* Límite para que no se expanda demasiado */
-    margin: 0 15px;        /* Pequeño margen de separación con los lados */
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    flex: 1;
+    min-width: 0;
+    max-width: 700px;
+    margin: 0 20px;
 }
 
-/* Caja de etiqueta lateral (puedes mantener tu rojo de F1 o adaptarlo) */
+/* Etiqueta lateral en azul translúcido a juego con el marco */
 .ticker-select-label {
-    background: #e10600;
-    color: white;
-    padding: 0 12px;
+    background: rgba(56, 189, 248, 0.2); /* Azul con transparencia */
+    color: #38bdf8;                      /* Texto en azul brillante */
+    border-right: 1px solid rgba(56, 189, 248, 0.4); /* Pequeña línea divisoria sutil */
+    padding: 0 14px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -1631,6 +1634,7 @@ table {
     text-transform: uppercase;
     white-space: nowrap;
     z-index: 2;
+    text-shadow: 0 0 6px rgba(56, 189, 248, 0.4); /* Efecto brillo en el texto */
 }
 
 .ticker-wrap {
@@ -1644,6 +1648,7 @@ table {
     padding-left: 100%;
     animation: ticker linear infinite;
     font-size: 12px;
+    color: #f8fafc;
 }
 
 .ticker-move span {
@@ -1654,7 +1659,6 @@ table {
     0% { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(-100%, 0, 0); }
 }
-
 /* ==========================================================
    ADAPTACIÓN RESPONSIVE DE LA BARRA SUPERIOR (LOGIN / OFICINAS / TWITCH)
    ========================================================== */
