@@ -1599,24 +1599,24 @@ table {
 }
 
 */
-/* Contenedor principal acotado al 70% de la página y centrado */
+/* Contenedor principal integrado en la columna central */
 .ticker-container {
     display: flex;
-    background: #111;
+    background: rgba(15, 23, 42, 0.85);
     color: #fff;
-    height: 40px;
+    height: 38px;
     align-items: center;
-    border-bottom: 2px solid #e10600;
-    font-family: sans-serif;
+    border: 1px solid #38bdf8; /* Borde azul eléctrico a juego con los iconos */
+    font-family: inherit;
     overflow: hidden;
-    border-radius: 4px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-    width: 70%;          /* Ocupa exactamente el 70% del ancho */
-    max-width: 1200px;   /* Límite máximo para pantallas gigantes */
-    margin: 0 auto 15px auto; /* Centrado automático a los lados */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+    flex: 1;               /* Hace que ocupe todo el espacio central disponible entre los dos bloques */
+    max-width: 600px;      /* Límite para que no se expanda demasiado */
+    margin: 0 15px;        /* Pequeño margen de separación con los lados */
 }
 
-/* Caja roja lateral restaurada y bien alineada */
+/* Caja de etiqueta lateral (puedes mantener tu rojo de F1 o adaptarlo) */
 .ticker-select-label {
     background: #e10600;
     color: white;
@@ -1643,7 +1643,7 @@ table {
     display: inline-block;
     padding-left: 100%;
     animation: ticker linear infinite;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .ticker-move span {
