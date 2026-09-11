@@ -1954,4 +1954,93 @@ table {
     text-overflow: ellipsis;
 }
 
+/* Contenedor del botón Ver Todos con el margen perfecto */
+.twitch-all-clips-btn-container {
+    text-align: center;
+    margin: 25px 0 20px 0;
+}
 
+/* Botón estilizado acorde a la paleta de la web */
+.btn-ver-todos {
+    background: transparent;
+    border: 1px solid #9146FF;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-ver-todos:hover {
+    background: rgba(145, 70, 255, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(145, 70, 255, 0.4);
+}
+
+/* Fondo oscuro y difuminado de la Modal */
+.twitch-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ventana principal de la Modal */
+.twitch-modal-content {
+    background: #12141c;
+    border: 2px solid #9146FF;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(145, 70, 255, 0.3);
+}
+
+/* Cabecera de la Modal */
+.twitch-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #2a2e3d;
+}
+
+.twitch-modal-header h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Botón de cerrar (X) */
+.twitch-modal-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.twitch-modal-close:hover {
+    color: #9146FF;
+}
+
+/* Parrilla interior con scroll vertical */
+.twitch-modal-grid {
+    padding: 20px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
