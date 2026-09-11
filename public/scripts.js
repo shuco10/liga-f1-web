@@ -258,13 +258,12 @@ async function iniciarBannerSecuencial() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// 
+
 let currentIndex = 0;
-// Creamos un respaldo de clips por defecto para que el carrusel NUNCA se quede en blanco si la API falla
-let clipsData = [
-    { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip1&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "¡Bienvenido a Cazadores de Curvas!" },
-    { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip2&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "Momento épico en pista" },
-    { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip3&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "Batalla en la última curva" }
-];
+let clipsData = []; // Guardará todos los clips de la BD
+let clipsCarrusel = []; // Guardará solo los 5 más nuevos para el carrusel principal
 let isTransitioning = false;
 
 async function cargarCarruselClips() {
@@ -274,16 +273,22 @@ async function cargarCarruselClips() {
         
         const datos = await response.json();
         
-        // Si la API devuelve datos reales, los usamos. Si viene vacío, tiramos del respaldo.
         if (Array.isArray(datos) && datos.length > 0) {
             clipsData = datos;
+            // Limitamos el carrusel principal estrictamente a los 5 más nuevos (asumiendo que vienen ordenados por fecha)
+            clipsCarrusel = clipsData.slice(0, 5);
         }
     } catch (error) {
-        console.warn('No se pudo conectar a /api/videos, usando datos de respaldo:', error);
-        // Mantiene el respaldo por defecto para que la web luzca perfecta siempre
+        console.warn('No se pudo conectar a /api/videos, usando respaldo:', error);
+        clipsData = [
+            { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip1&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "¡Bienvenido a Cazadores de Curvas!" },
+            { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip2&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "Momento épico en pista" }
+        ];
+        clipsCarrusel = clipsData;
     }
     
     renderCarousel();
+    poblarModalClips();
 }
 
 function renderCarousel() {
@@ -293,12 +298,16 @@ function renderCarousel() {
     container.innerHTML = '';
     const dominioActual = window.location.hostname;
 
-    // Triplicamos los elementos para asegurar el bucle infinito perfecto
-    const extendedClips = [...clipsData, ...clipsData, ...clipsData];
-    currentIndex = clipsData.length; // Empezamos en el bloque central
+    if (clipsCarrusel.length === 0) {
+        container.innerHTML = '<div class="carousel-loading" style="color: #94a3b8; font-size: 12px;">No hay clips guardados todavía.</div>';
+        return;
+    }
+
+    // Triplicamos solo los 5 clips del carrusel principal para mantener el bucle fluido
+    const extendedClips = [...clipsCarrusel, ...clipsCarrusel, ...clipsCarrusel];
+    currentIndex = clipsCarrusel.length; // Empezamos en el bloque central
 
     extendedClips.forEach((clip, absoluteIndex) => {
-        // Adaptamos el parent del iframe al dominio real de tu web (soporta producción y local)
         let iframeAdaptado = clip.embed_codigo;
         if (iframeAdaptado.includes('parent=')) {
             iframeAdaptado = iframeAdaptado.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
@@ -322,9 +331,37 @@ function renderCarousel() {
     actualizarPosicionCarrusel(false);
 }
 
+// Función para rellenar la rejilla del modal con TODOS los vídeos y su previsualización
+function poblarModalClips() {
+    const modalGrid = document.getElementById('modalClipsGrid');
+    if (!modalGrid) return;
+
+    modalGrid.innerHTML = '';
+    const dominioActual = window.location.hostname;
+
+    clipsData.forEach((clip) => {
+        let iframeAdaptado = clip.embed_codigo;
+        if (iframeAdaptado.includes('parent=')) {
+            iframeAdaptado = iframeAdaptado.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
+        } else if (iframeAdaptado.includes('src=')) {
+            iframeAdaptado = iframeAdaptado.replace('src="', `src="&parent=${dominioActual}&`);
+        }
+
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'modal-clip-card';
+        tarjeta.innerHTML = `
+            <div style="position: relative;">
+                ${iframeAdaptado}
+            </div>
+            <span title="${clip.titulo}">${clip.titulo}</span>
+        `;
+        modalGrid.appendChild(tarjeta);
+    });
+}
+
 function actualizarPosicionCarrusel(animar = true) {
     const container = document.getElementById('twitchCarousel');
-    if (!container || clipsData.length === 0) return;
+    if (!container || clipsCarrusel.length === 0) return;
 
     if (!animar) {
         container.style.transition = 'none';
@@ -334,7 +371,6 @@ function actualizarPosicionCarrusel(animar = true) {
 
     const items = container.children;
 
-    // Actualizar clases activas y estilos visuales (escala y opacidad de tiquismiquis)
     for (let i = 0; i < items.length; i++) {
         if (i === currentIndex) {
             items[i].classList.add('active');
@@ -349,7 +385,6 @@ function actualizarPosicionCarrusel(animar = true) {
         }
     }
 
-    // Centrar el elemento activo matemáticamente en el visor
     const activeItem = items[currentIndex];
     if (activeItem) {
         const containerWidth = container.parentElement.offsetWidth;
@@ -361,12 +396,36 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 }
 
-// Inicialización automática al cargar el DOM
+// Inicialización y eventos globales
 document.addEventListener('DOMContentLoaded', () => {
     cargarCarruselClips();
+
+    // Lógica para abrir y cerrar el Modal de "Ver todos"
+    const modal = document.getElementById('allClipsModal');
+    const openBtn = document.getElementById('openAllClipsModal');
+    const closeBtn = document.getElementById('closeAllClipsModal');
+
+    if (openBtn && modal) {
+        openBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+    }
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+
+    // Cerrar modal si pinchan fuera de la ventana flotante
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
 });
 
-// Control absoluto y seguro de las flechas del carrusel
+// Control de flechas del carrusel principal
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
     const prevBtn = e.target.closest('#prevClip');
@@ -376,7 +435,7 @@ document.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (clipsData.length === 0 || isTransitioning) return;
+    if (clipsCarrusel.length === 0 || isTransitioning) return;
     
     isTransitioning = true;
 
@@ -388,9 +447,8 @@ document.addEventListener('click', (e) => {
 
     actualizarPosicionCarrusel(true);
 
-    const totalClips = clipsData.length;
+    const totalClips = clipsCarrusel.length;
 
-    // Ejecuta el salto invisible al terminar la transición de 400ms de forma ultra precisa
     setTimeout(() => {
         if (currentIndex < totalClips) {
             currentIndex += totalClips;
@@ -399,6 +457,26 @@ document.addEventListener('click', (e) => {
             currentIndex -= totalClips;
             actualizarPosicionCarrusel(false);
         }
-        isTransitioning = false; // Permite el siguiente clic
+        isTransitioning = false;
     }, 400);
 });
+
+
+
+
+
+
+/////////////////////////////////////////////////
+//NO ELIMINAR ESTO DE AQUI//////////////////
+// Inicialización general al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    verificarSesionPagina();
+    gestionarVisitas();
+    iniciarBannerSecuencial();
+});
+
+
+
+
+
+
