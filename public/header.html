@@ -15,7 +15,7 @@
 <!-- 2. BARRA PRINCIPAL: Distribución simétrica real -->
 <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 100%; padding: 10px 30px; box-sizing: border-box; margin-bottom: 10px;">
     
-    <!-- Izquierda: Botones de Iniciar / Cerrar Sesión -->
+    <!-- Izquierda: Botones de Iniciar / Cerrar Sesión 
     <div style="position: absolute; left: 30px; display: flex; gap: 10px; align-items: center;">
         <button id="btnAbrirLogin" class="btn-login" style="display: none; background-color: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: bold; box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);">
             🔐 Iniciar Sesión
@@ -24,7 +24,7 @@
             🚪 Cerrar Sesión
         </button>
     </div>
-
+-->
     <!-- Centro: Botones de Oficina y Contacto (Centrados geométricamente) -->
     <div id="auth-controls" class="boton-login-blur" style="display: flex; gap: 10px; align-items: center; justify-content: center;">
         <a href="info.html" class="boton-header-blur">
@@ -125,12 +125,12 @@
     </div>
 
 <div class="nav-actions-group">
-    <!-- Botón de Iniciar Sesión (El script lo muestra si estás fuera) -->
+    <!-- Botón de Iniciar Sesión (mantiene su ID y lógica original) -->
     <button id="btnAbrirLogin" class="boton-accion nav-icon-only" style="display: none;" title="Iniciar Sesión">
         <i class="fa-solid fa-user"></i>
     </button>
     
-    <!-- Botón de Cerrar Sesión (El script lo muestra si estás dentro) -->
+    <!-- Botón de Cerrar Sesión (mantiene su ID y lógica original) -->
     <button id="btn-logout" class="boton-accion nav-icon-only" style="display: none;" title="Cerrar Sesión">
         <i class="fa-solid fa-door-open"></i>
     </button>
