@@ -543,17 +543,21 @@ function procesarCSV(contenido) {
         const separador = lineas[i].includes(';') ? ';' : ',';
         const columnas = lineas[i].split(separador);
         
-        if (columnas.length < 5) continue;
+        if (columnas.length < 8) continue;
 
-        const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
+        const [idGp, idPiloto, gamertag, posicion, pole, dnf, puntos, oficial] = columnas.map(c => c.trim().replace(/"/g, ''));
 
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #333';
         tr.innerHTML = `
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idGp}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
+            <td contenteditable="true" style="padding: 8px;">${gamertag}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${posicion}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${pole}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${dnf}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${puntos}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-oficial="${oficial}">${oficial}</td>
         `;
         tbodyPreview.appendChild(tr);
     }
@@ -570,79 +574,95 @@ if (btnGuardar) {
             return;
         }
 
-        // Obtiene el id_gp del atributo interno de la primera fila
-        const primeraCelda = filas[0].querySelector('td');
-        const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
-        const selectGp = document.getElementById('select-gp');
-        const id_gp = idGpInterno || (selectGp ? selectGp.value : null);
+        const registrosGP = [];
+        const registrosEntrenamientos = [];
+        let idGpDetectado = null;
 
-        if (!id_gp) {
-            alert("Error: No se ha podido detectar el id_gp del circuito.");
-            return;
-        }
-
-        // Prepara directamente el Array plano que exige tu servidor
-        const registrosAEnviar = [];
         filas.forEach(fila => {
             const celdas = fila.querySelectorAll('td');
-            if (celdas.length >= 4) {
-                const idPiloto = celdas[0].innerText.trim();
-                const tiempoClas = celdas[1].innerText.trim();
-                const tiempoVr = celdas[2].innerText.trim();
-                const tiempoTot = celdas[3].innerText.trim();
+            if (celdas.length >= 8) {
+                const idGp = parseInt(celdas[0].innerText.trim(), 10);
+                const idPiloto = parseInt(celdas[1].innerText.trim(), 10);
+                const gamertag = celdas[2].innerText.trim();
+                const posicion = parseInt(celdas[3].innerText.trim(), 10) || 0;
+                const pole = celdas[4].innerText.trim().toLowerCase() === 'true';
+                const dnf = celdas[5].innerText.trim().toLowerCase() === 'true';
+                const puntos = parseInt(celdas[6].innerText.trim(), 10) || 0;
+                const oficial = celdas[7].innerText.trim().toLowerCase() === 'true';
 
-                if (idPiloto) {
-                    registrosAEnviar.push({
-                        id_gp: parseInt(id_gp, 10),
-                        id: parseInt(idPiloto, 10),
-                        tiempo_clasificacion: tiempoClas,
-                        tiempo_vuelta_rapida_carrera: tiempoVr,
-                        tiempo_total_carrera: tiempoTot
+                if (!idGpDetectado && idGp) idGpDetectado = idGp;
+
+                if (oficial) {
+                    // Datos para la tabla de Grandes Premios Oficiales
+                    registrosGP.push({
+                        id_gp: idGp,
+                        id: idPiloto,
+                        gamertag: gamertag,
+                        posicion: posicion,
+                        pole: pole,
+                        dnf: dnf,
+                        puntos: puntos
+                    });
+                } else {
+                    // Datos para la tabla de Entrenamientos / No oficiales
+                    registrosEntrenamientos.push({
+                        id_entrenamiento: idGp, // O el campo que uses para entrenamientos
+                        id: idPiloto,
+                        gamertag: gamertag,
+                        posicion: posicion,
+                        pole: pole,
+                        dnf: dnf,
+                        puntos: puntos
                     });
                 }
             }
         });
 
-        if (registrosAEnviar.length === 0) {
+        if (registrosGP.length === 0 && registrosEntrenamientos.length === 0) {
             alert("No hay filas válidas para importar.");
             return;
         }
 
         try {
-            const response = await fetch('/api/importar-tiempos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(registrosAEnviar)
-            });
-
-            const resultado = await response.json();
-            if (response.ok) {
-                alert("¡Tiempos importados y guardados correctamente!");
-                
-                // --- ACTUALIZACIÓN DEL MENSAJE FIJO CON EFECTO NEÓN AMARILLO ---
-                if (selectGp) {
-                    selectGp.value = id_gp;
-                    const textoCircuito = selectGp.options[selectGp.selectedIndex]?.text || '';
-                    
-                    const infoContainer = document.getElementById('info-ultimos-tiempos');
-                    if (infoContainer && textoCircuito) {
-                        infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
-                        infoContainer.style.color = '#FACC15';
-                        infoContainer.style.fontWeight = 'bold';
-                        infoContainer.style.fontSize = '15px';
-                        infoContainer.style.margin = '10px 0';
-                        // Efecto neón brillante
-                        infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
-                    }
-                }
-                // -------------------------------------------------------------
-
-                document.getElementById('preview-container').style.display = 'none';
-                document.getElementById('csv-file-input').value = '';
-                if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
-            } else {
-                alert("Error al guardar: " + (resultado.error || resultado.mensaje || 'Desconocido'));
+            // Envío condicional según si el archivo marca oficial = true o false
+            if (registrosGP.length > 0) {
+                await fetch('/api/importar-tiempos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(registrosGP)
+                });
             }
+
+            if (registrosEntrenamientos.length > 0) {
+                await fetch('/api/importar-tiempos-entrenamiento', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(registrosEntrenamientos)
+                });
+            }
+
+            alert("¡Datos importados y guardados correctamente!");
+            
+            const selectGp = document.getElementById('select-gp');
+            if (selectGp && idGpDetectado) {
+                selectGp.value = idGpDetectado;
+                const textoCircuito = selectGp.options[selectGp.selectedIndex]?.text || '';
+                
+                const infoContainer = document.getElementById('info-ultimos-tiempos');
+                if (infoContainer && textoCircuito) {
+                    infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
+                    infoContainer.style.color = '#FACC15';
+                    infoContainer.style.fontWeight = 'bold';
+                    infoContainer.style.fontSize = '15px';
+                    infoContainer.style.margin = '10px 0';
+                    infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
+                }
+            }
+
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('csv-file-input').value = '';
+            if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
+
         } catch (error) {
             console.error("Error en la petición:", error);
             alert("Hubo un error de conexión al enviar los datos.");
