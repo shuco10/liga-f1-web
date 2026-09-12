@@ -548,13 +548,14 @@ function procesarCSV(contenido) {
 
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #333';
+        // Ocultamos las columnas internas de id_gp, id y oficial en la visualización para que cuadre exacto con las 4 cabeceras principales
         tr.innerHTML = `
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idGp}</td>
+            <td style="display:none;" data-idgp="${idGp}">${idGp}</td>
             <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
             <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
             <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
             <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-oficial="${oficial}">${oficial}</td>
+            <td style="display:none;" data-oficial="${oficial}">${oficial}</td>
         `;
         tbodyPreview.appendChild(tr);
     }
@@ -562,6 +563,10 @@ function procesarCSV(contenido) {
     document.getElementById('preview-container').style.display = 'block';
 }
 
+// Función comodín para evitar el error de la consola si se llama y aún no existe
+function cargarTiemposPorEntrenamiento() {
+    console.log("Carga de entrenamientos pendiente de definir.");
+}
 const btnGuardar = document.getElementById('btn-subir-definitivo');
 if (btnGuardar) {
     btnGuardar.addEventListener('click', async () => {
