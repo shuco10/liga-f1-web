@@ -565,15 +565,17 @@ function procesarCSV(contenido) {
         const separador = lineas[i].includes(';') ? ';' : ',';
         const columnas = lineas[i].split(separador);
         
-        if (columnas.length < 6) continue;
+        // Ahora esperamos 7 columnas: id_gp, id_entrenamiento, idPiloto, tiempos...
+        if (columnas.length < 7) continue;
 
-        const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot, oficial] = columnas.map(c => c.trim().replace(/"/g, ''));
+        const [idGp, idEntrenamiento, idPiloto, tiempoClas, tiempoVr, tiempoTot, oficial] = columnas.map(c => c.trim().replace(/"/g, ''));
 
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #333';
-        // Ocultamos las columnas internas de id_gp, id y oficial en la visualización para que cuadre exacto con las 4 cabeceras principales
+        // Guardamos id_gp e id_entrenamiento en atributos ocultos para leerlos al guardar
         tr.innerHTML = `
             <td style="display:none;" data-idgp="${idGp}">${idGp}</td>
+            <td style="display:none;" data-endentrenamiento="${idEntrenamiento}">${idEntrenamiento}</td>
             <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
             <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
             <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
