@@ -1135,7 +1135,7 @@ app.post('/api/importar-tiempos', async (req, res) => {
 
 
 /////////////////////////////////////////////////////////////////////////
-// Ruta para importar los tiempos de libres, etc
+// Ruta para importar los tiempos de entrenamientos
 app.post('/api/importar-tiempos-entrenamiento', async (req, res) => {
     const client = await pool.connect();
     try {
@@ -1147,17 +1147,18 @@ app.post('/api/importar-tiempos-entrenamiento', async (req, res) => {
         await client.query('BEGIN');
 
         for (const row of registros) {
-            const { id_entrenamiento, id, tiempo_clasificacion, tiempo_vuelta_rapida_carrera, tiempo_total_carrera } = row;
+            const { id_gp, id_entrenamiento, id, tiempo_clasificacion, tiempo_vuelta_rapida_carrera, tiempo_total_carrera } = row;
 
             await client.query(`
-                INSERT INTO tiempos_entrenamientos (id_entrenamiento, id, tiempo_clasificacion, tiempo_vuelta_rapida_carrera, tiempo_total_carrera)
-                VALUES ($1, $2, $3, $4, $5)
-                ON CONFLICT (id_entrenamiento, id) 
+                INSERT INTO tiempos_entrenamientos (id_gp, id_entrenamiento, id, tiempo_clasificacion, tiempo_vuelta_rapida_carrera, tiempo_total_carrera)
+                VALUES ($1, $2, $3, $4, $5, $6)
+                ON CONFLICT (id_gp, id_entrenamiento, id) 
                 DO UPDATE SET 
                     tiempo_clasificacion = EXCLUDED.tiempo_clasificacion,
                     tiempo_vuelta_rapida_carrera = EXCLUDED.tiempo_vuelta_rapida_carrera,
                     tiempo_total_carrera = EXCLUDED.tiempo_total_carrera;
             `, [
+                id_gp, 
                 id_entrenamiento, 
                 id, 
                 tiempo_clasificacion || null, 
@@ -1177,14 +1178,13 @@ app.post('/api/importar-tiempos-entrenamiento', async (req, res) => {
         client.release();
     }
 });
-
 /////////////////////////////////////////////////////////////////////////
-// Ruta para obtener los tiempos de entrenamientos de un circuito y sesión
+// Ruta para obtener los tiempos de entrenamientos filtrados por circuito y sesión
 app.get('/api/tiempos-entrenamiento/:id_gp', async (req, res) => {
     const id_gp = req.params.id_gp;
     const sesion = req.query.sesion;
 
-    if (!sesion) {
+    if (!sesion || !id_gp) {
         return res.json([]);
     }
 
@@ -1194,10 +1194,10 @@ app.get('/api/tiempos-entrenamiento/:id_gp', async (req, res) => {
             FROM tiempos_entrenamientos t
             LEFT JOIN pilotos p ON t.id = p.id
             LEFT JOIN escuderias e ON p.escuderia_id = e.id
-            WHERE t.id_entrenamiento = $1
+            WHERE t.id_gp = $1 AND t.id_entrenamiento = $2
         `;
         
-        const result = await pool.query(query, [sesion]);
+        const result = await pool.query(query, [id_gp, sesion]);
         res.json(result.rows);
 
     } catch (error) {
