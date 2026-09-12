@@ -22,14 +22,28 @@
     <div class="titulo-liga">⏱️ CONTROL DE TIEMPOS DE PILOTOS ⏱️</div>
     <h3 class="subtitulo-principal">⌚ Plataforma para el control de tiempos de los pilotos por circuito ⌚</h3>
 
-<!-- Selector de Gran Premio / Circuito -->
-<div style="margin: 30px auto; text-align: center;">
-    <label for="select-gp" style="font-weight: bold; margin-right: 10px;">Selecciona el Gran Premio:</label>
-    <select id="select-gp" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
-        <option value="">-- Selecciona un circuito --</option>
-    </select>
+<!-- Selector de Gran Premio / Circuito y Prácticas -->
+<div style="margin: 30px auto; text-align: center; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+    <!-- Selector Oficial -->
+    <div>
+        <label for="select-gp" style="font-weight: bold; margin-right: 10px;">Gran Premio Oficial:</label>
+        <select id="select-gp" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
+            <option value="">-- Selecciona un circuito --</option>
+        </select>
+    </div>
+
+    <!-- Nuevo Selector de Entrenamientos / Test -->
+    <div>
+        <label for="select-entrenamiento" style="font-weight: bold; margin-right: 10px;">Sesión de Prácticas:</label>
+        <select id="select-entrenamiento" style="padding: 8px 15px; border-radius: 6px; background-color: #2a2a2a; color: white; border: 1px solid #444;">
+            <option value="">-- Selecciona práctica --</option>
+            <option value="1">Libres 1</option>
+            <option value="2">Libres 2</option>
+        </select>
+    </div>
+
     <!-- AVISO DE CARGA DE TIEMPOS -->
-    <div id="info-ultimos-tiempos" style="margin-top: 10px; min-height: 20px;"></div>
+    <div id="info-ultimos-tiempos" style="width: 100%; margin-top: 10px; min-height: 20px;"></div>
 </div>
     <!-- Contenedor de la Tabla de Tiempos -->
     <div id="tabla-tiempos-container" style="overflow-x: auto; margin-top: 20px;">
@@ -55,8 +69,8 @@
 
     
 
-    
-    
+
+
     <!-- ÚNICO Contenedor de Importación (Visible solo para administradores) -->
     <div id="admin-import-container" style="display: none; margin-top: 30px; padding: 20px; background: #222; border: 1px solid #444; border-radius: 8px;">
         <h3 style="color: #ef4444; margin-bottom: 10px; margin-top: 0;">Importar Tiempos (CSV)</h3>
