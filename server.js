@@ -1132,6 +1132,52 @@ app.post('/api/importar-tiempos', async (req, res) => {
         client.release();
     }
 });
+
+
+/////////////////////////////////////////////////////////////////////////
+// Ruta para importar los tiempos de libres, etc
+app.post('/api/importar-tiempos-entrenamiento', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const registros = req.body;
+        if (!Array.isArray(registros) || registros.length === 0) {
+            return res.status(400).json({ error: "El archivo está vacío o el formato no es válido." });
+        }
+
+        await client.query('BEGIN');
+
+        for (const row of registros) {
+            const { id_entrenamiento, id, tiempo_clasificacion, tiempo_vuelta_rapida_carrera, tiempo_total_carrera } = row;
+
+            await client.query(`
+                INSERT INTO tiempos_entrenamientos (id_entrenamiento, id, tiempo_clasificacion, tiempo_vuelta_rapida_carrera, tiempo_total_carrera)
+                VALUES ($1, $2, $3, $4, $5)
+                ON CONFLICT (id_entrenamiento, id) 
+                DO UPDATE SET 
+                    tiempo_clasificacion = EXCLUDED.tiempo_clasificacion,
+                    tiempo_vuelta_rapida_carrera = EXCLUDED.tiempo_vuelta_rapida_carrera,
+                    tiempo_total_carrera = EXCLUDED.tiempo_total_carrera;
+            `, [
+                id_entrenamiento, 
+                id, 
+                tiempo_clasificacion || null, 
+                tiempo_vuelta_rapida_carrera || null, 
+                tiempo_total_carrera || null
+            ]);
+        }
+
+        await client.query('COMMIT');
+        res.json({ success: true, message: "Tiempos de entrenamientos importados correctamente." });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error("Error al importar entrenamientos:", error);
+        res.status(500).json({ error: "Hubo un error al procesar la importación." });
+    } finally {
+        client.release();
+    }
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////  JOIN DE LOS TIEMPOS //////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
