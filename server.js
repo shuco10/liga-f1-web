@@ -1184,16 +1184,16 @@ app.get('/api/tiempos-entrenamiento/:id_gp', async (req, res) => {
     const id_gp = req.params.id_gp;
     const sesion = req.query.sesion;
 
-    // Si no viene la sesión, respondemos con un array vacío para que el JS no rompa
     if (!sesion) {
         return res.json([]);
     }
 
     try {
         const query = `
-            SELECT t.*, p.gamertag, p.escuderia 
+            SELECT t.*, p.gamertag, e.nombre AS escuderia 
             FROM tiempos_entrenamientos t
             LEFT JOIN pilotos p ON t.id = p.id
+            LEFT JOIN escuderias e ON p.escuderia_id = e.id
             WHERE t.id_entrenamiento = $1
         `;
         
