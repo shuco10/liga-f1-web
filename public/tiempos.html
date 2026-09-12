@@ -298,8 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
-    
 async function cargarTiemposPorGP() {
     const selectGp = document.getElementById('select-gp');
     const selectEntrenamiento = document.getElementById('select-entrenamiento');
@@ -497,7 +495,6 @@ async function cargarTiemposPorGP() {
         console.error("Error al cargar y ordenar los tiempos:", error);
     }
 }
-    
 
 function cargarSelectGP() {
     const select = document.getElementById('select-gp');
@@ -538,35 +535,42 @@ function cargarSelectGP() {
         `).join('');
 }
 
-// Lógica de carga de archivo CSV
-document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('csv-file-input');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const text = event.target.result;
-                procesarCSV(text);
-            };
-            reader.readAsText(file, 'UTF-8');
-        });
-    }
-});
-
 function procesarCSV(contenido) {
     const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
     const tbodyPreview = document.getElementById('tbody-preview');
     if (!tbodyPreview) return;
     tbodyPreview.innerHTML = '';
 
+    // Sincronizar dinámicamente las cabeceras de la tabla de previsualización para que existan las 7 columnas exactas
+    const previewContainer = document.getElementById('preview-container');
+    if (previewContainer) {
+        const tablaPreview = previewContainer.querySelector('table');
+        if (tablaPreview) {
+            let theadPreview = tablaPreview.querySelector('thead');
+            if (!theadPreview) {
+                theadPreview = document.createElement('thead');
+                tablaPreview.insertBefore(theadPreview, tablaPreview.firstChild);
+            }
+            theadPreview.innerHTML = `
+                <tr>
+                    <th style="display:none;">ID GP</th>
+                    <th style="display:none;">ID Sesión</th>
+                    <th style="padding: 8px; text-align: left; color: #fff;">Piloto (ID / Gamertag)</th>
+                    <th style="padding: 8px; text-align: left; color: #fff;">Clasificación</th>
+                    <th style="padding: 8px; text-align: left; color: #fff;">Vuelta Rápida</th>
+                    <th style="padding: 8px; text-align: left; color: #fff;">Tiempo Total</th>
+                    <th style="display:none;">Oficial</th>
+                </tr>
+            `;
+        }
+        previewContainer.style.display = 'block';
+    }
+
     for (let i = 1; i < lineas.length; i++) {
         const separador = lineas[i].includes(';') ? ';' : ',';
         const columnas = lineas[i].split(separador);
         
-        // Ahora exigimos que tenga al menos 7 columnas según la nueva estructura
+        // Exigimos que tenga al menos 7 columnas según la estructura de entrenamientos
         if (columnas.length < 7) continue;
 
         const [idGp, idEntrenamiento, idPiloto, tiempoClas, tiempoVr, tiempoTot, oficial] = columnas.map(c => c.trim().replace(/"/g, ''));
@@ -576,18 +580,13 @@ function procesarCSV(contenido) {
         tr.innerHTML = `
             <td style="display:none;" data-idgp="${idGp}">${idGp}</td>
             <td style="display:none;" data-endentrenamiento="${idEntrenamiento}">${idEntrenamiento}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${idPiloto}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace; color: #fff;">${idPiloto}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace; color: #fff;">${tiempoClas}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace; color: #fff;">${tiempoVr}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace; color: #fff;">${tiempoTot}</td>
             <td style="display:none;" data-oficial="${oficial}">${oficial}</td>
         `;
         tbodyPreview.appendChild(tr);
-    }
-
-    const previewContainer = document.getElementById('preview-container');
-    if (previewContainer) {
-        previewContainer.style.display = 'block';
     }
 }
 
@@ -612,7 +611,7 @@ async function cargarTiemposPorEntrenamiento() {
         return;
     }
 
-    // Si deseleccionan la sesión de prácticas (vuelve a "-- Selecciona práctica --"), cargamos el GP normal
+    // Si deseleccionan la sesión de prácticas, cargamos el GP normal
     if (!sesion) {
         return cargarTiemposPorGP();
     }
@@ -621,7 +620,6 @@ async function cargarTiemposPorEntrenamiento() {
     const nombreSesion = selectEntrenamiento.options[selectEntrenamiento.selectedIndex]?.text || 'Sesión';
 
     try {
-        // Hacemos la petición a tu API de entrenamientos pasando el circuito y la sesión (id_entrenamiento o parámetro equivalente)
         const response = await fetch(`/api/tiempos-entrenamiento/${id_gp}?sesion=${sesion}`);
         const tiempos = await response.json();
 
@@ -643,7 +641,6 @@ async function cargarTiemposPorEntrenamiento() {
                     trHead.style.boxSizing = 'border-box';
                     trHead.style.borderRadius = '8px';
                     trHead.style.marginBottom = '8px';
-                    // CABECERAS ADAPTADAS PARA ENTRENAMIENTOS
                     trHead.innerHTML = `
                         <th style="flex: 0 0 50px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Pos</th>
                         <th style="flex: 0 0 130px; text-align: left; padding-left: 10px; font-size: 15px; font-weight: bold; color: #fff;">Piloto</th>
@@ -669,7 +666,6 @@ async function cargarTiemposPorEntrenamiento() {
             return;
         }
 
-        // Ordenar por vuelta rápida o tiempo total de forma genérica
         function tiempoASegundos(str) {
             if (!str || str.includes('DNF') || str.includes('No registrada')) return Infinity;
             const partes = str.split(':');
