@@ -559,20 +559,20 @@ document.addEventListener('DOMContentLoaded', () => {
 function procesarCSV(contenido) {
     const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
     const tbodyPreview = document.getElementById('tbody-preview');
+    if (!tbodyPreview) return;
     tbodyPreview.innerHTML = '';
 
     for (let i = 1; i < lineas.length; i++) {
         const separador = lineas[i].includes(';') ? ';' : ',';
         const columnas = lineas[i].split(separador);
         
-        // Ahora esperamos 7 columnas: id_gp, id_entrenamiento, idPiloto, tiempos...
+        // Ahora exigimos que tenga al menos 7 columnas según la nueva estructura
         if (columnas.length < 7) continue;
 
         const [idGp, idEntrenamiento, idPiloto, tiempoClas, tiempoVr, tiempoTot, oficial] = columnas.map(c => c.trim().replace(/"/g, ''));
 
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #333';
-        // Guardamos id_gp e id_entrenamiento en atributos ocultos para leerlos al guardar
         tr.innerHTML = `
             <td style="display:none;" data-idgp="${idGp}">${idGp}</td>
             <td style="display:none;" data-endentrenamiento="${idEntrenamiento}">${idEntrenamiento}</td>
@@ -585,7 +585,10 @@ function procesarCSV(contenido) {
         tbodyPreview.appendChild(tr);
     }
 
-    document.getElementById('preview-container').style.display = 'block';
+    const previewContainer = document.getElementById('preview-container');
+    if (previewContainer) {
+        previewContainer.style.display = 'block';
+    }
 }
 
 async function cargarTiemposPorEntrenamiento() {
