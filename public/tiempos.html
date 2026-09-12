@@ -603,10 +603,11 @@ if (btnGuardar) {
                     });
                 } else {
                     registrosEntrenamientos.push({
-                        id_entrenamiento: idGp, // O el ID correspondiente a la sesión de entrenamientos
+                        id_entrenamiento: idGp,
                         id: idPiloto,
-                        mejor_vuelta: tiempoVr, // O el campo que corresponda en entrenamientos
-                        vueltas_totales: 0
+                        tiempo_clasificacion: tiempoClas,
+                        tiempo_vuelta_rapida_carrera: tiempoVr,
+                        tiempo_total_carrera: tiempoTot
                     });
                 }
             }
