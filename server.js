@@ -1178,6 +1178,33 @@ app.post('/api/importar-tiempos-entrenamiento', async (req, res) => {
     }
 });
 
+/////////////////////////////////////////////////////////////////////////
+// Ruta para obtener los tiempos de entrenamientos de un circuito y sesión
+app.get('/api/tiempos-entrenamiento/:id_gp', async (req, res) => {
+    const id_gp = req.params.id_gp;
+    const sesion = req.query.sesion; // Recoge el ?sesion=1 o ?sesion=2 que manda el JS
+
+    try {
+        // Como en tu tabla 'tiempos_entrenamientos' guardas directamente 'id_entrenamiento' 
+        // (y asumimos que el id_entrenamiento coincide con la sesión o está vinculado al GP),
+        // hacemos la consulta filtrando por ese id_entrenamiento.
+        // Si necesitas cruzarlo con la tabla de GPs, asegúrate de que la relación sea correcta.
+        const query = `
+            SELECT t.*, p.gamertag, p.escuderia 
+            FROM tiempos_entrenamientos t
+            LEFT JOIN pilotos p ON t.id = p.id
+            WHERE t.id_entrenamiento = $1
+        `;
+        
+        const result = await pool.query(query, [sesion]);
+        res.json(result.rows);
+
+    } catch (error) {
+        console.error("Error al obtener los tiempos de entrenamiento:", error);
+        res.status(500).json({ error: "Hubo un error al obtener los datos." });
+    }
+});
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////  JOIN DE LOS TIEMPOS //////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
