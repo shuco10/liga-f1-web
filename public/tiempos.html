@@ -246,15 +246,38 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarSelectGP();
 
     const selectGp = document.getElementById('select-gp');
+    const selectEntrenamiento = document.getElementById('select-entrenamiento'); // <-- NUEVO
+
     if (selectGp) {
         // Carga automática si el navegador recuerda una opción seleccionada
         if (selectGp.value) {
-            cargarTiemposPorGP();
+            // Comprobamos si hay una sesión de prácticas activa o cargamos por defecto el GP
+            if (selectEntrenamiento && selectEntrenamiento.value) {
+                cargarTiemposPorEntrenamiento();
+            } else {
+                cargarTiemposPorGP();
+            }
         }
 
-        // Detecta el cambio en el desplegable y recarga la tabla ordenada
+        // Detecta el cambio en el desplegable de GP
         selectGp.addEventListener('change', () => {
-            cargarTiemposPorGP();
+            if (selectEntrenamiento && selectEntrenamiento.value) {
+                cargarTiemposPorEntrenamiento();
+            } else {
+                cargarTiemposPorGP();
+            }
+        });
+    }
+
+    // <-- NUEVO: Detecta el cambio en el desplegable de Entrenamientos (Libres 1, Libres 2...)
+    if (selectEntrenamiento) {
+        selectEntrenamiento.addEventListener('change', () => {
+            if (selectEntrenamiento.value) {
+                cargarTiemposPorEntrenamiento();
+            } else {
+                // Si vuelve a la opción vacía o por defecto, carga la tabla normal del GP
+                cargarTiemposPorGP();
+            }
         });
     }
 
@@ -563,100 +586,162 @@ function procesarCSV(contenido) {
     document.getElementById('preview-container').style.display = 'block';
 }
 
-// Función comodín para evitar el error de la consola si se llama y aún no existe
-function cargarTiemposPorEntrenamiento() {
-    console.log("Carga de entrenamientos pendiente de definir.");
-}
-const btnGuardar = document.getElementById('btn-subir-definitivo');
-if (btnGuardar) {
-    btnGuardar.addEventListener('click', async () => {
-        const filas = document.querySelectorAll('#tbody-preview tr');
-        if (filas.length === 0) {
-            alert("No hay datos para guardar.");
+async function cargarTiemposPorEntrenamiento() {
+    const selectGp = document.getElementById('select-gp');
+    const selectEntrenamiento = document.getElementById('select-entrenamiento');
+
+    const id_gp = selectGp ? selectGp.value : null;
+    const sesion = selectEntrenamiento ? selectEntrenamiento.value : null;
+
+    const tbody = document.getElementById('tbody-tiempos');
+    if (!tbody) return;
+
+    // Si no hay circuito seleccionado, avisamos
+    if (!id_gp) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="1" style="display: block; width: 100%; text-align: center; color: #94a3b8; font-size: 15px; padding: 25px; background-color: #2a2a2a; border-radius: 8px;">
+                    Por favor, selecciona primero un Gran Premio.
+                </td>
+            </tr>`;
+        return;
+    }
+
+    // Si deseleccionan la sesión de prácticas (vuelve a "-- Selecciona práctica --"), cargamos el GP normal
+    if (!sesion) {
+        return cargarTiemposPorGP();
+    }
+
+    const nombreCircuito = selectGp.options[selectGp.selectedIndex]?.text || 'este circuito';
+    const nombreSesion = selectEntrenamiento.options[selectEntrenamiento.selectedIndex]?.text || 'Sesión';
+
+    try {
+        // Hacemos la petición a tu API de entrenamientos pasando el circuito y la sesión (id_entrenamiento o parámetro equivalente)
+        const response = await fetch(`/api/tiempos-entrenamiento/${id_gp}?sesion=${sesion}`);
+        const tiempos = await response.json();
+
+        const tabla = tbody.closest('table');
+        if (tabla) {
+            tabla.style.width = '100%';
+            tabla.style.borderCollapse = 'separate';
+            tabla.style.borderSpacing = '0 8px';
+            
+            const thead = tabla.querySelector('thead');
+            if (thead) {
+                thead.style.display = 'block';
+                const trHead = thead.querySelector('tr');
+                if (trHead) {
+                    trHead.style.display = 'flex';
+                    trHead.style.alignItems = 'center';
+                    trHead.style.padding = '14px 15px';
+                    trHead.style.width = '100%';
+                    trHead.style.boxSizing = 'border-box';
+                    trHead.style.borderRadius = '8px';
+                    trHead.style.marginBottom = '8px';
+                    // CABECERAS ADAPTADAS PARA ENTRENAMIENTOS
+                    trHead.innerHTML = `
+                        <th style="flex: 0 0 50px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Pos</th>
+                        <th style="flex: 0 0 130px; text-align: left; padding-left: 10px; font-size: 15px; font-weight: bold; color: #fff;">Piloto</th>
+                        <th style="flex: 1 1 auto; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff;">Escudería</th>
+                        <th style="flex: 0 0 115px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">T. Clas.</th>
+                        <th style="flex: 0 0 125px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Vuelta Rápida</th>
+                        <th style="flex: 0 0 120px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Tiempo Total</th>
+                    `;
+                }
+            }
+        }
+
+        tbody.innerHTML = '';
+
+        if (!tiempos || tiempos.length === 0) {
+            const trVacio = document.createElement('tr');
+            trVacio.innerHTML = `
+                <td colspan="1" style="display: block; width: 100%; text-align: center; color: #94a3b8; font-size: 15px; padding: 25px; background-color: #2a2a2a; border-radius: 8px;">
+                    No hay registros de ${nombreSesion} para "${nombreCircuito}"
+                </td>
+            `;
+            tbody.appendChild(trVacio);
             return;
         }
 
-        const registrosGP = [];
-        const registrosEntrenamientos = [];
-        let idGpDetectado = null;
-
-        filas.forEach(fila => {
-            const celdas = fila.querySelectorAll('td');
-            if (celdas.length >= 6) {
-                const idGp = parseInt(celdas[0].innerText.trim(), 10);
-                const idPiloto = parseInt(celdas[1].innerText.trim(), 10);
-                const tiempoClas = celdas[2].innerText.trim();
-                const tiempoVr = celdas[3].innerText.trim();
-                const tiempoTot = celdas[4].innerText.trim();
-                const oficialVal = celdas[5].innerText.trim().toLowerCase();
-                const esOficial = oficialVal === 'true' || oficialVal === ''; // Si está vacío por defecto puede asumirse true o false según prefieras
-
-                if (!idGpDetectado && idGp) idGpDetectado = idGp;
-
-                if (esOficial) {
-                    registrosGP.push({
-                        id_gp: idGp,
-                        id: idPiloto,
-                        tiempo_clasificacion: tiempoClas,
-                        tiempo_vuelta_rapida_carrera: tiempoVr,
-                        tiempo_total_carrera: tiempoTot
-                    });
-                } else {
-                    registrosEntrenamientos.push({
-                        id_entrenamiento: idGp,
-                        id: idPiloto,
-                        tiempo_clasificacion: tiempoClas,
-                        tiempo_vuelta_rapida_carrera: tiempoVr,
-                        tiempo_total_carrera: tiempoTot
-                    });
-                }
+        // Ordenar por vuelta rápida o tiempo total de forma genérica
+        function tiempoASegundos(str) {
+            if (!str || str.includes('DNF') || str.includes('No registrada')) return Infinity;
+            const partes = str.split(':');
+            if (partes.length === 3) {
+                return parseFloat(partes[0]) * 3600 + parseFloat(partes[1]) * 60 + parseFloat(partes[2]);
+            } else if (partes.length === 2) {
+                return parseFloat(partes[0]) * 60 + parseFloat(partes[1]);
             }
+            return Infinity;
+        }
+
+        tiempos.sort((a, b) => tiempoASegundos(a.tiempo_vuelta_rapida_carrera) - tiempoASegundos(b.tiempo_vuelta_rapida_carrera));
+
+        const coloresBordeEscuderias = {
+            "Scuderia Ferrari HP": "#DC2626", "Audi Revolut F1 Team": "#881337",
+            "Visa Cash App Racing Bulls Formula One Team": "#38BDF8", "Cadillac Formula 1 Team": "#E2E8F0",
+            "McLaren Mastercard F1 Team": "#EA580C", "TGR Haas F1 Team": "#6B7280",
+            "Mercedes-AMG PETRONAS Formula One Team": "#10B981", "Aston Martin Aramco Formula One Team": "#059669",
+            "Oracle Red Bull Racing": "#3B82F6", "Atlassian Williams F1 Team": "#2563EB",
+            "BWT Alpine Formula One Team": "#FF1493", "Stake F1 Team Kick Sauber": "#16A34A"
+        };
+
+        const archivosBanderas = {
+            "Scuderia Ferrari HP": "ferrari.png", "Audi Revolut F1 Team": "audi.png",
+            "Visa Cash App Racing Bulls Formula One Team": "rb.png", "Cadillac Formula 1 Team": "cadillac.png",
+            "McLaren Mastercard F1 Team": "mclaren.png", "TGR Haas F1 Team": "haas.png",
+            "Mercedes-AMG PETRONAS Formula One Team": "mercedes.png", "Aston Martin Aramco Formula One Team": "aston_martin.png",
+            "Oracle Red Bull Racing": "redbull.png", "Atlassian Williams F1 Team": "williams.png",
+            "BWT Alpine Formula One Team": "alpine.png", "Stake F1 Team Kick Sauber": "sauber.png"
+        };
+
+        tiempos.forEach((t, index) => {
+            const puesto = index + 1;
+            let posHTML = puesto === 1 ? `<span style="background-color: #FFD700; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>` :
+                          puesto === 2 ? `<span style="background-color: #C0C0C0; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>` :
+                          puesto === 3 ? `<span style="background-color: #CD7F32; color: #fff; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>` : puesto;
+
+            const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
+            const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
+            const colorEscuderia = coloresBordeEscuderias[nombreEscuderia] || '#555';
+            const archivoBandera = archivosBanderas[nombreEscuderia];
+
+            const banderaHTML = archivoBandera ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 28px; height: 20px; object-fit: cover; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;">` : '';
+
+            const escuderiaHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 8px; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; padding-top: 1px;">
+                        ${banderaHTML}
+                        <span style="display: inline-block; width: 5px; height: 20px; background-color: ${colorEscuderia}; border-radius: 2px;"></span>
+                    </div>
+                    <span style="color: #cbd5e1; font-size: 13px; line-height: 1.2; word-break: normal; overflow-wrap: break-word; flex: 1;">${nombreEscuderia}</span>
+                </div>
+            `;
+
+            const tr = document.createElement('tr');
+            tr.style.display = 'block';
+            tr.style.backgroundColor = '#2a2a2a';
+            tr.style.marginBottom = '8px';
+            tr.style.borderRadius = '8px';
+            tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
+            
+            tr.innerHTML = `
+                <td colspan="6" style="display: flex; align-items: center; padding: 12px 15px; width: 100%; box-sizing: border-box;">
+                    <div style="flex: 0 0 50px; text-align: center;">${posHTML}</div>
+                    <div style="flex: 0 0 130px; padding-left: 10px; font-weight: 500; font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.gamertag || 'Piloto #' + t.id}</div>
+                    <div style="flex: 1 1 auto; padding-left: 15px; padding-right: 15px; min-width: 150px;">${escuderiaHTML}</div>
+                    <div style="flex: 0 0 115px; text-align: center; font-family: monospace; font-size: 13px;">${t.tiempo_clasificacion || '-'}</div>
+                    <div style="flex: 0 0 125px; text-align: center; font-family: monospace; font-size: 13px;">${t.tiempo_vuelta_rapida_carrera || '-'}</div>
+                    <div style="flex: 0 0 120px; text-align: center; font-family: monospace; font-size: 13px; font-weight: bold;">${t.tiempo_total_carrera || '-'}</div>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
 
-        try {
-            if (registrosGP.length > 0) {
-                await fetch('/api/importar-tiempos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(registrosGP)
-                });
-            }
-
-            if (registrosEntrenamientos.length > 0) {
-                await fetch('/api/importar-tiempos-entrenamiento', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(registrosEntrenamientos)
-                });
-            }
-
-            alert("¡Datos importados y guardados correctamente!");
-            
-            const selectGp = document.getElementById('select-gp');
-            if (selectGp && idGpDetectado) {
-                selectGp.value = idGpDetectado;
-                const textoCircuito = selectGp.options[selectGp.selectedIndex]?.text || '';
-                
-                const infoContainer = document.getElementById('info-ultimos-tiempos');
-                if (infoContainer && textoCircuito) {
-                    infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
-                    infoContainer.style.color = '#FACC15';
-                    infoContainer.style.fontWeight = 'bold';
-                    infoContainer.style.fontSize = '15px';
-                    infoContainer.style.margin = '10px 0';
-                    infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
-                }
-            }
-
-            document.getElementById('preview-container').style.display = 'none';
-            document.getElementById('csv-file-input').value = '';
-            if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
-
-        } catch (error) {
-            console.error("Error en la petición:", error);
-            alert("Hubo un error de conexión al enviar los datos.");
-        }
-    });
+    } catch (error) {
+        console.error("Error al cargar los tiempos de entrenamiento:", error);
+    }
 }
 // Función para consultar al servidor cuál es el último GP con tiempos subidos
 async function cargarUltimoAvisoGP() {
