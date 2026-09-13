@@ -483,7 +483,7 @@ function cargarSelectGP() {
 
 // Procesar JSON de RLT para la previsualización de Entrenamientos Libres o GP
 function procesarJsonRLT(jsonData) {
-    console.log("ESTRUCTURA DEL JSON DE PRÁCTICA:", jsonData); // <-- Añade esto aquí
+    console.log("ESTRUCTURA DEL JSON DE PRÁCTICA:", jsonData);
     
     const tbodyPreview = document.getElementById('tbody-preview');
     const trHead = document.getElementById('tr-preview-head');
@@ -503,7 +503,6 @@ function procesarJsonRLT(jsonData) {
             <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
         `;
 
-        // Intentar localizar la lista de pilotos independientemente de cómo la encapsule RLT
         const driversList = jsonData.session?.drivers || jsonData.drivers || jsonData.session?.results || [];
         
         if (driversList.length === 0) {
@@ -516,18 +515,14 @@ function procesarJsonRLT(jsonData) {
 
         driversList.forEach((d, index) => {
             const pos = index + 1;
-            
-            // Buscar el nombre o gamertag en varias propiedades posibles de RLT
             const driverInfo = d.driverInfo || d.driver || {};
             const nombrePiloto = driverInfo.name || driverInfo.gamertag || driverInfo.userName || d.name || `Piloto ${driverInfo.raceNumber || index + 1}`;
             const escuderia = driverInfo.teamName || driverInfo.team || d.teamName || '-';
             
-            // Vuelta rápida y compuestos
             const fastestLap = d.fastestLap || {};
             const mejorVuelta = fastestLap.lapTime || fastestLap.time || d.bestLapTime || 'No registrada';
             const compVR = fastestLap.visualCompound || fastestLap.compound || d.compound || '-';
             
-            // Sectores
             const sectors = d.bestSectors || d.sectors || [];
             const s1 = sectors[0]?.lapTime || sectors[0]?.time || '-';
             const s2 = sectors[1]?.lapTime || sectors[1]?.time || '-';
@@ -552,7 +547,6 @@ function procesarJsonRLT(jsonData) {
             tbodyPreview.appendChild(tr);
         });
     } else {
-        // Cabecera para Gran Premio (Clasificación / Carrera)
         trHead.innerHTML = `
             <th style="padding: 8px;">Piloto (ID / R,Number)</th>
             <th style="padding: 8px;">Clasificación</th>
@@ -578,8 +572,6 @@ function procesarJsonRLT(jsonData) {
     document.getElementById('preview-container').style.display = 'block';
 }
 
-
-    
 function procesarCSV(contenido) {
     const trHead = document.getElementById('tr-preview-head');
     trHead.innerHTML = `
@@ -653,7 +645,6 @@ if (btnGuardar) {
                         tiempo_total_carrera: driver.totalTime || null
                     }));
                 } else {
-                    // Modo CSV tradicional
                     const primeraCelda = filas[0].querySelector('td');
                     const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
                     const selectGp = document.getElementById('select-gp');
@@ -696,7 +687,6 @@ if (btnGuardar) {
             const resultado = await response.json();
             if (response.ok) {
                 alert("¡Datos importados y guardados correctamente!");
-                
                 document.getElementById('preview-container').style.display = 'none';
                 document.getElementById('csv-file-input').value = '';
                 datosJsonParseados = null;
@@ -733,6 +723,8 @@ async function cargarUltimoAvisoGP() {
         console.error("Error al obtener el último GP actualizado:", error);
     }
 }
+        
+
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
