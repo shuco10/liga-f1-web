@@ -1022,7 +1022,7 @@ async function cargarTiemposPantalla() {
 
             const badgeMorado = (texto) => `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-family: monospace;">${texto}</span>`;
 
-            let filasHtml = datos.map((row) => {
+            let filasHtml = datos.map((row, index) => {
                 const vMs = aMilisegundos(row.mejor_vuelta);
                 
                 const s1Val = row.s1_ms;
@@ -1043,7 +1043,7 @@ async function cargarTiemposPantalla() {
 
                 return `
                     <tr style="border-bottom: 1px solid #333;">
-                        <td style="padding: 12px 6px; text-align: center;">${index + 1}</td> <!-- <--- Cambiado a index + 1 -->
+                        <td style="padding: 12px 6px; text-align: center;">${index + 1}</td>
                         <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
                         <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
                         <td style="padding: 12px 6px; text-align: center;">${htmlVuelta}</td>
