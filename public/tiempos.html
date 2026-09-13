@@ -463,6 +463,19 @@
                 "Stake F1 Team Kick Sauber": "sauber.png"
             };
 
+            const archivosNeumaticos = {
+                "soft": "blando.png",
+                "blando": "blando.png",
+                "medium": "medio.png",
+                "medio": "medio.png",
+                "hard": "duro.png",
+                "duro": "duro.png",
+                "inter": "inter.png",
+                "intermedio": "inter.png",
+                "wet": "wet.png",
+                "lluvia": "wet.png"
+            };
+
             tiemposOrdenados.forEach((t, index) => {
                 const esDNF = tiempoASegundos(t.tiempo_total_carrera) === Infinity;
                 
@@ -912,6 +925,14 @@ async function cargarTiemposPantalla() {
         return `<div style="text-align: center;"><img src="banderas/${archivoImg}" alt="${nombreEscuderia}" title="${nombreEscuderia}" style="width: 56px; height: 32px; object-fit: contain; display: inline-block;"></div>`;
     };
 
+    const renderNeumaticoImg = (compuesto) => {
+        if (!compuesto) return '-';
+        const compKey = String(compuesto).trim().toLowerCase();
+        const archivoImg = archivosNeumaticos[compKey];
+        if (!archivoImg) return compuesto; 
+        return `<div style="text-align: center;"><img src="neumaticos/${archivoImg}" alt="${compuesto}" title="${compuesto}" style="width: 28px; height: 28px; object-fit: contain; display: inline-block;"></div>`;
+    };
+
     if (!id_gp) {
         tbodyTiempos.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>';
         return;
@@ -1014,7 +1035,7 @@ async function cargarTiemposPantalla() {
                         <td style="padding: 12px 6px; text-align: center;">${htmlS1}</td>
                         <td style="padding: 12px 6px; text-align: center;">${htmlS2}</td>
                         <td style="padding: 12px 6px; text-align: center;">${htmlS3}</td>
-                        <td style="padding: 12px 6px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
+                        <td style="padding: 12px 6px; text-align: center;">${renderNeumaticoImg(row.compuesto_neumatico)}</td>
                         <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${row.vueltas_totales || 0}</td>
                     </tr>
                 `;
