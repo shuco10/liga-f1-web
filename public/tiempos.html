@@ -137,594 +137,594 @@
             });
         }
 
-// 3. Lógica unificada de carga de archivos (JSON de RLT o CSV)
-const fileInput = document.getElementById('csv-file-input');
-if (fileInput) {
-    fileInput.onchange = function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+        // 3. Lógica unificada de carga de archivos (JSON de RLT o CSV)
+        const fileInput = document.getElementById('csv-file-input');
+        if (fileInput) {
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const text = event.target.result;
-            
-            if (file.name.endsWith('.json')) {
-                try {
-                    datosJsonParseados = JSON.parse(text);
-                    console.log("CONTENIDO DEL ARCHIVO JSON:", datosJsonParseados);
-                    procesarJsonRLT(datosJsonParseados);
-                } catch(err) {
-                    alert("El archivo JSON no es válido.");
-                    console.error(err);
-                }
-            } else {
-                datosJsonParseados = null;
-                procesarCSV(text);
-            }
-        };
-        reader.readAsText(file, 'UTF-8');
-    };
-    console.log("Listener asignado correctamente a #csv-file-input");
-} else {
-    console.error("No se encontró el elemento #csv-file-input en la página.");
-}
-
-// Botón cancelar previsualización
-const btnCancelar = document.getElementById('btn-cancelar-preview');
-if (btnCancelar) {
-    btnCancelar.addEventListener('click', () => {
-        document.getElementById('preview-container').style.display = 'none';
-        document.getElementById('csv-file-input').value = '';
-        datosJsonParseados = null;
-    });
-}
-async function verificarSesion() {
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    const formAdmin = document.getElementById('form-admin');
-    const adminImportContainer = document.getElementById('admin-import-container');
-    
-    let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
-    
-    if (!adminStatus) {
-        try {
-            const res = await fetch('/api/auth/sesion');
-            const data = await res.json();
-            
-            if (data.logueado && data.rol === 'admin') {
-                adminStatus = true;
-                localStorage.setItem('rol', 'admin');
-            }
-        } catch (err) {
-            console.error("Error al contrastar sesión:", err);
-        }
-    }
-    
-    if (btnLogin && btnLogout) {
-        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-    }
-    
-    if (formAdmin) {
-        formAdmin.style.display = adminStatus ? 'block' : 'none';
-    }
-
-    if (adminImportContainer) {
-        adminImportContainer.style.display = adminStatus ? 'block' : 'none';
-    }
-}
-
-function seguridadAbrirModal() {
-    const modal = document.getElementById('login-modal');
-    if (modal) modal.style.display = 'block';
-}
-
-async function enviarContacto() {
-    const nombre = document.getElementById('nombre-contacto').value;
-    const asunto = document.getElementById('asunto-contacto').value;
-    const mensaje = document.getElementById('mensaje-contacto').value;
-
-    if(!nombre || !asunto || !mensaje) {
-        alert("Por favor, rellena todos los campos.");
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/contacto', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, asunto, mensaje })
-        });
-
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-            alert(data.message);
-            document.getElementById('modal-contacto').style.display = 'none';
-            document.getElementById('nombre-contacto').value = '';
-            document.getElementById('asunto-contacto').value = '';
-            document.getElementById('mensaje-contacto').value = '';
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    
+                    if (file.name.endsWith('.json')) {
+                        try {
+                            datosJsonParseados = JSON.parse(text);
+                            console.log("CONTENIDO DEL ARCHIVO JSON:", datosJsonParseados);
+                            procesarJsonRLT(datosJsonParseados);
+                        } catch(err) {
+                            alert("El archivo JSON no es válido.");
+                            console.error(err);
+                        }
+                    } else {
+                        datosJsonParseados = null;
+                        procesarCSV(text);
+                    }
+                };
+                reader.readAsText(file, 'UTF-8');
+            };
+            console.log("Listener asignado correctamente a #csv-file-input");
         } else {
-            alert(data.error || "Error al enviar el mensaje.");
-        }
-    } catch (error) {
-        alert("Hubo un error de conexión.");
-    }
-}
-
-async function cargarTiemposPorGP() {
-    const selectGp = document.getElementById('select-gp');
-    const id_gp = selectGp ? selectGp.value : null;
-    
-    if (!id_gp) return;
-
-    const nombreCircuito = selectGp.options[selectGp.selectedIndex]?.text || 'este circuito';
-
-    try {
-        const response = await fetch(`/api/tiempos/${id_gp}`);
-        const tiempos = await response.json();
-
-        const tbody = document.getElementById('tbody-tiempos');
-        if (!tbody) return;
-
-        const tabla = tbody.closest('table');
-        if (tabla) {
-            tabla.style.width = '100%';
-            tabla.style.borderCollapse = 'separate';
-            tabla.style.borderSpacing = '0 8px';
-            
-            const thead = tabla.querySelector('thead');
-            if (thead) {
-                thead.style.display = 'block';
-                const trHead = thead.querySelector('tr');
-                if (trHead) {
-                    trHead.style.display = 'flex';
-                    trHead.style.alignItems = 'center';
-                    trHead.style.padding = '14px 15px';
-                    trHead.style.width = '100%';
-                    trHead.style.boxSizing = 'border-box';
-                    trHead.style.borderRadius = '8px';
-                    trHead.style.marginBottom = '8px';
-                    trHead.innerHTML = `
-                        <th style="flex: 0 0 50px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Pos</th>
-                        <th style="flex: 0 0 130px; text-align: left; padding-left: 10px; font-size: 15px; font-weight: bold; color: #fff;">Piloto</th>
-                        <th style="flex: 1 1 auto; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff;">Escudería</th>
-                        <th style="flex: 0 0 115px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Clasificación</th>
-                        <th style="flex: 0 0 125px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Vuelta Rápida</th>
-                        <th style="flex: 0 0 120px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Tiempo Total</th>
-                    `;
-                }
-            }
+            console.error("No se encontró el elemento #csv-file-input en la página.");
         }
 
-        tbody.innerHTML = '';
-
-        if (!tiempos || tiempos.length === 0) {
-            const trVacio = document.createElement('tr');
-            trVacio.innerHTML = `
-                <td colspan="1" style="display: block; width: 100%; text-align: center; color: #94a3b8; font-size: 15px; padding: 25px; background-color: #2a2a2a; border-radius: 8px;">
-                    No hay datos para "${nombreCircuito}"
-                </td>
-            `;
-            tbody.appendChild(trVacio);
-            return;
+        // Botón cancelar previsualización
+        const btnCancelar = document.getElementById('btn-cancelar-preview');
+        if (btnCancelar) {
+            btnCancelar.addEventListener('click', () => {
+                document.getElementById('preview-container').style.display = 'none';
+                document.getElementById('csv-file-input').value = '';
+                datosJsonParseados = null;
+            });
         }
+    });
 
-        function tiempoASegundos(str) {
-            if (!str || str.includes('DNF') || str.includes('No registrada')) return Infinity;
-            const partes = str.split(':');
-            if (partes.length === 3) {
-                return parseFloat(partes[0]) * 3600 + parseFloat(partes[1]) * 60 + parseFloat(partes[2]);
-            } else if (partes.length === 2) {
-                return parseFloat(partes[0]) * 60 + parseFloat(partes[1]);
-            }
-            return Infinity;
-        }
-
-        let mejorQuali = Infinity;
-        let mejorCarrera = Infinity;
-
-        tiempos.forEach(t => {
-            const qSec = tiempoASegundos(t.tiempo_clasificacion);
-            const cSec = tiempoASegundos(t.tiempo_vuelta_rapida_carrera);
-            if (qSec < mejorQuali) mejorQuali = qSec;
-            if (cSec < mejorCarrera) mejorCarrera = cSec;
-        });
-
-        const conTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) !== Infinity);
-        const sinTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) === Infinity);
-
-        conTiempo.sort((a, b) => tiempoASegundos(a.tiempo_total_carrera) - tiempoASegundos(b.tiempo_total_carrera));
-        const tiemposOrdenados = [...conTiempo, ...sinTiempo];
-
-        const coloresBordeEscuderias = {
-            "Scuderia Ferrari HP": "#DC2626",
-            "Audi Revolut F1 Team": "#881337",
-            "Visa Cash App Racing Bulls Formula One Team": "#38BDF8",
-            "Cadillac Formula 1 Team": "#E2E8F0",
-            "McLaren Mastercard F1 Team": "#EA580C",
-            "TGR Haas F1 Team": "#6B7280",
-            "Mercedes-AMG PETRONAS Formula One Team": "#10B981",
-            "Aston Martin Aramco Formula One Team": "#059669",
-            "Oracle Red Bull Racing": "#3B82F6",
-            "Atlassian Williams F1 Team": "#2563EB",
-            "BWT Alpine Formula One Team": "#FF1493",
-            "Stake F1 Team Kick Sauber": "#16A34A"
-        };
-
-        const archivosBanderas = {
-            "Scuderia Ferrari HP": "ferrari.png",
-            "Audi Revolut F1 Team": "audi.png",
-            "Visa Cash App Racing Bulls Formula One Team": "rb.png",
-            "Cadillac Formula 1 Team": "cadillac.png",
-            "McLaren Mastercard F1 Team": "mclaren.png",
-            "TGR Haas F1 Team": "haas.png",
-            "Mercedes-AMG PETRONAS Formula One Team": "mercedes.png",
-            "Aston Martin Aramco Formula One Team": "aston_martin.png",
-            "Oracle Red Bull Racing": "redbull.png",
-            "Atlassian Williams F1 Team": "williams.png",
-            "BWT Alpine Formula One Team": "alpine.png",
-            "Stake F1 Team Kick Sauber": "sauber.png"
-        };
-
-        tiemposOrdenados.forEach((t, index) => {
-            const esDNF = tiempoASegundos(t.tiempo_total_carrera) === Infinity;
-            
-            let posHTML = '';
-            if (esDNF) {
-                posHTML = `<span style="background-color: #d32f2f; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">DNF</span>`;
-            } else {
-                const puesto = index + 1;
-                if (puesto === 1) {
-                    posHTML = `<span style="background-color: #FFD700; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>`;
-                } else if (puesto === 2) {
-                    posHTML = `<span style="background-color: #C0C0C0; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>`;
-                } else if (puesto === 3) {
-                    posHTML = `<span style="background-color: #CD7F32; color: #fff; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>`;
-                } else {
-                    posHTML = puesto;
-                }
-            }
-
-            const qSec = tiempoASegundos(t.tiempo_clasificacion);
-            const cSec = tiempoASegundos(t.tiempo_vuelta_rapida_carrera);
-
-            const esMejorQuali = (qSec === mejorQuali && qSec !== Infinity);
-            const esMejorCarrera = (cSec === mejorCarrera && cSec !== Infinity);
-
-            const estiloMorado = `background-color: #7B1FA2; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
-
-            const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
-            const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
-            const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
-
-            const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
-            const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
-            
-            const colorEscuderia = coloresBordeEscuderias[nombreEscuderia] || '#555';
-            const archivoBandera = archivosBanderas[nombreEscuderia];
-
-            const banderaHTML = archivoBandera 
-                ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 28px; height: 20px; object-fit: cover; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;">` 
-                : '';
-
-            const escuderiaHTML = `
-                <div style="display: flex; align-items: flex-start; gap: 8px; width: 100%;">
-                    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; padding-top: 1px;">
-                        ${banderaHTML}
-                        <span style="display: inline-block; width: 5px; height: 20px; background-color: ${colorEscuderia}; border-radius: 2px;"></span>
-                    </div>
-                    <span style="color: #cbd5e1; font-size: 13px; line-height: 1.2; word-break: normal; overflow-wrap: break-word; flex: 1;">${nombreEscuderia}</span>
-                </div>
-            `;
-
-            const tr = document.createElement('tr');
-            tr.style.display = 'block';
-            tr.style.backgroundColor = '#2a2a2a';
-            tr.style.marginBottom = '8px';
-            tr.style.borderRadius = '8px';
-            tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
-            
-            tr.innerHTML = `
-                <td colspan="6" style="display: flex; align-items: center; padding: 12px 15px; width: 100%; box-sizing: border-box;">
-                    <div style="flex: 0 0 50px; text-align: center;">${posHTML}</div>
-                    <div style="flex: 0 0 130px; padding-left: 10px; font-weight: 500; font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.gamertag || 'Piloto #' + t.id}</div>
-                    <div style="flex: 1 1 auto; padding-left: 15px; padding-right: 15px; min-width: 150px;">${escuderiaHTML}</div>
-                    <div style="flex: 0 0 115px; text-align: center; font-family: monospace; font-size: 13px;">${htmlQuali}</div>
-                    <div style="flex: 0 0 125px; text-align: center; font-family: monospace; font-size: 13px;">${htmlCarreraVR}</div>
-                    <div style="flex: 0 0 120px; text-align: center; font-family: monospace; font-size: 13px; font-weight: bold;">${htmlTotal}</div>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-    } catch (error) {
-        console.error("Error al cargar y ordenar los tiempos:", error);
-    }
-}
-
-function cargarSelectGP() {
-    const select = document.getElementById('select-gp');
-    
-    const circuitos = [
-        { id: 3, ronda: 1, nombre: "Melbourne", fecha: "24 SEP" },
-        { id: 8, ronda: 2, nombre: "Shanghái", fecha: "01 OCT" },
-        { id: 7, ronda: 3, nombre: "Suzuka", fecha: "08 OCT" },
-        { id: 4, ronda: 4, nombre: "Sakhir", fecha: "15 OCT" },
-        { id: 2, ronda: 5, nombre: "Yeda", fecha: "22 OCT" },
-        { id: 9, ronda: 6, nombre: "Miami", fecha: "29 OCT" },
-        { id: 14, ronda: 7, nombre: "Montreal", fecha: "05 NOV" },
-        { id: 11, ronda: 8, nombre: "Mónaco", fecha: "12 NOV" },
-        { id: 12, ronda: 9, nombre: "Barcelona", fecha: "19 NOV" },
-        { id: 15, ronda: 10, nombre: "Spielberg", fecha: "26 NOV" },
-        { id: 16, ronda: 11, nombre: "Silverstone", fecha: "03 DEC" },
-        { id: 17, ronda: 12, nombre: "Spa", fecha: "10 DEC" },
-        { id: 76, ronda: 13, nombre: "Budapest", fecha: "17 DEC" },
-        { id: 18, ronda: 14, nombre: "Zandvoort", fecha: "14 JAN" },
-        { id: 19, ronda: 15, nombre: "Monza", fecha: "21 JAN" },
-        { id: 13, ronda: 16, nombre: "Madrid", fecha: "28 JAN" },
-        { id: 20, ronda: 17, nombre: "Bakú", fecha: "04 FEB" },
-        { id: 21, ronda: 18, nombre: "Singapur", fecha: "11 FEB" },
-        { id: 22, ronda: 19, nombre: "Austin", fecha: "18 FEB" },
-        { id: 23, ronda: 20, nombre: "Ciudad de México", fecha: "25 FEB" },
-        { id: 24, ronda: 21, nombre: "São Paulo", fecha: "04 MAR" },
-        { id: 25, ronda: 22, nombre: "Las Vegas", fecha: "11 MAR" },
-        { id: 26, ronda: 23, nombre: "Losail", fecha: "18 MAR" },
-        { id: 27, ronda: 24, nombre: "Abu Dabi", fecha: "01 APR" }
-    ];
-
-    select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
-        circuitos.map(c => `
-            <option value="${c.id}">
-                Ronda ${c.ronda} - ${c.nombre} (${c.fecha})
-            </option>
-        `).join('');
-}
-
-// Procesar JSON de RLT para la previsualización de Entrenamientos Libres o GP
-function procesarJsonRLT(jsonData) {
-    console.log("ESTRUCTURA DEL JSON DE PRÁCTICA:", jsonData);
-    
-    const tbodyPreview = document.getElementById('tbody-preview');
-    const trHead = document.getElementById('tr-preview-head');
-    tbodyPreview.innerHTML = '';
-
-    const tipoSesion = document.getElementById('select-tipo-sesion').value;
-
-    if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
-        trHead.innerHTML = `
-            <th style="padding: 8px; white-space: nowrap;">Pos</th>
-            <th style="padding: 8px; white-space: nowrap;">Piloto</th>
-            <th style="padding: 8px; white-space: nowrap;">Escudería</th>
-            <th style="padding: 8px; white-space: nowrap;">Vuelta Rápida</th>
-            <th style="padding: 8px; white-space: nowrap;">Comp. VR</th>
-            <th style="padding: 8px; white-space: nowrap;">Mejores Sectores (S1 / S2 / S3)</th>
-            <th style="padding: 8px; white-space: nowrap;">Comp. Mejores Sectores</th>
-            <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
-        `;
-
-        const driversList = jsonData.session?.drivers || jsonData.drivers || jsonData.session?.results || [];
+    async function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const formAdmin = document.getElementById('form-admin');
+        const adminImportContainer = document.getElementById('admin-import-container');
         
-        if (driversList.length === 0) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td colspan="8" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON.</td>`;
-            tbodyPreview.appendChild(tr);
-            document.getElementById('preview-container').style.display = 'block';
+        let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
+        
+        if (!adminStatus) {
+            try {
+                const res = await fetch('/api/auth/sesion');
+                const data = await res.json();
+                
+                if (data.logueado && data.rol === 'admin') {
+                    adminStatus = true;
+                    localStorage.setItem('rol', 'admin');
+                }
+            } catch (err) {
+                console.error("Error al contrastar sesión:", err);
+            }
+        }
+        
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        }
+        
+        if (formAdmin) {
+            formAdmin.style.display = adminStatus ? 'block' : 'none';
+        }
+
+        if (adminImportContainer) {
+            adminImportContainer.style.display = adminStatus ? 'block' : 'none';
+        }
+    }
+
+    function seguridadAbrirModal() {
+        const modal = document.getElementById('login-modal');
+        if (modal) modal.style.display = 'block';
+    }
+
+    async function enviarContacto() {
+        const nombre = document.getElementById('nombre-contacto').value;
+        const asunto = document.getElementById('asunto-contacto').value;
+        const mensaje = document.getElementById('mensaje-contacto').value;
+
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
             return;
         }
 
-        driversList.forEach((d, index) => {
-            const pos = index + 1;
-            const driverInfo = d.driverInfo || d.driver || {};
-            const nombrePiloto = driverInfo.name || driverInfo.gamertag || driverInfo.userName || d.name || `Piloto ${driverInfo.raceNumber || index + 1}`;
-            const escuderia = driverInfo.teamName || driverInfo.team || d.teamName || '-';
-            
-            const fastestLap = d.fastestLap || {};
-            const mejorVuelta = fastestLap.lapTime || fastestLap.time || d.bestLapTime || 'No registrada';
-            const compVR = fastestLap.visualCompound || fastestLap.compound || d.compound || '-';
-            
-            const sectors = d.bestSectors || d.sectors || [];
-            const s1 = sectors[0]?.lapTime || sectors[0]?.time || '-';
-            const s2 = sectors[1]?.lapTime || sectors[1]?.time || '-';
-            const s3 = sectors[2]?.lapTime || sectors[2]?.time || '-';
-            const sectoresStr = `${s1} / ${s2} / ${s3}`;
-            const compSectores = sectors[0]?.visualCompound || sectors[0]?.compound || '-';
-            
-            const vueltasTotales = d.lapsCompleted || d.laps || 0;
+        try {
+            const res = await fetch('/api/contacto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, asunto, mensaje })
+            });
 
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #333';
-            tr.innerHTML = `
-                <td style="padding: 8px; text-align: center; font-family: monospace;">${pos}</td>
-                <td style="padding: 8px; font-weight: 500; white-space: nowrap;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
-                <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${escuderia}</td>
-                <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold; white-space: nowrap;">${mejorVuelta}</td>
-                <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compVR}</td>
-                <td style="padding: 8px; font-family: monospace; font-size: 13px; white-space: nowrap;">${sectoresStr}</td>
-                <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compSectores}</td>
-                <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${vueltasTotales}</td>
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                alert(data.message);
+                document.getElementById('modal-contacto').style.display = 'none';
+                document.getElementById('nombre-contacto').value = '';
+                document.getElementById('asunto-contacto').value = '';
+                document.getElementById('mensaje-contacto').value = '';
+            } else {
+                alert(data.error || "Error al enviar el mensaje.");
+            }
+        } catch (error) {
+            alert("Hubo un error de conexión.");
+        }
+    }
+
+    function tiempoASegundos(str) {
+        if (!str || str.includes('DNF') || str.includes('No registrada')) return Infinity;
+        const partes = str.split(':');
+        if (partes.length === 3) {
+            return parseFloat(partes[0]) * 3600 + parseFloat(partes[1]) * 60 + parseFloat(partes[2]);
+        } else if (partes.length === 2) {
+            return parseFloat(partes[0]) * 60 + parseFloat(partes[1]);
+        }
+        return Infinity;
+    }
+
+    async function cargarTiemposPorGP() {
+        const selectGp = document.getElementById('select-gp');
+        const id_gp = selectGp ? selectGp.value : null;
+        
+        if (!id_gp) return;
+
+        const nombreCircuito = selectGp.options[selectGp.selectedIndex]?.text || 'este circuito';
+
+        try {
+            const response = await fetch(`/api/tiempos/${id_gp}`);
+            const tiempos = await response.json();
+
+            const tbody = document.getElementById('tbody-tiempos');
+            if (!tbody) return;
+
+            const tabla = tbody.closest('table');
+            if (tabla) {
+                tabla.style.width = '100%';
+                tabla.style.borderCollapse = 'separate';
+                tabla.style.borderSpacing = '0 8px';
+                
+                const thead = tabla.querySelector('thead');
+                if (thead) {
+                    thead.style.display = 'block';
+                    const trHead = thead.querySelector('tr');
+                    if (trHead) {
+                        trHead.style.display = 'flex';
+                        trHead.style.alignItems = 'center';
+                        trHead.style.padding = '14px 15px';
+                        trHead.style.width = '100%';
+                        trHead.style.boxSizing = 'border-box';
+                        trHead.style.borderRadius = '8px';
+                        trHead.style.marginBottom = '8px';
+                        trHead.innerHTML = `
+                            <th style="flex: 0 0 50px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Pos</th>
+                            <th style="flex: 0 0 130px; text-align: left; padding-left: 10px; font-size: 15px; font-weight: bold; color: #fff;">Piloto</th>
+                            <th style="flex: 1 1 auto; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff;">Escudería</th>
+                            <th style="flex: 0 0 115px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Clasificación</th>
+                            <th style="flex: 0 0 125px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Vuelta Rápida</th>
+                            <th style="flex: 0 0 120px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Tiempo Total</th>
+                        `;
+                    }
+                }
+            }
+
+            tbody.innerHTML = '';
+
+            if (!tiempos || tiempos.length === 0) {
+                const trVacio = document.createElement('tr');
+                trVacio.innerHTML = `
+                    <td colspan="1" style="display: block; width: 100%; text-align: center; color: #94a3b8; font-size: 15px; padding: 25px; background-color: #2a2a2a; border-radius: 8px;">
+                        No hay datos para "${nombreCircuito}"
+                    </td>
+                `;
+                tbody.appendChild(trVacio);
+                return;
+            }
+
+            let mejorQuali = Infinity;
+            let mejorCarrera = Infinity;
+
+            tiempos.forEach(t => {
+                const qSec = tiempoASegundos(t.tiempo_clasificacion);
+                const cSec = tiempoASegundos(t.tiempo_vuelta_rapida_carrera);
+                if (qSec < mejorQuali) mejorQuali = qSec;
+                if (cSec < mejorCarrera) mejorCarrera = cSec;
+            });
+
+            const conTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) !== Infinity);
+            const sinTiempo = tiempos.filter(t => tiempoASegundos(t.tiempo_total_carrera) === Infinity);
+
+            conTiempo.sort((a, b) => tiempoASegundos(a.tiempo_total_carrera) - tiempoASegundos(b.tiempo_total_carrera));
+            const tiemposOrdenados = [...conTiempo, ...sinTiempo];
+
+            const coloresBordeEscuderias = {
+                "Scuderia Ferrari HP": "#DC2626",
+                "Audi Revolut F1 Team": "#881337",
+                "Visa Cash App Racing Bulls Formula One Team": "#38BDF8",
+                "Cadillac Formula 1 Team": "#E2E8F0",
+                "McLaren Mastercard F1 Team": "#EA580C",
+                "TGR Haas F1 Team": "#6B7280",
+                "Mercedes-AMG PETRONAS Formula One Team": "#10B981",
+                "Aston Martin Aramco Formula One Team": "#059669",
+                "Oracle Red Bull Racing": "#3B82F6",
+                "Atlassian Williams F1 Team": "#2563EB",
+                "BWT Alpine Formula One Team": "#FF1493",
+                "Stake F1 Team Kick Sauber": "#16A34A"
+            };
+
+            const archivosBanderas = {
+                "Scuderia Ferrari HP": "ferrari.png",
+                "Audi Revolut F1 Team": "audi.png",
+                "Visa Cash App Racing Bulls Formula One Team": "rb.png",
+                "Cadillac Formula 1 Team": "cadillac.png",
+                "McLaren Mastercard F1 Team": "mclaren.png",
+                "TGR Haas F1 Team": "haas.png",
+                "Mercedes-AMG PETRONAS Formula One Team": "mercedes.png",
+                "Aston Martin Aramco Formula One Team": "aston_martin.png",
+                "Oracle Red Bull Racing": "redbull.png",
+                "Atlassian Williams F1 Team": "williams.png",
+                "BWT Alpine Formula One Team": "alpine.png",
+                "Stake F1 Team Kick Sauber": "sauber.png"
+            };
+
+            tiemposOrdenados.forEach((t, index) => {
+                const esDNF = tiempoASegundos(t.tiempo_total_carrera) === Infinity;
+                
+                let posHTML = '';
+                if (esDNF) {
+                    posHTML = `<span style="background-color: #d32f2f; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">DNF</span>`;
+                } else {
+                    const puesto = index + 1;
+                    if (puesto === 1) {
+                        posHTML = `<span style="background-color: #FFD700; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #cca600;">1</span>`;
+                    } else if (puesto === 2) {
+                        posHTML = `<span style="background-color: #C0C0C0; color: #000; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #999;">2</span>`;
+                    } else if (puesto === 3) {
+                        posHTML = `<span style="background-color: #CD7F32; color: #fff; padding: 3px 10px; border-radius: 4px; font-weight: bold; border: 1px solid #9e5b1f;">3</span>`;
+                    } else {
+                        posHTML = puesto;
+                    }
+                }
+
+                const qSec = tiempoASegundos(t.tiempo_clasificacion);
+                const cSec = tiempoASegundos(t.tiempo_vuelta_rapida_carrera);
+
+                const esMejorQuali = (qSec === mejorQuali && qSec !== Infinity);
+                const esMejorCarrera = (cSec === mejorCarrera && cSec !== Infinity);
+
+                const estiloMorado = `background-color: #7B1FA2; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; box-shadow: 0 0 8px rgba(123, 31, 162, 0.6);`;
+
+                const htmlQuali = esMejorQuali ? `<span style="${estiloMorado}">${t.tiempo_clasificacion}</span>` : (t.tiempo_clasificacion || '-');
+                const htmlCarreraVR = esMejorCarrera ? `<span style="${estiloMorado}">${t.tiempo_vuelta_rapida_carrera}</span>` : (t.tiempo_vuelta_rapida_carrera || 'No registrada / DNF');
+                const htmlTotal = t.tiempo_total_carrera || 'No registrada / DNF';
+
+                const nombreEscuderiaCrudo = t.escuderia || 'Sin Escudería';
+                const nombreEscuderia = nombreEscuderiaCrudo.trim().replace(/\s+/g, ' ');
+                
+                const colorEscuderia = coloresBordeEscuderias[nombreEscuderia] || '#555';
+                const archivoBandera = archivosBanderas[nombreEscuderia];
+
+                const banderaHTML = archivoBandera 
+                    ? `<img src="/banderas/${archivoBandera}" alt="Bandera" style="width: 28px; height: 20px; object-fit: cover; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;">` 
+                    : '';
+
+                const escuderiaHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 8px; width: 100%;">
+                        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0; padding-top: 1px;">
+                            ${banderaHTML}
+                            <span style="display: inline-block; width: 5px; height: 20px; background-color: ${colorEscuderia}; border-radius: 2px;"></span>
+                        </div>
+                        <span style="color: #cbd5e1; font-size: 13px; line-height: 1.2; word-break: normal; overflow-wrap: break-word; flex: 1;">${nombreEscuderia}</span>
+                    </div>
+                `;
+
+                const tr = document.createElement('tr');
+                tr.style.display = 'block';
+                tr.style.backgroundColor = '#2a2a2a';
+                tr.style.marginBottom = '8px';
+                tr.style.borderRadius = '8px';
+                tr.style.boxShadow = '0 3px 6px rgba(0,0,0,0.3)';
+                
+                tr.innerHTML = `
+                    <td colspan="6" style="display: flex; align-items: center; padding: 12px 15px; width: 100%; box-sizing: border-box;">
+                        <div style="flex: 0 0 50px; text-align: center;">${posHTML}</div>
+                        <div style="flex: 0 0 130px; padding-left: 10px; font-weight: 500; font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.gamertag || 'Piloto #' + t.id}</div>
+                        <div style="flex: 1 1 auto; padding-left: 15px; padding-right: 15px; min-width: 150px;">${escuderiaHTML}</div>
+                        <div style="flex: 0 0 115px; text-align: center; font-family: monospace; font-size: 13px;">${htmlQuali}</div>
+                        <div style="flex: 0 0 125px; text-align: center; font-family: monospace; font-size: 13px;">${htmlCarreraVR}</div>
+                        <div style="flex: 0 0 120px; text-align: center; font-family: monospace; font-size: 13px; font-weight: bold;">${htmlTotal}</div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+        } catch (error) {
+            console.error("Error al cargar y ordenar los tiempos:", error);
+        }
+    }
+
+    function cargarSelectGP() {
+        const select = document.getElementById('select-gp');
+        if (!select) return;
+        
+        const circuitos = [
+            { id: 3, ronda: 1, nombre: "Melbourne", fecha: "24 SEP" },
+            { id: 8, ronda: 2, nombre: "Shanghái", fecha: "01 OCT" },
+            { id: 7, ronda: 3, nombre: "Suzuka", fecha: "08 OCT" },
+            { id: 4, ronda: 4, nombre: "Sakhir", fecha: "15 OCT" },
+            { id: 2, ronda: 5, nombre: "Yeda", fecha: "22 OCT" },
+            { id: 9, ronda: 6, nombre: "Miami", fecha: "29 OCT" },
+            { id: 14, ronda: 7, nombre: "Montreal", fecha: "05 NOV" },
+            { id: 11, ronda: 8, nombre: "Mónaco", fecha: "12 NOV" },
+            { id: 12, ronda: 9, nombre: "Barcelona", fecha: "19 NOV" },
+            { id: 15, ronda: 10, nombre: "Spielberg", fecha: "26 NOV" },
+            { id: 16, ronda: 11, nombre: "Silverstone", fecha: "03 DEC" },
+            { id: 17, ronda: 12, nombre: "Spa", fecha: "10 DEC" },
+            { id: 76, ronda: 13, nombre: "Budapest", fecha: "17 DEC" },
+            { id: 18, ronda: 14, nombre: "Zandvoort", fecha: "14 JAN" },
+            { id: 19, ronda: 15, nombre: "Monza", fecha: "21 JAN" },
+            { id: 13, ronda: 16, nombre: "Madrid", fecha: "28 JAN" },
+            { id: 20, ronda: 17, nombre: "Bakú", fecha: "04 FEB" },
+            { id: 21, ronda: 18, nombre: "Singapur", fecha: "11 FEB" },
+            { id: 22, ronda: 19, nombre: "Austin", fecha: "18 FEB" },
+            { id: 23, ronda: 20, nombre: "Ciudad de México", fecha: "25 FEB" },
+            { id: 24, ronda: 21, nombre: "São Paulo", fecha: "04 MAR" },
+            { id: 25, ronda: 22, nombre: "Las Vegas", fecha: "11 MAR" },
+            { id: 26, ronda: 23, nombre: "Losail", fecha: "18 MAR" },
+            { id: 27, ronda: 24, nombre: "Abu Dabi", fecha: "01 APR" }
+        ];
+
+        select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
+            circuitos.map(c => `
+                <option value="${c.id}">
+                    Ronda ${c.ronda} - ${c.nombre} (${c.fecha})
+                </option>
+            `).join('');
+    }
+
+    function procesarJsonRLT(jsonData) {
+        console.log("ESTRUCTURA DEL JSON DE PRÁCTICA:", jsonData);
+        
+        const tbodyPreview = document.getElementById('tbody-preview');
+        const trHead = document.getElementById('tr-preview-head');
+        tbodyPreview.innerHTML = '';
+
+        const tipoSesion = document.getElementById('select-tipo-sesion').value;
+
+        if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
+            trHead.innerHTML = `
+                <th style="padding: 8px; white-space: nowrap;">Pos</th>
+                <th style="padding: 8px; white-space: nowrap;">Piloto</th>
+                <th style="padding: 8px; white-space: nowrap;">Escudería</th>
+                <th style="padding: 8px; white-space: nowrap;">Vuelta Rápida</th>
+                <th style="padding: 8px; white-space: nowrap;">Comp. VR</th>
+                <th style="padding: 8px; white-space: nowrap;">Mejores Sectores (S1 / S2 / S3)</th>
+                <th style="padding: 8px; white-space: nowrap;">Comp. Mejores Sectores</th>
+                <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
             `;
-            tbodyPreview.appendChild(tr);
-        });
-    } else {
+
+            const driversList = jsonData.session?.drivers || jsonData.drivers || jsonData.session?.results || [];
+            
+            if (driversList.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="8" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON.</td>`;
+                tbodyPreview.appendChild(tr);
+                document.getElementById('preview-container').style.display = 'block';
+                return;
+            }
+
+            driversList.forEach((d, index) => {
+                const pos = index + 1;
+                const driverInfo = d.driverInfo || d.driver || {};
+                const nombrePiloto = driverInfo.name || driverInfo.gamertag || driverInfo.userName || d.name || `Piloto ${driverInfo.raceNumber || index + 1}`;
+                const escuderia = driverInfo.teamName || driverInfo.team || d.teamName || '-';
+                
+                const fastestLap = d.fastestLap || {};
+                const mejorVuelta = fastestLap.lapTime || fastestLap.time || d.bestLapTime || 'No registrada';
+                const compVR = fastestLap.visualCompound || fastestLap.compound || d.compound || '-';
+                
+                const sectors = d.bestSectors || d.sectors || [];
+                const s1 = sectors[0]?.lapTime || sectors[0]?.time || '-';
+                const s2 = sectors[1]?.lapTime || sectors[1]?.time || '-';
+                const s3 = sectors[2]?.lapTime || sectors[2]?.time || '-';
+                const sectoresStr = `${s1} / ${s2} / ${s3}`;
+                const compSectores = sectors[0]?.visualCompound || sectors[0]?.compound || '-';
+                
+                const vueltasTotales = d.lapsCompleted || d.laps || 0;
+
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #333';
+                tr.innerHTML = `
+                    <td style="padding: 8px; text-align: center; font-family: monospace;">${pos}</td>
+                    <td style="padding: 8px; font-weight: 500; white-space: nowrap;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
+                    <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${escuderia}</td>
+                    <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold; white-space: nowrap;">${mejorVuelta}</td>
+                    <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compVR}</td>
+                    <td style="padding: 8px; font-family: monospace; font-size: 13px; white-space: nowrap;">${sectoresStr}</td>
+                    <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compSectores}</td>
+                    <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${vueltasTotales}</td>
+                `;
+                tbodyPreview.appendChild(tr);
+            });
+        } else {
+            trHead.innerHTML = `
+                <th style="padding: 8px;">Piloto (ID / R,Number)</th>
+                <th style="padding: 8px;">Clasificación</th>
+                <th style="padding: 8px;">Vuelta Rápida</th>
+                <th style="padding: 8px;">Tiempo Total</th>
+            `;
+            const driversList = jsonData.session?.drivers || jsonData.drivers || [];
+            driversList.forEach(d => {
+                const driverInfo = d.driverInfo || {};
+                const nombrePiloto = driverInfo.name || `Piloto ${driverInfo.raceNumber || ''}`;
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #333';
+                tr.innerHTML = `
+                    <td style="padding: 8px; font-family: monospace;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
+                    <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
+                    <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
+                    <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
+                `;
+                tbodyPreview.appendChild(tr);
+            });
+        }
+
+        document.getElementById('preview-container').style.display = 'block';
+    }
+
+    function procesarCSV(contenido) {
+        const trHead = document.getElementById('tr-preview-head');
         trHead.innerHTML = `
-            <th style="padding: 8px;">Piloto (ID / R,Number)</th>
+            <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
             <th style="padding: 8px;">Clasificación</th>
             <th style="padding: 8px;">Vuelta Rápida</th>
             <th style="padding: 8px;">Tiempo Total</th>
         `;
-        const driversList = jsonData.session?.drivers || jsonData.drivers || [];
-        driversList.forEach(d => {
-            const driverInfo = d.driverInfo || {};
-            const nombrePiloto = driverInfo.name || `Piloto ${driverInfo.raceNumber || ''}`;
+
+        const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
+        const tbodyPreview = document.getElementById('tbody-preview');
+        tbodyPreview.innerHTML = '';
+
+        for (let i = 1; i < lineas.length; i++) {
+            const separador = lineas[i].includes(';') ? ';' : ',';
+            const columnas = lineas[i].split(separador);
+            
+            if (columnas.length < 5) continue;
+
+            const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
+
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #333';
             tr.innerHTML = `
-                <td style="padding: 8px; font-family: monospace;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
+                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
             `;
             tbodyPreview.appendChild(tr);
+        }
+
+        document.getElementById('preview-container').style.display = 'block';
+    }
+
+    const btnGuardar = document.getElementById('btn-subir-definitivo');
+    if (btnGuardar) {
+        btnGuardar.addEventListener('click', async () => {
+            const tipoSesion = document.getElementById('select-tipo-sesion').value;
+            const filas = document.querySelectorAll('#tbody-preview tr');
+            
+            if (filas.length === 0 && !datosJsonParseados) {
+                alert("No hay datos para guardar.");
+                return;
+            }
+
+            try {
+                let endpoint = '';
+                let payload = {};
+
+                if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
+                    if (!datosJsonParseados) {
+                        alert("Para subir entrenamientos libres debes cargar el archivo JSON de Racing League Tools.");
+                        return;
+                    }
+                    endpoint = '/api/importar-entrenamientos';
+                    payload = {
+                        id_entrenamiento: tipoSesion === 'libre1' ? 1 : 2, 
+                        drivers: datosJsonParseados.session.drivers
+                    };
+                } else {
+                    endpoint = '/api/importar-tiempos';
+                    
+                    if (datosJsonParseados) {
+                        const idGp = datosJsonParseados.event.round;
+                        payload = datosJsonParseados.session.drivers.map(driver => ({
+                            id_gp: parseInt(idGp, 10),
+                            id: parseInt(driver.driverInfo.raceNumber, 10),
+                            tiempo_clasificacion: driver.qualifying?.bestLapTime || null,
+                            tiempo_vuelta_rapida_carrera: driver.fastestLap?.lapTime || null,
+                            tiempo_total_carrera: driver.totalTime || null
+                        }));
+                    } else {
+                        const primeraCelda = filas[0].querySelector('td');
+                        const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
+                        const selectGp = document.getElementById('select-gp');
+                        const id_gp = idGpInterno || (selectGp ? selectGp.value : null);
+
+                        if (!id_gp) {
+                            alert("Error: No se ha podido detectar el id_gp del circuito.");
+                            return;
+                        }
+
+                        payload = [];
+                        filas.forEach(fila => {
+                            const celdas = fila.querySelectorAll('td');
+                            if (celdas.length >= 4) {
+                                const idPiloto = celdas[0].innerText.trim();
+                                const tiempoClas = celdas[1].innerText.trim();
+                                const tiempoVr = celdas[2].innerText.trim();
+                                const tiempoTot = celdas[3].innerText.trim();
+
+                                if (idPiloto) {
+                                    payload.push({
+                                        id_gp: parseInt(id_gp, 10),
+                                        id: parseInt(idPiloto, 10),
+                                        tiempo_clasificacion: tiempoClas,
+                                        tiempo_vuelta_rapida_carrera: tiempoVr,
+                                        tiempo_total_carrera: tiempoTot
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const resultado = await response.json();
+                if (response.ok) {
+                    alert("¡Datos importados y guardados correctamente!");
+                    document.getElementById('preview-container').style.display = 'none';
+                    document.getElementById('csv-file-input').value = '';
+                    datosJsonParseados = null;
+                    if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
+                } else {
+                    alert("Error al guardar: " + (resultado.error || resultado.mensaje || 'Desconocido'));
+                }
+            } catch (error) {
+                console.error("Error en la petición:", error);
+                alert("Hubo un error de conexión al enviar los datos.");
+            }
         });
     }
 
-    document.getElementById('preview-container').style.display = 'block';
-}
-
-function procesarCSV(contenido) {
-    const trHead = document.getElementById('tr-preview-head');
-    trHead.innerHTML = `
-        <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
-        <th style="padding: 8px;">Clasificación</th>
-        <th style="padding: 8px;">Vuelta Rápida</th>
-        <th style="padding: 8px;">Tiempo Total</th>
-    `;
-
-    const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
-    const tbodyPreview = document.getElementById('tbody-preview');
-    tbodyPreview.innerHTML = '';
-
-    for (let i = 1; i < lineas.length; i++) {
-        const separador = lineas[i].includes(';') ? ';' : ',';
-        const columnas = lineas[i].split(separador);
-        
-        if (columnas.length < 5) continue;
-
-        const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
-
-        const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid #333';
-        tr.innerHTML = `
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
-            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
-        `;
-        tbodyPreview.appendChild(tr);
-    }
-
-    document.getElementById('preview-container').style.display = 'block';
-}
-
-const btnGuardar = document.getElementById('btn-subir-definitivo');
-if (btnGuardar) {
-    btnGuardar.addEventListener('click', async () => {
-        const tipoSesion = document.getElementById('select-tipo-sesion').value;
-        const filas = document.querySelectorAll('#tbody-preview tr');
-        
-        if (filas.length === 0 && !datosJsonParseados) {
-            alert("No hay datos para guardar.");
-            return;
-        }
-
+    async function cargarUltimoAvisoGP() {
         try {
-            let endpoint = '';
-            let payload = {};
-
-            if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
-                if (!datosJsonParseados) {
-                    alert("Para subir entrenamientos libres debes cargar el archivo JSON de Racing League Tools.");
-                    return;
+            const response = await fetch('/api/ultimo-gp');
+            if (!response.ok) return;
+            
+            const data = await response.json();
+            
+            if (data && data.nombre) {
+                const infoContainer = document.getElementById('info-ultimos-tiempos');
+                if (infoContainer) {
+                    infoContainer.innerText = `Últimos tiempos subidos: ${data.nombre}`;
+                    infoContainer.style.color = '#FACC15';
+                    infoContainer.style.fontWeight = 'bold';
+                    infoContainer.style.fontSize = '15px';
+                    infoContainer.style.margin = '10px 0';
+                    infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
                 }
-                endpoint = '/api/importar-entrenamientos';
-                payload = {
-                    id_entrenamiento: tipoSesion === 'libre1' ? 1 : 2, 
-                    drivers: datosJsonParseados.session.drivers
-                };
-            } else {
-                endpoint = '/api/importar-tiempos';
-                
-                if (datosJsonParseados) {
-                    const idGp = datosJsonParseados.event.round;
-                    payload = datosJsonParseados.session.drivers.map(driver => ({
-                        id_gp: parseInt(idGp, 10),
-                        id: parseInt(driver.driverInfo.raceNumber, 10),
-                        tiempo_clasificacion: driver.qualifying?.bestLapTime || null,
-                        tiempo_vuelta_rapida_carrera: driver.fastestLap?.lapTime || null,
-                        tiempo_total_carrera: driver.totalTime || null
-                    }));
-                } else {
-                    const primeraCelda = filas[0].querySelector('td');
-                    const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
-                    const selectGp = document.getElementById('select-gp');
-                    const id_gp = idGpInterno || (selectGp ? selectGp.value : null);
-
-                    if (!id_gp) {
-                        alert("Error: No se ha podido detectar el id_gp del circuito.");
-                        return;
-                    }
-
-                    payload = [];
-                    filas.forEach(fila => {
-                        const celdas = fila.querySelectorAll('td');
-                        if (celdas.length >= 4) {
-                            const idPiloto = celdas[0].innerText.trim();
-                            const tiempoClas = celdas[1].innerText.trim();
-                            const tiempoVr = celdas[2].innerText.trim();
-                            const tiempoTot = celdas[3].innerText.trim();
-
-                            if (idPiloto) {
-                                payload.push({
-                                    id_gp: parseInt(id_gp, 10),
-                                    id: parseInt(idPiloto, 10),
-                                    tiempo_clasificacion: tiempoClas,
-                                    tiempo_vuelta_rapida_carrera: tiempoVr,
-                                    tiempo_total_carrera: tiempoTot
-                                });
-                            }
-                        }
-                    });
-                }
-            }
-
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const resultado = await response.json();
-            if (response.ok) {
-                alert("¡Datos importados y guardados correctamente!");
-                document.getElementById('preview-container').style.display = 'none';
-                document.getElementById('csv-file-input').value = '';
-                datosJsonParseados = null;
-                if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
-            } else {
-                alert("Error al guardar: " + (resultado.error || resultado.mensaje || 'Desconocido'));
             }
         } catch (error) {
-            console.error("Error en la petición:", error);
-            alert("Hubo un error de conexión al enviar los datos.");
+            console.error("Error al obtener el último GP actualizado:", error);
         }
-    });
-}
-
-async function cargarUltimoAvisoGP() {
-    try {
-        const response = await fetch('/api/ultimo-gp');
-        if (!response.ok) return;
-        
-        const data = await response.json();
-        
-        if (data && data.nombre) {
-            const infoContainer = document.getElementById('info-ultimos-tiempos');
-            if (infoContainer) {
-                infoContainer.innerText = `Últimos tiempos subidos: ${data.nombre}`;
-                infoContainer.style.color = '#FACC15';
-                infoContainer.style.fontWeight = 'bold';
-                infoContainer.style.fontSize = '15px';
-                infoContainer.style.margin = '10px 0';
-                infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
-            }
-        }
-    } catch (error) {
-        console.error("Error al obtener el último GP actualizado:", error);
     }
-}
-        
-
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
