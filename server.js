@@ -1133,7 +1133,7 @@ app.post('/api/importar-tiempos', async (req, res) => {
     }
 });
 //////////////////////////////////////////////////////////////////////////
-//////////  TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
+////////// GUARDAR TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 // Ruta para importar Entrenamientos Libres (Libres 1 o Libres 2)
 app.post('/api/importar-entrenamientos', async (req, res) => {
@@ -1197,6 +1197,42 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
         client.release();
     }
 });
+
+//////////////////////////////////////////////////////////////////////////
+//////////  OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+app.get('/api/entrenamientos/:id_entrenamiento', async (req, res) => {
+    try {
+        const { id_entrenamiento } = req.params;
+        // O si lo filtras también por GP, asegúrate de relacionarlo. 
+        // Dependiendo de cómo guardes el id_gp en entrenamientos, haz el JOIN correspondiente.
+        const resultado = await pool.query(`
+            SELECT 
+                te.posicion,
+                p.gamertag,
+                e.nombre AS escuderia,
+                te.mejor_vuelta,
+                te.s1_ms,
+                te.s2_ms,
+                te.s3_ms,
+                te.compuesto_neumatico,
+                te.vueltas_totales
+            FROM tiempos_entrenamientos te
+            JOIN pilotos p ON te.id = p.id
+            LEFT JOIN escuderias e ON p.escuderia_id = e.id
+            WHERE te.id_entrenamiento = $1
+            ORDER BY te.posicion ASC;
+        `, [id_entrenamiento]);
+
+        res.json(resultado.rows);
+    } catch (error) {
+        console.error("Error al obtener los entrenamientos:", error);
+        res.status(500).json({ error: "Error al cargar los tiempos de entrenamientos." });
+    }
+});
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////  JOIN DE LOS TIEMPOS //////////////////////////////////////////
