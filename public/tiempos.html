@@ -481,6 +481,8 @@ function cargarSelectGP() {
 
 // Procesar JSON de RLT para la previsualización de Entrenamientos Libres o GP
 function procesarJsonRLT(jsonData) {
+    console.log("ESTRUCTURA DEL JSON DE PRÁCTICA:", jsonData); // <-- Añade esto aquí
+    
     const tbodyPreview = document.getElementById('tbody-preview');
     const trHead = document.getElementById('tr-preview-head');
     tbodyPreview.innerHTML = '';
