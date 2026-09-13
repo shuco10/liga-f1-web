@@ -1199,10 +1199,14 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
         const id_gp = resCircuito.rows[0].id;
         const id_entrenamiento = sessionPosition; // 1 o 2
 
-        // 3. Insertamos o actualizamos los tiempos
+       // 3. Insertamos o actualizamos los tiempos
         for (const p of pilotos) {
+            // Buscamos de forma flexible ignorando diferencias de ceros o mayúsculas/minúsculas
             const resPiloto = await client.query(
-                'SELECT id FROM pilotos WHERE gamertag ILIKE $1 LIMIT 1', 
+                `SELECT id FROM pilotos 
+                 WHERE LOWER(REPLACE(gamertag, '0', '')) = LOWER(REPLACE($1, '0', '')) 
+                    OR gamertag ILIKE $1 
+                 LIMIT 1`, 
                 [p.nombrePiloto]
             );
             let idPiloto = resPiloto.rows.length > 0 ? resPiloto.rows[0].id : null;
