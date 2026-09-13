@@ -38,7 +38,7 @@
     <tr style="background-color: #ef4444; color: white;">
         <th style="padding: 14px 10px; text-align: center;">Pos</th>
         <th style="padding: 14px 10px;">Piloto</th>
-        <th style="padding: 14px 10px;">Escudería</th> <!-- Nueva columna añadida -->
+        <th style="padding: 14px 10px;">Escudería</th>
         <th style="padding: 14px 10px; text-align: center;">Clasificación</th>
         <th style="padding: 14px 10px; text-align: center;">Vuelta Rápida</th>
         <th style="padding: 14px 10px; text-align: center;">Tiempo Total</th>
@@ -52,23 +52,30 @@
             </tbody>
         </table>
     </div>
-
-    
-
-    
     
     <!-- ÚNICO Contenedor de Importación (Visible solo para administradores) -->
     <div id="admin-import-container" style="display: none; margin-top: 30px; padding: 20px; background: #222; border: 1px solid #444; border-radius: 8px;">
-        <h3 style="color: #ef4444; margin-bottom: 10px; margin-top: 0;">Importar Tiempos (CSV)</h3>
-        <input type="file" id="csv-file-input" accept=".csv" style="color: #fff; margin-bottom: 10px;" />
+        <h3 style="color: #ef4444; margin-bottom: 10px; margin-top: 0;">Importar Datos de Sesión (JSON o CSV)</h3>
         
-        <!-- Contenedor de la tabla editable -->
+        <!-- Selector para elegir el tipo de sesión a importar -->
+        <div style="margin-bottom: 15px;">
+            <label style="margin-right: 10px; font-size: 14px; font-weight: bold;">Tipo de Sesión:</label>
+            <select id="select-tipo-sesion" style="padding: 6px 12px; background: #2a2a2a; color: white; border: 1px solid #444; border-radius: 4px;">
+                <option value="gp">Gran Premio (Clasificación / Carrera)</option>
+                <option value="libre1">Entrenamientos Libres 1</option>
+                <option value="libre2">Entrenamientos Libres 2</option>
+            </select>
+        </div>
+
+        <input type="file" id="csv-file-input" accept=".json,.csv" style="color: #fff; margin-bottom: 10px;" />
+        
+        <!-- Contenedor de la tabla / previsualización -->
         <div id="preview-container" style="display: none; margin-top: 15px;">
             <h4 style="color: #fff; margin-bottom: 8px;">Previsualización y Corrección de Datos</h4>
-            <div style="overflow-x: auto; max-height: 350px; border: 1px solid #444;">
-                <table style="width: 100%; border-collapse: collapse; color: #fff; font-size: 14px;">
+            <div style="overflow-x: auto; max-height: 350px; border: 1px solid #444; padding: 10px; background: #1a1a1a;" id="preview-box-wrapper">
+                <table id="tabla-preview-element" style="width: 100%; border-collapse: collapse; color: #fff; font-size: 14px;">
                     <thead>
-                        <tr style="background: #ef4444; text-align: left;">
+                        <tr style="background: #ef4444; text-align: left;" id="tr-preview-head">
                             <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
                             <th style="padding: 8px;">Clasificación</th>
                             <th style="padding: 8px;">Vuelta Rápida</th>
@@ -92,6 +99,8 @@
 <div id="footer-placeholder"></div>
 
 <script>
+    let datosJsonParseados = null; // Almacenará el JSON de RLT cargado
+
     document.addEventListener('DOMContentLoaded', () => {
         // 1. Cargar componentes externos (Header, Footer, Modal)
         fetch('/header.html')
@@ -119,18 +128,16 @@
 
         const selectGp = document.getElementById('select-gp');
         if (selectGp) {
-            // Carga automática si el navegador recuerda una opción seleccionada
             if (selectGp.value) {
                 cargarTiemposPorGP();
             }
 
-            // Detecta el cambio en el desplegable (único listener limpio)
             selectGp.addEventListener('change', () => {
                 cargarTiemposPorGP();
             });
         }
 
-        // 3. Lógica de carga de archivo CSV (Solo para administradores)
+        // 3. Lógica unificada de carga de archivos (JSON de RLT o CSV)
         const fileInput = document.getElementById('csv-file-input');
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
@@ -140,11 +147,31 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const text = event.target.result;
-                    if (typeof procesarCSV === 'function') {
+                    
+                    if (file.name.endsWith('.json')) {
+                        try {
+                            datosJsonParseados = JSON.parse(text);
+                            procesarJsonRLT(datosJsonParseados);
+                        } catch(err) {
+                            alert("El archivo JSON no es válido.");
+                            console.error(err);
+                        }
+                    } else {
+                        datosJsonParseados = null;
                         procesarCSV(text);
                     }
                 };
                 reader.readAsText(file, 'UTF-8');
+            });
+        }
+
+        // Botón cancelar previsualización
+        const btnCancelar = document.getElementById('btn-cancelar-preview');
+        if (btnCancelar) {
+            btnCancelar.addEventListener('click', () => {
+                document.getElementById('preview-container').style.display = 'none';
+                document.getElementById('csv-file-input').value = '';
+                datosJsonParseados = null;
             });
         }
     });
@@ -155,10 +182,8 @@ async function verificarSesion() {
     const formAdmin = document.getElementById('form-admin');
     const adminImportContainer = document.getElementById('admin-import-container');
     
-    // 1. Comprobación local inicial (método tradicional / llave)
     let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
     
-    // 2. Si localmente no consta, consultamos la sesión real en la base de datos vía API
     if (!adminStatus) {
         try {
             const res = await fetch('/api/auth/sesion');
@@ -166,10 +191,10 @@ async function verificarSesion() {
             
             if (data.logueado && data.rol === 'admin') {
                 adminStatus = true;
-                localStorage.setItem('rol', 'admin'); // Sincronizamos para agilizar
+                localStorage.setItem('rol', 'admin');
             }
         } catch (err) {
-            console.error("Error al contrastar sesión con la base de datos en tiempos:", err);
+            console.error("Error al contrastar sesión:", err);
         }
     }
     
@@ -187,10 +212,10 @@ async function verificarSesion() {
     }
 }
 
-    function seguridadAbrirModal() {
-        const modal = document.getElementById('login-modal');
-        if (modal) modal.style.display = 'block';
-    }
+function seguridadAbrirModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) modal.style.display = 'block';
+}
 
 async function enviarContacto() {
     const nombre = document.getElementById('nombre-contacto').value;
@@ -225,44 +250,6 @@ async function enviarContacto() {
     }
 }
 
-
-// 1. Evento único de inicialización cuando el DOM está listo
-document.addEventListener('DOMContentLoaded', () => {
-    // Primero cargamos las opciones en el desplegable de circuitos
-    cargarSelectGP();
-
-    const selectGp = document.getElementById('select-gp');
-    if (selectGp) {
-        // Carga automática si el navegador recuerda una opción seleccionada
-        if (selectGp.value) {
-            cargarTiemposPorGP();
-        }
-
-        // Detecta el cambio en el desplegable y recarga la tabla ordenada
-        selectGp.addEventListener('change', () => {
-            cargarTiemposPorGP();
-        });
-    }
-
-    // Lógica de carga de archivo CSV
-    const fileInput = document.getElementById('csv-file-input');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const text = event.target.result;
-                procesarCSV(text);
-            };
-            reader.readAsText(file, 'UTF-8');
-        });
-    }
-});
-
-
-    
 async function cargarTiemposPorGP() {
     const selectGp = document.getElementById('select-gp');
     const id_gp = selectGp ? selectGp.value : null;
@@ -294,8 +281,8 @@ async function cargarTiemposPorGP() {
                     trHead.style.padding = '14px 15px';
                     trHead.style.width = '100%';
                     trHead.style.boxSizing = 'border-box';
-                    trHead.style.borderRadius = '8px'; // Esquinas redondeadas igual que las filas
-                    trHead.style.marginBottom = '8px'; // Espaciado idéntico al de las tarjetas
+                    trHead.style.borderRadius = '8px';
+                    trHead.style.marginBottom = '8px';
                     trHead.innerHTML = `
                         <th style="flex: 0 0 50px; text-align: center; font-size: 15px; font-weight: bold; color: #fff;">Pos</th>
                         <th style="flex: 0 0 130px; text-align: left; padding-left: 10px; font-size: 15px; font-weight: bold; color: #fff;">Piloto</th>
@@ -453,71 +440,106 @@ async function cargarTiemposPorGP() {
         console.error("Error al cargar y ordenar los tiempos:", error);
     }
 }
+
+function cargarSelectGP() {
+    const select = document.getElementById('select-gp');
     
+    const circuitos = [
+        { id: 3, ronda: 1, nombre: "Melbourne", fecha: "24 SEP" },
+        { id: 8, ronda: 2, nombre: "Shanghái", fecha: "01 OCT" },
+        { id: 7, ronda: 3, nombre: "Suzuka", fecha: "08 OCT" },
+        { id: 4, ronda: 4, nombre: "Sakhir", fecha: "15 OCT" },
+        { id: 2, ronda: 5, nombre: "Yeda", fecha: "22 OCT" },
+        { id: 9, ronda: 6, nombre: "Miami", fecha: "29 OCT" },
+        { id: 14, ronda: 7, nombre: "Montreal", fecha: "05 NOV" },
+        { id: 11, ronda: 8, nombre: "Mónaco", fecha: "12 NOV" },
+        { id: 12, ronda: 9, nombre: "Barcelona", fecha: "19 NOV" },
+        { id: 15, ronda: 10, nombre: "Spielberg", fecha: "26 NOV" },
+        { id: 16, ronda: 11, nombre: "Silverstone", fecha: "03 DEC" },
+        { id: 17, ronda: 12, nombre: "Spa", fecha: "10 DEC" },
+        { id: 76, ronda: 13, nombre: "Budapest", fecha: "17 DEC" },
+        { id: 18, ronda: 14, nombre: "Zandvoort", fecha: "14 JAN" },
+        { id: 19, ronda: 15, nombre: "Monza", fecha: "21 JAN" },
+        { id: 13, ronda: 16, nombre: "Madrid", fecha: "28 JAN" },
+        { id: 20, ronda: 17, nombre: "Bakú", fecha: "04 FEB" },
+        { id: 21, ronda: 18, nombre: "Singapur", fecha: "11 FEB" },
+        { id: 22, ronda: 19, nombre: "Austin", fecha: "18 FEB" },
+        { id: 23, ronda: 20, nombre: "Ciudad de México", fecha: "25 FEB" },
+        { id: 24, ronda: 21, nombre: "São Paulo", fecha: "04 MAR" },
+        { id: 25, ronda: 22, nombre: "Las Vegas", fecha: "11 MAR" },
+        { id: 26, ronda: 23, nombre: "Losail", fecha: "18 MAR" },
+        { id: 27, ronda: 24, nombre: "Abu Dabi", fecha: "01 APR" }
+    ];
 
-    function cargarSelectGP() {
-        const select = document.getElementById('select-gp');
-        
-        const circuitos = [
-            { id: 3, ronda: 1, nombre: "Melbourne", fecha: "24 SEP" },
-            { id: 8, ronda: 2, nombre: "Shanghái", fecha: "01 OCT" },
-            { id: 7, ronda: 3, nombre: "Suzuka", fecha: "08 OCT" },
-            { id: 4, ronda: 4, nombre: "Sakhir", fecha: "15 OCT" },
-            { id: 2, ronda: 5, nombre: "Yeda", fecha: "22 OCT" },
-            { id: 9, ronda: 6, nombre: "Miami", fecha: "29 OCT" },
-            { id: 14, ronda: 7, nombre: "Montreal", fecha: "05 NOV" },
-            { id: 11, ronda: 8, nombre: "Mónaco", fecha: "12 NOV" },
-            { id: 12, ronda: 9, nombre: "Barcelona", fecha: "19 NOV" },
-            { id: 15, ronda: 10, nombre: "Spielberg", fecha: "26 NOV" },
-            { id: 16, ronda: 11, nombre: "Silverstone", fecha: "03 DEC" },
-            { id: 17, ronda: 12, nombre: "Spa", fecha: "10 DEC" },
-            { id: 76, ronda: 13, nombre: "Budapest", fecha: "17 DEC" },
-            { id: 18, ronda: 14, nombre: "Zandvoort", fecha: "14 JAN" },
-            { id: 19, ronda: 15, nombre: "Monza", fecha: "21 JAN" },
-            { id: 13, ronda: 16, nombre: "Madrid", fecha: "28 JAN" },
-            { id: 20, ronda: 17, nombre: "Bakú", fecha: "04 FEB" },
-            { id: 21, ronda: 18, nombre: "Singapur", fecha: "11 FEB" },
-            { id: 22, ronda: 19, nombre: "Austin", fecha: "18 FEB" },
-            { id: 23, ronda: 20, nombre: "Ciudad de México", fecha: "25 FEB" },
-            { id: 24, ronda: 21, nombre: "São Paulo", fecha: "04 MAR" },
-            { id: 25, ronda: 22, nombre: "Las Vegas", fecha: "11 MAR" },
-            { id: 26, ronda: 23, nombre: "Losail", fecha: "18 MAR" },
-            { id: 27, ronda: 24, nombre: "Abu Dabi", fecha: "01 APR" }
-        ];
+    select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
+        circuitos.map(c => `
+            <option value="${c.id}">
+                Ronda ${c.ronda} - ${c.nombre} (${c.fecha})
+            </option>
+        `).join('');
+}
 
-        select.innerHTML = '<option value="">-- Selecciona un circuito --</option>' + 
-            circuitos.map(c => `
-                <option value="${c.id}">
-                    Ronda ${c.ronda} - ${c.nombre} (${c.fecha})
-                </option>
-            `).join('');
+// Procesar JSON de RLT para la previsualización
+function procesarJsonRLT(jsonData) {
+    const tbodyPreview = document.getElementById('tbody-preview');
+    const trHead = document.getElementById('tr-preview-head');
+    tbodyPreview.innerHTML = '';
+
+    const tipoSesion = document.getElementById('select-tipo-sesion').value;
+
+    if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
+        trHead.innerHTML = `
+            <th style="padding: 8px;">Piloto (ID / R,Number)</th>
+            <th style="padding: 8px;">Mejor Vuelta</th>
+            <th style="padding: 8px;">Vueltas Totales</th>
+        `;
+        jsonData.session.drivers.forEach(d => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #333';
+            tr.innerHTML = `
+                <td style="padding: 8px; font-family: monospace;" data-idpiloto="${d.driverInfo.raceNumber}">${d.driverInfo.name || 'Piloto ' + d.driverInfo.raceNumber}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || 'No registrada'}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.lapsCompleted || 0}</td>
+            `;
+            tbodyPreview.appendChild(tr);
+        });
+    } else {
+        trHead.innerHTML = `
+            <th style="padding: 8px;">Piloto (ID / R,Number)</th>
+            <th style="padding: 8px;">Clasificación</th>
+            <th style="padding: 8px;">Vuelta Rápida</th>
+            <th style="padding: 8px;">Tiempo Total</th>
+        `;
+        jsonData.session.drivers.forEach(d => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #333';
+            tr.innerHTML = `
+                <td style="padding: 8px; font-family: monospace;" data-idpiloto="${d.driverInfo.raceNumber}">${d.driverInfo.name || 'Piloto ' + d.driverInfo.raceNumber}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
+            `;
+            tbodyPreview.appendChild(tr);
+        });
     }
 
-    // Lógica de carga de archivo CSV
-    document.addEventListener('DOMContentLoaded', () => {
-        const fileInput = document.getElementById('csv-file-input');
-        if (fileInput) {
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const text = event.target.result;
-                    procesarCSV(text);
-                };
-                reader.readAsText(file, 'UTF-8');
-            });
-        }
-    });
+    document.getElementById('preview-container').style.display = 'block';
+}
 
 function procesarCSV(contenido) {
+    const trHead = document.getElementById('tr-preview-head');
+    trHead.innerHTML = `
+        <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
+        <th style="padding: 8px;">Clasificación</th>
+        <th style="padding: 8px;">Vuelta Rápida</th>
+        <th style="padding: 8px;">Tiempo Total</th>
+    `;
+
     const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
     const tbodyPreview = document.getElementById('tbody-preview');
     tbodyPreview.innerHTML = '';
 
     for (let i = 1; i < lineas.length; i++) {
-        // Detecta automáticamente si usa coma o punto y coma
         const separador = lineas[i].includes(';') ? ';' : ',';
         const columnas = lineas[i].split(separador);
         
@@ -542,81 +564,88 @@ function procesarCSV(contenido) {
 const btnGuardar = document.getElementById('btn-subir-definitivo');
 if (btnGuardar) {
     btnGuardar.addEventListener('click', async () => {
+        const tipoSesion = document.getElementById('select-tipo-sesion').value;
         const filas = document.querySelectorAll('#tbody-preview tr');
-        if (filas.length === 0) {
+        
+        if (filas.length === 0 && !datosJsonParseados) {
             alert("No hay datos para guardar.");
             return;
         }
 
-        // Obtiene el id_gp del atributo interno de la primera fila
-        const primeraCelda = filas[0].querySelector('td');
-        const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
-        const selectGp = document.getElementById('select-gp');
-        const id_gp = idGpInterno || (selectGp ? selectGp.value : null);
+        try {
+            let endpoint = '';
+            let payload = {};
 
-        if (!id_gp) {
-            alert("Error: No se ha podido detectar el id_gp del circuito.");
-            return;
-        }
+            if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
+                if (!datosJsonParseados) {
+                    alert("Para subir entrenamientos libres debes cargar el archivo JSON de Racing League Tools.");
+                    return;
+                }
+                endpoint = '/api/importar-entrenamientos';
+                payload = {
+                    id_entrenamiento: tipoSesion === 'libre1' ? 1 : 2, 
+                    drivers: datosJsonParseados.session.drivers
+                };
+            } else {
+                endpoint = '/api/importar-tiempos';
+                
+                if (datosJsonParseados) {
+                    const idGp = datosJsonParseados.event.round;
+                    payload = datosJsonParseados.session.drivers.map(driver => ({
+                        id_gp: parseInt(idGp, 10),
+                        id: parseInt(driver.driverInfo.raceNumber, 10),
+                        tiempo_clasificacion: driver.qualifying?.bestLapTime || null,
+                        tiempo_vuelta_rapida_carrera: driver.fastestLap?.lapTime || null,
+                        tiempo_total_carrera: driver.totalTime || null
+                    }));
+                } else {
+                    // Modo CSV tradicional
+                    const primeraCelda = filas[0].querySelector('td');
+                    const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
+                    const selectGp = document.getElementById('select-gp');
+                    const id_gp = idGpInterno || (selectGp ? selectGp.value : null);
 
-        // Prepara directamente el Array plano que exige tu servidor
-        const registrosAEnviar = [];
-        filas.forEach(fila => {
-            const celdas = fila.querySelectorAll('td');
-            if (celdas.length >= 4) {
-                const idPiloto = celdas[0].innerText.trim();
-                const tiempoClas = celdas[1].innerText.trim();
-                const tiempoVr = celdas[2].innerText.trim();
-                const tiempoTot = celdas[3].innerText.trim();
+                    if (!id_gp) {
+                        alert("Error: No se ha podido detectar el id_gp del circuito.");
+                        return;
+                    }
 
-                if (idPiloto) {
-                    registrosAEnviar.push({
-                        id_gp: parseInt(id_gp, 10),
-                        id: parseInt(idPiloto, 10),
-                        tiempo_clasificacion: tiempoClas,
-                        tiempo_vuelta_rapida_carrera: tiempoVr,
-                        tiempo_total_carrera: tiempoTot
+                    payload = [];
+                    filas.forEach(fila => {
+                        const celdas = fila.querySelectorAll('td');
+                        if (celdas.length >= 4) {
+                            const idPiloto = celdas[0].innerText.trim();
+                            const tiempoClas = celdas[1].innerText.trim();
+                            const tiempoVr = celdas[2].innerText.trim();
+                            const tiempoTot = celdas[3].innerText.trim();
+
+                            if (idPiloto) {
+                                payload.push({
+                                    id_gp: parseInt(id_gp, 10),
+                                    id: parseInt(idPiloto, 10),
+                                    tiempo_clasificacion: tiempoClas,
+                                    tiempo_vuelta_rapida_carrera: tiempoVr,
+                                    tiempo_total_carrera: tiempoTot
+                                });
+                            }
+                        }
                     });
                 }
             }
-        });
 
-        if (registrosAEnviar.length === 0) {
-            alert("No hay filas válidas para importar.");
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/importar-tiempos', {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(registrosAEnviar)
+                body: JSON.stringify(payload)
             });
 
             const resultado = await response.json();
             if (response.ok) {
-                alert("¡Tiempos importados y guardados correctamente!");
+                alert("¡Datos importados y guardados correctamente!");
                 
-                // --- ACTUALIZACIÓN DEL MENSAJE FIJO CON EFECTO NEÓN AMARILLO ---
-                if (selectGp) {
-                    selectGp.value = id_gp;
-                    const textoCircuito = selectGp.options[selectGp.selectedIndex]?.text || '';
-                    
-                    const infoContainer = document.getElementById('info-ultimos-tiempos');
-                    if (infoContainer && textoCircuito) {
-                        infoContainer.innerText = `Últimos tiempos subidos: ${textoCircuito}`;
-                        infoContainer.style.color = '#FACC15';
-                        infoContainer.style.fontWeight = 'bold';
-                        infoContainer.style.fontSize = '15px';
-                        infoContainer.style.margin = '10px 0';
-                        // Efecto neón brillante
-                        infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
-                    }
-                }
-                // -------------------------------------------------------------
-
                 document.getElementById('preview-container').style.display = 'none';
                 document.getElementById('csv-file-input').value = '';
+                datosJsonParseados = null;
                 if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
             } else {
                 alert("Error al guardar: " + (resultado.error || resultado.mensaje || 'Desconocido'));
@@ -628,7 +657,6 @@ if (btnGuardar) {
     });
 }
 
-// Función para consultar al servidor cuál es el último GP con tiempos subidos
 async function cargarUltimoAvisoGP() {
     try {
         const response = await fetch('/api/ultimo-gp');
@@ -636,7 +664,6 @@ async function cargarUltimoAvisoGP() {
         
         const data = await response.json();
         
-        // El servidor devuelve directamente { id: 21, nombre: "Singapur", ultima_subida: "..." }
         if (data && data.nombre) {
             const infoContainer = document.getElementById('info-ultimos-tiempos');
             if (infoContainer) {
@@ -652,8 +679,6 @@ async function cargarUltimoAvisoGP() {
         console.error("Error al obtener el último GP actualizado:", error);
     }
 }
-    
-    
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
