@@ -520,6 +520,7 @@ function procesarJsonRLT(jsonData) {
         let mejorS2Global = Infinity;
         let mejorS3Global = Infinity;
 
+        // --- PASO 1: Calcular récords absolutos barriendo las vueltas de todos ---
         const processedDrivers = driversList.map((d, index) => {
             const pos = d.position || (index + 1);
             const nombrePiloto = d.driverName || d.driverInfo?.displayName || d.driverInfo?.firstName || `Piloto ${index + 1}`;
@@ -534,7 +535,6 @@ function procesarJsonRLT(jsonData) {
             let mejorS3PilotoMs = Infinity;
 
             lapsList.forEach(lap => {
-                // Usamos las claves en milisegundos exactas que nos has pasado
                 const s1 = lap.sector1TimeMs;
                 const s2 = lap.sector2TimeMs;
                 const s3 = lap.sector3TimeMs;
@@ -550,9 +550,6 @@ function procesarJsonRLT(jsonData) {
             if (mejorVueltaSec && mejorVueltaSec < mejorVueltaGlobal) {
                 mejorVueltaGlobal = mejorVueltaSec;
             }
-            if (mejorS1PilotoMs < mejorS1Global) mejorS1Global = mejorS1PilotoMs;
-            if (mejorS2PilotoMs < mejorS2Global) mejorS2Global = mejorS2PilotoMs;
-            if (mejorS3PilotoMs < mejorS3Global) mejorS3Global = mejorS3Dialogo => mejorS3Global = mejorS3PilotoMs; // corregido abajo por limpieza
 
             return {
                 pos,
@@ -568,20 +565,20 @@ function procesarJsonRLT(jsonData) {
             };
         });
 
-        // Aseguramos el mínimo global de S3 por si acaso
+        // --- PASO 2: Extraer los mínimos absolutos globales reales de la sesión ---
         processedDrivers.forEach(d => {
             if (d.mejorS1Ms !== null && d.mejorS1Ms < mejorS1Global) mejorS1Global = d.mejorS1Ms;
             if (d.mejorS2Ms !== null && d.mejorS2Ms < mejorS2Global) mejorS2Global = d.mejorS2Ms;
             if (d.mejorS3Ms !== null && d.mejorS3Ms < mejorS3Global) mejorS3Global = d.mejorS3Ms;
         });
 
+        // --- PASO 3: Renderizado aplicando los estilos morados correctamente ---
         processedDrivers.forEach(d => {
-            const esVueltaRecordGlobal = (d.mejorVueltaSec && d.mejorVueltaSec === mejorVueltaGlobal);
+            const esVueltaRecordGlobal = (d.mejorVueltaSec && Math.abs(d.mejorVueltaSec - mejorVueltaGlobal) < 0.001);
             const esS1Record = (d.mejorS1Ms !== null && d.mejorS1Ms === mejorS1Global);
             const esS2Record = (d.mejorS2Ms !== null && d.mejorS2Ms === mejorS2Global);
             const esS3Record = (d.mejorS3Ms !== null && d.mejorS3Ms === mejorS3Global);
 
-            // Estilo morado F1 style (fondo translúcido + borde + texto brillante)
             const estiloBadgeMorado = 'padding: 3px 6px; background-color: rgba(147, 51, 234, 0.35); border: 1px solid #a855f7; border-radius: 4px; color: #e9d5ff; font-weight: bold; font-family: monospace; display: inline-block;';
             const estiloNormal = 'padding: 8px; font-family: monospace; color: #fff; white-space: nowrap;';
             const estiloNormalSector = 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
@@ -617,7 +614,6 @@ function parseTimeToSeconds(timeStr) {
 }
 
 function formatMsToSeconds(ms) {
-    // Convierte 22033 ms en "22.033"
     return (ms / 1000).toFixed(3);
 }
 
