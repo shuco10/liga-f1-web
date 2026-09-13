@@ -23,20 +23,35 @@
         overflow: hidden;
     }
 
-    /* FORZAMOS EL DEGRADADO NEÓN EN TODA LA FILA DE LA CABECERA (Sea de 6 o 9 columnas) */
-    #tabla-tiempos-container thead tr {
-        background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
-        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+    /* Forzamos que la tabla ocupe todo el ancho y distribuya bien las columnas */
+    #tabla-tiempos-container table {
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
     }
 
-    /* Aseguramos que todas las celdas de la cabecera sean transparentes para que se vea el degradado de la fila */
-    #tabla-tiempos-container thead th {
+    /* EL DEGRADADO SE APLICA AL THEAD ENTERO PARA QUE LLEGUE DE PUNTA A PUNTA */
+    #tabla-tiempos-container thead {
+        background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+        display: table-header-group !important;
+    }
+
+    #tabla-tiempos-container thead tr {
+        background: transparent !important;
+    }
+
+    #tabla-tiempos-container th {
         background: transparent !important;
         color: #ffffff !important;
         text-transform: uppercase;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         letter-spacing: 1px;
         border: none !important;
+        padding: 14px 6px !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     /* Líneas de la tabla sutiles con efecto hover */
