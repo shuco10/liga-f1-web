@@ -779,13 +779,17 @@ if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
 
 
 // Usamos el selectGp que ya existe en tu archivo principal
-const selectVerSesion = document.getElementById('select-ver-sesion');
-const tablaHead = document.querySelector('#tabla-tiempos-container thead');
-const tbodyTiempos = document.getElementById('tbody-tiempos');
-
 async function cargarTiemposPantalla() {
-    const id_gp = selectGp.value; // Usa la variable que ya tienes creada en tu código
-    const tipoVer = selectVerSesion.value;
+    // Buscamos el select del circuito de forma segura dentro de la función
+    const selectGpElement = document.getElementById('select-gp');
+    const selectVerSesion = document.getElementById('select-ver-sesion');
+    const tablaHead = document.querySelector('#tabla-tiempos-container thead');
+    const tbodyTiempos = document.getElementById('tbody-tiempos');
+
+    if (!selectGpElement) return;
+
+    const id_gp = selectGpElement.value;
+    const tipoVer = selectVerSesion ? selectVerSesion.value : 'gp';
 
     if (!id_gp) {
         tbodyTiempos.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>';
@@ -841,7 +845,6 @@ async function cargarTiemposPantalla() {
                 </tr>
             `;
 
-            // ID de entrenamiento según el GP seleccionado y si es libre 1 o libre 2
             const idEntrenamiento = tipoVer === 'libre1' ? `${id_gp}1` : `${id_gp}2`; 
 
             const res = await fetch(`/api/entrenamientos/${idEntrenamiento}`);
@@ -874,9 +877,19 @@ async function cargarTiemposPantalla() {
     }
 }
 
-// Escuchar cambios en los selectores
-if (selectGp) selectGp.addEventListener('change', cargarTiemposPantalla);
-if (selectVerSesion) selectVerSesion.addEventListener('change', cargarTiemposPantalla);
+// Conectar eventos a los selectores de forma segura
+document.addEventListener('DOMContentLoaded', () => {
+    const selectGp = document.getElementById('select-gp');
+    const selectVerSesion = document.getElementById('select-ver-sesion');
+
+    if (selectGp) selectGp.addEventListener('change', cargarTiemposPantalla);
+    if (selectVerSesion) selectVerSesion.addEventListener('change', cargarTiemposPantalla);
+});
+
+
+
+
+    
     
 </script>
 <script src="/socket.io/socket.io.js"></script>
