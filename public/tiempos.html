@@ -794,7 +794,15 @@ async function cargarTiemposPantalla() {
     if (!selectGpElement) return;
 
     const id_gp = selectGpElement.value;
-    const tipoVer = selectVerSesion ? selectVerSesion.value : 'gp';
+    
+    // Obtenemos tanto el valor como el texto seleccionado para evitar fallos de concordancia
+    const valorSeleccionado = selectVerSesion ? selectVerSesion.value.toLowerCase() : 'gp';
+    const textoSeleccionado = selectVerSesion && selectVerSesion.options[selectVerSesion.selectedIndex] 
+        ? selectVerSesion.options[selectVerSesion.selectedIndex].text.toLowerCase() 
+        : '';
+
+    // Determinamos si es carrera o libres comprobando si contiene las palabras clave
+    const esCarrera = valorSeleccionado === 'gp' || valorSeleccionado === 'carrera' || textoSeleccionado.includes('carrera') || (!textoSeleccionado.includes('libre') && !valorSeleccionado.includes('libre'));
 
     if (!id_gp) {
         tbodyTiempos.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>';
@@ -802,7 +810,7 @@ async function cargarTiemposPantalla() {
     }
 
     try {
-        if (tipoVer === 'gp') {
+        if (esCarrera) {
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 14px 10px; text-align: center; width: 8%;">Pos</th>
@@ -848,12 +856,15 @@ async function cargarTiemposPantalla() {
                 </tr>
             `;
 
-            const numSesion = tipoVer === 'libre1' ? 1 : 2;
+            // Detectamos si es Libres 2 basándonos en el valor o texto (si contiene un '2' o 'dos')
+            const esLibres2 = valorSeleccionado.includes('2') || textoSeleccionado.includes('2') || valorSeleccionado.includes('libre2');
+            const numSesion = esLibres2 ? 2 : 1;
+
             const res = await fetch(`/api/entrenamientos/${id_gp}?sesion=${numSesion}`);
             const datos = await res.json();
 
             if (!datos || datos.length === 0) {
-                tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #aaa;">No hay registros de ${tipoVer.toUpperCase()} para este GP.</td></tr>`;
+                tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #aaa;">No hay registros de Entrenamientos Libres ${numSesion} para este GP.</td></tr>`;
                 return;
             }
 
