@@ -137,7 +137,7 @@
             });
         }
 
-        // 3. Lógica unificada de carga de archivos (JSON de RLT o CSV)
+// 3. Lógica unificada de carga de archivos (JSON de RLT o CSV)
         const fileInput = document.getElementById('csv-file-input');
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
@@ -151,6 +151,10 @@
                     if (file.name.endsWith('.json')) {
                         try {
                             datosJsonParseados = JSON.parse(text);
+                            
+                            // --- PONLO AQUÍ ---
+                            console.log("CONTENIDO DEL ARCHIVO JSON:", datosJsonParseados);
+                            
                             procesarJsonRLT(datosJsonParseados);
                         } catch(err) {
                             alert("El archivo JSON no es válido.");
