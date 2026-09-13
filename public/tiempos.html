@@ -583,7 +583,7 @@ function procesarJsonRLT(jsonData) {
             if (d.mejorS3Ms !== null && d.mejorS3Ms < mejorS3Global) mejorS3Global = d.mejorS3Ms;
         });
 
-        // --- PASO 3: Renderizado aplicando los estilos morados correctamente ---
+// --- PASO 3: Renderizado aplicando los estilos morados correctamente ---
         processedDrivers.forEach(d => {
             const esVueltaRecordGlobal = (d.mejorVueltaSec && Math.abs(d.mejorVueltaSec - mejorVueltaGlobal) < 0.001);
             const esS1Record = (d.mejorS1Ms !== null && d.mejorS1Ms === mejorS1Global);
@@ -632,153 +632,159 @@ function nombrePilotoFiltro(nombre) {
     return nombre;
 }
 
-    function procesarCSV(contenido) {
-        const trHead = document.getElementById('tr-preview-head');
-        trHead.innerHTML = `
-            <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
-            <th style="padding: 8px;">Clasificación</th>
-            <th style="padding: 8px;">Vuelta Rápida</th>
-            <th style="padding: 8px;">Tiempo Total</th>
+function procesarCSV(contenido) {
+    const trHead = document.getElementById('tr-preview-head');
+    trHead.innerHTML = `
+        <th style="padding: 8px;">Piloto (ID / Gamertag)</th>
+        <th style="padding: 8px;">Clasificación</th>
+        <th style="padding: 8px;">Vuelta Rápida</th>
+        <th style="padding: 8px;">Tiempo Total</th>
+    `;
+
+    const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
+    const tbodyPreview = document.getElementById('tbody-preview');
+    tbodyPreview.innerHTML = '';
+
+    for (let i = 1; i < lineas.length; i++) {
+        const separador = lineas[i].includes(';') ? ';' : ',';
+        const columnas = lineas[i].split(separador);
+        
+        if (columnas.length < 5) continue;
+
+        const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #333';
+        tr.innerHTML = `
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
+            <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
         `;
-
-        const lineas = contenido.split(/\r\n|\n/).filter(linea => linea.trim() !== '');
-        const tbodyPreview = document.getElementById('tbody-preview');
-        tbodyPreview.innerHTML = '';
-
-        for (let i = 1; i < lineas.length; i++) {
-            const separador = lineas[i].includes(';') ? ';' : ',';
-            const columnas = lineas[i].split(separador);
-            
-            if (columnas.length < 5) continue;
-
-            const [idGp, idPiloto, tiempoClas, tiempoVr, tiempoTot] = columnas.map(c => c.trim().replace(/"/g, ''));
-
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #333';
-            tr.innerHTML = `
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;" data-idgp="${idGp}">${idPiloto}</td>
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoClas}</td>
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoVr}</td>
-                <td contenteditable="true" style="padding: 8px; font-family: monospace;">${tiempoTot}</td>
-            `;
-            tbodyPreview.appendChild(tr);
-        }
-
-        document.getElementById('preview-container').style.display = 'block';
+        tbodyPreview.appendChild(tr);
     }
 
-    const btnGuardar = document.getElementById('btn-subir-definitivo');
-    if (btnGuardar) {
-        btnGuardar.addEventListener('click', async () => {
-            const tipoSesion = document.getElementById('select-tipo-sesion').value;
-            const filas = document.querySelectorAll('#tbody-preview tr');
-            
-            if (filas.length === 0 && !datosJsonParseados) {
-                alert("No hay datos para guardar.");
-                return;
-            }
+    document.getElementById('preview-container').style.display = 'block';
+}
 
-            try {
-                let endpoint = '';
-                let payload = {};
+const btnGuardar = document.getElementById('btn-subir-definitivo');
+if (btnGuardar) {
+    btnGuardar.addEventListener('click', async () => {
+        const tipoSesion = document.getElementById('select-tipo-sesion').value;
+        const filas = document.querySelectorAll('#tbody-preview tr');
+        
+        if (filas.length === 0 && !datosJsonParseados) {
+            alert("No hay datos para guardar.");
+            return;
+        }
 
-if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
-                    if (!datosJsonParseados) {
-                        alert("Para subir entrenamientos libres debes cargar el archivo JSON de Racing League Tools.");
-                        return;
-                    }
-                    endpoint = '/api/importar-entrenamientos';
-                    
-                    const pilotosLibres = [];
-                    filas.forEach(fila => {
-                        const celdas = fila.querySelectorAll('td');
-                        if (celdas.length >= 9) {
-                            const posicion = parseInt(celdas[0].innerText.trim()) || null;
-                            const nombrePiloto = celdas[1].innerText.trim();
-                            const escuderia = celdas[2].innerText.trim();
-                            
-                            const mejorVueltaEl = celdas[3].querySelector('span') || celdas[3];
-                            const mejor_vuelta = mejorVueltaEl.innerText.trim();
-                            
-                            const s1Text = celdas[4].querySelector('span') ? celdas[4].querySelector('span').innerText.trim() : celdas[4].innerText.trim();
-                            const s2Text = celdas[5].querySelector('span') ? celdas[5].querySelector('span').innerText.trim() : celdas[5].innerText.trim();
-                            const s3Text = celdas[6].querySelector('span') ? celdas[6].querySelector('span').innerText.trim() : celdas[6].innerText.trim();
+        try {
+            let endpoint = '';
+            let payload = {};
 
-                            const s1_ms = s1Text !== '-' ? Math.round(parseFloat(s1Text) * 1000) : null;
-                            const s2_ms = s2Text !== '-' ? Math.round(parseFloat(s2Text) * 1000) : null;
-                            const s3_ms = s3Text !== '-' ? Math.round(parseFloat(s3Text) * 1000) : null;
-
-                            const compuesto_neumatico = celdas[7].innerText.trim();
-                            const vueltas_totales = parseInt(celdas[8].innerText.trim()) || 0;
-
-                            pilotosLibres.push({
-                                posicion,
-                                nombrePiloto,
-                                escuderia,
-                                mejor_vuelta,
-                                s1_ms,
-                                s2_ms,
-                                s3_ms,
-                                compuesto_neumatico,
-                                vueltas_totales
-                            });
-                        }
-                    });
-
-                    payload = {
-                        id_entrenamiento: tipoSesion === 'libre1' ? 1 : 2, 
-                        pilotos: pilotosLibres
-                    };
+            if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
+                if (!datosJsonParseados) {
+                    alert("Para subir entrenamientos libres debes cargar el archivo JSON de Racing League Tools.");
+                    return;
                 }
+                endpoint = '/api/importar-entrenamientos';
+                
+                const pilotosLibres = [];
+                filas.forEach(fila => {
+                    const celdas = fila.querySelectorAll('td');
+                    if (celdas.length >= 9) {
+                        const posicion = parseInt(celdas[0].innerText.trim()) || null;
+                        const nombrePiloto = celdas[1].innerText.trim();
+                        const escuderia = celdas[2].innerText.trim();
+                        
+                        const mejorVueltaEl = celdas[3].querySelector('span') || celdas[3];
+                        const mejor_vuelta = mejorVueltaEl.innerText.trim();
+                        
+                        const s1Text = celdas[4].querySelector('span') ? celdas[4].querySelector('span').innerText.trim() : celdas[4].innerText.trim();
+                        const s2Text = celdas[5].querySelector('span') ? celdas[5].querySelector('span').innerText.trim() : celdas[5].innerText.trim();
+                        const s3Text = celdas[6].querySelector('span') ? celdas[6].querySelector('span').innerText.trim() : celdas[6].innerText.trim();
 
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                        const s1_ms = s1Text !== '-' ? Math.round(parseFloat(s1Text) * 1000) : null;
+                        const s2_ms = s2Text !== '-' ? Math.round(parseFloat(s2Text) * 1000) : null;
+                        const s3_ms = s3Text !== '-' ? Math.round(parseFloat(s3Text) * 1000) : null;
+
+                        const compuesto_neumatico = celdas[7].innerText.trim();
+                        const vueltas_totales = parseInt(celdas[8].innerText.trim()) || 0;
+
+                        pilotosLibres.push({
+                            posicion,
+                            nombrePiloto,
+                            escuderia,
+                            mejor_vuelta,
+                            s1_ms,
+                            s2_ms,
+                            s3_ms,
+                            compuesto_neumatico,
+                            vueltas_totales
+                        });
+                    }
                 });
 
-                const resultado = await response.json();
-                if (response.ok) {
-                    alert("¡Datos importados y guardados correctamente!");
-                    document.getElementById('preview-container').style.display = 'none';
-                    document.getElementById('csv-file-input').value = '';
-                    datosJsonParseados = null;
-                    if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
-                } else {
-                    alert("Error al guardar: " + (resultado.error || resultado.mensaje || 'Desconocido'));
-                }
-            } catch (error) {
-                console.error("Error en la petición:", error);
-                alert("Hubo un error de conexión al enviar los datos.");
+                // ADAPTACIÓN AL BACKEND: Enviamos el objeto completo con 'event', 'session' y 'pilotos'
+                payload = {
+                    event: datosJsonParseados.event,
+                    session: {
+                        ...datosJsonParseados.session,
+                        sessionInfo: {
+                            ...datosJsonParseados.session?.sessionInfo,
+                            sessionPosition: tipoSesion === 'libre1' ? 1 : 2
+                        }
+                    },
+                    pilotos: pilotosLibres
+                };
             }
-        });
-    }
 
-    async function cargarUltimoAvisoGP() {
-        try {
-            const response = await fetch('/api/ultimo-gp');
-            if (!response.ok) return;
-            
-            const data = await response.json();
-            
-            if (data && data.nombre) {
-                const infoContainer = document.getElementById('info-ultimos-tiempos');
-                if (infoContainer) {
-                    infoContainer.innerText = `Últimos tiempos subidos: ${data.nombre}`;
-                    infoContainer.style.color = '#FACC15';
-                    infoContainer.style.fontWeight = 'bold';
-                    infoContainer.style.fontSize = '15px';
-                    infoContainer.style.margin = '10px 0';
-                    infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
-                }
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const resultado = await response.json();
+            if (response.ok) {
+                alert("¡Datos importados y guardados correctamente!");
+                document.getElementById('preview-container').style.display = 'none';
+                document.getElementById('csv-file-input').value = '';
+                datosJsonParseados = null;
+                if (typeof cargarTiemposPorGP === 'function') cargarTiemposPorGP();
+            } else {
+                alert("Error al guardar: " + (resultado.error || resultado.mensaje || 'Desconocido'));
             }
         } catch (error) {
-            console.error("Error al obtener el último GP actualizado:", error);
+            console.error("Error en la petición:", error);
+            alert("Hubo un error de conexión al enviar los datos.");
         }
+    });
+}
+
+async function cargarUltimoAvisoGP() {
+    try {
+        const response = await fetch('/api/ultimo-gp');
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        
+        if (data && data.nombre) {
+            const infoContainer = document.getElementById('info-ultimos-tiempos');
+            if (infoContainer) {
+                infoContainer.innerText = `Últimos tiempos subidos: ${data.nombre}`;
+                infoContainer.style.color = '#FACC15';
+                infoContainer.style.fontWeight = 'bold';
+                infoContainer.style.fontSize = '15px';
+                infoContainer.style.margin = '10px 0';
+                infoContainer.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.6), 0 0 15px rgba(250, 204, 21, 0.4)';
+            }
+        }
+    } catch (error) {
+        console.error("Error al obtener el último GP actualizado:", error);
     }
+}
 
-
-// Usamos el selectGp que ya existe en tu archivo principal
 async function cargarTiemposPantalla() {
     const selectGpElement = document.getElementById('select-gp');
     const selectVerSesion = document.getElementById('select-ver-sesion');
@@ -797,7 +803,6 @@ async function cargarTiemposPantalla() {
 
     try {
         if (tipoVer === 'gp') {
-            // 1. Pintar cabecera de Carrera / Clasificación
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 14px 10px; text-align: center;">Pos</th>
@@ -829,7 +834,6 @@ async function cargarTiemposPantalla() {
             `).join('');
 
         } else {
-            // 2. Pintar cabecera de Entrenamientos Libres (Libres 1 o Libres 2)
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 14px 10px; text-align: center;">Pos</th>
@@ -844,7 +848,6 @@ async function cargarTiemposPantalla() {
                 </tr>
             `;
 
-            // Enviamos el id del GP y especificamos si es libre1 o libre2 mediante parámetros o ruta limpia
             const numSesion = tipoVer === 'libre1' ? 1 : 2;
             const res = await fetch(`/api/entrenamientos/${id_gp}?sesion=${numSesion}`);
             const datos = await res.json();
@@ -876,7 +879,6 @@ async function cargarTiemposPantalla() {
     }
 }
 
-// Conectar eventos de forma segura
 document.addEventListener('DOMContentLoaded', () => {
     const selectGp = document.getElementById('select-gp');
     const selectVerSesion = document.getElementById('select-ver-sesion');
