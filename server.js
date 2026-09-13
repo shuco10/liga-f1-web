@@ -1137,10 +1137,10 @@ app.post('/api/importar-tiempos', async (req, res) => {
 //////////////////////////////////////////////////////////////////////////
 // Ruta para importar Entrenamientos Libres (Libres 1 o Libres 2)
 app.post('/api/importar-entrenamientos', async (req, res) => {
-    const { id_entrenamiento, pilotos } = req.body; // Recibimos el array de pilotos procesados desde la tabla
+    const { id_entrenamiento, pilotos } = req.body;
     
     if (!id_entrenamiento || !pilotos || !Array.isArray(pilotos)) {
-        return res.status(400).json({ error: "Faltan datos obligatorios (id_entrenamiento o pilotos)" });
+        return res.status(400).json({ error: "Faltan datos obligatorios (id_entrenamiento or pilotos)" });
     }
 
     const client = await pool.connect();
@@ -1148,9 +1148,9 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
         await client.query('BEGIN');
 
         for (const p of pilotos) {
-            // Buscamos el ID real del piloto en la tabla "pilotos" usando su nombre o nickname
+            // Buscamos el ID real en la tabla "pilotos" usando su columna correcta: "gamertag"
             const resPiloto = await client.query(
-                'SELECT id FROM pilotos WHERE nombre ILIKE $1 OR nickname ILIKE $1 LIMIT 1', 
+                'SELECT id FROM pilotos WHERE gamertag ILIKE $1 LIMIT 1', 
                 [p.nombrePiloto]
             );
             let idPiloto = resPiloto.rows.length > 0 ? resPiloto.rows[0].id : null;
@@ -1160,7 +1160,6 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
                 continue; 
             }
 
-            // Insertamos o actualizamos en la tabla tiempos_entrenamientos con las nuevas columnas
             await client.query(`
                 INSERT INTO tiempos_entrenamientos 
                 (id_entrenamiento, id, posicion, mejor_vuelta, s1_ms, s2_ms, s3_ms, compuesto_neumatico, vueltas_totales, updated_at)
@@ -1198,7 +1197,6 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
         client.release();
     }
 });
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////  JOIN DE LOS TIEMPOS //////////////////////////////////////////
