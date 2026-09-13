@@ -834,21 +834,22 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
-            // Función para convertir string de tiempo (ej "1:11.401" o milisegundos) a segundos totales en número para comparar récords
+            // Conversor robusto compatible con strings tipo "1:11.401", "18.111" o números puros
             const aMilisegundos = (t) => {
-                if (!t) return null;
+                if (t === null || t === undefined || t === '-' || t === '') return null;
                 if (typeof t === 'number') return t;
-                if (typeof t === 'string' && t.includes(':')) {
-                    const partes = t.split(':');
-                    const mins = parseFloat(partes[0]);
-                    const secs = parseFloat(partes[1]);
+                const str = String(t).trim();
+                if (str.includes(':')) {
+                    const partes = str.split(':');
+                    const mins = parseFloat(partes[0]) || 0;
+                    const secs = parseFloat(partes[1]) || 0;
                     return (mins * 60 * 1000) + (secs * 1000);
                 }
-                const num = parseFloat(t);
-                return isNaN(num) ? null : num;
+                const num = parseFloat(str);
+                // Si es un número pequeño (ej: 18.111), asumimos que son segundos y lo pasamos a ms
+                return isNaN(num) ? null : (num < 100 ? num * 1000 : num);
             };
 
-            // Encontramos los mínimos absolutos de la sesión para pintar en morado
             const tiemposVueltaMs = datos.map(r => aMilisegundos(r.mejor_vuelta)).filter(v => v !== null && v > 0);
             const s1Ms = datos.map(r => aMilisegundos(r.s1)).filter(v => v !== null && v > 0);
             const s2Ms = datos.map(r => aMilisegundos(r.s2)).filter(v => v !== null && v > 0);
@@ -909,19 +910,19 @@ async function cargarTiemposPantalla() {
             }
 
             const aMilisegundos = (t) => {
-                if (!t) return null;
+                if (t === null || t === undefined || t === '-' || t === '') return null;
                 if (typeof t === 'number') return t;
-                if (typeof t === 'string' && t.includes(':')) {
-                    const partes = t.split(':');
-                    const mins = parseFloat(partes[0]);
-                    const secs = parseFloat(partes[1]);
+                const str = String(t).trim();
+                if (str.includes(':')) {
+                    const partes = str.split(':');
+                    const mins = parseFloat(partes[0]) || 0;
+                    const secs = parseFloat(partes[1]) || 0;
                     return (mins * 60 * 1000) + (secs * 1000);
                 }
-                const num = parseFloat(t);
-                return isNaN(num) ? null : num;
+                const num = parseFloat(str);
+                return isNaN(num) ? null : (num < 100 ? num * 1000 : num);
             };
 
-            // Detectamos la vuelta rápida absoluta de carrera para pintarla en morado
             const vrValidas = datos.map(r => aMilisegundos(r.tiempo_vuelta_rapida_carrera)).filter(v => v !== null && v > 0);
             const minVueltaCarrera = vrValidas.length ? Math.min(...vrValidas) : null;
 
