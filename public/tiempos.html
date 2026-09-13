@@ -794,7 +794,6 @@ async function cargarTiemposPantalla() {
 
     if (!selectGpElement || !selectVerSesion) return;
 
-    // Forzamos un layout fijo en la tabla para que respete los anchos de forma estricta
     if (tablaContainer) {
         const tabla = tablaContainer.querySelector('table') || tablaContainer;
         tabla.style.tableLayout = 'fixed';
@@ -813,17 +812,17 @@ async function cargarTiemposPantalla() {
         if (valorSesion === 'libre1' || valorSesion === 'libre2' || valorSesion === '1' || valorSesion === '2') {
             const numSesion = (valorSesion === 'libre2' || valorSesion === '2') ? 2 : 1;
 
-            // 9 Columnas exactas para Entrenamientos
+            // 9 Columnas exactas para Entrenamientos (coinciden con los 9 <td> de abajo)
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 12px 6px; text-align: center; width: 6%;">Pos</th>
                     <th style="padding: 12px 6px; width: 18%;">Piloto</th>
-                    <th style="padding: 12px 6px; width: 18%;">Escudería</th>
+                    <th style="padding: 12px 6px; width: 20%;">Escudería</th>
                     <th style="padding: 12px 6px; text-align: center; width: 13%;">Mejor Vuelta</th>
-                    <th style="padding: 12px 6px; text-align: center; width: 9%;">S1</th>
-                    <th style="padding: 12px 6px; text-align: center; width: 9%;">S2</th>
-                    <th style="padding: 12px 6px; text-align: center; width: 9%;">S3</th>
-                    <th style="padding: 12px 6px; text-align: center; width: 10%;">Neumático</th>
+                    <th style="padding: 12px 6px; text-align: center; width: 8%;">S1</th>
+                    <th style="padding: 12px 6px; text-align: center; width: 8%;">S2</th>
+                    <th style="padding: 12px 6px; text-align: center; width: 8%;">S3</th>
+                    <th style="padding: 12px 6px; text-align: center; width: 11%;">Neumático</th>
                     <th style="padding: 12px 6px; text-align: center; width: 8%;">Vueltas</th>
                 </tr>
             `;
@@ -838,7 +837,7 @@ async function cargarTiemposPantalla() {
 
             const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
 
-            // Exactamente 9 celdas por fila que corresponden con los 9 th de arriba
+            // Tus 9 celdas originales intactas pero con clases/estilos seguros
             tbodyTiempos.innerHTML = datos.map((row) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 6px; text-align: center;">${row.posicion || '-'}</td>
@@ -854,7 +853,7 @@ async function cargarTiemposPantalla() {
             `).join('');
 
         } else {
-            // 6 Columnas exactas para Carrera
+            // 6 Columnas exactas para Carrera (coinciden con los 6 <td> de abajo)
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 12px 8px; text-align: center; width: 8%;">Pos</th>
@@ -874,7 +873,7 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
-            // Exactamente 6 celdas por fila que corresponden con los 6 th de arriba
+            // Tus 6 celdas originales de carrera intactas
             tbodyTiempos.innerHTML = datos.map((row, index) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 8px; text-align: center;">${index + 1}</td>
@@ -892,6 +891,9 @@ async function cargarTiemposPantalla() {
     }
 }
 
+
+
+//////////////////////////////////////////////////////////////////////////////   
 // Vinculación directa y segura de eventos
 window.addEventListener('DOMContentLoaded', () => {
     const selectGp = document.getElementById('select-gp');
