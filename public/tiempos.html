@@ -38,12 +38,16 @@
         box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
         display: table-row-group !important;
         width: 100% !important;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
     }
 
     #tabla-tiempos-container thead tr {
         background: transparent !important;
         display: table-row !important;
         width: 100% !important;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
     }
 
     #tabla-tiempos-container th {
@@ -54,6 +58,14 @@
         letter-spacing: 1px;
         border: none !important;
         background: transparent !important;
+    }
+
+    #tabla-tiempos-container th:first-child {
+        border-top-left-radius: 8px;
+    }
+
+    #tabla-tiempos-container th:last-child {
+        border-top-right-radius: 8px;
     }
 
     /* Líneas de la tabla sutiles con efecto hover */
