@@ -1135,20 +1135,72 @@ app.post('/api/importar-tiempos', async (req, res) => {
 //////////////////////////////////////////////////////////////////////////
 ////////// GUARDAR TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-// Ruta para importar Entrenamientos Libres (Libres 1 o Libres 2)
 app.post('/api/importar-entrenamientos', async (req, res) => {
-    const { id_entrenamiento, pilotos } = req.body;
+    const { event, session, pilotos } = req.body;
     
-    if (!id_entrenamiento || !pilotos || !Array.isArray(pilotos)) {
-        return res.status(400).json({ error: "Faltan datos obligatorios (id_entrenamiento or pilotos)" });
+    if (!event || !session || !pilotos || !Array.isArray(pilotos)) {
+        return res.status(400).json({ error: "Estructura de JSON inválida o faltan datos." });
+    }
+
+    let trackName = event.track?.trackName; // Ej: "Interlagos"
+    const sessionPosition = session.sessionInfo?.sessionPosition; // 1 o 2
+
+    if (!trackName || !sessionPosition) {
+        return res.status(400).json({ error: "Faltan datos del circuito o sesión en el JSON." });
+    }
+
+    // 1. Diccionario de equivalencias: Traducción de RLT -> Tu Base de Datos
+    const equivalenciasCircuitos = {
+        "Interlagos": "São Paulo",
+        "Circuit Gilles-Villeneuve": "Montreal",
+        "Circuit of the Americas": "Austin",
+        "Autodromo Hermanos Rodriguez": "Ciudad de México",
+        "Albert Park Circuit": "Melbourne",
+        "Shanghai International Circuit": "Shanghái",
+        "Bahrain International Circuit": "Sakhir",
+        "Jeddah Corniche Circuit": "Yeda",
+        "Miami International Autodrome": "Miami",
+        "Circuit de Monaco": "Mónaco",
+        "Circuit de Barcelona-Catalunya": "Barcelona",
+        "Red Bull Ring": "Spielberg",
+        "Silverstone Circuit": "Silverstone",
+        "Circuit de Spa-Francorchamps": "Spa",
+        "Hungaroring": "Budapest",
+        "Circuit Zandvoort": "Zandvoort",
+        "Autodromo Nazionale Monza": "Monza",
+        "Madrid Circuit": "Madrid",
+        "Baku City Circuit": "Bakú",
+        "Marina Bay Street Circuit": "Singapur",
+        "Las Vegas Strip Circuit": "Las Vegas",
+        "Lusail International Circuit": "Losail",
+        "Yas Marina Circuit": "Abu Dabi"
+    };
+
+    // Si existe una equivalencia, la aplicamos; si no, dejamos el nombre que traía
+    if (equivalenciasCircuitos[trackName]) {
+        trackName = equivalenciasCircuitos[trackName];
     }
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
+        // 2. Buscamos el ID real del circuito en tu tabla 'circuitos' usando el nombre traducido ("São Paulo")
+        const resCircuito = await client.query(
+            'SELECT id FROM circuitos WHERE nombre ILIKE $1 LIMIT 1',
+            [trackName]
+        );
+
+        if (resCircuito.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: `No se encontró ningún circuito con el nombre '${trackName}' en la base de datos.` });
+        }
+
+        const id_gp = resCircuito.rows[0].id;
+        const id_entrenamiento = sessionPosition; // 1 o 2
+
+        // 3. Insertamos o actualizamos los tiempos
         for (const p of pilotos) {
-            // Buscamos el ID real en la tabla "pilotos" usando su columna correcta: "gamertag"
             const resPiloto = await client.query(
                 'SELECT id FROM pilotos WHERE gamertag ILIKE $1 LIMIT 1', 
                 [p.nombrePiloto]
@@ -1162,9 +1214,9 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
 
             await client.query(`
                 INSERT INTO tiempos_entrenamientos 
-                (id_entrenamiento, id, posicion, mejor_vuelta, s1_ms, s2_ms, s3_ms, compuesto_neumatico, vueltas_totales, updated_at)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
-                ON CONFLICT (id_entrenamiento, id) 
+                (id_gp, id_entrenamiento, id, posicion, mejor_vuelta, s1_ms, s2_ms, s3_ms, compuesto_neumatico, vueltas_totales, updated_at)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+                ON CONFLICT (id_gp, id_entrenamiento, id) 
                 DO UPDATE SET 
                     posicion = EXCLUDED.posicion,
                     mejor_vuelta = EXCLUDED.mejor_vuelta,
@@ -1175,6 +1227,7 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
                     vueltas_totales = EXCLUDED.vueltas_totales,
                     updated_at = NOW();
             `, [
+                id_gp,
                 id_entrenamiento,
                 idPiloto,
                 p.posicion,
@@ -1188,7 +1241,7 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
         }
 
         await client.query('COMMIT');
-        res.json({ success: true, mensaje: "Entrenamientos libres importados y guardados correctamente." });
+        res.json({ success: true, mensaje: `Libres ${id_entrenamiento} de ${trackName} importados correctamente.` });
     } catch (err) {
         await client.query('ROLLBACK');
         console.error("Error al importar entrenamientos:", err);
@@ -1197,16 +1250,16 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
         client.release();
     }
 });
-
 //////////////////////////////////////////////////////////////////////////
 //////////  OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-app.get('/api/entrenamientos/:id_entrenamiento', async (req, res) => {
+app.get('/api/entrenamientos/:id_gp', async (req, res) => {
     try {
-        const { id_entrenamiento } = req.params;
-        // O si lo filtras también por GP, asegúrate de relacionarlo. 
-        // Dependiendo de cómo guardes el id_gp en entrenamientos, haz el JOIN correspondiente.
+        const { id_gp } = req.params;
+        // Recogemos la sesión de la query string (?sesion=1 o ?sesion=2). Si no viene nada, por defecto pedimos la 1 (Libres 1).
+        const sesion = req.query.sesion || '1'; 
+
         const resultado = await pool.query(`
             SELECT 
                 te.posicion,
@@ -1221,9 +1274,9 @@ app.get('/api/entrenamientos/:id_entrenamiento', async (req, res) => {
             FROM tiempos_entrenamientos te
             JOIN pilotos p ON te.id = p.id
             LEFT JOIN escuderias e ON p.escuderia_id = e.id
-            WHERE te.id_entrenamiento = $1
+            WHERE te.id_gp = $1 AND te.id_entrenamiento = $2
             ORDER BY te.posicion ASC;
-        `, [id_entrenamiento]);
+        `, [id_gp, sesion]);
 
         res.json(resultado.rows);
     } catch (error) {
