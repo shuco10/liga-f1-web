@@ -905,7 +905,7 @@ async function cargarTiemposPantalla() {
         "Stake F1 Team Kick Sauber": "sauber.png"
     };
 
-const renderEscuderiaImg = (nombreEscuderia) => {
+    const renderEscuderiaImg = (nombreEscuderia) => {
         if (!nombreEscuderia) return '-';
         const archivoImg = archivosBanderas[nombreEscuderia];
         if (!archivoImg) return nombreEscuderia; 
@@ -962,6 +962,14 @@ const renderEscuderiaImg = (nombreEscuderia) => {
                 return (ms / 1000).toFixed(3);
             };
 
+            const formatMsToLap = (ms) => {
+                if (!ms || ms <= 0) return '-';
+                const totalSecs = ms / 1000;
+                const mins = Math.floor(totalSecs / 60);
+                const secs = (totalSecs % 60).toFixed(3);
+                return mins > 0 ? `${mins}:${secs < 10 ? '0' : ''}${secs}` : secs;
+            };
+
             const tiemposVueltaMs = datos.map(r => aMilisegundos(r.mejor_vuelta)).filter(v => v !== null && v > 0);
             
             const s1MsArr = datos.map(r => r.s1_ms).filter(v => v !== null && v > 0);
@@ -973,9 +981,12 @@ const renderEscuderiaImg = (nombreEscuderia) => {
             const minS2 = s2MsArr.length ? Math.min(...s2MsArr) : null;
             const minS3 = s3MsArr.length ? Math.min(...s3MsArr) : null;
 
+            const vueltaIdealMs = (minS1 && minS2 && minS3) ? (minS1 + minS2 + minS3) : null;
+            const textoVueltaIdeal = formatMsToLap(vueltaIdealMs);
+
             const badgeMorado = (texto) => `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-family: monospace;">${texto}</span>`;
 
-            tbodyTiempos.innerHTML = datos.map((row) => {
+            let filasHtml = datos.map((row) => {
                 const vMs = aMilisegundos(row.mejor_vuelta);
                 
                 const s1Val = row.s1_ms;
@@ -1008,6 +1019,17 @@ const renderEscuderiaImg = (nombreEscuderia) => {
                     </tr>
                 `;
             }).join('');
+
+            // Fila inferior con la Vuelta Ideal Teórica
+            filasHtml += `
+                <tr style="background: rgba(147, 51, 234, 0.15); border-top: 2px solid rgba(147, 51, 234, 0.4); font-weight: bold;">
+                    <td colspan="3" style="padding: 12px 10px; text-align: right; color: #c084fc; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Vuelta Ideal Teórica (Optimal Lap):</td>
+                    <td style="padding: 12px 6px; text-align: center; color: #ffffff;">${badgeMorado(textoVueltaIdeal)}</td>
+                    <td colspan="5" style="padding: 12px 6px; color: #aaa; font-size: 0.75rem; font-style: italic;">Suma de los mejores sectores absolutos de la sesión</td>
+                </tr>
+            `;
+
+            tbodyTiempos.innerHTML = filasHtml;
 
         } else {
             // 6 Columnas de Carrera
