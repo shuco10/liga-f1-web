@@ -905,11 +905,11 @@ async function cargarTiemposPantalla() {
         "Stake F1 Team Kick Sauber": "sauber.png"
     };
 
-    const renderEscuderiaImg = (nombreEscuderia) => {
+const renderEscuderiaImg = (nombreEscuderia) => {
         if (!nombreEscuderia) return '-';
         const archivoImg = archivosBanderas[nombreEscuderia];
-        if (!archivoImg) return nombreEscuderia; // Fallback si no está en el diccionario
-        return `<img src="banderas/${archivoImg}" alt="${nombreEscuderia}" title="${nombreEscuderia}" style="width: 32px; height: 22px; object-fit: contain; vertical-align: middle;">`;
+        if (!archivoImg) return nombreEscuderia; 
+        return `<div style="text-align: center;"><img src="banderas/${archivoImg}" alt="${nombreEscuderia}" title="${nombreEscuderia}" style="width: 56px; height: 32px; object-fit: contain; display: inline-block;"></div>`;
     };
 
     if (!id_gp) {
