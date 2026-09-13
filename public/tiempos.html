@@ -776,6 +776,110 @@ if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
             console.error("Error al obtener el último GP actualizado:", error);
         }
     }
+
+
+const selectVerSesion = document.getElementById('select-ver-sesion');
+const tablaHead = document.querySelector('#tabla-tiempos-container thead');
+const tbodyTiempos = document.getElementById('tbody-tiempos');
+
+async function cargarTiemposPantalla() {
+    const id_gp = selectGp.value;
+    const tipoVer = selectVerSesion.value;
+
+    if (!id_gp) {
+        tbodyTiempos.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>';
+        return;
+    }
+
+    try {
+        if (tipoVer === 'gp') {
+            // 1. Pintar cabecera de Carrera / Clasificación
+            tablaHead.innerHTML = `
+                <tr style="background-color: #ef4444; color: white;">
+                    <th style="padding: 14px 10px; text-align: center;">Pos</th>
+                    <th style="padding: 14px 10px;">Piloto</th>
+                    <th style="padding: 14px 10px;">Escudería</th>
+                    <th style="padding: 14px 10px; text-align: center;">Clasificación</th>
+                    <th style="padding: 14px 10px; text-align: center;">Vuelta Rápida</th>
+                    <th style="padding: 14px 10px; text-align: center;">Tiempo Total</th>
+                </tr>
+            `;
+
+            const res = await fetch(`/api/tiempos/${id_gp}`);
+            const datos = await res.json();
+
+            if (datos.length === 0) {
+                tbodyTiempos.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: #aaa;">No hay datos de carrera guardados para este GP.</td></tr>`;
+                return;
+            }
+
+            tbodyTiempos.innerHTML = datos.map((row, index) => `
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 12px 10px; text-align: center;">${index + 1}</td>
+                    <td style="padding: 12px 10px; font-weight: bold;">${row.gamertag}</td>
+                    <td style="padding: 12px 10px; color: #aaa;">${row.escuderia || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${row.tiempo_clasificacion || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${row.tiempo_vuelta_rapida_carrera || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${row.tiempo_total_carrera || '-'}</td>
+                </tr>
+            `).join('');
+
+        } else {
+            // 2. Pintar cabecera de Entrenamientos Libres (Libres 1 o Libres 2)
+            tablaHead.innerHTML = `
+                <tr style="background-color: #ef4444; color: white;">
+                    <th style="padding: 14px 10px; text-align: center;">Pos</th>
+                    <th style="padding: 14px 10px;">Piloto</th>
+                    <th style="padding: 14px 10px;">Escudería</th>
+                    <th style="padding: 14px 10px; text-align: center;">Mejor Vuelta</th>
+                    <th style="padding: 14px 10px; text-align: center;">S1</th>
+                    <th style="padding: 14px 10px; text-align: center;">S2</th>
+                    <th style="padding: 14px 10px; text-align: center;">S3</th>
+                    <th style="padding: 14px 10px; text-align: center;">Neumático</th>
+                    <th style="padding: 14px 10px; text-align: center;">Vueltas</th>
+                </tr>
+            `;
+
+            // Calculamos el ID del entrenamiento en base al GP y si es libre 1 o libre 2 
+            // (Ajusta esta fórmula según cómo guardes el id_entrenamiento en tu base de datos)
+            const idEntrenamiento = tipoVer === 'libre1' ? `${id_gp}1` : `${id_gp}2`; 
+
+            const res = await fetch(`/api/entrenamientos/${idEntrenamiento}`);
+            const datos = await res.json();
+
+            if (!datos || datos.length === 0) {
+                tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #aaa;">No hay registros de ${tipoVer.toUpperCase()} para este GP.</td></tr>`;
+                return;
+            }
+
+            // Función auxiliar para formatear milisegundos a segundos (ej: 28450 -> 28.450)
+            const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
+
+            tbodyTiempos.innerHTML = datos.map((row) => `
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 12px 10px; text-align: center;">${row.posicion || '-'}</td>
+                    <td style="padding: 12px 10px; font-weight: bold;">${row.gamertag}</td>
+                    <td style="padding: 12px 10px; color: #aaa;">${row.escuderia || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; color: #4ade80; font-weight: bold;">${row.mejor_vuelta || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${msASegundos(row.s1_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${msASegundos(row.s2_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${msASegundos(row.s3_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${row.vueltas_totales || 0}</td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error("Error al cargar la tabla de tiempos:", error);
+        tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #ef4444;">Error al cargar los datos en pantalla.</td></tr>`;
+    }
+}
+
+// Escuchar cambios en los selectores superiores
+selectGp.addEventListener('change', cargarTiemposPantalla);
+selectVerSesion.addEventListener('change', cargarTiemposPantalla);
+
+    
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
