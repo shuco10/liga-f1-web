@@ -780,7 +780,6 @@ if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
 
 // Usamos el selectGp que ya existe en tu archivo principal
 async function cargarTiemposPantalla() {
-    // Buscamos el select del circuito de forma segura dentro de la función
     const selectGpElement = document.getElementById('select-gp');
     const selectVerSesion = document.getElementById('select-ver-sesion');
     const tablaHead = document.querySelector('#tabla-tiempos-container thead');
@@ -813,7 +812,7 @@ async function cargarTiemposPantalla() {
             const res = await fetch(`/api/tiempos/${id_gp}`);
             const datos = await res.json();
 
-            if (datos.length === 0) {
+            if (!datos || datos.length === 0) {
                 tbodyTiempos.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: #aaa;">No hay datos de carrera guardados para este GP.</td></tr>`;
                 return;
             }
@@ -845,9 +844,9 @@ async function cargarTiemposPantalla() {
                 </tr>
             `;
 
-            const idEntrenamiento = tipoVer === 'libre1' ? `${id_gp}1` : `${id_gp}2`; 
-
-            const res = await fetch(`/api/entrenamientos/${idEntrenamiento}`);
+            // Enviamos el id del GP y especificamos si es libre1 o libre2 mediante parámetros o ruta limpia
+            const numSesion = tipoVer === 'libre1' ? 1 : 2;
+            const res = await fetch(`/api/entrenamientos/${id_gp}?sesion=${numSesion}`);
             const datos = await res.json();
 
             if (!datos || datos.length === 0) {
@@ -860,7 +859,7 @@ async function cargarTiemposPantalla() {
             tbodyTiempos.innerHTML = datos.map((row) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 10px; text-align: center;">${row.posicion || '-'}</td>
-                    <td style="padding: 12px 10px; font-weight: bold;">${row.gamertag}</td>
+                    <td style="padding: 12px 10px; font-weight: bold;">${row.gamertag || 'Piloto'}</td>
                     <td style="padding: 12px 10px; color: #aaa;">${row.escuderia || '-'}</td>
                     <td style="padding: 12px 10px; text-align: center; color: #4ade80; font-weight: bold;">${row.mejor_vuelta || '-'}</td>
                     <td style="padding: 12px 10px; text-align: center;">${msASegundos(row.s1_ms)}</td>
@@ -877,7 +876,7 @@ async function cargarTiemposPantalla() {
     }
 }
 
-// Conectar eventos a los selectores de forma segura
+// Conectar eventos de forma segura
 document.addEventListener('DOMContentLoaded', () => {
     const selectGp = document.getElementById('select-gp');
     const selectVerSesion = document.getElementById('select-ver-sesion');
