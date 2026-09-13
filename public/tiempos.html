@@ -24,35 +24,39 @@
     }
 
     #tabla-tiempos-container table {
-        width: 100% !important;
+        width: 100%;
         border-collapse: collapse;
         background-color: #222;
         text-align: left;
         border-radius: 8px;
-        overflow: hidden;
+        overflow: hidden; /* Esto recorta los bordes de la tabla para que coincidan con las esquinas */
     }
 
-    /* FORZAMOS EL THEAD A OCUPAR EL 100% Y LLEVAR EL DEGRADADO DE LADO A LADO */
-    #tabla-tiempos-container thead {
+    /* Recuperamos el degradado al 100% y le devolvemos el redondeo arriba */
+    #tabla-tiempos-container thead tr {
         background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
         box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
-        display: table-row-group !important;
-        width: 100% !important;
+        width: 100%;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
     }
 
-    #tabla-tiempos-container thead tr {
-        background: transparent !important;
-        display: table-row !important;
-        width: 100% !important;
+    /* Redondeamos también la primera y última celda por seguridad visual */
+    #tabla-tiempos-container th:first-child {
+        border-top-left-radius: 8px;
+    }
+
+    #tabla-tiempos-container th:last-child {
+        border-top-right-radius: 8px;
     }
 
     #tabla-tiempos-container th {
         padding: 14px 10px;
-        color: #ffffff !important;
+        color: #ffffff;
         text-transform: uppercase;
         font-size: 0.85rem;
         letter-spacing: 1px;
-        border: none !important;
+        border: none;
         background: transparent !important;
     }
 
