@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-   <style>
+  <style>
     body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
     
     /* Contenedor principal de tiempos con estilo neón */
@@ -23,35 +23,30 @@
         overflow: hidden;
     }
 
-    /* Forzamos que la tabla ocupe todo el ancho y distribuya bien las columnas */
+    /* Forzamos la tabla para que no se rompa al redibujar */
     #tabla-tiempos-container table {
         width: 100% !important;
-        table-layout: fixed !important;
         border-collapse: collapse !important;
     }
 
-    /* EL DEGRADADO SE APLICA AL THEAD ENTERO PARA QUE LLEGUE DE PUNTA A PUNTA */
-    #tabla-tiempos-container thead {
-        background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
-        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
-        display: table-header-group !important;
-    }
-
+    /* BLOQUEAMOS EL DEGRADADO PARA QUE SOBREVIVA A LOS CAMBIOS DEL SELECTOR */
+    #tabla-tiempos-container thead, 
+    #tabla-tiempos-container tr[style*="background"],
     #tabla-tiempos-container thead tr {
-        background: transparent !important;
+        background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4) !important;
     }
 
+    /* Forzamos los títulos de la cabecera para que nunca se amontonen ni encojan */
     #tabla-tiempos-container th {
         background: transparent !important;
         color: #ffffff !important;
         text-transform: uppercase;
-        font-size: 0.82rem;
-        letter-spacing: 1px;
+        font-size: 0.82rem !important;
+        letter-spacing: 1px !important;
         border: none !important;
-        padding: 14px 6px !important;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        padding: 14px 10px !important;
+        white-space: nowrap !important;
     }
 
     /* Líneas de la tabla sutiles con efecto hover */
