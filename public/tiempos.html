@@ -791,18 +791,15 @@ async function cargarTiemposPantalla() {
     const tablaHead = document.querySelector('#tabla-tiempos-container thead');
     const tbodyTiempos = document.getElementById('tbody-tiempos');
 
-    if (!selectGpElement) return;
+    if (!selectGpElement || !selectVerSesion) {
+        console.warn("Faltan elementos select en el DOM.");
+        return;
+    }
 
     const id_gp = selectGpElement.value;
-    
-    // Obtenemos tanto el valor como el texto seleccionado para evitar fallos de concordancia
-    const valorSeleccionado = selectVerSesion ? selectVerSesion.value.toLowerCase() : 'gp';
-    const textoSeleccionado = selectVerSesion && selectVerSesion.options[selectVerSesion.selectedIndex] 
-        ? selectVerSesion.options[selectVerSesion.selectedIndex].text.toLowerCase() 
-        : '';
+    const valorSesion = selectVerSesion.value; // Valor exacto de la opción seleccionada
 
-    // Determinamos si es carrera o libres comprobando si contiene las palabras clave
-    const esCarrera = valorSeleccionado === 'gp' || valorSeleccionado === 'carrera' || textoSeleccionado.includes('carrera') || (!textoSeleccionado.includes('libre') && !valorSeleccionado.includes('libre'));
+    console.log("GP seleccionado:", id_gp, "| Valor de sesión seleccionado:", valorSesion);
 
     if (!id_gp) {
         tbodyTiempos.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>';
@@ -810,7 +807,51 @@ async function cargarTiemposPantalla() {
     }
 
     try {
-        if (esCarrera) {
+        // Si el valor contiene 'libre' o '1' o '2' (ajusta esto según lo que valgan tus options en el HTML)
+        if (valorSesion === 'libre1' || valorSesion === 'libre2' || valorSesion === '1' || valorSesion === '2') {
+            
+            const numSesion = (valorSesion === 'libre2' || valorSesion === '2') ? 2 : 1;
+
+            tablaHead.innerHTML = `
+                <tr style="background-color: #ef4444; color: white;">
+                    <th style="padding: 14px 10px; text-align: center; width: 7%;">Pos</th>
+                    <th style="padding: 14px 10px; width: 23%;">Piloto</th>
+                    <th style="padding: 14px 10px; width: 20%;">Escudería</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 13%;">Mejor Vuelta</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S1</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S2</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S3</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 10%;">Neumático</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 8%;">Vueltas</th>
+                </tr>
+            `;
+
+            const res = await fetch(`/api/entrenamientos/${id_gp}?sesion=${numSesion}`);
+            const datos = await res.json();
+
+            if (!datos || datos.length === 0) {
+                tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #aaa;">No hay registros de Entrenamientos Libres ${numSesion} para este GP.</td></tr>`;
+                return;
+            }
+
+            const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
+
+            tbodyTiempos.innerHTML = datos.map((row) => `
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 12px 10px; text-align: center;">${row.posicion || '-'}</td>
+                    <td style="padding: 12px 10px; font-weight: bold; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
+                    <td style="padding: 12px 10px; color: #aaa; white-space: nowrap;">${row.escuderia || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s1_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s2_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s3_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${row.vueltas_totales || 0}</td>
+                </tr>
+            `).join('');
+
+        } else {
+            // Por defecto tratamos como Carrera / GP
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 14px 10px; text-align: center; width: 8%;">Pos</th>
@@ -840,55 +881,25 @@ async function cargarTiemposPantalla() {
                     <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${row.tiempo_total_carrera || '-'}</td>
                 </tr>
             `).join('');
-
-        } else {
-            tablaHead.innerHTML = `
-                <tr style="background-color: #ef4444; color: white;">
-                    <th style="padding: 14px 10px; text-align: center; width: 7%;">Pos</th>
-                    <th style="padding: 14px 10px; width: 23%;">Piloto</th>
-                    <th style="padding: 14px 10px; width: 20%;">Escudería</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 13%;">Mejor Vuelta</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S1</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S2</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S3</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 10%;">Neumático</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 8%;">Vueltas</th>
-                </tr>
-            `;
-
-            // Detectamos si es Libres 2 basándonos en el valor o texto (si contiene un '2' o 'dos')
-            const esLibres2 = valorSeleccionado.includes('2') || textoSeleccionado.includes('2') || valorSeleccionado.includes('libre2');
-            const numSesion = esLibres2 ? 2 : 1;
-
-            const res = await fetch(`/api/entrenamientos/${id_gp}?sesion=${numSesion}`);
-            const datos = await res.json();
-
-            if (!datos || datos.length === 0) {
-                tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #aaa;">No hay registros de Entrenamientos Libres ${numSesion} para este GP.</td></tr>`;
-                return;
-            }
-
-            const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
-
-            tbodyTiempos.innerHTML = datos.map((row) => `
-                <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 12px 10px; text-align: center;">${row.posicion || '-'}</td>
-                    <td style="padding: 12px 10px; font-weight: bold; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
-                    <td style="padding: 12px 10px; color: #aaa; white-space: nowrap;">${row.escuderia || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center; color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s1_ms)}</td>
-                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s2_ms)}</td>
-                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s3_ms)}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${row.vueltas_totales || 0}</td>
-                </tr>
-            `).join('');
         }
     } catch (error) {
         console.error("Error al cargar la tabla de tiempos:", error);
         tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #ef4444;">Error al cargar los datos en pantalla.</td></tr>`;
     }
 }
+
+// Vinculación directa y segura de eventos
+window.addEventListener('DOMContentLoaded', () => {
+    const selectGp = document.getElementById('select-gp');
+    const selectVerSesion = document.getElementById('select-ver-sesion');
+
+    if (selectGp) {
+        selectGp.addEventListener('change', cargarTiemposPantalla);
+    }
+    if (selectVerSesion) {
+        selectVerSesion.addEventListener('change', cargarTiemposPantalla);
+    }
+});
 
 
 
