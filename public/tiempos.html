@@ -147,15 +147,16 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const text = event.target.result;
+                    console.log("TEXTO CRUDO DEL ARCHIVO:", text.substring(0, 200) + "..."); // <-- Esto obligatoriamente tiene que salir en consola
                     
                     if (file.name.endsWith('.json')) {
                         try {
                             datosJsonParseados = JSON.parse(text);
-                            console.log("CONTENIDO DEL ARCHIVO JSON:", datosJsonParseados);
+                            console.log("JSON PARSEADO COMPLETO:", datosJsonParseados);
                             procesarJsonRLT(datosJsonParseados);
                         } catch(err) {
                             alert("El archivo JSON no es válido.");
-                            console.error(err);
+                            console.error("Error al parsear JSON:", err);
                         }
                     } else {
                         datosJsonParseados = null;
@@ -165,8 +166,6 @@
                 reader.readAsText(file, 'UTF-8');
             };
             console.log("Listener asignado correctamente a #csv-file-input");
-        } else {
-            console.error("No se encontró el elemento #csv-file-input en la página.");
         }
 
         // Botón cancelar previsualización
@@ -484,8 +483,8 @@
             `).join('');
     }
 
-    function procesarJsonRLT(jsonData) {
-        console.log("ESTRUCTURA DEL JSON DE PRÁCTICA:", jsonData);
+   function procesarJsonRLT(jsonData) {
+        console.log("Procesando JSON en procesarJsonRLT:", jsonData);
         
         const tbodyPreview = document.getElementById('tbody-preview');
         const trHead = document.getElementById('tr-preview-head');
@@ -505,11 +504,14 @@
                 <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
             `;
 
-            const driversList = jsonData.session?.drivers || jsonData.drivers || jsonData.session?.results || [];
+            // Probamos varias rutas comunes de RLT para encontrar la lista de pilotos
+            const driversList = jsonData.session?.drivers || jsonData.drivers || jsonData.session?.results || jsonData.participants || [];
             
+            console.log("Lista de pilotos detectada en el JSON:", driversList);
+
             if (driversList.length === 0) {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="8" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON.</td>`;
+                tr.innerHTML = `<td colspan="8" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON. Revisa la consola.</td>`;
                 tbodyPreview.appendChild(tr);
                 document.getElementById('preview-container').style.display = 'block';
                 return;
@@ -517,28 +519,28 @@
 
             driversList.forEach((d, index) => {
                 const pos = index + 1;
-                const driverInfo = d.driverInfo || d.driver || {};
-                const nombrePiloto = driverInfo.name || driverInfo.gamertag || driverInfo.userName || d.name || `Piloto ${driverInfo.raceNumber || index + 1}`;
-                const escuderia = driverInfo.teamName || driverInfo.team || d.teamName || '-';
                 
-                const fastestLap = d.fastestLap || {};
-                const mejorVuelta = fastestLap.lapTime || fastestLap.time || d.bestLapTime || 'No registrada';
-                const compVR = fastestLap.visualCompound || fastestLap.compound || d.compound || '-';
+                // Mapeo flexible por si el nombre viene en distintas propiedades según la versión de RLT
+                const nombrePiloto = d.name || d.driverName || d.driverInfo?.name || d.driverInfo?.gamertag || d.userName || `Piloto ${index + 1}`;
+                const escuderia = d.teamName || d.team || d.driverInfo?.teamName || d.driverInfo?.team || '-';
+                
+                const mejorVuelta = d.bestLapTime || d.fastestLap?.lapTime || d.fastestLap?.time || 'No registrada';
+                const compVR = d.compound || d.fastestLap?.visualCompound || d.fastestLap?.compound || '-';
                 
                 const sectors = d.bestSectors || d.sectors || [];
-                const s1 = sectors[0]?.lapTime || sectors[0]?.time || '-';
-                const s2 = sectors[1]?.lapTime || sectors[1]?.time || '-';
-                const s3 = sectors[2]?.lapTime || sectors[2]?.time || '-';
+                const s1 = sectors[0]?.lapTime || sectors[0]?.time || sectors[0] || '-';
+                const s2 = sectors[1]?.lapTime || sectors[1]?.time || sectors[1] || '-';
+                const s3 = sectors[2]?.lapTime || sectors[2]?.time || sectors[2] || '-';
                 const sectoresStr = `${s1} / ${s2} / ${s3}`;
                 const compSectores = sectors[0]?.visualCompound || sectors[0]?.compound || '-';
                 
-                const vueltasTotales = d.lapsCompleted || d.laps || 0;
+                const vueltasTotales = d.lapsCompleted || d.laps || d.totalLaps || 0;
 
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #333';
                 tr.innerHTML = `
                     <td style="padding: 8px; text-align: center; font-family: monospace;">${pos}</td>
-                    <td style="padding: 8px; font-weight: 500; white-space: nowrap;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
+                    <td style="padding: 8px; font-weight: 500; white-space: nowrap;">${nombrePiloto}</td>
                     <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${escuderia}</td>
                     <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold; white-space: nowrap;">${mejorVuelta}</td>
                     <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compVR}</td>
@@ -548,29 +550,7 @@
                 `;
                 tbodyPreview.appendChild(tr);
             });
-        } else {
-            trHead.innerHTML = `
-                <th style="padding: 8px;">Piloto (ID / R,Number)</th>
-                <th style="padding: 8px;">Clasificación</th>
-                <th style="padding: 8px;">Vuelta Rápida</th>
-                <th style="padding: 8px;">Tiempo Total</th>
-            `;
-            const driversList = jsonData.session?.drivers || jsonData.drivers || [];
-            driversList.forEach(d => {
-                const driverInfo = d.driverInfo || {};
-                const nombrePiloto = driverInfo.name || `Piloto ${driverInfo.raceNumber || ''}`;
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #333';
-                tr.innerHTML = `
-                    <td style="padding: 8px; font-family: monospace;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
-                    <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
-                    <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
-                    <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
-                `;
-                tbodyPreview.appendChild(tr);
-            });
         }
-
         document.getElementById('preview-container').style.display = 'block';
     }
 
