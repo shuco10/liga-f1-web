@@ -20,33 +20,40 @@
         box-shadow: 0 0 20px rgba(147, 51, 234, 0.2), inset 0 0 15px rgba(147, 51, 234, 0.05);
         padding: 15px;
         margin-top: 20px;
+        overflow-x: auto;
+    }
+
+    #tabla-tiempos-container table {
+        width: 100% !important;
+        border-collapse: collapse;
+        background-color: #222;
+        text-align: left;
+        border-radius: 8px;
         overflow: hidden;
     }
 
-    /* Forzamos la tabla para que no se rompa al redibujar */
-    #tabla-tiempos-container table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-    }
-
-    /* BLOQUEAMOS EL DEGRADADO PARA QUE SOBREVIVA A LOS CAMBIOS DEL SELECTOR */
-    #tabla-tiempos-container thead, 
-    #tabla-tiempos-container tr[style*="background"],
-    #tabla-tiempos-container thead tr {
+    /* FORZAMOS EL THEAD A OCUPAR EL 100% Y LLEVAR EL DEGRADADO DE LADO A LADO */
+    #tabla-tiempos-container thead {
         background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
-        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+        display: table-row-group !important;
+        width: 100% !important;
     }
 
-    /* Forzamos los títulos de la cabecera para que nunca se amontonen ni encojan */
-    #tabla-tiempos-container th {
+    #tabla-tiempos-container thead tr {
         background: transparent !important;
+        display: table-row !important;
+        width: 100% !important;
+    }
+
+    #tabla-tiempos-container th {
+        padding: 14px 10px;
         color: #ffffff !important;
         text-transform: uppercase;
-        font-size: 0.82rem !important;
-        letter-spacing: 1px !important;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
         border: none !important;
-        padding: 14px 10px !important;
-        white-space: nowrap !important;
+        background: transparent !important;
     }
 
     /* Líneas de la tabla sutiles con efecto hover */
