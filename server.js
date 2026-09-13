@@ -1132,42 +1132,68 @@ app.post('/api/importar-tiempos', async (req, res) => {
         client.release();
     }
 });
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////  TIEMPOS DE LOS ENTRENAMIENTOS //////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////  TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 // Ruta para importar Entrenamientos Libres (Libres 1 o Libres 2)
 app.post('/api/importar-entrenamientos', async (req, res) => {
-    const { id_entrenamiento, drivers } = req.body; // drivers viene del JSON de RLT
+    const { id_entrenamiento, pilotos } = req.body; // Recibimos el array de pilotos procesados desde la tabla
     
-    if (!id_entrenamiento || !drivers) {
-        return res.status(400).json({ error: "Faltan datos obligatorios (id_entrenamiento o drivers)" });
+    if (!id_entrenamiento || !pilotos || !Array.isArray(pilotos)) {
+        return res.status(400).json({ error: "Faltan datos obligatorios (id_entrenamiento o pilotos)" });
     }
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
-        for (const driver of drivers) {
-            const pilotoId = driver.driverInfo.raceNumber; // O el ID real de tu tabla pilotos
-            const tiempoVuelta = driver.fastestLap?.lapTime || null;
-            const vueltas = driver.lapsCompleted || 0;
+        for (const p of pilotos) {
+            // Buscamos el ID real del piloto en la tabla "pilotos" usando su nombre o nickname
+            const resPiloto = await client.query(
+                'SELECT id FROM pilotos WHERE nombre ILIKE $1 OR nickname ILIKE $1 LIMIT 1', 
+                [p.nombrePiloto]
+            );
+            let idPiloto = resPiloto.rows.length > 0 ? resPiloto.rows[0].id : null;
 
+            if (!idPiloto) {
+                console.log(`Piloto no encontrado en BD: ${p.nombrePiloto}. Saltando...`);
+                continue; 
+            }
+
+            // Insertamos o actualizamos en la tabla tiempos_entrenamientos con las nuevas columnas
             await client.query(`
-                INSERT INTO tiempos_entrenamientos (id_entrenamiento, piloto_id, tiempo_vuelta, vueltas)
-                VALUES ($1, $2, $3, $4)
-                ON CONFLICT (id_entrenamiento, piloto_id) 
+                INSERT INTO tiempos_entrenamientos 
+                (id_entrenamiento, id, posicion, mejor_vuelta, s1_ms, s2_ms, s3_ms, compuesto_neumatico, vueltas_totales, updated_at)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
+                ON CONFLICT (id_entrenamiento, id) 
                 DO UPDATE SET 
-                    tiempo_vuelta = EXCLUDED.tiempo_vuelta,
-                    vueltas = EXCLUDED.vueltas;
-            `, [id_entrenamiento, pilotoId, tiempoVuelta, vueltas]);
+                    posicion = EXCLUDED.posicion,
+                    mejor_vuelta = EXCLUDED.mejor_vuelta,
+                    s1_ms = EXCLUDED.s1_ms,
+                    s2_ms = EXCLUDED.s2_ms,
+                    s3_ms = EXCLUDED.s3_ms,
+                    compuesto_neumatico = EXCLUDED.compuesto_neumatico,
+                    vueltas_totales = EXCLUDED.vueltas_totales,
+                    updated_at = NOW();
+            `, [
+                id_entrenamiento,
+                idPiloto,
+                p.posicion,
+                p.mejor_vuelta,
+                p.s1_ms,
+                p.s2_ms,
+                p.s3_ms,
+                p.compuesto_neumatico,
+                p.vueltas_totales
+            ]);
         }
 
         await client.query('COMMIT');
-        res.json({ success: true, mensaje: "Entrenamientos importados correctamente" });
+        res.json({ success: true, mensaje: "Entrenamientos libres importados y guardados correctamente." });
     } catch (err) {
         await client.query('ROLLBACK');
         console.error("Error al importar entrenamientos:", err);
-        res.status(500).json({ error: "Error interno en el servidor" });
+        res.status(500).json({ error: "Error interno en el servidor al guardar entrenamientos." });
     } finally {
         client.release();
     }
