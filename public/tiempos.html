@@ -871,7 +871,7 @@ async function cargarUltimoAvisoGP() {
 
 
 ///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////    
+///////////////////////////////////////////////////////////////////   
 async function cargarTiemposPantalla() {
     const selectGpElement = document.getElementById('select-gp');
     const selectVerSesion = document.getElementById('select-ver-sesion');
@@ -889,6 +889,28 @@ async function cargarTiemposPantalla() {
 
     const id_gp = selectGpElement.value;
     const valorSesion = selectVerSesion.value;
+
+    const archivosBanderas = {
+        "Scuderia Ferrari HP": "ferrari.png",
+        "Audi Revolut F1 Team": "audi.png",
+        "Visa Cash App Racing Bulls Formula One Team": "rb.png",
+        "Cadillac Formula 1 Team": "cadillac.png",
+        "McLaren Mastercard F1 Team": "mclaren.png",
+        "TGR Haas F1 Team": "haas.png",
+        "Mercedes-AMG PETRONAS Formula One Team": "mercedes.png",
+        "Aston Martin Aramco Formula One Team": "aston_martin.png",
+        "Oracle Red Bull Racing": "redbull.png",
+        "Atlassian Williams F1 Team": "williams.png",
+        "BWT Alpine Formula One Team": "alpine.png",
+        "Stake F1 Team Kick Sauber": "sauber.png"
+    };
+
+    const renderEscuderiaImg = (nombreEscuderia) => {
+        if (!nombreEscuderia) return '-';
+        const archivoImg = archivosBanderas[nombreEscuderia];
+        if (!archivoImg) return nombreEscuderia; // Fallback si no está en el diccionario
+        return `<img src="banderas/${archivoImg}" alt="${nombreEscuderia}" title="${nombreEscuderia}" style="width: 32px; height: 22px; object-fit: contain; vertical-align: middle;">`;
+    };
 
     if (!id_gp) {
         tbodyTiempos.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>';
@@ -937,13 +959,11 @@ async function cargarTiemposPantalla() {
 
             const msASegundos = (ms) => {
                 if (!ms || ms <= 0) return '-';
-                // Si viene en milisegundos puros (ej 18111), lo pasamos a segundos con 3 decimales
                 return (ms / 1000).toFixed(3);
             };
 
             const tiemposVueltaMs = datos.map(r => aMilisegundos(r.mejor_vuelta)).filter(v => v !== null && v > 0);
             
-            // Usamos las propiedades _ms que vienen de tu base de datos
             const s1MsArr = datos.map(r => r.s1_ms).filter(v => v !== null && v > 0);
             const s2MsArr = datos.map(r => r.s2_ms).filter(v => v !== null && v > 0);
             const s3MsArr = datos.map(r => r.s3_ms).filter(v => v !== null && v > 0);
@@ -972,11 +992,13 @@ async function cargarTiemposPantalla() {
                 const htmlS2 = (s2Val && s2Val === minS2) ? badgeMorado(textoS2) : `<span style="font-family: monospace;">${textoS2}</span>`;
                 const htmlS3 = (s3Val && s3Val === minS3) ? badgeMorado(textoS3) : `<span style="font-family: monospace;">${textoS3}</span>`;
 
+                const nombreEscuderia = row.escuderia || '';
+
                 return `
                     <tr style="border-bottom: 1px solid #333;">
                         <td style="padding: 12px 6px; text-align: center;">${row.posicion || '-'}</td>
                         <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
-                        <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia_html || row.escuderia || '-'}</td>
+                        <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
                         <td style="padding: 12px 6px; text-align: center;">${htmlVuelta}</td>
                         <td style="padding: 12px 6px; text-align: center;">${htmlS1}</td>
                         <td style="padding: 12px 6px; text-align: center;">${htmlS2}</td>
@@ -1051,12 +1073,13 @@ async function cargarTiemposPantalla() {
                 }
 
                 const textoTotal = esDnfTotal ? badgeDnf : `<span style="font-family: monospace;">${row.tiempo_total_carrera || '-'}</span>`;
+                const nombreEscuderia = row.escuderia || '';
 
                 return `
                     <tr style="border-bottom: 1px solid #333;">
                         <td style="padding: 12px 8px; text-align: center;">${index + 1}</td>
                         <td style="padding: 12px 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag}</td>
-                        <td style="padding: 12px 8px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia_html || row.escuderia || '-'}</td>
+                        <td style="padding: 12px 8px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
                         <td style="padding: 12px 8px; text-align: center; font-family: monospace;">${row.tiempo_clasificacion || '-'}</td>
                         <td style="padding: 12px 8px; text-align: center;">${textoVuelta}</td>
                         <td style="padding: 12px 8px; text-align: center;">${textoTotal}</td>
