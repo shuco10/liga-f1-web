@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-  <style>
+ <style>
     body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
     
     /* Contenedor principal de tiempos con estilo neón */
@@ -29,25 +29,14 @@
         background-color: #222;
         text-align: left;
         border-radius: 8px;
-        overflow: hidden; /* Esto recorta los bordes de la tabla para que coincidan con las esquinas */
+        overflow: hidden;
     }
 
-    /* Recuperamos el degradado al 100% y le devolvemos el redondeo arriba */
+    /* TRUCO LIMPIO: Forzamos el degradado en la fila de la cabecera cubriendo siempre el 100% */
     #tabla-tiempos-container thead tr {
         background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
         box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
         width: 100%;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-    }
-
-    /* Redondeamos también la primera y última celda por seguridad visual */
-    #tabla-tiempos-container th:first-child {
-        border-top-left-radius: 8px;
-    }
-
-    #tabla-tiempos-container th:last-child {
-        border-top-right-radius: 8px;
     }
 
     #tabla-tiempos-container th {
