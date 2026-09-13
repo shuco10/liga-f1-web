@@ -778,12 +778,13 @@ if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
     }
 
 
+// Usamos el selectGp que ya existe en tu archivo principal
 const selectVerSesion = document.getElementById('select-ver-sesion');
 const tablaHead = document.querySelector('#tabla-tiempos-container thead');
 const tbodyTiempos = document.getElementById('tbody-tiempos');
 
 async function cargarTiemposPantalla() {
-    const id_gp = selectGp.value;
+    const id_gp = selectGp.value; // Usa la variable que ya tienes creada en tu código
     const tipoVer = selectVerSesion.value;
 
     if (!id_gp) {
@@ -840,8 +841,7 @@ async function cargarTiemposPantalla() {
                 </tr>
             `;
 
-            // Calculamos el ID del entrenamiento en base al GP y si es libre 1 o libre 2 
-            // (Ajusta esta fórmula según cómo guardes el id_entrenamiento en tu base de datos)
+            // ID de entrenamiento según el GP seleccionado y si es libre 1 o libre 2
             const idEntrenamiento = tipoVer === 'libre1' ? `${id_gp}1` : `${id_gp}2`; 
 
             const res = await fetch(`/api/entrenamientos/${idEntrenamiento}`);
@@ -852,7 +852,6 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
-            // Función auxiliar para formatear milisegundos a segundos (ej: 28450 -> 28.450)
             const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
 
             tbodyTiempos.innerHTML = datos.map((row) => `
@@ -875,10 +874,9 @@ async function cargarTiemposPantalla() {
     }
 }
 
-// Escuchar cambios en los selectores superiores
-selectGp.addEventListener('change', cargarTiemposPantalla);
-selectVerSesion.addEventListener('change', cargarTiemposPantalla);
-
+// Escuchar cambios en los selectores
+if (selectGp) selectGp.addEventListener('change', cargarTiemposPantalla);
+if (selectVerSesion) selectVerSesion.addEventListener('change', cargarTiemposPantalla);
     
 </script>
 <script src="/socket.io/socket.io.js"></script>
