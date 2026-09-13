@@ -489,43 +489,61 @@ function procesarJsonRLT(jsonData) {
 
     if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
         trHead.innerHTML = `
-            <th style="padding: 8px;">Pos</th>
-            <th style="padding: 8px;">Piloto</th>
-            <th style="padding: 8px;">Escudería</th>
-            <th style="padding: 8px;">Vuelta Rápida</th>
-            <th style="padding: 8px;">Comp. VR</th>
-            <th style="padding: 8px;">Mejores Sectores (S1 / S2 / S3)</th>
-            <th style="padding: 8px;">Comp. Mejores Sectores</th>
-            <th style="padding: 8px;">Vueltas Totales</th>
+            <th style="padding: 8px; white-space: nowrap;">Pos</th>
+            <th style="padding: 8px; white-space: nowrap;">Piloto</th>
+            <th style="padding: 8px; white-space: nowrap;">Escudería</th>
+            <th style="padding: 8px; white-space: nowrap;">Vuelta Rápida</th>
+            <th style="padding: 8px; white-space: nowrap;">Comp. VR</th>
+            <th style="padding: 8px; white-space: nowrap;">Mejores Sectores (S1 / S2 / S3)</th>
+            <th style="padding: 8px; white-space: nowrap;">Comp. Mejores Sectores</th>
+            <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
         `;
 
-        if (!jsonData.session || !jsonData.session.drivers) return;
+        // Intentar localizar la lista de pilotos independientemente de cómo la encapsule RLT
+        const driversList = jsonData.session?.drivers || jsonData.drivers || jsonData.session?.results || [];
+        
+        if (driversList.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="8" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON.</td>`;
+            tbodyPreview.appendChild(tr);
+            document.getElementById('preview-container').style.display = 'block';
+            return;
+        }
 
-        jsonData.session.drivers.forEach((d, index) => {
+        driversList.forEach((d, index) => {
             const pos = index + 1;
-            const nombrePiloto = d.driverInfo?.name || `Piloto ${d.driverInfo?.raceNumber || ''}`;
-            const escuderia = d.driverInfo?.teamName || '-';
-            const mejorVuelta = d.fastestLap?.lapTime || 'No registrada';
-            const compVR = d.fastestLap?.visualCompound || d.fastestLap?.compound || '-';
             
-            const s1 = d.bestSectors?.[0]?.lapTime || '-';
-            const s2 = d.bestSectors?.[1]?.lapTime || '-';
-            const s3 = d.bestSectors?.[2]?.lapTime || '-';
+            // Buscar el nombre o gamertag en varias propiedades posibles de RLT
+            const driverInfo = d.driverInfo || d.driver || {};
+            const nombrePiloto = driverInfo.name || driverInfo.gamertag || driverInfo.userName || d.name || `Piloto ${driverInfo.raceNumber || index + 1}`;
+            const escuderia = driverInfo.teamName || driverInfo.team || d.teamName || '-';
+            
+            // Vuelta rápida y compuestos
+            const fastestLap = d.fastestLap || {};
+            const mejorVuelta = fastestLap.lapTime || fastestLap.time || d.bestLapTime || 'No registrada';
+            const compVR = fastestLap.visualCompound || fastestLap.compound || d.compound || '-';
+            
+            // Sectores
+            const sectors = d.bestSectors || d.sectors || [];
+            const s1 = sectors[0]?.lapTime || sectors[0]?.time || '-';
+            const s2 = sectors[1]?.lapTime || sectors[1]?.time || '-';
+            const s3 = sectors[2]?.lapTime || sectors[2]?.time || '-';
             const sectoresStr = `${s1} / ${s2} / ${s3}`;
-            const compSectores = d.bestSectors?.[0]?.visualCompound || '-';
-            const vueltasTotales = d.lapsCompleted || 0;
+            const compSectores = sectors[0]?.visualCompound || sectors[0]?.compound || '-';
+            
+            const vueltasTotales = d.lapsCompleted || d.laps || 0;
 
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #333';
             tr.innerHTML = `
                 <td style="padding: 8px; text-align: center; font-family: monospace;">${pos}</td>
-                <td style="padding: 8px; font-weight: 500;" data-idpiloto="${d.driverInfo?.raceNumber}">${nombrePiloto}</td>
-                <td style="padding: 8px; color: #cbd5e1;">${escuderia}</td>
-                <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold;">${mejorVuelta}</td>
-                <td style="padding: 8px; font-size: 13px;">${compVR}</td>
-                <td style="padding: 8px; font-family: monospace; font-size: 13px;">${sectoresStr}</td>
-                <td style="padding: 8px; font-size: 13px;">${compSectores}</td>
-                <td style="padding: 8px; text-align: center; font-family: monospace;">${vueltasTotales}</td>
+                <td style="padding: 8px; font-weight: 500; white-space: nowrap;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
+                <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${escuderia}</td>
+                <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold; white-space: nowrap;">${mejorVuelta}</td>
+                <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compVR}</td>
+                <td style="padding: 8px; font-family: monospace; font-size: 13px; white-space: nowrap;">${sectoresStr}</td>
+                <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compSectores}</td>
+                <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${vueltasTotales}</td>
             `;
             tbodyPreview.appendChild(tr);
         });
@@ -537,20 +555,20 @@ function procesarJsonRLT(jsonData) {
             <th style="padding: 8px;">Vuelta Rápida</th>
             <th style="padding: 8px;">Tiempo Total</th>
         `;
-        if (jsonData.session && jsonData.session.drivers) {
-            jsonData.session.drivers.forEach(d => {
-                const nombrePiloto = d.driverInfo?.name || `Piloto ${d.driverInfo?.raceNumber || ''}`;
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #333';
-                tr.innerHTML = `
-                    <td style="padding: 8px; font-family: monospace;" data-idpiloto="${d.driverInfo?.raceNumber}">${nombrePiloto}</td>
-                    <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
-                    <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
-                    <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
-                `;
-                tbodyPreview.appendChild(tr);
-            });
-        }
+        const driversList = jsonData.session?.drivers || jsonData.drivers || [];
+        driversList.forEach(d => {
+            const driverInfo = d.driverInfo || {};
+            const nombrePiloto = driverInfo.name || `Piloto ${driverInfo.raceNumber || ''}`;
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #333';
+            tr.innerHTML = `
+                <td style="padding: 8px; font-family: monospace;" data-idpiloto="${driverInfo.raceNumber || ''}">${nombrePiloto}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
+                <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
+            `;
+            tbodyPreview.appendChild(tr);
+        });
     }
 
     document.getElementById('preview-container').style.display = 'block';
