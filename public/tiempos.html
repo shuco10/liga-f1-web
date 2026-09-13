@@ -791,15 +791,10 @@ async function cargarTiemposPantalla() {
     const tablaHead = document.querySelector('#tabla-tiempos-container thead');
     const tbodyTiempos = document.getElementById('tbody-tiempos');
 
-    if (!selectGpElement || !selectVerSesion) {
-        console.warn("Faltan elementos select en el DOM.");
-        return;
-    }
+    if (!selectGpElement || !selectVerSesion) return;
 
     const id_gp = selectGpElement.value;
-    const valorSesion = selectVerSesion.value; // Valor exacto de la opción seleccionada
-
-    console.log("GP seleccionado:", id_gp, "| Valor de sesión seleccionado:", valorSesion);
+    const valorSesion = selectVerSesion.value;
 
     if (!id_gp) {
         tbodyTiempos.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #aaa;">Selecciona un Gran Premio para ver los tiempos.</td></tr>';
@@ -807,22 +802,21 @@ async function cargarTiemposPantalla() {
     }
 
     try {
-        // Si el valor contiene 'libre' o '1' o '2' (ajusta esto según lo que valgan tus options en el HTML)
         if (valorSesion === 'libre1' || valorSesion === 'libre2' || valorSesion === '1' || valorSesion === '2') {
-            
             const numSesion = (valorSesion === 'libre2' || valorSesion === '2') ? 2 : 1;
 
+            // Cabecera exacta de 9 columnas para Entrenamientos
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
-                    <th style="padding: 14px 10px; text-align: center; width: 7%;">Pos</th>
-                    <th style="padding: 14px 10px; width: 23%;">Piloto</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 6%;">Pos</th>
+                    <th style="padding: 14px 10px; width: 22%;">Piloto</th>
                     <th style="padding: 14px 10px; width: 20%;">Escudería</th>
                     <th style="padding: 14px 10px; text-align: center; width: 13%;">Mejor Vuelta</th>
                     <th style="padding: 14px 10px; text-align: center; width: 9%;">S1</th>
                     <th style="padding: 14px 10px; text-align: center; width: 9%;">S2</th>
                     <th style="padding: 14px 10px; text-align: center; width: 9%;">S3</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 10%;">Neumático</th>
-                    <th style="padding: 14px 10px; text-align: center; width: 8%;">Vueltas</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 8%;">Neumático</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 4%;">Vueltas</th>
                 </tr>
             `;
 
@@ -836,6 +830,7 @@ async function cargarTiemposPantalla() {
 
             const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
 
+            // Exactamente 9 celdas (<td>) por fila para que casen con los 9 th
             tbodyTiempos.innerHTML = datos.map((row) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 10px; text-align: center;">${row.posicion || '-'}</td>
@@ -851,7 +846,7 @@ async function cargarTiemposPantalla() {
             `).join('');
 
         } else {
-            // Por defecto tratamos como Carrera / GP
+            // Cabecera exacta de 6 columnas para Carrera
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 14px 10px; text-align: center; width: 8%;">Pos</th>
@@ -871,6 +866,7 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
+            // Exactamente 6 celdas (<td>) por fila para que casen con los 6 th
             tbodyTiempos.innerHTML = datos.map((row, index) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 10px; text-align: center;">${index + 1}</td>
