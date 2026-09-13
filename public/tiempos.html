@@ -138,36 +138,41 @@
         }
 
 // 3. Lógica unificada de carga de archivos (JSON de RLT o CSV)
-        const fileInput = document.getElementById('csv-file-input');
-        if (fileInput) {
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('csv-file-input');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const text = event.target.result;
-                    
-                    if (file.name.endsWith('.json')) {
-                        try {
-                            datosJsonParseados = JSON.parse(text);
-                            
-                            // --- PONLO AQUÍ ---
-                            console.log("CONTENIDO DEL ARCHIVO JSON:", datosJsonParseados);
-                            
-                            procesarJsonRLT(datosJsonParseados);
-                        } catch(err) {
-                            alert("El archivo JSON no es válido.");
-                            console.error(err);
-                        }
-                    } else {
-                        datosJsonParseados = null;
-                        procesarCSV(text);
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const text = event.target.result;
+                
+                if (file.name.endsWith('.json')) {
+                    try {
+                        datosJsonParseados = JSON.parse(text);
+                        
+                        // Muestra la estructura exacta del JSON en DevTools
+                        console.log("CONTENIDO DEL ARCHIVO JSON:", datosJsonParseados);
+                        
+                        procesarJsonRLT(datosJsonParseados);
+                    } catch(err) {
+                        alert("El archivo JSON no es válido.");
+                        console.error(err);
                     }
-                };
-                reader.readAsText(file, 'UTF-8');
-            });
-        }
+                } else {
+                    datosJsonParseados = null;
+                    procesarCSV(text);
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
+        console.log("Listener adjuntado a #csv-file-input");
+    } else {
+        console.error("No se encontró el elemento #csv-file-input en la página.");
+    }
+});
 
         // Botón cancelar previsualización
         const btnCancelar = document.getElementById('btn-cancelar-preview');
