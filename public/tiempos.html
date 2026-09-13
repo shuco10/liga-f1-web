@@ -499,42 +499,29 @@
                 <th style="padding: 8px; white-space: nowrap;">Escudería</th>
                 <th style="padding: 8px; white-space: nowrap;">Vuelta Rápida</th>
                 <th style="padding: 8px; white-space: nowrap;">Comp. VR</th>
-                <th style="padding: 8px; white-space: nowrap;">Mejores Sectores (S1 / S2 / S3)</th>
-                <th style="padding: 8px; white-space: nowrap;">Comp. Mejores Sectores</th>
                 <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
             `;
 
-            // Probamos varias rutas comunes de RLT para encontrar la lista de pilotos
-            const driversList = jsonData.session?.drivers || jsonData.drivers || jsonData.session?.results || jsonData.participants || [];
+            const driversList = jsonData.session?.drivers || jsonData.drivers || [];
             
-            console.log("Lista de pilotos detectada en el JSON:", driversList);
-
             if (driversList.length === 0) {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="8" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON. Revisa la consola.</td>`;
+                tr.innerHTML = `<td colspan="6" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON.</td>`;
                 tbodyPreview.appendChild(tr);
                 document.getElementById('preview-container').style.display = 'block';
                 return;
             }
 
             driversList.forEach((d, index) => {
-                const pos = index + 1;
+                const pos = d.position || (index + 1);
                 
-                // Mapeo flexible por si el nombre viene en distintas propiedades según la versión de RLT
-                const nombrePiloto = d.name || d.driverName || d.driverInfo?.name || d.driverInfo?.gamertag || d.userName || `Piloto ${index + 1}`;
-                const escuderia = d.teamName || d.team || d.driverInfo?.teamName || d.driverInfo?.team || '-';
+                // Extracción correcta según la estructura del JSON
+                const nombrePiloto = d.driverName || d.driverInfo?.displayName || d.driverInfo?.firstName || `Piloto ${index + 1}`;
+                const escuderia = d.team?.fullName || d.team?.name || '-';
                 
-                const mejorVuelta = d.bestLapTime || d.fastestLap?.lapTime || d.fastestLap?.time || 'No registrada';
-                const compVR = d.compound || d.fastestLap?.visualCompound || d.fastestLap?.compound || '-';
-                
-                const sectors = d.bestSectors || d.sectors || [];
-                const s1 = sectors[0]?.lapTime || sectors[0]?.time || sectors[0] || '-';
-                const s2 = sectors[1]?.lapTime || sectors[1]?.time || sectors[1] || '-';
-                const s3 = sectors[2]?.lapTime || sectors[2]?.time || sectors[2] || '-';
-                const sectoresStr = `${s1} / ${s2} / ${s3}`;
-                const compSectores = sectors[0]?.visualCompound || sectors[0]?.compound || '-';
-                
-                const vueltasTotales = d.lapsCompleted || d.laps || d.totalLaps || 0;
+                const mejorVuelta = d.fastestLapTime || 'No registrada';
+                const compVR = d.fastestLapTyreCompound || '-';
+                const vueltasTotales = d.lapsCompleted || 0;
 
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #333';
@@ -544,8 +531,6 @@
                     <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${escuderia}</td>
                     <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold; white-space: nowrap;">${mejorVuelta}</td>
                     <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compVR}</td>
-                    <td style="padding: 8px; font-family: monospace; font-size: 13px; white-space: nowrap;">${sectoresStr}</td>
-                    <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compSectores}</td>
                     <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${vueltasTotales}</td>
                 `;
                 tbodyPreview.appendChild(tr);
