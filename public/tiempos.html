@@ -483,61 +483,157 @@
             `).join('');
     }
 
-   function procesarJsonRLT(jsonData) {
-        console.log("Procesando JSON en procesarJsonRLT:", jsonData);
+ function procesarJsonRLT(jsonData) {
+    console.log("Procesando JSON en procesarJsonRLT:", jsonData);
+    
+    const tbodyPreview = document.getElementById('tbody-preview');
+    const trHead = document.getElementById('tr-preview-head');
+    tbodyPreview.innerHTML = '';
+
+    const tipoSesion = document.getElementById('select-tipo-sesion').value;
+
+    if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
+        // 1. Añadimos las cabeceras de los sectores
+        trHead.innerHTML = `
+            <th style="padding: 8px; white-space: nowrap;">Pos</th>
+            <th style="padding: 8px; white-space: nowrap;">Piloto</th>
+            <th style="padding: 8px; white-space: nowrap;">Escudería</th>
+            <th style="padding: 8px; white-space: nowrap;">Vuelta Rápida</th>
+            <th style="padding: 8px; white-space: nowrap;">S1</th>
+            <th style="padding: 8px; white-space: nowrap;">S2</th>
+            <th style="padding: 8px; white-space: nowrap;">S3</th>
+            <th style="padding: 8px; white-space: nowrap;">Comp. VR</th>
+            <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
+        `;
+
+        const driversList = jsonData.session?.drivers || jsonData.drivers || [];
         
-        const tbodyPreview = document.getElementById('tbody-preview');
-        const trHead = document.getElementById('tr-preview-head');
-        tbodyPreview.innerHTML = '';
-
-        const tipoSesion = document.getElementById('select-tipo-sesion').value;
-
-        if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
-            trHead.innerHTML = `
-                <th style="padding: 8px; white-space: nowrap;">Pos</th>
-                <th style="padding: 8px; white-space: nowrap;">Piloto</th>
-                <th style="padding: 8px; white-space: nowrap;">Escudería</th>
-                <th style="padding: 8px; white-space: nowrap;">Vuelta Rápida</th>
-                <th style="padding: 8px; white-space: nowrap;">Comp. VR</th>
-                <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
-            `;
-
-            const driversList = jsonData.session?.drivers || jsonData.drivers || [];
-            
-            if (driversList.length === 0) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="6" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON.</td>`;
-                tbodyPreview.appendChild(tr);
-                document.getElementById('preview-container').style.display = 'block';
-                return;
-            }
-
-            driversList.forEach((d, index) => {
-                const pos = d.position || (index + 1);
-                
-                // Extracción correcta según la estructura del JSON
-                const nombrePiloto = d.driverName || d.driverInfo?.displayName || d.driverInfo?.firstName || `Piloto ${index + 1}`;
-                const escuderia = d.team?.fullName || d.team?.name || '-';
-                
-                const mejorVuelta = d.fastestLapTime || 'No registrada';
-                const compVR = d.fastestLapTyreCompound || '-';
-                const vueltasTotales = d.lapsCompleted || 0;
-
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #333';
-                tr.innerHTML = `
-                    <td style="padding: 8px; text-align: center; font-family: monospace;">${pos}</td>
-                    <td style="padding: 8px; font-weight: 500; white-space: nowrap;">${nombrePiloto}</td>
-                    <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${escuderia}</td>
-                    <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold; white-space: nowrap;">${mejorVuelta}</td>
-                    <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${compVR}</td>
-                    <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${vueltasTotales}</td>
-                `;
-                tbodyPreview.appendChild(tr);
-            });
+        if (driversList.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="9" style="padding: 15px; text-align: center; color: #aaa;">No se encontraron datos de pilotos en este JSON.</td>`;
+            tbodyPreview.appendChild(tr);
+            document.getElementById('preview-container').style.display = 'block';
+            return;
         }
-        document.getElementById('preview-container').style.display = 'block';
+
+        // --- PASO 1: Calcular récords absolutos globales de la sesión ---
+        let mejorVueltaGlobal = Infinity;
+        let mejorS1Global = Infinity;
+        let mejorS2Global = Infinity;
+        let mejorS3Global = Infinity;
+
+        // Estructura auxiliar para guardar los mejores datos procesados por piloto
+        const processedDrivers = driversList.map((d, index) => {
+            const pos = d.position || (index + 1);
+            const nombrePiloto = d.driverName || d.driverInfo?.displayName || d.driverInfo?.firstName || `Piloto ${index + 1}`;
+            const escuderia = d.team?.fullName || d.team?.name || '-';
+            const compVR = d.fastestLapTyreCompound || '-';
+            const vueltasTotales = d.lapsCompleted || 0;
+
+            let fastestLapNum = d.fastestLapTimeSeconds || d.fastestLapTime; // Ajusta según tu JSON si viene en segundos o string
+
+            // Buscar en el array de vueltas del piloto (suele llamarse 'laps' o similar en los JSON de RLT/Sims)
+            const lapsList = d.laps || d.lapTimes || [];
+            
+            let mejorS1Piloto = Infinity;
+            let mejorS2Piloto = Infinity;
+            let mejorS3Piloto = Infinity;
+
+            lapsList.forEach(lap => {
+                // Asegúrate de cambiar 's1', 's2', 's3' o 'sector1' por las propiedades exactas de tu JSON
+                const s1 = lap.sector1 || lap.s1;
+                const s2 = lap.sector2 || lap.s2;
+                const s3 = lap.sector3 || lap.s3;
+
+                if (s1 && s1 > 0 && s1 < mejorS1Piloto) mejorS1Piloto = s1;
+                if (s2 && s2 > 0 && s2 < mejorS2Piloto) mejorS2Piloto = s2;
+                if (s3 && s3 > 0 && s3 < mejorS3Piloto) mejorS3Piloto = s3;
+            });
+
+            // Si no hay array de vueltas detalladas pero sí trae los mejores sectores directos:
+            if (mejorS1Piloto === Infinity && d.bestSector1) mejorS1Piloto = d.bestSector1;
+            if (mejorS2Piloto === Infinity && d.bestSector2) mejorS2Piloto = d.bestSector2;
+            if (mejorS3Piloto === Infinity && d.bestSector3) mejorS3Piloto = d.bestSector3;
+
+            const mejorVueltaStr = d.fastestLapTime || '-';
+            const mejorVueltaSec = d.fastestLapTimeSeconds || parseTimeToSeconds(mejorVueltaStr);
+
+            if (mejorVueltaSec && mejorVueltaSec < mejorVueltaGlobal) {
+                mejorVueltaGlobal = mejorVueltaSec;
+            }
+            if (mejorS1Piloto < mejorS1Global) mejorS1Global = mejorS1Piloto;
+            if (mejorS2Piloto < mejorS2Global) mejorS2Global = mejorS2Piloto;
+            if (mejorS3Piloto < mejorS3Global) mejorS3Global = mejorS3Global;
+
+            return {
+                pos,
+                nombrePiloto,
+                escuderia,
+                mejorVueltaStr,
+                mejorVueltaSec,
+                mejorS1: mejorS1Piloto !== Infinity ? mejorS1Piloto : null,
+                mejorS2: mejorS2Piloto !== Infinity ? mejorS2Piloto : null,
+                mejorS3: mejorS3Piloto !== Infinity ? mejorS3Piloto : null,
+                compVR,
+                vueltasTotales
+            };
+        });
+
+        // --- PASO 2: Renderizar filas aplicando el morado ÚNICAMENTE al récord absoluto ---
+        processedDrivers.forEach(d => {
+            const esVueltaRecordGlobal = (d.mejorVueltaSec === mejorVueltaGlobal);
+            const esS1Record = (d.mejorS1 !== null && d.mejorS1 === mejorS1Global);
+            const esS2Record = (d.mejorS2 !== null && d.mejorS2 === mejorS2Global);
+            const esS3Record = (d.mejorS3 !== null && d.mejorS3 === mejorS3Global);
+
+            // Clases o estilos condicionales para el morado
+            const estiloVR = esVueltaRecordGlobal 
+                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; white-space: nowrap;' 
+                : 'padding: 8px; font-family: monospace; color: #fff; white-space: nowrap;';
+
+            const estiloS1 = esS1Record 
+                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; text-align: center;' 
+                : 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
+
+            const estiloS2 = esS2Record 
+                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; text-align: center;' 
+                : 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
+
+            const estiloS3 = esS3Record 
+                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; text-align: center;' 
+                : 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
+
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #333';
+            tr.innerHTML = `
+                <td style="padding: 8px; text-align: center; font-family: monospace;">${d.pos}</td>
+                <td style="padding: 8px; font-weight: 500; white-space: nowrap;">${d.nombrePiloto}</td>
+                <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${d.escuderia}</td>
+                <td style="${estiloVR}">${d.mejorVueltaStr}</td>
+                <td style="${estiloS1}">${d.mejorS1 !== null ? formatTime(d.mejorS1) : '-'}</td>
+                <td style="${estiloS2}">${d.mejorS2 !== null ? formatTime(d.mejorS2) : '-'}</td>
+                <td style="${estiloS3}">${d.mejorS3 !== null ? formatTime(d.mejorS3) : '-'}</td>
+                <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${d.compVR}</td>
+                <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${d.vueltasTotales}</td>
+            `;
+            tbodyPreview.appendChild(tr);
+        });
     }
+    document.getElementById('preview-container').style.display = 'block';
+}
+
+// Funciones auxiliares por si tus tiempos vienen en formato texto ("1:11.401") y necesitas pasarlos a segundos para comparar, o viceversa:
+function parseTimeToSeconds(timeStr) {
+    if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) return null;
+    const parts = timeStr.split(':');
+    return parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
+}
+
+function formatTime(val) {
+    // Si ya viene formateado como texto (ej. "24.123"), devuélvelo. Si viene en segundos numéricos, formatéalo.
+    if (typeof val === 'string') return val;
+    return val.toFixed(3); 
+}
 
     function procesarCSV(contenido) {
         const trHead = document.getElementById('tr-preview-head');
