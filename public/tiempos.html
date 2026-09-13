@@ -479,7 +479,7 @@ function cargarSelectGP() {
         `).join('');
 }
 
-// Procesar JSON de RLT para la previsualización
+// Procesar JSON de RLT para la previsualización de Entrenamientos Libres o GP
 function procesarJsonRLT(jsonData) {
     const tbodyPreview = document.getElementById('tbody-preview');
     const trHead = document.getElementById('tr-preview-head');
@@ -489,43 +489,75 @@ function procesarJsonRLT(jsonData) {
 
     if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
         trHead.innerHTML = `
-            <th style="padding: 8px;">Piloto (ID / R,Number)</th>
-            <th style="padding: 8px;">Mejor Vuelta</th>
+            <th style="padding: 8px;">Pos</th>
+            <th style="padding: 8px;">Piloto</th>
+            <th style="padding: 8px;">Escudería</th>
+            <th style="padding: 8px;">Vuelta Rápida</th>
+            <th style="padding: 8px;">Comp. VR</th>
+            <th style="padding: 8px;">Mejores Sectores (S1 / S2 / S3)</th>
+            <th style="padding: 8px;">Comp. Mejores Sectores</th>
             <th style="padding: 8px;">Vueltas Totales</th>
         `;
-        jsonData.session.drivers.forEach(d => {
+
+        if (!jsonData.session || !jsonData.session.drivers) return;
+
+        jsonData.session.drivers.forEach((d, index) => {
+            const pos = index + 1;
+            const nombrePiloto = d.driverInfo?.name || `Piloto ${d.driverInfo?.raceNumber || ''}`;
+            const escuderia = d.driverInfo?.teamName || '-';
+            const mejorVuelta = d.fastestLap?.lapTime || 'No registrada';
+            const compVR = d.fastestLap?.visualCompound || d.fastestLap?.compound || '-';
+            
+            const s1 = d.bestSectors?.[0]?.lapTime || '-';
+            const s2 = d.bestSectors?.[1]?.lapTime || '-';
+            const s3 = d.bestSectors?.[2]?.lapTime || '-';
+            const sectoresStr = `${s1} / ${s2} / ${s3}`;
+            const compSectores = d.bestSectors?.[0]?.visualCompound || '-';
+            const vueltasTotales = d.lapsCompleted || 0;
+
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #333';
             tr.innerHTML = `
-                <td style="padding: 8px; font-family: monospace;" data-idpiloto="${d.driverInfo.raceNumber}">${d.driverInfo.name || 'Piloto ' + d.driverInfo.raceNumber}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || 'No registrada'}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.lapsCompleted || 0}</td>
+                <td style="padding: 8px; text-align: center; font-family: monospace;">${pos}</td>
+                <td style="padding: 8px; font-weight: 500;" data-idpiloto="${d.driverInfo?.raceNumber}">${nombrePiloto}</td>
+                <td style="padding: 8px; color: #cbd5e1;">${escuderia}</td>
+                <td style="padding: 8px; font-family: monospace; color: #7B1FA2; font-weight: bold;">${mejorVuelta}</td>
+                <td style="padding: 8px; font-size: 13px;">${compVR}</td>
+                <td style="padding: 8px; font-family: monospace; font-size: 13px;">${sectoresStr}</td>
+                <td style="padding: 8px; font-size: 13px;">${compSectores}</td>
+                <td style="padding: 8px; text-align: center; font-family: monospace;">${vueltasTotales}</td>
             `;
             tbodyPreview.appendChild(tr);
         });
     } else {
+        // Cabecera para Gran Premio (Clasificación / Carrera)
         trHead.innerHTML = `
             <th style="padding: 8px;">Piloto (ID / R,Number)</th>
             <th style="padding: 8px;">Clasificación</th>
             <th style="padding: 8px;">Vuelta Rápida</th>
             <th style="padding: 8px;">Tiempo Total</th>
         `;
-        jsonData.session.drivers.forEach(d => {
-            const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #333';
-            tr.innerHTML = `
-                <td style="padding: 8px; font-family: monospace;" data-idpiloto="${d.driverInfo.raceNumber}">${d.driverInfo.name || 'Piloto ' + d.driverInfo.raceNumber}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
-                <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
-            `;
-            tbodyPreview.appendChild(tr);
-        });
+        if (jsonData.session && jsonData.session.drivers) {
+            jsonData.session.drivers.forEach(d => {
+                const nombrePiloto = d.driverInfo?.name || `Piloto ${d.driverInfo?.raceNumber || ''}`;
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #333';
+                tr.innerHTML = `
+                    <td style="padding: 8px; font-family: monospace;" data-idpiloto="${d.driverInfo?.raceNumber}">${nombrePiloto}</td>
+                    <td style="padding: 8px; font-family: monospace;">${d.qualifying?.bestLapTime || '-'}</td>
+                    <td style="padding: 8px; font-family: monospace;">${d.fastestLap?.lapTime || '-'}</td>
+                    <td style="padding: 8px; font-family: monospace;">${d.totalTime || '-'}</td>
+                `;
+                tbodyPreview.appendChild(tr);
+            });
+        }
     }
 
     document.getElementById('preview-container').style.display = 'block';
 }
 
+
+    
 function procesarCSV(contenido) {
     const trHead = document.getElementById('tr-preview-head');
     trHead.innerHTML = `
