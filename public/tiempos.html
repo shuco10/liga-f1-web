@@ -23,7 +23,6 @@
         overflow-x: auto;
     }
 
-    /* LA TABLA LLEVA EL REDONDEO GENERAL */
     #tabla-tiempos-container table {
         width: 100%;
         border-collapse: collapse;
@@ -33,18 +32,10 @@
         overflow: hidden;
     }
 
-    /* EL DEGRADADO Y EL REDONDEO VIVEN EN EL THEAD ENTERO */
-    #tabla-tiempos-container thead {
-        background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
-        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-    }
-
+    /* Cabecera neón aplicada únicamente al tr para respetar la estructura original */
     #tabla-tiempos-container thead tr {
-        background: transparent !important;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+        background: linear-gradient(135deg, #7e22ce, #ef4444);
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
     }
 
     #tabla-tiempos-container th {
@@ -54,7 +45,7 @@
         font-size: 0.85rem;
         letter-spacing: 1px;
         border: none;
-        background: transparent !important;
+        background: transparent;
     }
 
     /* Líneas de la tabla sutiles con efecto hover */
