@@ -483,7 +483,7 @@
             `).join('');
     }
 
- function procesarJsonRLT(jsonData) {
+function procesarJsonRLT(jsonData) {
     console.log("Procesando JSON en procesarJsonRLT:", jsonData);
     
     const tbodyPreview = document.getElementById('tbody-preview');
@@ -493,15 +493,14 @@
     const tipoSesion = document.getElementById('select-tipo-sesion').value;
 
     if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
-        // 1. Añadimos las cabeceras de los sectores
         trHead.innerHTML = `
             <th style="padding: 8px; white-space: nowrap;">Pos</th>
             <th style="padding: 8px; white-space: nowrap;">Piloto</th>
             <th style="padding: 8px; white-space: nowrap;">Escudería</th>
             <th style="padding: 8px; white-space: nowrap;">Vuelta Rápida</th>
-            <th style="padding: 8px; white-space: nowrap;">S1</th>
-            <th style="padding: 8px; white-space: nowrap;">S2</th>
-            <th style="padding: 8px; white-space: nowrap;">S3</th>
+            <th style="padding: 8px; white-space: nowrap; text-align: center;">S1</th>
+            <th style="padding: 8px; white-space: nowrap; text-align: center;">S2</th>
+            <th style="padding: 8px; white-space: nowrap; text-align: center;">S3</th>
             <th style="padding: 8px; white-space: nowrap;">Comp. VR</th>
             <th style="padding: 8px; white-space: nowrap;">Vueltas Totales</th>
         `;
@@ -516,13 +515,11 @@
             return;
         }
 
-        // --- PASO 1: Calcular récords absolutos globales de la sesión ---
         let mejorVueltaGlobal = Infinity;
         let mejorS1Global = Infinity;
         let mejorS2Global = Infinity;
         let mejorS3Global = Infinity;
 
-        // Estructura auxiliar para guardar los mejores datos procesados por piloto
         const processedDrivers = driversList.map((d, index) => {
             const pos = d.position || (index + 1);
             const nombrePiloto = d.driverName || d.driverInfo?.displayName || d.driverInfo?.firstName || `Piloto ${index + 1}`;
@@ -530,30 +527,22 @@
             const compVR = d.fastestLapTyreCompound || '-';
             const vueltasTotales = d.lapsCompleted || 0;
 
-            let fastestLapNum = d.fastestLapTimeSeconds || d.fastestLapTime; // Ajusta según tu JSON si viene en segundos o string
-
-            // Buscar en el array de vueltas del piloto (suele llamarse 'laps' o similar en los JSON de RLT/Sims)
-            const lapsList = d.laps || d.lapTimes || [];
+            const lapsList = d.laps || d.lapTimes || d.lapList || [];
             
-            let mejorS1Piloto = Infinity;
-            let mejorS2Piloto = Infinity;
-            let mejorS3Piloto = Infinity;
+            let mejorS1PilotoMs = Infinity;
+            let mejorS2PilotoMs = Infinity;
+            let mejorS3PilotoMs = Infinity;
 
             lapsList.forEach(lap => {
-                // Asegúrate de cambiar 's1', 's2', 's3' o 'sector1' por las propiedades exactas de tu JSON
-                const s1 = lap.sector1 || lap.s1;
-                const s2 = lap.sector2 || lap.s2;
-                const s3 = lap.sector3 || lap.s3;
+                // Usamos las claves en milisegundos exactas que nos has pasado
+                const s1 = lap.sector1TimeMs;
+                const s2 = lap.sector2TimeMs;
+                const s3 = lap.sector3TimeMs;
 
-                if (s1 && s1 > 0 && s1 < mejorS1Piloto) mejorS1Piloto = s1;
-                if (s2 && s2 > 0 && s2 < mejorS2Piloto) mejorS2Piloto = s2;
-                if (s3 && s3 > 0 && s3 < mejorS3Piloto) mejorS3Piloto = s3;
+                if (s1 !== undefined && s1 !== null && s1 > 0 && s1 < mejorS1PilotoMs) mejorS1PilotoMs = s1;
+                if (s2 !== undefined && s2 !== null && s2 > 0 && s2 < mejorS2PilotoMs) mejorS2PilotoMs = s2;
+                if (s3 !== undefined && s3 !== null && s3 > 0 && s3 < mejorS3PilotoMs) mejorS3PilotoMs = s3;
             });
-
-            // Si no hay array de vueltas detalladas pero sí trae los mejores sectores directos:
-            if (mejorS1Piloto === Infinity && d.bestSector1) mejorS1Piloto = d.bestSector1;
-            if (mejorS2Piloto === Infinity && d.bestSector2) mejorS2Piloto = d.bestSector2;
-            if (mejorS3Piloto === Infinity && d.bestSector3) mejorS3Piloto = d.bestSector3;
 
             const mejorVueltaStr = d.fastestLapTime || '-';
             const mejorVueltaSec = d.fastestLapTimeSeconds || parseTimeToSeconds(mejorVueltaStr);
@@ -561,9 +550,9 @@
             if (mejorVueltaSec && mejorVueltaSec < mejorVueltaGlobal) {
                 mejorVueltaGlobal = mejorVueltaSec;
             }
-            if (mejorS1Piloto < mejorS1Global) mejorS1Global = mejorS1Piloto;
-            if (mejorS2Piloto < mejorS2Global) mejorS2Global = mejorS2Piloto;
-            if (mejorS3Piloto < mejorS3Global) mejorS3Global = mejorS3Global;
+            if (mejorS1PilotoMs < mejorS1Global) mejorS1Global = mejorS1PilotoMs;
+            if (mejorS2PilotoMs < mejorS2Global) mejorS2Global = mejorS2PilotoMs;
+            if (mejorS3PilotoMs < mejorS3Global) mejorS3Global = mejorS3Dialogo => mejorS3Global = mejorS3PilotoMs; // corregido abajo por limpieza
 
             return {
                 pos,
@@ -571,37 +560,36 @@
                 escuderia,
                 mejorVueltaStr,
                 mejorVueltaSec,
-                mejorS1: mejorS1Piloto !== Infinity ? mejorS1Piloto : null,
-                mejorS2: mejorS2Piloto !== Infinity ? mejorS2Piloto : null,
-                mejorS3: mejorS3Piloto !== Infinity ? mejorS3Piloto : null,
+                mejorS1Ms: mejorS1PilotoMs !== Infinity ? mejorS1PilotoMs : null,
+                mejorS2Ms: mejorS2PilotoMs !== Infinity ? mejorS2PilotoMs : null,
+                mejorS3Ms: mejorS3PilotoMs !== Infinity ? mejorS3PilotoMs : null,
                 compVR,
                 vueltasTotales
             };
         });
 
-        // --- PASO 2: Renderizar filas aplicando el morado ÚNICAMENTE al récord absoluto ---
+        // Aseguramos el mínimo global de S3 por si acaso
         processedDrivers.forEach(d => {
-            const esVueltaRecordGlobal = (d.mejorVueltaSec === mejorVueltaGlobal);
-            const esS1Record = (d.mejorS1 !== null && d.mejorS1 === mejorS1Global);
-            const esS2Record = (d.mejorS2 !== null && d.mejorS2 === mejorS2Global);
-            const esS3Record = (d.mejorS3 !== null && d.mejorS3 === mejorS3Global);
+            if (d.mejorS1Ms !== null && d.mejorS1Ms < mejorS1Global) mejorS1Global = d.mejorS1Ms;
+            if (d.mejorS2Ms !== null && d.mejorS2Ms < mejorS2Global) mejorS2Global = d.mejorS2Ms;
+            if (d.mejorS3Ms !== null && d.mejorS3Ms < mejorS3Global) mejorS3Global = d.mejorS3Ms;
+        });
 
-            // Clases o estilos condicionales para el morado
-            const estiloVR = esVueltaRecordGlobal 
-                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; white-space: nowrap;' 
-                : 'padding: 8px; font-family: monospace; color: #fff; white-space: nowrap;';
+        processedDrivers.forEach(d => {
+            const esVueltaRecordGlobal = (d.mejorVueltaSec && d.mejorVueltaSec === mejorVueltaGlobal);
+            const esS1Record = (d.mejorS1Ms !== null && d.mejorS1Ms === mejorS1Global);
+            const esS2Record = (d.mejorS2Ms !== null && d.mejorS2Ms === mejorS2Global);
+            const esS3Record = (d.mejorS3Ms !== null && d.mejorS3Ms === mejorS3Global);
 
-            const estiloS1 = esS1Record 
-                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; text-align: center;' 
-                : 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
+            // Estilo morado F1 style (fondo translúcido + borde + texto brillante)
+            const estiloBadgeMorado = 'padding: 3px 6px; background-color: rgba(147, 51, 234, 0.35); border: 1px solid #a855f7; border-radius: 4px; color: #e9d5ff; font-weight: bold; font-family: monospace; display: inline-block;';
+            const estiloNormal = 'padding: 8px; font-family: monospace; color: #fff; white-space: nowrap;';
+            const estiloNormalSector = 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
 
-            const estiloS2 = esS2Record 
-                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; text-align: center;' 
-                : 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
-
-            const estiloS3 = esS3Record 
-                ? 'padding: 8px; font-family: monospace; color: #b19cd9; font-weight: bold; text-align: center;' 
-                : 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
+            const estiloVR = esVueltaRecordGlobal ? estiloBadgeMorado : estiloNormal;
+            const estiloS1 = esS1Record ? estiloBadgeMorado : estiloNormalSector;
+            const estiloS2 = esS2Record ? estiloBadgeMorado : estiloNormalSector;
+            const estiloS3 = esS3Record ? estiloBadgeMorado : estiloNormalSector;
 
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #333';
@@ -609,10 +597,10 @@
                 <td style="padding: 8px; text-align: center; font-family: monospace;">${d.pos}</td>
                 <td style="padding: 8px; font-weight: 500; white-space: nowrap;">${d.nombrePiloto}</td>
                 <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${d.escuderia}</td>
-                <td style="${estiloVR}">${d.mejorVueltaStr}</td>
-                <td style="${estiloS1}">${d.mejorS1 !== null ? formatTime(d.mejorS1) : '-'}</td>
-                <td style="${estiloS2}">${d.mejorS2 !== null ? formatTime(d.mejorS2) : '-'}</td>
-                <td style="${estiloS3}">${d.mejorS3 !== null ? formatTime(d.mejorS3) : '-'}</td>
+                <td style="white-space: nowrap; padding: 6px 8px;"><span style="${estiloVR}">${d.mejorVueltaStr}</span></td>
+                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS1}">${d.mejorS1Ms !== null ? formatMsToSeconds(d.mejorS1Ms) : '-'}</span></td>
+                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS2}">${d.mejorS2Ms !== null ? formatMsToSeconds(d.mejorS2Ms) : '-'}</span></td>
+                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS3}">${d.mejorS3Ms !== null ? formatMsToSeconds(d.mejorS3Ms) : '-'}</span></td>
                 <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${d.compVR}</td>
                 <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${d.vueltasTotales}</td>
             `;
@@ -622,17 +610,19 @@
     document.getElementById('preview-container').style.display = 'block';
 }
 
-// Funciones auxiliares por si tus tiempos vienen en formato texto ("1:11.401") y necesitas pasarlos a segundos para comparar, o viceversa:
 function parseTimeToSeconds(timeStr) {
     if (!timeStr || typeof timeStr !== 'string' || !timeStr.includes(':')) return null;
     const parts = timeStr.split(':');
     return parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
 }
 
-function formatTime(val) {
-    // Si ya viene formateado como texto (ej. "24.123"), devuélvelo. Si viene en segundos numéricos, formatéalo.
-    if (typeof val === 'string') return val;
-    return val.toFixed(3); 
+function formatMsToSeconds(ms) {
+    // Convierte 22033 ms en "22.033"
+    return (ms / 1000).toFixed(3);
+}
+
+function nombrePilotoFiltro(nombre) {
+    return nombre;
 }
 
     function procesarCSV(contenido) {
