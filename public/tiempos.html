@@ -812,7 +812,7 @@ async function cargarTiemposPantalla() {
         if (valorSesion === 'libre1' || valorSesion === 'libre2' || valorSesion === '1' || valorSesion === '2') {
             const numSesion = (valorSesion === 'libre2' || valorSesion === '2') ? 2 : 1;
 
-            // 9 Columnas exactas para Entrenamientos (coinciden con los 9 <td> de abajo)
+            // 9 Columnas de Libres
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 12px 6px; text-align: center; width: 6%;">Pos</th>
@@ -835,25 +835,43 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
+            // Calculamos los tiempos mínimos absolutos (récords en morado) para S1, S2 y S3 de toda la sesión
+            const validS1 = datos.map(r => r.s1_ms).filter(v => v > 0);
+            const validS2 = datos.map(r => r.s2_ms).filter(v => v > 0);
+            const validS3 = datos.map(r => r.s3_ms).filter(v => v > 0);
+
+            const minS1 = validS1.length ? Math.min(...validS1) : null;
+            const minS2 = validS2.length ? Math.min(...validS2) : null;
+            const minS3 = validS3.length ? Math.min(...validS3) : null;
+
             const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
 
-            // Tus 9 celdas originales intactas pero con clases/estilos seguros
+            // Función auxiliar para pintar en morado si es el récord del sector
+            const estiloSector = (valorMs, minVal) => {
+                if (!valorMs || valorMs <= 0) return '-';
+                const texto = msASegundos(valorMs);
+                if (valorMs === minVal) {
+                    return `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold;">${texto}</span>`;
+                }
+                return texto;
+            };
+
             tbodyTiempos.innerHTML = datos.map((row) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 6px; text-align: center;">${row.posicion || '-'}</td>
                     <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
-                    <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia || '-'}</td>
+                    <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia_html || row.escuderia || '-'}</td>
                     <td style="padding: 12px 6px; text-align: center; color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</td>
-                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${msASegundos(row.s1_ms)}</td>
-                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${msASegundos(row.s2_ms)}</td>
-                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${msASegundos(row.s3_ms)}</td>
+                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${estiloSector(row.s1_ms, minS1)}</td>
+                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${estiloSector(row.s2_ms, minS2)}</td>
+                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${estiloSector(row.s3_ms, minS3)}</td>
                     <td style="padding: 12px 6px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
                     <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${row.vueltas_totales || 0}</td>
                 </tr>
             `).join('');
 
         } else {
-            // 6 Columnas exactas para Carrera (coinciden con los 6 <td> de abajo)
+            // 6 Columnas de Carrera
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 12px 8px; text-align: center; width: 8%;">Pos</th>
@@ -873,17 +891,35 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
-            // Tus 6 celdas originales de carrera intactas
-            tbodyTiempos.innerHTML = datos.map((row, index) => `
-                <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 12px 8px; text-align: center;">${index + 1}</td>
-                    <td style="padding: 12px 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag}</td>
-                    <td style="padding: 12px 8px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia || '-'}</td>
-                    <td style="padding: 12px 8px; text-align: center; font-family: monospace;">${row.tiempo_clasificacion || '-'}</td>
-                    <td style="padding: 12px 8px; text-align: center; font-family: monospace;">${row.tiempo_vuelta_rapida_carrera || '-'}</td>
-                    <td style="padding: 12px 8px; text-align: center; font-family: monospace;">${row.tiempo_total_carrera || '-'}</td>
-                </tr>
-            `).join('');
+            // Lógica para ordenar DNF al final y etiquetar correctamente
+            const datosOrdenados = [...datos].sort((a, b) => {
+                const aEsDnf = !a.tiempo_total_carrera || a.tiempo_total_carrera === 'DNF' || a.tiempo_total_carrera.includes('No registrada');
+                const bEsDnf = !b.tiempo_total_carrera || b.tiempo_total_carrera === 'DNF' || b.tiempo_total_carrera.includes('No registrada');
+                if (aEsDnf && !bEsDnf) return 1;
+                if (!aEsDnf && bEsDnf) return -1;
+                return 0;
+            });
+
+            tbodyTiempos.innerHTML = datosOrdenados.map((row, index) => {
+                const esDnfTotal = !row.tiempo_total_carrera || row.tiempo_total_carrera === 'DNF' || row.tiempo_total_carrera.includes('No registrada');
+                const esDnfVuelta = !row.tiempo_vuelta_rapida_carrera || row.tiempo_vuelta_rapida_carrera === 'DNF' || row.tiempo_vuelta_rapida_carrera.includes('No registrada');
+
+                const badgeDnf = `<span style="background-color: #7f1d1d; color: #fca5a5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">DNF</span>`;
+                
+                const textoVuelta = esDnfVuelta ? badgeDnf : `<span style="font-family: monospace;">${row.tiempo_vuelta_rapida_carrera}</span>`;
+                const textoTotal = esDnfTotal ? badgeDnf : `<span style="font-family: monospace;">${row.tiempo_total_carrera}</span>`;
+
+                return `
+                    <tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 12px 8px; text-align: center;">${index + 1}</td>
+                        <td style="padding: 12px 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag}</td>
+                        <td style="padding: 12px 8px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia_html || row.escuderia || '-'}</td>
+                        <td style="padding: 12px 8px; text-align: center; font-family: monospace;">${row.tiempo_clasificacion || '-'}</td>
+                        <td style="padding: 12px 8px; text-align: center;">${textoVuelta}</td>
+                        <td style="padding: 12px 8px; text-align: center;">${textoTotal}</td>
+                    </tr>
+                `;
+            }).join('');
         }
     } catch (error) {
         console.error("Error al cargar la tabla de tiempos:", error);
