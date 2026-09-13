@@ -1043,7 +1043,7 @@ async function cargarTiemposPantalla() {
 
                 return `
                     <tr style="border-bottom: 1px solid #333;">
-                        <td style="padding: 12px 6px; text-align: center;">${row.posicion || '-'}</td>
+                        <td style="padding: 12px 6px; text-align: center;">${index + 1}</td> <!-- <--- Cambiado a index + 1 -->
                         <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
                         <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
                         <td style="padding: 12px 6px; text-align: center;">${htmlVuelta}</td>
