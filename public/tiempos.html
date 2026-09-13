@@ -812,7 +812,6 @@ async function cargarTiemposPantalla() {
         if (valorSesion === 'libre1' || valorSesion === 'libre2' || valorSesion === '1' || valorSesion === '2') {
             const numSesion = (valorSesion === 'libre2' || valorSesion === '2') ? 2 : 1;
 
-            // 9 Columnas de Libres
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 12px 6px; text-align: center; width: 6%;">Pos</th>
@@ -835,40 +834,58 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
-            // Calculamos los tiempos mínimos absolutos (récords en morado) para S1, S2 y S3 de toda la sesión
-            const validS1 = datos.map(r => r.s1_ms).filter(v => v > 0);
-            const validS2 = datos.map(r => r.s2_ms).filter(v => v > 0);
-            const validS3 = datos.map(r => r.s3_ms).filter(v => v > 0);
-
-            const minS1 = validS1.length ? Math.min(...validS1) : null;
-            const minS2 = validS2.length ? Math.min(...validS2) : null;
-            const minS3 = validS3.length ? Math.min(...validS3) : null;
-
-            const msASegundos = (ms) => ms ? (ms / 1000).toFixed(3) : '-';
-
-            // Función auxiliar para pintar en morado si es el récord del sector
-            const estiloSector = (valorMs, minVal) => {
-                if (!valorMs || valorMs <= 0) return '-';
-                const texto = msASegundos(valorMs);
-                if (valorMs === minVal) {
-                    return `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold;">${texto}</span>`;
+            // Función para convertir string de tiempo (ej "1:11.401" o milisegundos) a segundos totales en número para comparar récords
+            const aMilisegundos = (t) => {
+                if (!t) return null;
+                if (typeof t === 'number') return t;
+                if (typeof t === 'string' && t.includes(':')) {
+                    const partes = t.split(':');
+                    const mins = parseFloat(partes[0]);
+                    const secs = parseFloat(partes[1]);
+                    return (mins * 60 * 1000) + (secs * 1000);
                 }
-                return texto;
+                const num = parseFloat(t);
+                return isNaN(num) ? null : num;
             };
 
-            tbodyTiempos.innerHTML = datos.map((row) => `
-                <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 12px 6px; text-align: center;">${row.posicion || '-'}</td>
-                    <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
-                    <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia_html || row.escuderia || '-'}</td>
-                    <td style="padding: 12px 6px; text-align: center; color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</td>
-                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${estiloSector(row.s1_ms, minS1)}</td>
-                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${estiloSector(row.s2_ms, minS2)}</td>
-                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${estiloSector(row.s3_ms, minS3)}</td>
-                    <td style="padding: 12px 6px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
-                    <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${row.vueltas_totales || 0}</td>
-                </tr>
-            `).join('');
+            // Encontramos los mínimos absolutos de la sesión para pintar en morado
+            const tiemposVueltaMs = datos.map(r => aMilisegundos(r.mejor_vuelta)).filter(v => v !== null && v > 0);
+            const s1Ms = datos.map(r => aMilisegundos(r.s1)).filter(v => v !== null && v > 0);
+            const s2Ms = datos.map(r => aMilisegundos(r.s2)).filter(v => v !== null && v > 0);
+            const s3Ms = datos.map(r => aMilisegundos(r.s3)).filter(v => v !== null && v > 0);
+
+            const minVuelta = tiemposVueltaMs.length ? Math.min(...tiemposVueltaMs) : null;
+            const minS1 = s1Ms.length ? Math.min(...s1Ms) : null;
+            const minS2 = s2Ms.length ? Math.min(...s2Ms) : null;
+            const minS3 = s3Ms.length ? Math.min(...s3Ms) : null;
+
+            const badgeMorado = (texto) => `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-family: monospace;">${texto}</span>`;
+
+            tbodyTiempos.innerHTML = datos.map((row) => {
+                const vMs = aMilisegundos(row.mejor_vuelta);
+                const s1M = aMilisegundos(row.s1);
+                const s2M = aMilisegundos(row.s2);
+                const s3M = aMilisegundos(row.s3);
+
+                const htmlVuelta = (vMs !== null && vMs === minVuelta) ? badgeMorado(row.mejor_vuelta) : `<span style="color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</span>`;
+                const htmlS1 = (s1M !== null && s1M === minS1) ? badgeMorado(row.s1) : `<span style="font-family: monospace;">${row.s1 || '-'}</span>`;
+                const htmlS2 = (s2M !== null && s2M === minS2) ? badgeMorado(row.s2) : `<span style="font-family: monospace;">${row.s2 || '-'}</span>`;
+                const htmlS3 = (s3M !== null && s3M === minS3) ? badgeMorado(row.s3) : `<span style="font-family: monospace;">${row.s3 || '-'}</span>`;
+
+                return `
+                    <tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 12px 6px; text-align: center;">${row.posicion || '-'}</td>
+                        <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
+                        <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.escuderia_html || row.escuderia || '-'}</td>
+                        <td style="padding: 12px 6px; text-align: center;">${htmlVuelta}</td>
+                        <td style="padding: 12px 6px; text-align: center;">${htmlS1}</td>
+                        <td style="padding: 12px 6px; text-align: center;">${htmlS2}</td>
+                        <td style="padding: 12px 6px; text-align: center;">${htmlS3}</td>
+                        <td style="padding: 12px 6px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
+                        <td style="padding: 12px 6px; text-align: center; font-family: monospace;">${row.vueltas_totales || 0}</td>
+                    </tr>
+                `;
+            }).join('');
 
         } else {
             // 6 Columnas de Carrera
@@ -891,7 +908,23 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
-            // Lógica para ordenar DNF al final y etiquetar correctamente
+            const aMilisegundos = (t) => {
+                if (!t) return null;
+                if (typeof t === 'number') return t;
+                if (typeof t === 'string' && t.includes(':')) {
+                    const partes = t.split(':');
+                    const mins = parseFloat(partes[0]);
+                    const secs = parseFloat(partes[1]);
+                    return (mins * 60 * 1000) + (secs * 1000);
+                }
+                const num = parseFloat(t);
+                return isNaN(num) ? null : num;
+            };
+
+            // Detectamos la vuelta rápida absoluta de carrera para pintarla en morado
+            const vrValidas = datos.map(r => aMilisegundos(r.tiempo_vuelta_rapida_carrera)).filter(v => v !== null && v > 0);
+            const minVueltaCarrera = vrValidas.length ? Math.min(...vrValidas) : null;
+
             const datosOrdenados = [...datos].sort((a, b) => {
                 const aEsDnf = !a.tiempo_total_carrera || a.tiempo_total_carrera === 'DNF' || a.tiempo_total_carrera.includes('No registrada');
                 const bEsDnf = !b.tiempo_total_carrera || b.tiempo_total_carrera === 'DNF' || b.tiempo_total_carrera.includes('No registrada');
@@ -900,13 +933,23 @@ async function cargarTiemposPantalla() {
                 return 0;
             });
 
+            const badgeMorado = (texto) => `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-family: monospace;">${texto}</span>`;
+            const badgeDnf = `<span style="background-color: #7f1d1d; color: #fca5a5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">DNF</span>`;
+
             tbodyTiempos.innerHTML = datosOrdenados.map((row, index) => {
                 const esDnfTotal = !row.tiempo_total_carrera || row.tiempo_total_carrera === 'DNF' || row.tiempo_total_carrera.includes('No registrada');
                 const esDnfVuelta = !row.tiempo_vuelta_rapida_carrera || row.tiempo_vuelta_rapida_carrera === 'DNF' || row.tiempo_vuelta_rapida_carrera.includes('No registrada');
 
-                const badgeDnf = `<span style="background-color: #7f1d1d; color: #fca5a5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">DNF</span>`;
-                
-                const textoVuelta = esDnfVuelta ? badgeDnf : `<span style="font-family: monospace;">${row.tiempo_vuelta_rapida_carrera}</span>`;
+                const vrMs = aMilisegundos(row.tiempo_vuelta_rapida_carrera);
+                let textoVuelta = '-';
+                if (esDnfVuelta) {
+                    textoVuelta = badgeDnf;
+                } else if (vrMs !== null && vrMs === minVueltaCarrera) {
+                    textoVuelta = badgeMorado(row.tiempo_vuelta_rapida_carrera);
+                } else {
+                    textoVuelta = `<span style="font-family: monospace;">${row.tiempo_vuelta_rapida_carrera}</span>`;
+                }
+
                 const textoTotal = esDnfTotal ? badgeDnf : `<span style="font-family: monospace;">${row.tiempo_total_carrera}</span>`;
 
                 return `
