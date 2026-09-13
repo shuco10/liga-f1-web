@@ -805,12 +805,12 @@ async function cargarTiemposPantalla() {
         if (tipoVer === 'gp') {
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
-                    <th style="padding: 14px 10px; text-align: center;">Pos</th>
-                    <th style="padding: 14px 10px;">Piloto</th>
-                    <th style="padding: 14px 10px;">Escudería</th>
-                    <th style="padding: 14px 10px; text-align: center;">Clasificación</th>
-                    <th style="padding: 14px 10px; text-align: center;">Vuelta Rápida</th>
-                    <th style="padding: 14px 10px; text-align: center;">Tiempo Total</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 8%;">Pos</th>
+                    <th style="padding: 14px 10px; width: 28%;">Piloto</th>
+                    <th style="padding: 14px 10px; width: 24%;">Escudería</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 13%;">Clasificación</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 13%;">Vuelta Rápida</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 14%;">Tiempo Total</th>
                 </tr>
             `;
 
@@ -825,26 +825,26 @@ async function cargarTiemposPantalla() {
             tbodyTiempos.innerHTML = datos.map((row, index) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 10px; text-align: center;">${index + 1}</td>
-                    <td style="padding: 12px 10px; font-weight: bold;">${row.gamertag}</td>
-                    <td style="padding: 12px 10px; color: #aaa;">${row.escuderia || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${row.tiempo_clasificacion || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${row.tiempo_vuelta_rapida_carrera || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${row.tiempo_total_carrera || '-'}</td>
+                    <td style="padding: 12px 10px; font-weight: bold; white-space: nowrap;">${row.gamertag}</td>
+                    <td style="padding: 12px 10px; color: #aaa; white-space: nowrap;">${row.escuderia || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${row.tiempo_clasificacion || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${row.tiempo_vuelta_rapida_carrera || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${row.tiempo_total_carrera || '-'}</td>
                 </tr>
             `).join('');
 
         } else {
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
-                    <th style="padding: 14px 10px; text-align: center;">Pos</th>
-                    <th style="padding: 14px 10px;">Piloto</th>
-                    <th style="padding: 14px 10px;">Escudería</th>
-                    <th style="padding: 14px 10px; text-align: center;">Mejor Vuelta</th>
-                    <th style="padding: 14px 10px; text-align: center;">S1</th>
-                    <th style="padding: 14px 10px; text-align: center;">S2</th>
-                    <th style="padding: 14px 10px; text-align: center;">S3</th>
-                    <th style="padding: 14px 10px; text-align: center;">Neumático</th>
-                    <th style="padding: 14px 10px; text-align: center;">Vueltas</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 7%;">Pos</th>
+                    <th style="padding: 14px 10px; width: 23%;">Piloto</th>
+                    <th style="padding: 14px 10px; width: 20%;">Escudería</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 13%;">Mejor Vuelta</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S1</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S2</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 9%;">S3</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 10%;">Neumático</th>
+                    <th style="padding: 14px 10px; text-align: center; width: 8%;">Vueltas</th>
                 </tr>
             `;
 
@@ -862,14 +862,14 @@ async function cargarTiemposPantalla() {
             tbodyTiempos.innerHTML = datos.map((row) => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 12px 10px; text-align: center;">${row.posicion || '-'}</td>
-                    <td style="padding: 12px 10px; font-weight: bold;">${row.gamertag || 'Piloto'}</td>
-                    <td style="padding: 12px 10px; color: #aaa;">${row.escuderia || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center; color: #4ade80; font-weight: bold;">${row.mejor_vuelta || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${msASegundos(row.s1_ms)}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${msASegundos(row.s2_ms)}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${msASegundos(row.s3_ms)}</td>
+                    <td style="padding: 12px 10px; font-weight: bold; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
+                    <td style="padding: 12px 10px; color: #aaa; white-space: nowrap;">${row.escuderia || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s1_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s2_ms)}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${msASegundos(row.s3_ms)}</td>
                     <td style="padding: 12px 10px; text-align: center;">${row.compuesto_neumatico || '-'}</td>
-                    <td style="padding: 12px 10px; text-align: center;">${row.vueltas_totales || 0}</td>
+                    <td style="padding: 12px 10px; text-align: center; font-family: monospace;">${row.vueltas_totales || 0}</td>
                 </tr>
             `).join('');
         }
@@ -878,15 +878,6 @@ async function cargarTiemposPantalla() {
         tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #ef4444;">Error al cargar los datos en pantalla.</td></tr>`;
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const selectGp = document.getElementById('select-gp');
-    const selectVerSesion = document.getElementById('select-ver-sesion');
-
-    if (selectGp) selectGp.addEventListener('change', cargarTiemposPantalla);
-    if (selectVerSesion) selectVerSesion.addEventListener('change', cargarTiemposPantalla);
-});
-
 
 
 
