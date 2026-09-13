@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
- <style>
+<style>
     body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
     
     /* Contenedor principal de tiempos con estilo neón */
@@ -23,6 +23,7 @@
         overflow-x: auto;
     }
 
+    /* LA TABLA LLEVA EL REDONDEO GENERAL */
     #tabla-tiempos-container table {
         width: 100%;
         border-collapse: collapse;
@@ -32,11 +33,18 @@
         overflow: hidden;
     }
 
-    /* TRUCO LIMPIO: Forzamos el degradado en la fila de la cabecera cubriendo siempre el 100% */
-    #tabla-tiempos-container thead tr {
+    /* EL DEGRADADO Y EL REDONDEO VIVEN EN EL THEAD ENTERO */
+    #tabla-tiempos-container thead {
         background: linear-gradient(135deg, #7e22ce 0%, #ef4444 100%) !important;
         box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
-        width: 100%;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    #tabla-tiempos-container thead tr {
+        background: transparent !important;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
     }
 
     #tabla-tiempos-container th {
