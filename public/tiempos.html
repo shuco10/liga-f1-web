@@ -925,6 +925,20 @@ async function cargarTiemposPantalla() {
         return `<div style="text-align: center;"><img src="banderas/${archivoImg}" alt="${nombreEscuderia}" title="${nombreEscuderia}" style="width: 56px; height: 32px; object-fit: contain; display: inline-block;"></div>`;
     };
 
+    // 1. PRIMERO declaramos el objeto de los neumáticos:
+    const archivosNeumaticos = {
+        "soft": "blando.png",
+        "blando": "blando.png",
+        "medium": "medio.png",
+        "medio": "medio.png",
+        "hard": "duro.png",
+        "duro": "duro.png",
+        "inter": "inter.png",
+        "intermedio": "inter.png",
+        "wet": "wet.png",
+        "lluvia": "wet.png"
+    };
+
     const renderNeumaticoImg = (compuesto) => {
         if (!compuesto) return '-';
         const compKey = String(compuesto).trim().toLowerCase();
