@@ -671,60 +671,53 @@ function nombrePilotoFiltro(nombre) {
                 let endpoint = '';
                 let payload = {};
 
-                if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
+if (tipoSesion === 'libre1' || tipoSesion === 'libre2') {
                     if (!datosJsonParseados) {
                         alert("Para subir entrenamientos libres debes cargar el archivo JSON de Racing League Tools.");
                         return;
                     }
                     endpoint = '/api/importar-entrenamientos';
+                    
+                    const pilotosLibres = [];
+                    filas.forEach(fila => {
+                        const celdas = fila.querySelectorAll('td');
+                        if (celdas.length >= 9) {
+                            const posicion = parseInt(celdas[0].innerText.trim()) || null;
+                            const nombrePiloto = celdas[1].innerText.trim();
+                            const escuderia = celdas[2].innerText.trim();
+                            
+                            const mejorVueltaEl = celdas[3].querySelector('span') || celdas[3];
+                            const mejor_vuelta = mejorVueltaEl.innerText.trim();
+                            
+                            const s1Text = celdas[4].querySelector('span') ? celdas[4].querySelector('span').innerText.trim() : celdas[4].innerText.trim();
+                            const s2Text = celdas[5].querySelector('span') ? celdas[5].querySelector('span').innerText.trim() : celdas[5].innerText.trim();
+                            const s3Text = celdas[6].querySelector('span') ? celdas[6].querySelector('span').innerText.trim() : celdas[6].innerText.trim();
+
+                            const s1_ms = s1Text !== '-' ? Math.round(parseFloat(s1Text) * 1000) : null;
+                            const s2_ms = s2Text !== '-' ? Math.round(parseFloat(s2Text) * 1000) : null;
+                            const s3_ms = s3Text !== '-' ? Math.round(parseFloat(s3Text) * 1000) : null;
+
+                            const compuesto_neumatico = celdas[7].innerText.trim();
+                            const vueltas_totales = parseInt(celdas[8].innerText.trim()) || 0;
+
+                            pilotosLibres.push({
+                                posicion,
+                                nombrePiloto,
+                                escuderia,
+                                mejor_vuelta,
+                                s1_ms,
+                                s2_ms,
+                                s3_ms,
+                                compuesto_neumatico,
+                                vueltas_totales
+                            });
+                        }
+                    });
+
                     payload = {
                         id_entrenamiento: tipoSesion === 'libre1' ? 1 : 2, 
-                        drivers: datosJsonParseados.session.drivers
+                        pilotos: pilotosLibres
                     };
-                } else {
-                    endpoint = '/api/importar-tiempos';
-                    
-                    if (datosJsonParseados) {
-                        const idGp = datosJsonParseados.event.round;
-                        payload = datosJsonParseados.session.drivers.map(driver => ({
-                            id_gp: parseInt(idGp, 10),
-                            id: parseInt(driver.driverInfo.raceNumber, 10),
-                            tiempo_clasificacion: driver.qualifying?.bestLapTime || null,
-                            tiempo_vuelta_rapida_carrera: driver.fastestLap?.lapTime || null,
-                            tiempo_total_carrera: driver.totalTime || null
-                        }));
-                    } else {
-                        const primeraCelda = filas[0].querySelector('td');
-                        const idGpInterno = primeraCelda ? primeraCelda.getAttribute('data-idgp') : null;
-                        const selectGp = document.getElementById('select-gp');
-                        const id_gp = idGpInterno || (selectGp ? selectGp.value : null);
-
-                        if (!id_gp) {
-                            alert("Error: No se ha podido detectar el id_gp del circuito.");
-                            return;
-                        }
-
-                        payload = [];
-                        filas.forEach(fila => {
-                            const celdas = fila.querySelectorAll('td');
-                            if (celdas.length >= 4) {
-                                const idPiloto = celdas[0].innerText.trim();
-                                const tiempoClas = celdas[1].innerText.trim();
-                                const tiempoVr = celdas[2].innerText.trim();
-                                const tiempoTot = celdas[3].innerText.trim();
-
-                                if (idPiloto) {
-                                    payload.push({
-                                        id_gp: parseInt(id_gp, 10),
-                                        id: parseInt(idPiloto, 10),
-                                        tiempo_clasificacion: tiempoClas,
-                                        tiempo_vuelta_rapida_carrera: tiempoVr,
-                                        tiempo_total_carrera: tiempoTot
-                                    });
-                                }
-                            }
-                        });
-                    }
                 }
 
                 const response = await fetch(endpoint, {
