@@ -785,6 +785,9 @@ async function cargarUltimoAvisoGP() {
     }
 }
 
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////    
 async function cargarTiemposPantalla() {
     const selectGpElement = document.getElementById('select-gp');
     const selectVerSesion = document.getElementById('select-ver-sesion');
@@ -834,7 +837,6 @@ async function cargarTiemposPantalla() {
                 return;
             }
 
-            // Conversor robusto compatible con strings tipo "1:11.401", "18.111" o números puros
             const aMilisegundos = (t) => {
                 if (t === null || t === undefined || t === '-' || t === '') return null;
                 if (typeof t === 'number') return t;
@@ -846,32 +848,45 @@ async function cargarTiemposPantalla() {
                     return (mins * 60 * 1000) + (secs * 1000);
                 }
                 const num = parseFloat(str);
-                // Si es un número pequeño (ej: 18.111), asumimos que son segundos y lo pasamos a ms
                 return isNaN(num) ? null : (num < 100 ? num * 1000 : num);
             };
 
+            const msASegundos = (ms) => {
+                if (!ms || ms <= 0) return '-';
+                // Si viene en milisegundos puros (ej 18111), lo pasamos a segundos con 3 decimales
+                return (ms / 1000).toFixed(3);
+            };
+
             const tiemposVueltaMs = datos.map(r => aMilisegundos(r.mejor_vuelta)).filter(v => v !== null && v > 0);
-            const s1Ms = datos.map(r => aMilisegundos(r.s1)).filter(v => v !== null && v > 0);
-            const s2Ms = datos.map(r => aMilisegundos(r.s2)).filter(v => v !== null && v > 0);
-            const s3Ms = datos.map(r => aMilisegundos(r.s3)).filter(v => v !== null && v > 0);
+            
+            // Usamos las propiedades _ms que vienen de tu base de datos
+            const s1MsArr = datos.map(r => r.s1_ms).filter(v => v !== null && v > 0);
+            const s2MsArr = datos.map(r => r.s2_ms).filter(v => v !== null && v > 0);
+            const s3MsArr = datos.map(r => r.s3_ms).filter(v => v !== null && v > 0);
 
             const minVuelta = tiemposVueltaMs.length ? Math.min(...tiemposVueltaMs) : null;
-            const minS1 = s1Ms.length ? Math.min(...s1Ms) : null;
-            const minS2 = s2Ms.length ? Math.min(...s2Ms) : null;
-            const minS3 = s3Ms.length ? Math.min(...s3Ms) : null;
+            const minS1 = s1MsArr.length ? Math.min(...s1MsArr) : null;
+            const minS2 = s2MsArr.length ? Math.min(...s2MsArr) : null;
+            const minS3 = s3MsArr.length ? Math.min(...s3MsArr) : null;
 
             const badgeMorado = (texto) => `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-family: monospace;">${texto}</span>`;
 
             tbodyTiempos.innerHTML = datos.map((row) => {
                 const vMs = aMilisegundos(row.mejor_vuelta);
-                const s1M = aMilisegundos(row.s1);
-                const s2M = aMilisegundos(row.s2);
-                const s3M = aMilisegundos(row.s3);
+                
+                const s1Val = row.s1_ms;
+                const s2Val = row.s2_ms;
+                const s3Val = row.s3_ms;
 
                 const htmlVuelta = (vMs !== null && vMs === minVuelta) ? badgeMorado(row.mejor_vuelta) : `<span style="color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</span>`;
-                const htmlS1 = (s1M !== null && s1M === minS1) ? badgeMorado(row.s1) : `<span style="font-family: monospace;">${row.s1 || '-'}</span>`;
-                const htmlS2 = (s2M !== null && s2M === minS2) ? badgeMorado(row.s2) : `<span style="font-family: monospace;">${row.s2 || '-'}</span>`;
-                const htmlS3 = (s3M !== null && s3M === minS3) ? badgeMorado(row.s3) : `<span style="font-family: monospace;">${row.s3 || '-'}</span>`;
+                
+                const textoS1 = msASegundos(s1Val);
+                const textoS2 = msASegundos(s2Val);
+                const textoS3 = msASegundos(s3Val);
+
+                const htmlS1 = (s1Val && s1Val === minS1) ? badgeMorado(textoS1) : `<span style="font-family: monospace;">${textoS1}</span>`;
+                const htmlS2 = (s2Val && s2Val === minS2) ? badgeMorado(textoS2) : `<span style="font-family: monospace;">${textoS2}</span>`;
+                const htmlS3 = (s3Val && s3Val === minS3) ? badgeMorado(textoS3) : `<span style="font-family: monospace;">${textoS3}</span>`;
 
                 return `
                     <tr style="border-bottom: 1px solid #333;">
@@ -948,10 +963,10 @@ async function cargarTiemposPantalla() {
                 } else if (vrMs !== null && vrMs === minVueltaCarrera) {
                     textoVuelta = badgeMorado(row.tiempo_vuelta_rapida_carrera);
                 } else {
-                    textoVuelta = `<span style="font-family: monospace;">${row.tiempo_vuelta_rapida_carrera}</span>`;
+                    textoVuelta = `<span style="font-family: monospace;">${row.tiempo_vuelta_rapida_carrera || '-'}</span>`;
                 }
 
-                const textoTotal = esDnfTotal ? badgeDnf : `<span style="font-family: monospace;">${row.tiempo_total_carrera}</span>`;
+                const textoTotal = esDnfTotal ? badgeDnf : `<span style="font-family: monospace;">${row.tiempo_total_carrera || '-'}</span>`;
 
                 return `
                     <tr style="border-bottom: 1px solid #333;">
