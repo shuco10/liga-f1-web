@@ -447,7 +447,43 @@ document.addEventListener('click', (e) => {
     }, 400);
 }); // <-- ¡Esta llave cerraba el addEventListener y faltaba!
 
+// Configura aquí la fecha de la próxima carrera (Año, Mes [0-11], Día, Hora, Minuto)
+    const fechaProximaCarrera = new Date(2026, 8, 20, 22, 30, 0).getTime();
 
+    function actualizarCuentaAtrasHeader() {
+        const ahora = new Date().getTime();
+        const diferencia = fechaProximaCarrera - ahora;
+
+        const elemDias = document.getElementById('dias');
+        const elemHoras = document.getElementById('horas');
+        const elemMinutos = document.getElementById('minutos');
+        const elemSegundos = document.getElementById('segundos');
+
+        if (!elemDias) return;
+
+        if (diferencia < 0) {
+            document.getElementById('nombre-gp').innerText = "¡El Gran Premio está en marcha!";
+            elemDias.innerText = "00";
+            elemHoras.innerText = "00";
+            elemMinutos.innerText = "00";
+            elemSegundos.innerText = "00";
+            return;
+        }
+
+        const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+        elemDias.innerText = String(dias).padStart(2, '0');
+        elemHoras.innerText = String(horas).padStart(2, '0');
+        elemMinutos.innerText = String(minutos).padStart(2, '0');
+        elemSegundos.innerText = String(segundos).padStart(2, '0');
+    }
+
+    // Arrancar el contador inmediatamente y refrescar cada segundo
+    actualizarCuentaAtrasHeader();
+    setInterval(actualizarCuentaAtrasHeader, 1000);
 
 
 
