@@ -456,14 +456,16 @@ document.addEventListener('click', (e) => {
 ////////////////////////////////////////////////////////////////////////////////
 /// CUENTA ATRÁS DE CIRCUITOS (Adaptada a la estructura exacta de Neon DB)
 ////////////////////////////////////////////////////////////////////////////////
-
 async function inicializarCuentaAtrasCircuitos() {
     try {
+        console.log("-> 1. Intentando hacer fetch a /api/circuitos...");
         const response = await fetch('/api/circuitos');
         const text = await response.text();
         
+        console.log("-> 2. Respuesta cruda recibida:", text.substring(0, 150)); // Muestra los primeros caracteres
+
         if (text.trim().startsWith('<')) {
-            console.warn("La API de circuitos devolvió HTML.");
+            console.error("❌ La API devolvió HTML en lugar de JSON. Revisa la ruta en el backend.");
             return;
         }
         
@@ -471,10 +473,16 @@ async function inicializarCuentaAtrasCircuitos() {
         try {
             circuitos = JSON.parse(text);
         } catch (e) {
+            console.error("❌ Error al parsear el JSON de circuitos:", e);
             return;
         }
         
-        if (!Array.isArray(circuitos) || circuitos.length === 0) return;
+        console.log("-> 3. Circuitos parseados correctamente:", circuitos);
+
+        if (!Array.isArray(circuitos) || circuitos.length === 0) {
+            console.warn("⚠️ El array de circuitos está vacío o no es un array.");
+            return;
+        }
 
         const mesesMap = {
             'ENE': 0, 'JAN': 0,
@@ -484,7 +492,7 @@ async function inicializarCuentaAtrasCircuitos() {
             'MAY': 4,
             'JUN': 5,
             'JUL': 6,
-            'AGO': 7, 'AUG': 7,
+            - 'AGO': 7, 'AUG': 7,
             'SEP': 8,
             'OCT': 9,
             'NOV': 10,
@@ -496,28 +504,40 @@ async function inicializarCuentaAtrasCircuitos() {
         let menorDiferencia = Infinity;
         let anioActual = new Date().getFullYear();
 
-        circuitos.forEach(c => {
-            if (!c.fecha_carrera) return;
+        circuitos.forEach((c, index) => {
+            console.log(`--- Analizando circuito [${index}]:`, c);
             
-            // Limpiamos la fecha (ej: "24 SEP" -> ["24", "SEP"])
-            const partes = c.fecha_carrera.trim().toUpperCase().split(/\s+/);
-            if (partes.length < 2) return;
+            // Comprobamos si la propiedad se llama 'fecha_carrera' o de otra forma
+            const fechaStr = c.fecha_carrera || c.fecha || c.date;
+            if (!fechaStr) {
+                console.warn(`⚠️ El circuito ${c.nombre || index} no tiene campo de fecha reconocido.`);
+                return;
+            }
+
+            const partes = fechaStr.trim().toUpperCase().split(/\s+/);
+            if (partes.length < 2) {
+                console.warn(`⚠️ Formato de fecha extraño: "${fechaStr}"`);
+                return;
+            }
 
             const dia = parseInt(partes[0], 10);
             const mesStr = partes[1].substring(0, 3);
             const mes = mesesMap[mesStr];
 
-            if (isNaN(dia) || mes === undefined) return;
+            if (isNaN(dia) || mes === undefined) {
+                console.warn(`⚠️ No se pudo traducir el día (${dia}) o el mes (${mesStr}) de la fecha: "${fechaStr}"`);
+                return;
+            }
 
-            // Creamos la fecha objetivo a las 20:00 hora local
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
             
-            // Si la fecha ya pasó este año, pasa al año siguiente
             if (fechaC < ahora) {
                 fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
 
             const diferencia = fechaC - ahora;
+            console.log(`   -> Fecha calculada para ${c.nombre}: ${new Date(fechaC)} (Diferencia: ${diferencia}ms)`);
+
             if (diferencia > 0 && diferencia < menorDiferencia) {
                 menorDiferencia = diferencia;
                 proximaCarrera = {
@@ -526,6 +546,8 @@ async function inicializarCuentaAtrasCircuitos() {
                 };
             }
         });
+
+        console.log("-> 4. Próxima carrera seleccionada:", proximaCarrera);
 
         if (!proximaCarrera) {
             const elGp = document.getElementById('nombre-gp');
@@ -571,7 +593,7 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("Error en cuenta atrás de circuitos:", e);
+        console.error("❌ Error crítico en cuenta atrás de circuitos:", e);
     }
 }
 
