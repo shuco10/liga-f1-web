@@ -460,11 +460,16 @@ async function inicializarCuentaAtrasCircuitos() {
     const elGp = document.getElementById('nombre-gp');
     const elGrid = document.getElementById('contador-grid');
 
-    if (!elGp || !elGrid) return;
+    if (!elGp || !elGrid) {
+        console.warn("⚠️ No se encontraron los elementos HTML 'nombre-gp' o 'contador-grid'");
+        return;
+    }
 
     try {
+        console.log("🔍 Consultando /api/circuitos...");
         const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
+        console.log("✅ Circuitos recibidos:", circuitos);
 
         let eventos = [];
         try {
@@ -476,12 +481,14 @@ async function inicializarCuentaAtrasCircuitos() {
 
         const listaCircuitos = Array.isArray(circuitos) ? circuitos.map(c => ({
             nombre: `Gran Premio de ${c.nombre}`,
-            fecha: c.fecha_carrera
+            fecha: c.fecha_carrera,
+            ronda: c.r_round
         })) : [];
 
         const listaEventos = Array.isArray(eventos) ? eventos.map(e => ({
             nombre: e.nombre,
-            fecha: e.fecha_evento
+            fecha: e.fecha_evento,
+            ronda: 999
         })) : [];
 
         const eventosTotales = [...listaCircuitos, ...listaEventos];
@@ -509,14 +516,17 @@ async function inicializarCuentaAtrasCircuitos() {
             if (!fechaStr) return;
 
             const partes = fechaStr.trim().toUpperCase().split(/\s+/);
-            if (partes.length < 2) return;
+            if (partes.length < 2) {
+                console.warn(`⚠️ Formato de fecha extrañó en "${item.nombre}": "${fechaStr}"`);
+                return;
+            }
 
             const dia = parseInt(partes[0], 10);
             const mesStr = partes[1].substring(0, 3);
             const mes = mesesMap[mesStr];
 
             if (isNaN(dia) || mes === undefined) {
-                console.warn(`⚠️ No se pudo parsear la fecha: "${fechaStr}" para el evento: ${item.nombre}`);
+                console.warn(`⚠️ No se pudo mapear el mes/día para: "${fechaStr}"`);
                 return;
             }
 
@@ -537,10 +547,12 @@ async function inicializarCuentaAtrasCircuitos() {
         });
 
         if (!proximaCita) {
+            console.warn("⚠️ Ningún evento superó la validación de fechas.");
             elGp.innerText = "No hay próximas citas";
             return;
         }
 
+        console.log("🏁 Próxima cita seleccionada:", proximaCita);
         elGp.innerText = proximaCita.nombreCompleto;
         elGrid.style.display = 'flex';
 
