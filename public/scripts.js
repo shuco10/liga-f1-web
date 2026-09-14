@@ -454,7 +454,7 @@ document.addEventListener('click', (e) => {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// CUENTA ATRÁS DE CIRCUITOS (Aislada y con comprobación de JSON)
+/// CUENTA ATRÁS DE CIRCUITOS (Adaptada a la estructura exacta de Neon DB)
 ////////////////////////////////////////////////////////////////////////////////
 
 async function inicializarCuentaAtrasCircuitos() {
@@ -463,7 +463,7 @@ async function inicializarCuentaAtrasCircuitos() {
         const text = await response.text();
         
         if (text.trim().startsWith('<')) {
-            console.warn("La API de circuitos devolvió una página HTML en lugar de datos JSON.");
+            console.warn("La API de circuitos devolvió HTML.");
             return;
         }
         
@@ -477,8 +477,18 @@ async function inicializarCuentaAtrasCircuitos() {
         if (!Array.isArray(circuitos) || circuitos.length === 0) return;
 
         const mesesMap = {
-            'ENE': 0, 'FEB': 1, 'MAR': 2, 'ABR': 3, 'MAY': 4, 'JUN': 5,
-            'JUL': 6, 'AGO': 7, 'SEP': 8, 'OCT': 9, 'NOV': 10, 'DIC': 11
+            'ENE': 0, 'JAN': 0,
+            'FEB': 1,
+            'MAR': 2,
+            'ABR': 3, 'APR': 3,
+            'MAY': 4,
+            'JUN': 5,
+            'JUL': 6,
+            'AGO': 7, 'AUG': 7,
+            'SEP': 8,
+            'OCT': 9,
+            'NOV': 10,
+            'DIC': 11, 'DEC': 11
         };
 
         const ahora = new Date().getTime();
@@ -488,6 +498,8 @@ async function inicializarCuentaAtrasCircuitos() {
 
         circuitos.forEach(c => {
             if (!c.fecha_carrera) return;
+            
+            // Limpiamos la fecha (ej: "24 SEP" -> ["24", "SEP"])
             const partes = c.fecha_carrera.trim().toUpperCase().split(/\s+/);
             if (partes.length < 2) return;
 
@@ -497,8 +509,10 @@ async function inicializarCuentaAtrasCircuitos() {
 
             if (isNaN(dia) || mes === undefined) return;
 
+            // Creamos la fecha objetivo a las 20:00 hora local
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
             
+            // Si la fecha ya pasó este año, pasa al año siguiente
             if (fechaC < ahora) {
                 fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
@@ -513,7 +527,11 @@ async function inicializarCuentaAtrasCircuitos() {
             }
         });
 
-        if (!proximaCarrera) return;
+        if (!proximaCarrera) {
+            const elGp = document.getElementById('nombre-gp');
+            if (elGp) elGp.innerText = "No hay carreras próximas";
+            return;
+        }
 
         const elGp = document.getElementById('nombre-gp');
         const elGrid = document.getElementById('contador-grid');
@@ -553,7 +571,7 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("Error en cuenta atrás:", e);
+        console.error("Error en cuenta atrás de circuitos:", e);
     }
 }
 
