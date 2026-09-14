@@ -492,7 +492,7 @@ async function inicializarCuentaAtrasCircuitos() {
             'MAY': 4,
             'JUN': 5,
             'JUL': 6,
-            - 'AGO': 7, 'AUG': 7,
+            'AGO': 7, 'AUG': 7,
             'SEP': 8,
             'OCT': 9,
             'NOV': 10,
