@@ -2194,7 +2194,66 @@ table {
     box-shadow: 0 0 15px rgba(147, 51, 234, 0.4);
 }
 
+/* ==========================================
+   WIDGET DE CUENTA ATRÁS (ESTILOS CABECERA)
+   ========================================== */
+.widget-carrera {
+    max-width: 600px;
+    margin: 15px auto;
+    background: rgba(18, 18, 24, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 162, 255, 0.3);
+    border-left: 4px solid #ff3333;
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
 
+.widget-carrera h3 {
+    color: #00a2ff;
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.widget-carrera .nombre-gp {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.contador-grid {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: nowrap; /* Evita que los bloques salten hacia abajo */
+}
+
+.tiempo-bloque {
+    background: rgba(12, 12, 16, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 6px 10px;
+    min-width: 45px;
+    text-align: center;
+}
+
+.tiempo-numero {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.tiempo-etiqueta {
+    font-size: 0.65rem;
+    color: #888;
+    text-transform: uppercase;
+}
 
 
 
