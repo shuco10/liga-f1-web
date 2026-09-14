@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stats | Cazadores de Curvas</title>
     <!-- Enlace al archivo de estilos compartido -->
@@ -12,105 +11,301 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    
     <style>
-        /* Estilo base para el fondo de esta página */
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        :root {
+            --bg-main: #0b0f17;
+            --bg-card: #131823;
+            --bg-select: #171e2c;
+            --border-neon-red: rgba(225, 6, 0, 0.6);
+            --border-neon-blue: rgba(0, 162, 255, 0.4);
+            --accent-red: #e10600;
+            --accent-blue: #00a2ff;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .caja-contenido {
+            max-width: 1000px;
+            margin: 0 auto 50px;
+            padding: 0 15px;
+        }
+
+        .titulo-liga {
+            text-align: center;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin: 30px 15px 10px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(225, 6, 0, 0.4);
+        }
+
+        .subtitulo-principal {
+            text-align: center;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+
+        /* Tarjeta principal de comparativa con estilo unificado */
+        .comparativa-card {
+            background: var(--bg-card) !important;
+            padding: 25px !important;
+            border-radius: 12px !important;
+            color: var(--text-main) !important;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .comparativa-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-red);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        .comparativa-card h2 {
+            color: var(--text-main) !important;
+            font-size: 1.35rem;
+            margin-bottom: 20px !important;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(225, 6, 0, 0.3);
+        }
+
+        /* Selectores de filtros con diseño limpio y moderno */
+        .comparativa-card select {
+            padding: 12px !important;
+            background: var(--bg-select) !important;
+            color: var(--text-main) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 8px !important;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .comparativa-card select:focus {
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 0 10px rgba(0, 162, 255, 0.3);
+        }
+
+        /* Botón de comparar con estética de neón rojo */
+        .comparativa-card button[onclick="ejecutarComparativa()"] {
+            width: 100% !important;
+            padding: 14px !important;
+            background: linear-gradient(135deg, #e10600, #b30500) !important;
+            color: white !important;
+            border: none !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4);
+            margin-top: 10px;
+        }
+
+        .comparativa-card button[onclick="ejecutarComparativa()"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(225, 6, 0, 0.6);
+        }
+
+        /* Resultados de la comparativa */
+        .resultado-comparativa {
+            margin-top: 25px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .titulo-metrica-header {
+            display: inline-block;
+            background: rgba(0, 162, 255, 0.1);
+            color: var(--accent-blue);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 162, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        .item-resultado {
+            background: #171e2c;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .item-resultado:hover {
+            box-shadow: 0 0 15px rgba(0, 162, 255, 0.15);
+        }
+
+        .header-tarjeta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .info-izq {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .caja-foto img.foto-piloto-card {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-blue);
+        }
+
+        .info-izq h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .caja-valor {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
+        }
+
+        .contenedor-vs {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .badge-vs {
+            background: #0f141f;
+            color: var(--text-muted);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 2px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
+
     <script src="/auth.js"></script>
 </head>
 <body>
     <div id="header-placeholder"></div>
 
+    <main class="caja-contenido">
+        <div class="titulo-liga">📊 COMPARATIVA Y ESTADÍSTICAS 📊</div>
+        <h3 class="subtitulo-principal">📈 La plataforma integral para el seguimiento de pilotos y escuderías. 📈</h3>
 
-<main class="caja-contenido">
-
-    <div class="titulo-liga">📊 COMPARATIVA Y ESTADÍSTICAS 📊</div>
-<h3 class="subtitulo-principal">📈 La plataforma integral para el seguimiento de pilotos y escuderías. 📈</h3>
-
-                <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
-<!-- Estructura HTML para la sección de comparativas -->
-<div class="comparativa-card" style="background: #1a1a1a; padding: 20px; border-radius: 8px; color: #fff; margin-top: 20px;">
-    <h2 style="color: #ff4444; margin-bottom: 15px; text-align: center;">HEAD-TO-HEAD COMPARISON</h2>
-    
-<!-- Selectores de filtros -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
-        <select id="tipoComparacion" onchange="cambiarTipoComparacion()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
-            <option value="pilotos">Pilotos</option>
-            <option value="escuderias">Escuderías</option>
-            <option value="circuitos">Circuitos</option>
-        </select>
-        
-        <!-- Selector de Circuito (Aparece solo cuando se selecciona Circuitos) -->
-        <select id="selectCircuito" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px; display: none;">
-            <option value="">Selecciona circuito...</option>
-        </select>
-
-        <select id="selectItem1" onchange="comprobarOcultarMetrica()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
-            <option value="">Selecciona 1...</option>
-        </select>
-
-        <select id="selectItem2" onchange="comprobarOcultarMetrica()" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
-            <option value="">Selecciona 2...</option>
-        </select>
-
-        <select id="selectMetrica" style="padding: 8px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 4px;">
-            <option value="puntos">Puntos</option>
-            <option value="victorias">Victorias</option>
-            <option value="podios">Podios</option>
-            <option value="poles">Poles</option>
-            <option value="dnf">DNFs</option>
-        </select>
-    </div>
-
-    <button onclick="ejecutarComparativa()" style="width: 100%; padding: 10px; background: #ff4444; color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">COMPARAR</button>
-
-     <!-- Panel de visualización de resultados -->
-<!-- Resultados de la comparativa -->
-<!-- Contenedor principal de resultados (empieza oculto) -->
-        <div class="resultado-comparativa" id="contenedorResultados" style="display: none;">
+        <!-- Estructura HTML para la sección de comparativas -->
+        <div class="comparativa-card">
+            <h2>HEAD-TO-HEAD COMPARISON</h2>
             
-            <!-- Título dinámico de la métrica -->
-            <div align="center">
-                <span id="tituloMetricaComparativa" class="titulo-metrica-header">ESTADÍSTICA</span>
+            <!-- Selectores de filtros -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <select id="tipoComparacion" onchange="cambiarTipoComparacion()">
+                    <option value="pilotos">Pilotos</option>
+                    <option value="escuderias">Escuderías</option>
+                    <option value="circuitos">Circuitos</option>
+                </select>
+                
+                <!-- Selector de Circuito (Aparece solo cuando se selecciona Circuitos) -->
+                <select id="selectCircuito" style="display: none;">
+                    <option value="">Selecciona circuito...</option>
+                </select>
+
+                <select id="selectItem1" onchange="comprobarOcultarMetrica()">
+                    <option value="">Selecciona 1...</option>
+                </select>
+
+                <select id="selectItem2" onchange="comprobarOcultarMetrica()">
+                    <option value="">Selecciona 2...</option>
+                </select>
+
+                <select id="selectMetrica">
+                    <option value="puntos">Puntos</option>
+                    <option value="victorias">Victorias</option>
+                    <option value="podios">Podios</option>
+                    <option value="poles">Poles</option>
+                    <option value="dnf">DNFs</option>
+                </select>
             </div>
 
-            <!-- Tarjeta 1 -->
-            <div class="item-resultado" id="tarjetaItem1">
-                <div class="header-tarjeta" id="bgItem1">
-                    <div class="info-izq">
-                        <div class="caja-foto" id="contenedorFoto1">
-                            <img id="fotoItem1" src="" alt="" class="foto-piloto-card" style="display: none;">
-                        </div>
-                        <h3 id="nombreItem1">-</h3>
-                    </div>
-                    <div class="caja-valor" id="valorItem1">0</div>
+            <button onclick="ejecutarComparativa()">COMPARAR</button>
+
+            <!-- Panel de visualización de resultados -->
+            <div class="resultado-comparativa" id="contenedorResultados" style="display: none;">
+                <!-- Título dinámico de la métrica -->
+                <div align="center">
+                    <span id="tituloMetricaComparativa" class="titulo-metrica-header">ESTADÍSTICA</span>
                 </div>
-            </div>
-            
-            <!-- VS Centrado -->
-            <div class="contenedor-vs">
-                <span class="badge-vs">VS</span>
-            </div>
 
-            <!-- Tarjeta 2 -->
-            <div class="item-resultado" id="tarjetaItem2">
-                <div class="header-tarjeta" id="bgItem2">
-                    <div class="info-izq">
-                        <div class="caja-foto" id="contenedorFoto2">
-                            <img id="fotoItem2" src="" alt="" class="foto-piloto-card" style="display: none;">
+                <!-- Tarjeta 1 -->
+                <div class="item-resultado" id="tarjetaItem1">
+                    <div class="header-tarjeta" id="bgItem1">
+                        <div class="info-izq">
+                            <div class="caja-foto" id="contenedorFoto1">
+                                <img id="fotoItem1" src="" alt="" class="foto-piloto-card" style="display: none;">
+                            </div>
+                            <h3 id="nombreItem1">-</h3>
                         </div>
-                        <h3 id="nombreItem2">-</h3>
+                        <div class="caja-valor" id="valorItem1">0</div>
                     </div>
-                    <div class="caja-valor" id="valorItem2">0</div>
+                </div>
+                
+                <!-- VS Centrado -->
+                <div class="contenedor-vs">
+                    <span class="badge-vs">VS</span>
+                </div>
+
+                <!-- Tarjeta 2 -->
+                <div class="item-resultado" id="tarjetaItem2">
+                    <div class="header-tarjeta" id="bgItem2">
+                        <div class="info-izq">
+                            <div class="caja-foto" id="contenedorFoto2">
+                                <img id="fotoItem2" src="" alt="" class="foto-piloto-card" style="display: none;">
+                            </div>
+                            <h3 id="nombreItem2">-</h3>
+                        </div>
+                        <div class="caja-valor" id="valorItem2">0</div>
+                    </div>
                 </div>
             </div>
         </div>
-                <!-- DESPLEGABLES Y DEMAS EN ESTE HUECO -->
-
-</main>
-
-
+    </main>
 
     <div id="footer-placeholder"></div>
 
