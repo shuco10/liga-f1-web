@@ -491,7 +491,6 @@ async function inicializarCuentaAtrasCircuitos() {
             return;
         }
 
-        // Mapeo completo de meses en español e inglés por seguridad
         const mesesMap = {
             'ENE': 0, 'JAN': 0, 'FEB': 1, 'MAR': 2, 'ABR': 3, 'APR': 3,
             'MAY': 4, 'JUN': 5, 'JUL': 6, 'AGO': 7, 'AUG': 7,
@@ -523,7 +522,6 @@ async function inicializarCuentaAtrasCircuitos() {
 
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
 
-            // Si la fecha ya pasó este año, se programa para el año siguiente
             if (fechaC < timestampActual) {
                 fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
@@ -577,7 +575,7 @@ async function inicializarCuentaAtrasCircuitos() {
         actualizarReloj();
         setInterval(actualizarReloj, 1000);
 
-    } chequearError: catch (e) {
+    } catch (e) {
         console.error("❌ Error crítico en cuenta atrás:", e);
         elGp.innerText = "Error al cargar la cuenta atrás";
     }
