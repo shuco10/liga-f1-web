@@ -1737,6 +1737,19 @@ app.get('/api/videos', async (req, res) => {
     }
 });
 
+// ==========================================
+// RUTA DE EVENTOS ESPECIALES
+// ==========================================
+app.get('/api/eventos-especiales', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT id, nombre, fecha_evento, descripcion, tipo FROM eventos_especiales ORDER BY id ASC;');
+        res.json(rows);
+    } catch (err) {
+        console.error("Error al obtener eventos especiales:", err);
+        res.status(500).json({ error: 'Error al consultar eventos especiales' });
+    }
+});
+
 
 
 // ==========================================
