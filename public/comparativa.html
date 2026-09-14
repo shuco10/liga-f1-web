@@ -152,16 +152,17 @@
             text-transform: uppercase;
         }
 
+        /* Corrección para evitar el doble cajón y unificar las tarjetas de resultado */
         .item-resultado {
-            background: #171e2c;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px !important;
+            margin-bottom: 12px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            overflow: hidden !important;
             transition: all 0.3s ease;
         }
 
         .item-resultado:hover {
-            box-shadow: 0 0 15px rgba(0, 162, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 162, 255, 0.2);
         }
 
         .header-tarjeta {
@@ -190,12 +191,16 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
         }
 
         .caja-valor {
             font-size: 1.4rem;
             font-weight: 800;
             color: #fff;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 12px;
+            border-radius: 6px;
             text-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
         }
 
