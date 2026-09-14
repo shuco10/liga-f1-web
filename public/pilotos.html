@@ -11,8 +11,216 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
-        #lista-noticias { padding: 20px; max-width: 800px; margin: auto; }
+        :root {
+            --bg-main: #0b0f17;
+            --bg-card: rgba(18, 22, 31, 0.95);
+            --border-card: rgba(225, 6, 0, 0.4);
+            --accent-red: #e10600;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .titulo-liga {
+            text-align: center;
+            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin: 25px 15px 20px;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .contenedor-sanciones-exclusivo {
+            max-width: 1200px;
+            margin: 0 auto 50px;
+            padding: 0 15px;
+        }
+
+        /* Estilo de tarjeta idéntico al de los sponsors / bloques de la web */
+        .seccion {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .seccion::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-red);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .section-title {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            font-weight: 700;
+            color: var(--accent-red);
+            margin: 0 0 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Contenedor responsivo para tablas */
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pilotos-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .pilotos-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.8px;
+            padding: 12px 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .pilotos-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .pilotos-table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .pilotos-table tbody tr:hover {
+            background-color: rgba(225, 6, 0, 0.08);
+        }
+
+        /* Anchuras y alineaciones de columnas */
+        .col-pos { width: 50px; font-weight: bold; }
+        .col-piloto { text-align: left !important; min-width: 200px; }
+        .col-plataforma { width: 90px; }
+        .col-escuderia { text-align: left !important; min-width: 190px; }
+        .col-vics, .col-podios, .col-poles, .col-dnfs { width: 60px; color: var(--text-muted); }
+        .col-puntos { width: 90px; font-weight: bold; color: #fff; }
+
+        /* Posiciones / Podios */
+        .pos-podio {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .pos-1 { background: linear-gradient(135deg, #ffd700, #cca100); color: #000; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3); }
+        .pos-2 { background: linear-gradient(135deg, #e0e0e0, #adadad); color: #000; box-shadow: 0 2px 8px rgba(224, 224, 224, 0.3); }
+        .pos-3 { background: linear-gradient(135deg, #cd7f32, #9a5d21); color: #fff; box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3); }
+
+        /* Avatares y Piloto */
+        .contenedor-avatar-grande {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+        }
+
+        .avatar-grande {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background-color: #1a1a1a;
+        }
+
+        .contenedor-estrellas {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.55rem;
+            white-space: nowrap;
+            z-index: 2;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.9));
+        }
+
+        .numero-piloto {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* Plataformas Badges */
+        .plataforma {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        .plataforma.PC { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .plataforma.PS5, .plataforma.PLAYSTATION { background-color: rgba(14, 116, 144, 0.15); color: #22d3ee; border: 1px solid rgba(14, 116, 144, 0.3); }
+        .plataforma.XBOX { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        .nombre-escuderia {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Ajustes Mobile */
+        @media (max-width: 768px) {
+            .contenedor-sanciones-exclusivo {
+                padding: 0 10px;
+            }
+            .seccion {
+                padding: 16px 12px;
+                border-radius: 8px;
+            }
+            .seccion::before {
+                width: 3px;
+            }
+            .pilotos-table {
+                font-size: 0.82rem;
+            }
+            .pilotos-table th, .pilotos-table td {
+                padding: 10px 6px;
+            }
+        }
     </style>
     <script src="/auth.js"></script>
 </head>
@@ -24,25 +232,28 @@
 <main class="contenedor-sanciones-exclusivo">
     <div id="mundial-pilotos" class="seccion">
         
-<h2 class="section-title">Pilotos Titulares</h2>
+<h2 class="section-title"><i class="fa-solid fa-flag-checkered"></i> Pilotos Titulares</h2>
+<div class="table-responsive-wrapper">
 <table class="table-standings-fix pilotos-table">
     <thead>
         <tr>
             <th class="col-pos">Pos</th>
             <th class="col-piloto">Piloto</th>
-            <th class="col-plataforma">Plataforma</th>                    
+            <th class="col-plataforma">Plataforma</th>                
             <th class="col-escuderia">Escudería</th>
             <th class="col-vics">Vic.</th>
             <th class="col-podios">Podios</th>
             <th class="col-poles">Poles</th>
-            <th class="col-dnfs">DNF</th> <!-- Nueva columna DNF -->
+            <th class="col-dnfs">DNF</th>
             <th class="col-puntos">Puntos</th>
         </tr>
     </thead>
     <tbody id="tabla-titulares"></tbody>
 </table>
+</div>
 
-<h2 class="section-title" style="margin-top: 40px;">Pilotos Reservas</h2>
+<h2 class="section-title" style="margin-top: 35px;"><i class="fa-solid fa-helmet-safety"></i> Pilotos Reservas</h2>
+<div class="table-responsive-wrapper">
 <table class="table-standings-fix pilotos-table">
     <thead>
         <tr>
@@ -53,13 +264,15 @@
             <th class="col-vics">Vic.</th>
             <th class="col-podios">Podios</th>
             <th class="col-poles">Poles</th>
-            <th class="col-dnfs">DNF</th> <!-- Nueva columna DNF -->
+            <th class="col-dnfs">DNF</th>
             <th class="col-puntos">Puntos</th>
         </tr>
     </thead>
     <tbody id="tabla-reservas"></tbody>
 </table>
-    </main>
+</div>
+    </div>
+</main>
 
     <div id="footer-placeholder"></div>
 
@@ -130,8 +343,6 @@ async function cargarTodosLosDatos() {
             const listaPilotosGlobal = await res.json();
             const resultados = await resResultados.json();
 
-            // ELIMINADO EL BUCLE FOREACH QUE SOBREESCRIBÍA LAS VICTORIAS Y PODIOS
-
             const titulares = listaPilotosGlobal.filter(p => !p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
             const reservas = listaPilotosGlobal.filter(p => p.es_reserva).sort((a, b) => b.puntos_totales - a.puntos_totales);
 
@@ -161,11 +372,11 @@ function renderizarTabla(id, data, esReserva) {
         
         // Lógica Escudería con Logo
         const logoUrl = (!esReserva && LOGOS_ESCUDERIAS[p.escuderia_id]) ? LOGOS_ESCUDERIAS[p.escuderia_id] : null;
-        const logoHtml = logoUrl ? `<img src="${logoUrl}" style="width: 25px; height: 25px; object-fit: contain; margin-right: 8px; vertical-align: middle;">` : '';
+        const logoHtml = logoUrl ? `<img src="${logoUrl}" style="width: 22px; height: 22px; object-fit: contain; margin-right: 6px; vertical-align: middle;">` : '';
         
         const escuderiaCol = esReserva 
-            ? '<span style="color: #CCFF00; font-weight: bold;">[ RESERVA ]</span>' 
-            : `<div style="display: flex; align-items: center; gap: 8px;">
+            ? '<span style="color: #CCFF00; font-weight: bold; font-size: 0.82rem;">[ RESERVA ]</span>' 
+            : `<div style="display: flex; align-items: center; gap: 6px;">
                 ${logoHtml}
                 <span class="nombre-escuderia">${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</span>
                </div>`;
@@ -173,13 +384,13 @@ function renderizarTabla(id, data, esReserva) {
         return `<tr>
 <td class="col-pos"><div class="pos-podio ${posClass}">${posicionDisplay}</div></td>
     <td class="col-piloto" style="text-align: left;">
-        <div style="display: flex; align-items: center; gap: 10px; white-space: nowrap;">
+        <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
             <div class="contenedor-avatar-grande">
                 ${estrellas}
                 <img src="${avatarUrl}" class="avatar-grande" style="flex-shrink: 0;" onerror="this.src='/pilotos/R.png'">
             </div>
             <span class="numero-piloto">${p.numero_piloto || '00'}</span>
-            <strong style="overflow: hidden; text-overflow: ellipsis;">${p.gamertag}</strong>
+            <strong style="overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem;">${p.gamertag}</strong>
         </div>
     </td>
 
@@ -188,7 +399,7 @@ function renderizarTabla(id, data, esReserva) {
     <td class="col-vics">${p.victorias}</td>
     <td class="col-podios">${p.podios || '0'}</td>
     <td class="col-poles">${p.poles || '0'}</td>
-    <td class="col-dnfs">${p.dnfs || '0'}</td> <!-- <--- Añadido aquí entre poles y puntos -->
+    <td class="col-dnfs">${p.dnfs || '0'}</td>
     <td class="col-puntos"><strong>${p.puntos_totales} pts</strong></td>
 </tr>`;
     }).join('');
@@ -206,7 +417,6 @@ function renderizarTabla(id, data, esReserva) {
     }
 
     function seguridadAbrirModal() { const modal = document.getElementById('login-modal'); if (modal) modal.style.display = 'block'; }
-
 
 async function enviarContacto() {
     const nombre = document.getElementById('nombre-contacto').value;
