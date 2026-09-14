@@ -457,30 +457,33 @@ document.addEventListener('click', (e) => {
 /// CUENTA ATRÁS DE CIRCUITOS (Adaptada a la estructura exacta de Neon DB)
 ////////////////////////////////////////////////////////////////////////////////
 async function inicializarCuentaAtrasCircuitos() {
+    const elGp = document.getElementById('nombre-gp');
+    const elGrid = document.getElementById('contador-grid');
+
+    if (!elGp || !elGrid) return;
+
     try {
-        console.log("-> 1. Intentando hacer fetch a /api/circuitos...");
-        const response = await fetch('/api/circuitos');
-        const text = await response.text();
-        
-        console.log("-> 2. Respuesta cruda recibida:", text.substring(0, 150)); // Muestra los primeros caracteres
+        // Consultamos ambas APIs de forma independiente
+        const [resCircuitos, resEventos] = await Promise.all([
+            fetch('/api/circuitos').then(r => r.json()).catch(() => []),
+            fetch('/api/eventos-especiales').then(r => r.json()).catch(() => [])
+        ]);
 
-        if (text.trim().startsWith('<')) {
-            console.error("❌ La API devolvió HTML en lugar de JSON. Revisa la ruta en el backend.");
-            return;
-        }
-        
-        let circuitos;
-        try {
-            circuitos = JSON.parse(text);
-        } catch (e) {
-            console.error("❌ Error al parsear el JSON de circuitos:", e);
-            return;
-        }
-        
-        console.log("-> 3. Circuitos parseados correctamente:", circuitos);
+        // Adaptamos los circuitos y los eventos a un formato común
+        const listaCircuitos = Array.isArray(resCircuitos) ? resCircuitos.map(c => ({
+            nombre: `Gran Premio de ${c.nombre}`,
+            fecha: c.fecha_carrera
+        })) : [];
 
-        if (!Array.isArray(circuitos) || circuitos.length === 0) {
-            console.warn("⚠️ El array de circuitos está vacío o no es un array.");
+        const listaEventos = Array.isArray(resEventos) ? resEventos.map(e => ({
+            nombre: e.nombre,
+            fecha: e.fecha_evento
+        })) : [];
+
+        const eventosTotales = [...listaCircuitos, ...listaEventos];
+
+        if (eventosTotales.length === 0) {
+            elGp.innerText = "No hay eventos programados";
             return;
         }
 
@@ -500,34 +503,22 @@ async function inicializarCuentaAtrasCircuitos() {
         };
 
         const ahora = new Date().getTime();
-        let proximaCarrera = null;
+        let proximaCita = null;
         let menorDiferencia = Infinity;
         let anioActual = new Date().getFullYear();
 
-        circuitos.forEach((c, index) => {
-            console.log(`--- Analizando circuito [${index}]:`, c);
-            
-            // Comprobamos si la propiedad se llama 'fecha_carrera' o de otra forma
-            const fechaStr = c.fecha_carrera || c.fecha || c.date;
-            if (!fechaStr) {
-                console.warn(`⚠️ El circuito ${c.nombre || index} no tiene campo de fecha reconocido.`);
-                return;
-            }
+        eventosTotales.forEach(item => {
+            const fechaStr = item.fecha;
+            if (!fechaStr) return;
 
             const partes = fechaStr.trim().toUpperCase().split(/\s+/);
-            if (partes.length < 2) {
-                console.warn(`⚠️ Formato de fecha extraño: "${fechaStr}"`);
-                return;
-            }
+            if (partes.length < 2) return;
 
             const dia = parseInt(partes[0], 10);
             const mesStr = partes[1].substring(0, 3);
             const mes = mesesMap[mesStr];
 
-            if (isNaN(dia) || mes === undefined) {
-                console.warn(`⚠️ No se pudo traducir el día (${dia}) o el mes (${mesStr}) de la fecha: "${fechaStr}"`);
-                return;
-            }
+            if (isNaN(dia) || mes === undefined) return;
 
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
             
@@ -536,34 +527,26 @@ async function inicializarCuentaAtrasCircuitos() {
             }
 
             const diferencia = fechaC - ahora;
-            console.log(`   -> Fecha calculada para ${c.nombre}: ${new Date(fechaC)} (Diferencia: ${diferencia}ms)`);
-
             if (diferencia > 0 && diferencia < menorDiferencia) {
                 menorDiferencia = diferencia;
-                proximaCarrera = {
-                    nombre: c.nombre,
+                proximaCita = {
+                    nombreCompleto: item.nombre,
                     tiempoObjetivo: fechaC
                 };
             }
         });
 
-        console.log("-> 4. Próxima carrera seleccionada:", proximaCarrera);
-
-        if (!proximaCarrera) {
-            const elGp = document.getElementById('nombre-gp');
-            if (elGp) elGp.innerText = "No hay carreras próximas";
+        if (!proximaCita) {
+            elGp.innerText = "No hay próximas citas";
             return;
         }
 
-        const elGp = document.getElementById('nombre-gp');
-        const elGrid = document.getElementById('contador-grid');
-        
-        if (elGp) elGp.innerText = `Gran Premio de ${proximaCarrera.nombre}`;
-        if (elGrid) elGrid.style.display = 'flex';
+        elGp.innerText = proximaCita.nombreCompleto;
+        elGrid.style.display = 'flex';
 
         function actualizarReloj() {
             const ahoraLoc = new Date().getTime();
-            const diferenciaLoc = proximaCarrera.tiempoObjetivo - ahoraLoc;
+            const diferenciaLoc = proximaCita.tiempoObjetivo - ahoraLoc;
 
             const elemDias = document.getElementById('dias');
             const elemHoras = document.getElementById('horas');
@@ -573,8 +556,8 @@ async function inicializarCuentaAtrasCircuitos() {
             if (!elemDias) return;
 
             if (diferenciaLoc < 0) {
-                if (elGp) elGp.innerText = `¡GP de ${proximaCarrera.nombre} en marcha!`;
-                if (elGrid) elGrid.style.display = 'none';
+                elGp.innerText = `¡${proximaCita.nombreCompleto} en marcha!`;
+                elGrid.style.display = 'none';
                 return;
             }
 
@@ -593,7 +576,7 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("❌ Error crítico en cuenta atrás de circuitos:", e);
+        console.error("Error al cargar la cuenta atrás combinada:", e);
     }
 }
 
