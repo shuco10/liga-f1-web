@@ -58,7 +58,6 @@
             margin-bottom: 30px;
         }
 
-        /* Tarjeta principal de comparativa con estilo unificado */
         .comparativa-card {
             background: var(--bg-card) !important;
             padding: 25px !important;
@@ -68,19 +67,6 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             position: relative;
-        }
-
-        .comparativa-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent-red);
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-            box-shadow: 0 0 10px var(--accent-red);
         }
 
         .comparativa-card h2 {
@@ -93,7 +79,6 @@
             text-shadow: 0 0 10px rgba(225, 6, 0, 0.3);
         }
 
-        /* Selectores de filtros con diseño limpio y moderno */
         .comparativa-card select {
             padding: 12px !important;
             background: var(--bg-select) !important;
@@ -110,7 +95,6 @@
             box-shadow: 0 0 10px rgba(0, 162, 255, 0.3);
         }
 
-        /* Botón de comparar con estética de neón rojo */
         .comparativa-card button[onclick="ejecutarComparativa()"] {
             width: 100% !important;
             padding: 14px !important;
@@ -132,7 +116,6 @@
             box-shadow: 0 6px 20px rgba(225, 6, 0, 0.6);
         }
 
-        /* Resultados de la comparativa */
         .resultado-comparativa {
             margin-top: 25px;
             animation: fadeIn 0.4s ease-in-out;
@@ -152,10 +135,10 @@
             text-transform: uppercase;
         }
 
-        /* Corrección para evitar el doble cajón y unificar las tarjetas de resultado */
+        /* Añadido margen inferior generoso para que no se peguen las cajas */
         .item-resultado {
             border-radius: 8px !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 18px !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
             overflow: hidden !important;
             transition: all 0.3s ease;
@@ -204,15 +187,16 @@
             text-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
         }
 
+        /* Espaciado superior e inferior para el distintivo VS */
         .contenedor-vs {
             text-align: center;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .badge-vs {
             background: #0f141f;
             color: var(--text-muted);
-            padding: 4px 12px;
+            padding: 6px 16px;
             border-radius: 12px;
             font-weight: 800;
             font-size: 0.75rem;
@@ -235,11 +219,9 @@
         <div class="titulo-liga">📊 COMPARATIVA Y ESTADÍSTICAS 📊</div>
         <h3 class="subtitulo-principal">📈 La plataforma integral para el seguimiento de pilotos y escuderías. 📈</h3>
 
-        <!-- Estructura HTML para la sección de comparativas >-->
-        <div class="comparativa-card"
+        <div class="comparativa-card">
             <h2>HEAD-TO-HEAD COMPARISON</h2>
             
-            <!-- Selectores de filtros -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px;">
                 <select id="tipoComparacion" onchange="cambiarTipoComparacion()">
                     <option value="pilotos">Pilotos</option>
@@ -247,7 +229,6 @@
                     <option value="circuitos">Circuitos</option>
                 </select>
                 
-                <!-- Selector de Circuito (Aparece solo cuando se selecciona Circuitos) -->
                 <select id="selectCircuito" style="display: none;">
                     <option value="">Selecciona circuito...</option>
                 </select>
@@ -271,14 +252,11 @@
 
             <button onclick="ejecutarComparativa()">COMPARAR</button>
 
-            <!-- Panel de visualización de resultados -->
             <div class="resultado-comparativa" id="contenedorResultados" style="display: none;">
-                <!-- Título dinámico de la métrica -->
                 <div align="center">
                     <span id="tituloMetricaComparativa" class="titulo-metrica-header">ESTADÍSTICA</span>
                 </div>
 
-                <!-- Tarjeta 1 -->
                 <div class="item-resultado" id="tarjetaItem1">
                     <div class="header-tarjeta" id="bgItem1">
                         <div class="info-izq">
@@ -291,12 +269,10 @@
                     </div>
                 </div>
                 
-                <!-- VS Centrado -->
                 <div class="contenedor-vs">
                     <span class="badge-vs">VS</span>
                 </div>
 
-                <!-- Tarjeta 2 -->
                 <div class="item-resultado" id="tarjetaItem2">
                     <div class="header-tarjeta" id="bgItem2">
                         <div class="info-izq">
@@ -309,8 +285,7 @@
                     </div>
                 </div>
             </div>
-         <!-- cajon -->
-        </div> 
+        </div>
     </main>
 
     <div id="footer-placeholder"></div>
