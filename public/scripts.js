@@ -461,18 +461,15 @@ async function inicializarCuentaAtrasCircuitos() {
     const elGp = document.getElementById('nombre-gp');
     const elGrid = document.getElementById('contador-grid');
 
-    console.log("🔍 Buscando elementos del DOM:", { elGp, elGrid });
-
     if (!elGp || !elGrid) {
-        console.error("❌ Faltan los elementos en el DOM");
+        // Si aún no se han pintado en el DOM, reintentamos en medio segundo
+        setTimeout(inicializarCuentaAtrasCircuitos, 500);
         return;
     }
 
     try {
-        console.log("📡 Pidiendo circuitos a /api/circuitos...");
         const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
-        console.log("✅ Circuitos recibidos:", circuitos);
 
         let eventos = [];
         try {
@@ -546,7 +543,6 @@ async function inicializarCuentaAtrasCircuitos() {
             return;
         }
 
-        console.log("🎯 Evento seleccionado para la cuenta atrás:", proximaCita.nombreCompleto);
         elGp.innerText = proximaCita.nombreCompleto;
         elGrid.style.display = 'flex';
 
