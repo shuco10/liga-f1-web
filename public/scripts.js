@@ -472,14 +472,26 @@ document.addEventListener('click', (e) => {
     </div>
 </div>
 
-<script>
 async function inicializarCuentaAtrasCircuitos() {
     try {
-        // Petición a tu API de circuitos existente
-        const response = await fetch('/api/circuitos'); 
-        const circuitos = await response.json();
+        // Asegúrate de que esta URL sea la correcta de vuestra API (ej: '/api/circuitos' o '/circuitos')
+        const response = await fetch('/api/circuitos');
+        const text = await response.text();
         
-        if (!circuitos || circuitos.length === 0) return;
+        // Comprobar si la respuesta es JSON válido antes de parsearla
+        let circuitos;
+        try {
+            circuitos = JSON.parse(text);
+        } catch (e) {
+            console.error("La API de circuitos no devolvió un JSON válido:", text.substring(0, 100));
+            document.getElementById('nombre-gp').innerText = "Error al cargar circuitos";
+            return;
+        }
+        
+        if (!Array.isArray(circuitos) || circuitos.length === 0) {
+            document.getElementById('nombre-gp').innerText = "No hay circuitos programados";
+            return;
+        }
 
         const mesesMap = {
             'ENE': 0, 'FEB': 1, 'MAR': 2, 'ABR': 3, 'MAY': 4, 'JUN': 5,
@@ -489,11 +501,11 @@ async function inicializarCuentaAtrasCircuitos() {
         const ahora = new Date().getTime();
         let proximaCarrera = null;
         let menorDiferencia = Infinity;
+        let anioActual = new Date().getFullYear();
 
-        // Buscar el circuito cuya fecha sea la más próxima en el futuro
         circuitos.forEach(c => {
             if (!c.fecha_carrera) return;
-            const partes = c.fecha_carrera.trim().toUpperCase().split(' ');
+            const partes = c.fecha_carrera.trim().toUpperCase().split(/\s+/);
             if (partes.length < 2) return;
 
             const dia = parseInt(partes[0], 10);
@@ -502,10 +514,10 @@ async function inicializarCuentaAtrasCircuitos() {
 
             if (isNaN(dia) || mes === undefined) return;
 
-            // Determinar el año (si el mes ya pasó este año, se asume el año siguiente)
-            let anioActual = new Date().getFullYear();
-            let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime(); // Hora estimada de carrera por defecto (20:00)
+            // Calcular timestamp de la carrera (asumimos a las 20:00 hora local)
+            let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
             
+            // Si la fecha ya pasó este año, probamos con el año siguiente
             if (fechaC < ahora) {
                 fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
@@ -520,7 +532,10 @@ async function inicializarCuentaAtrasCircuitos() {
             }
         });
 
-        if (!proximaCarrera) return;
+        if (!proximaCarrera) {
+            document.getElementById('nombre-gp').innerText = "Fin del calendario de carreras";
+            return;
+        }
 
         document.getElementById('nombre-gp').innerText = `Gran Premio de ${proximaCarrera.nombre}`;
         document.getElementById('contador-grid').style.display = 'flex';
@@ -557,12 +572,17 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("Error al cargar la próxima carrera desde circuitos:", e);
+        console.error("Error crítico al inicializar la cuenta atrás:", e);
+        document.getElementById('nombre-gp').innerText = "Error de conexión";
     }
 }
 
-inicializarCuentaAtrasCircuitos();
-</script>
+// Ejecutar cuando cargue el DOM de la cabecera
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarCuentaAtrasCircuitos);
+} else {
+    inicializarCuentaAtrasCircuitos();
+}
 
 
 
