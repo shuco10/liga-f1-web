@@ -704,11 +704,11 @@ app.get('/api/todos-los-resultados', async (req, res) => {
 });
 
 // ==========================================
-// RUTA DE CIRCUITOS (Faltante en comisarios.html)
+// RUTA DE CIRCUITOS (Corregida con fecha y orden de ronda)
 // ==========================================
 app.get('/api/circuitos', async (req, res) => {
     try {
-        const { rows } = await pool.query('SELECT id, nombre FROM circuitos ORDER BY id ASC;');
+        const { rows } = await pool.query('SELECT id, nombre, fecha_carrera, r_round FROM circuitos ORDER BY r_round ASC;');
         res.json(rows);
     } catch (err) {
         console.error("Error al obtener circuitos:", err);
