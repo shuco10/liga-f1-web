@@ -58,9 +58,10 @@
             margin-bottom: 30px;
         }
 
+       /* 1. Sí dejamos espacio en el borde inferior del cajón grande para que respire */
         .comparativa-card {
             background: var(--bg-card) !important;
-            padding: 25px !important;
+            padding: 25px 25px 40px 25px !important;
             border-radius: 12px !important;
             color: var(--text-main) !important;
             margin-top: 20px;
@@ -135,10 +136,10 @@
             text-transform: uppercase;
         }
 
-        /* Añadido margen inferior generoso para que no se peguen las cajas */
+       /* 2. Tarjetas de resultado limpias y sin huecos raros dentro */
         .item-resultado {
             border-radius: 8px !important;
-            margin-bottom: 18px !important;
+            margin-bottom: 8px !important; /* Margen normal y limpio entre el equipo 1, el VS y el equipo 2 */
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
             overflow: hidden !important;
             transition: all 0.3s ease;
@@ -152,7 +153,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 15px 20px; /* Relleno interno estándar de la barra de equipo */
         }
 
         .info-izq {
@@ -187,21 +188,21 @@
             text-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
         }
 
-        /* Espaciado superior e inferior para el distintivo VS */
+       /* Separador VS ajustado y limpio */
         .contenedor-vs {
             text-align: center;
-            margin: 15px 0;
+            margin: 6px 0;
         }
 
         .badge-vs {
             background: #0f141f;
             color: var(--text-muted);
-            padding: 6px 16px;
-            border-radius: 12px;
+            padding: 3px 10px;
+            border-radius: 10px;
             font-weight: 800;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
         }
 
         @keyframes fadeIn {
