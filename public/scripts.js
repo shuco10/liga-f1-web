@@ -463,24 +463,17 @@ async function inicializarCuentaAtrasCircuitos() {
     if (!elGp || !elGrid) return;
 
     try {
-        console.log("1. Iniciando carga de cuenta atrás...");
-        
-        // Hacemos el fetch de circuitos
         const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
-        console.log("2. Circuitos obtenidos:", circuitos);
 
-        // Hacemos el fetch de eventos especiales con protección por si la tabla da problemas
         let eventos = [];
         try {
             const resE = await fetch('/api/eventos-especiales');
             eventos = await resE.json();
-            console.log("3. Eventos especiales obtenidos:", eventos);
         } catch (err) {
-            console.warn("No se pudieron cargar eventos especiales, continuando solo con circuitos:", err);
+            console.warn("No se pudieron cargar eventos especiales:", err);
         }
 
-        // Unificamos ambos arrays de forma segura
         const listaCircuitos = Array.isArray(circuitos) ? circuitos.map(c => ({
             nombre: `Gran Premio de ${c.nombre}`,
             fecha: c.fecha_carrera
@@ -492,7 +485,6 @@ async function inicializarCuentaAtrasCircuitos() {
         })) : [];
 
         const eventosTotales = [...listaCircuitos, ...listaEventos];
-        console.log("4. Total de eventos combinados:", eventosTotales.length);
 
         if (eventosTotales.length === 0) {
             elGp.innerText = "Sin eventos programados";
@@ -500,18 +492,9 @@ async function inicializarCuentaAtrasCircuitos() {
         }
 
         const mesesMap = {
-            'ENE': 0, 'JAN': 0,
-            'FEB': 1,
-            'MAR': 2,
-            'ABR': 3, 'APR': 3,
-            'MAY': 4,
-            'JUN': 5,
-            'JUL': 6,
-            'AGO': 7, 'AUG': 7,
-            'SEP': 8,
-            'OCT': 9,
-            'NOV': 10,
-            'DIC': 11, 'DEC': 11
+            'ENE': 0, 'JAN': 0, 'FEB': 1, 'MAR': 2, 'ABR': 3, 'APR': 3,
+            'MAY': 4, 'JUN': 5, 'JUL': 6, 'AGO': 7, 'AUG': 7,
+            'SEP': 8, 'OCT': 9, 'NOV': 10, 'DIC': 11, 'DEC': 11
         };
 
         const ahora = new Date().getTime();
@@ -523,20 +506,28 @@ async function inicializarCuentaAtrasCircuitos() {
             const fechaStr = item.fecha;
             if (!fechaStr) return;
 
-            const partes = fechaStr.trim().toUpperCase().split(/\s+/);
-            if (partes.length < 2) return;
+            let fechaC = null;
 
-            const dia = parseInt(partes[0], 10);
-            const mesStr = partes[1].substring(0, 3);
-            const mes = mesesMap[mesStr];
-
-            if (isNaN(dia) || mes === undefined) return;
-
-            let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
-            
-            if (fechaC < ahora) {
-                fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
+            // Si la fecha viene en formato ISO o YYYY-MM-DD
+            if (fechaStr.includes('-') || fechaStr.includes('T')) {
+                fechaC = new Date(fechaStr).getTime();
+            } else {
+                // Formato antiguo tipo "15 JUN"
+                const partes = fechaStr.trim().toUpperCase().split(/\s+/);
+                if (partes.length >= 2) {
+                    const dia = parseInt(partes[0], 10);
+                    const mesStr = partes[1].substring(0, 3);
+                    const mes = mesesMap[mesStr];
+                    if (!isNaN(dia) && mes !== undefined) {
+                        fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
+                        if (fechaC < ahora) {
+                            fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
+                        }
+                    }
+                }
             }
+
+            if (!fechaC || isNaN(fechaC)) return;
 
             const diferencia = fechaC - ahora;
             if (diferencia > 0 && diferencia < menorDiferencia) {
@@ -553,7 +544,6 @@ async function inicializarCuentaAtrasCircuitos() {
             return;
         }
 
-        console.log("5. Próxima cita seleccionada:", proximaCita);
         elGp.innerText = proximaCita.nombreCompleto;
         elGrid.style.display = 'flex';
 
