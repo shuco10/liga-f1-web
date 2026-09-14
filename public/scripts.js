@@ -460,7 +460,6 @@ async function inicializarCuentaAtrasCircuitos() {
     const elGp = document.getElementById('nombre-gp');
     const elGrid = document.getElementById('contador-grid');
 
-    // Si no estamos en la página que tiene el contador, salimos limpiamente sin error
     if (!elGp || !elGrid) return;
 
     try {
@@ -520,8 +519,10 @@ async function inicializarCuentaAtrasCircuitos() {
 
             if (isNaN(dia) || mes === undefined) return;
 
+            // Crear fecha para el año actual a las 20:00
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
 
+            // Si la fecha ya pasó este año, programarla para el año siguiente
             if (fechaC < timestampActual) {
                 fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
