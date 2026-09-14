@@ -456,15 +456,23 @@ document.addEventListener('click', (e) => {
 ////////////////////////////////////////////////////////////////////////////////
 /// CUENTA ATRÁS DE CIRCUITOS (Adaptada a la estructura exacta de Neon DB)
 ////////////////////////////////////////////////////////////////////////////////
+
 async function inicializarCuentaAtrasCircuitos() {
     const elGp = document.getElementById('nombre-gp');
     const elGrid = document.getElementById('contador-grid');
 
-    if (!elGp || !elGrid) return;
+    console.log("🔍 Buscando elementos del DOM:", { elGp, elGrid });
+
+    if (!elGp || !elGrid) {
+        console.error("❌ Faltan los elementos en el DOM");
+        return;
+    }
 
     try {
+        console.log("📡 Pidiendo circuitos a /api/circuitos...");
         const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
+        console.log("✅ Circuitos recibidos:", circuitos);
 
         let eventos = [];
         try {
