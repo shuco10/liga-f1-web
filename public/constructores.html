@@ -4,281 +4,423 @@
     <meta charset="UTF-8">
     <!-- Icono para la pestaña del navegador -->
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
-    <!-- Icono para la pestaña del navegador -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Constructores | Cazadores de Curvas</title>
-    <!-- Enlace al archivo de estilos compartido -->
-    <link rel="stylesheet" href="estilos-cabecera.css">
+    <script src="/auth.js"></script>
+    <link rel="stylesheet" href="/estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    
-<style>
-    /* Estilo específico para los avatares de esta página */
-    .avatar-constructor-grande {
-        width: 45px !important;
-        height: 45px !important;
-        border-radius: 50%;
-        object-fit: cover;
-        margin: 0 4px; /* Un poco de aire entre avatares */
-    }
-</style>
-    <script src="/auth.js"></script>
+    <style>
+        :root {
+            --bg-main: #0b0f17;
+            --bg-row: #131823;
+            --bg-row-alt: #171e2c;
+            --border-neon-red: rgba(225, 6, 0, 0.6);
+            --border-neon-blue: rgba(0, 162, 255, 0.4);
+            --accent-red: #e10600;
+            --accent-blue: #00a2ff;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .titulo-liga {
+            text-align: center;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin: 30px 15px 25px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(225, 6, 0, 0.4);
+        }
+
+        .contenedor-sanciones-exclusivo {
+            max-width: 1200px;
+            margin: 0 auto 50px;
+            padding: 0 15px;
+        }
+
+        .section-title {
+            font-size: clamp(1.1rem, 2vw, 1.35rem);
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 40px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--accent-red);
+            padding-left: 12px;
+            text-shadow: 0 0 10px rgba(225, 6, 0, 0.3);
+        }
+
+        /* Contenedor responsivo limpio sin bordes exteriores extraños */
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: transparent;
+        }
+
+        .pilotos-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 6px; /* Separa visualmente las filas dándoles aspecto de tarjeta flotante */
+            text-align: center;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            background-color: transparent;
+            padding: 0 2px;
+        }
+
+        .pilotos-table th {
+            background-color: #0f141f;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 14px 10px;
+            border-bottom: 2px solid var(--accent-red);
+        }
+
+        .pilotos-table tbody tr {
+            background-color: var(--bg-row);
+            transition: all 0.25s ease;
+        }
+
+        .pilotos-table tbody tr:hover {
+            background-color: var(--bg-row-alt);
+            transform: scale(1.002);
+            box-shadow: 0 0 15px rgba(0, 162, 255, 0.15);
+        }
+
+        .pilotos-table td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Detalle lateral rojo neón en cada tarjeta */
+        .pilotos-table tbody tr td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            border-left: 3px solid var(--border-neon-red);
+        }
+        .pilotos-table tbody tr td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* Anchuras y alineaciones de columnas adaptadas para constructores */
+        .col-pos { width: 50px; font-weight: bold; }
+        .col-mundiales { width: 90px; }
+        .col-escuderia { text-align: left !important; min-width: 210px; }
+        .col-pilotos { min-width: 120px; }
+        .col-vics, .col-podios { width: 60px; color: var(--text-muted); }
+        .col-puntos { width: 90px; font-weight: bold; color: #fff; text-shadow: 0 0 8px rgba(0, 162, 255, 0.4); }
+
+        /* Posiciones / Podios con brillo neón */
+        .pos-podio {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.88rem;
+        }
+        .pos-1 { background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; box-shadow: 0 0 12px rgba(255, 215, 0, 0.5); }
+        .pos-2 { background: linear-gradient(135deg, #e0e0e0, #94a3b8); color: #000; box-shadow: 0 0 10px rgba(224, 224, 224, 0.4); }
+        .pos-3 { background: linear-gradient(135deg, #cd7f32, #8b4513); color: #fff; box-shadow: 0 0 10px rgba(205, 127, 50, 0.4); }
+
+        /* Avatares y Pilotos en Constructores */
+        .contenedor-avatar {
+            position: relative;
+            display: inline-block;
+            margin: 0 3px;
+        }
+
+        .avatar-constructor-grande {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-blue);
+            background-color: #1a1a1a;
+            box-shadow: 0 0 8px rgba(0, 162, 255, 0.3);
+            vertical-align: middle;
+        }
+
+        .contenedor-estrellas {
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.55rem;
+            white-space: nowrap;
+            z-index: 2;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9));
+        }
+
+        .logo-escuderia {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .color-banda {
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            border-radius: 2px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .nombre-escuderia-texto {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Ajustes Mobile */
+        @media (max-width: 768px) {
+            .contenedor-sanciones-exclusivo {
+                padding: 0 10px;
+            }
+            .pilotos-table {
+                font-size: 0.82rem;
+            }
+            .pilotos-table th, .pilotos-table td {
+                padding: 10px 6px;
+            }
+        }
+    </style>
 </head>
-  <body>
+<body>
     <div id="header-placeholder"></div>
-<div class="titulo-liga">🏎️ CLASIFICACION DE CONSTRUCTORES 🏎️</div>
+    <div class="titulo-liga">🏎️ CLASIFICACION DE CONSTRUCTORES 🏎️</div>
 
-
-<main class="contenedor-sanciones-exclusivo">
-    <div class="seccion"> <h2 class="section-title">Clasificación de Escuderías</h2>
-        
-        <div class="table-wrapper"> <table class="table-standings-fix pilotos-table constructores-table">
-                <thead>
-                    <tr>
-                        <th class="col-pos">POS</th>
-                        <th class="col-mundiales">MUNDIALES</th>
-                        <th class="col-escuderia">ESCUDERÍA</th>
-                        <th class="col-pilotos">PILOTOS</th>
-                        <th class="col-vics">VICS</th>
-                        <th class="col-podios">PODIOS</th>
-                        <th class="col-puntos">PUNTOS</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-body-constructores">
-                </tbody>
-            </table>
+    <main class="contenedor-sanciones-exclusivo">
+        <div id="mundial-constructores">
+            <h2 class="section-title"><i class="fa-solid fa-shield-halved"></i> Clasificación de Escuderías</h2>
+            <div class="table-responsive-wrapper">
+                <table class="table-standings-fix pilotos-table">
+                    <thead>
+                        <tr>
+                            <th class="col-pos">POS</th>
+                            <th class="col-mundiales">MUNDIALES</th>
+                            <th class="col-escuderia">ESCUDERÍA</th>
+                            <th class="col-pilotos">PILOTOS</th>
+                            <th class="col-vics">VICS</th>
+                            <th class="col-podios">PODIOS</th>
+                            <th class="col-puntos">PUNTOS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body-constructores">
+                    </tbody>
+                </table>
+            </div>
         </div>
-        
-    </div>
-</main>
+    </main>
 
-
-      <div id="footer-placeholder"></div>
+    <div id="footer-placeholder"></div>
 
 <script>
+    // --- CONSTANTES DE RUTAS ---
+    const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
+    const NOMBRES_ESCUDERIAS = {
+        1: 'Red Bull Racing', 2: 'Ferrari', 3: 'Mercedes-AMG', 4: 'McLaren',
+        5: 'Aston Martin', 6: 'Alpine', 7: 'Williams', 8: 'Visa Cash App RB',
+        9: 'Audi', 10: 'Haas', 11: 'Cadillac'
+    };
 
+    const LOGOS_ESCUDERIAS = {
+        1: '/logos/redbull.png', 
+        2: '/logos/ferrari.png', 
+        3: '/logos/mercedes.png', 
+        4: '/logos/mclaren.png',
+        5: '/logos/aston.png',
+        6: '/logos/alpine.png',
+        7: '/logos/williams.png',
+        8: '/logos/rb.png',
+        9: '/logos/audi.png', 
+        10: '/logos/hass.png', 
+        11: '/logos/cadillac.png'
+    };
 
+    // 1. Carga unificada en paralelo (similar a pilotos)
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const [headerRes, footerRes, modalRes, resP, resE, resR] = await Promise.all([
+                fetch('/header.html'),
+                fetch('/footer.html'),
+                fetch('/login-modal.html'),
+                fetch('/api/lista-de-pilotos'),
+                fetch('/api/escuderias'),
+                fetch('/api/todos-los-resultados')
+            ]);
 
+            document.getElementById('header-placeholder').innerHTML = await headerRes.text();
+            document.getElementById('footer-placeholder').innerHTML = await footerRes.text();
+            document.body.insertAdjacentHTML('beforeend', await modalRes.text());
 
-    
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. Cargar Header (ÚNICO FETCH)
-    fetch('/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-            
-            // Configurar Banner de Instant Gaming
-            window.igBannerConfig = {
-                lang: 'es',
-                igr: 'gamer-97d22e',
-                banners: ['my-banner']
-            };
+            // 2. Configuración Banner Instant Gaming
+            window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
             const script = document.createElement('script');
             script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
             script.defer = true;
             document.body.appendChild(script);
 
-            // Verificación de sesión justo después de inyectar el HTML
             verificarSesion();
-        })
-        .catch(error => console.error('Error al cargar la cabecera:', error));
 
-    // 2. Cargar Footer
-    fetch('/footer.html')
-        .then(res => res.text())
-        .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+            const pilotos = await resP.json();
+            const escuderias = await resE.json();
+            const resultados = await resR.json();
+
+            renderizarConstructores(pilotos, escuderias);
+        } catch (error) {
+            console.error("Error al cargar los datos:", error);
+        }
+    });
+
+    // 3. Lógica de renderizado de Constructores
+    function renderizarConstructores(pilotos, escuderias) {
+        const body = document.getElementById('tabla-body-constructores');
+        if (!body) return;
+        body.innerHTML = "";
+
+        const datosConstructores = escuderias.map(esc => {
+            const pilotosEscuderia = pilotos.filter(p => 
+                String(p.escuderia_id) === String(esc.id) && String(p.es_reserva) === '0'
+            );
+            
+            const puntosPilotos = pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0);
+            
+            return {
+                nombre: esc.nombre,
+                mundiales: esc.mundiales || 0,
+                color: esc.color_hex || "#555555",
+                logo: (LOGOS_ESCUDERIAS[esc.id]) || '/logos/default.png',
+                pilotos: pilotosEscuderia,
+                victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
+                podios: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.podios) || 0), 0),
+                puntos: puntosPilotos + (Number(esc.puntos) || 0)
+            };
+        }).sort((a, b) => b.puntos - a.puntos);
+
+        datosConstructores.forEach((c, index) => {
+            const esPodio = index < 3;
+            const posClass = esPodio ? `pos-${index + 1}` : '';
+            const numeroDisplay = index + 1;
+            
+            // Avatares con estrellas de mundiales integradas
+            const avatars = c.pilotos.map(p => {
+                const nombreArchivo = (p.foto_url || 'R.png').replace('pilotos/', '');
+                const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'🌟'.repeat(p.mundiales)}</div>` : '';
+                
+                return `
+                    <div class="contenedor-avatar">
+                        ${estrellas}
+                        <img src="/pilotos/${nombreArchivo}" 
+                             class="avatar-constructor-grande" 
+                             title="${p.gamertag}" 
+                             onerror="this.src='/pilotos/R.png'">
+                    </div>`;
+            }).join('');
+
+            body.innerHTML += `
+                <tr>
+                    <td class="col-pos"><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
+                    <td class="col-mundiales" style="font-weight:bold; color: #ffcc00; text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);">${c.mundiales}</td> 
+                    <td class="col-escuderia" style="text-align: left;">
+                        <div style="display: flex; align-items: center;">
+                            <span class="color-banda" style="background-color: ${c.color};"></span>
+                            <img src="${c.logo}" class="logo-escuderia" onerror="this.style.display='none'"> 
+                            <span class="nombre-escuderia-texto">${c.nombre}</span>
+                        </div>
+                    </td>
+                    <td class="col-pilotos" style="text-align: center;">${avatars || '-'}</td>
+                    <td class="col-vics">${c.victorias}</td>
+                    <td class="col-podios">${c.podios}</td>
+                    <td class="col-puntos"><strong>${c.puntos} pts</strong></td>
+                </tr>
+            `;
+        });
+    }
+
+    // --- FUNCIONES GLOBALES ---
+    function verificarSesion() {
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
         
-    // 3. Cargar el Modal de Login
-    fetch('/login-modal.html')
-        .then(res => res.text())
-        .then(data => document.body.insertAdjacentHTML('beforeend', data));
-});
+        if (btnLogin && btnLogout) {
+            btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+            btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        } else {
+            setTimeout(verificarSesion, 100);
+        }
+    }
 
-
-// Esta función permite abrir el modal desde cualquier página
     function seguridadAbrirModal() {
         const modal = document.getElementById('login-modal');
-        if (modal) {
-            modal.style.display = 'block';
-        } else {
-            console.warn("El modal de login aún no está cargado.");
+        if (modal) modal.style.display = 'block';
+    }
+
+    async function enviarContacto() {
+        const nombre = document.getElementById('nombre-contacto').value;
+        const asunto = document.getElementById('asunto-contacto').value;
+        const mensaje = document.getElementById('mensaje-contacto').value;
+
+        if(!nombre || !asunto || !mensaje) {
+            alert("Por favor, rellena todos los campos.");
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/contacto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, asunto, mensaje })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                alert(data.message);
+                document.getElementById('modal-contacto').style.display = 'none';
+                document.getElementById('nombre-contacto').value = '';
+                document.getElementById('asunto-contacto').value = '';
+                document.getElementById('mensaje-contacto').value = '';
+            } else {
+                alert(data.error || "Error al enviar el mensaje.");
+            }
+        } catch (error) {
+            alert("Hubo un error de conexión.");
         }
     }
-
-    // --- CONSTANTES DE RUTAS ---
-        const FOTO_POR_DEFECTO = 'https://www.w3schools.com/howto/img_avatar.png';
-        const NOMBRES_ESCUDERIAS = {
-            1: 'Red Bull Racing', 2: 'Ferrari', 3: 'Mercedes-AMG', 4: 'McLaren',
-            5: 'Aston Martin', 6: 'Alpine', 7: 'Williams', 8: 'Visa Cash App RB',
-            9: 'Audi', 10: 'Haas', 11: 'Cadillac'
-        };
-
-        const LOGOS_ESCUDERIAS = {
-            1: '/logos/redbull.png', 
-            2: '/logos/ferrari.png', 
-            3: '/logos/mercedes.png', 
-            4: '/logos/mclaren.png',
-            5: '/logos/aston.png',
-            6: '/logos/alpine.png',
-            7: '/logos/williams.png',
-            8: '/logos/rb.png',
-            9: '/logos/audi.png', 
-            10: '/logos/hass.png', 
-            11: '/logos/cadillac.png'
-        };
-
-
-
-// 1. La lógica de renderizado
-function renderizarConstructores(pilotos, escuderias) {
-    console.log("Datos recibidos:", { 
-        cantidadPilotos: pilotos.length, 
-        ejemploPiloto: pilotos[0] 
-    });
-    const body = document.getElementById('tabla-body-constructores');
-    if (!body) return;
-    body.innerHTML = "";
-
-    const datosConstructores = escuderias.map(esc => {
-        const pilotosEscuderia = pilotos.filter(p => 
-            String(p.escuderia_id) === String(esc.id) && String(p.es_reserva) === '0'
-        );
-        
-        const puntosPilotos = pilotosEscuderia.reduce((sum, p) => sum + (Number(p.puntos_totales) || 0), 0);
-        
-        return {
-            nombre: esc.nombre,
-            mundiales: esc.mundiales || 0,
-            color: esc.color_hex || "#555555",
-            logo: (typeof LOGOS_ESCUDERIAS !== 'undefined' ? LOGOS_ESCUDERIAS[esc.id] : '') || '/logos/default.png',
-            pilotos: pilotosEscuderia,
-            victorias: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.victorias) || 0), 0),
-            podios: pilotosEscuderia.reduce((sum, p) => sum + (Number(p.podios) || 0), 0),
-            puntos: puntosPilotos + (Number(esc.puntos) || 0)
-        };
-    }).sort((a, b) => b.puntos - a.puntos);
-
-    datosConstructores.forEach((c, index) => {
-        const esPodio = index < 3;
-        const posClass = esPodio ? `pos-${index + 1}` : '';
-        const numeroDisplay = index + 1;
-        
-        // Lógica de las estrellas aquí:
-const avatars = c.pilotos.map(p => {
-    const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
-    // Generamos las estrellas solo si tiene más de 0 mundiales
-    const estrellas = (p.mundiales > 0) ? `<div class="contenedor-estrellas">${'🌟'.repeat(p.mundiales)}</div>` : '';
-    
-    return `
-        <div class="contenedor-avatar">
-            ${estrellas}
-            <img src="/pilotos/${nombreArchivo}" 
-                 class="avatar-constructor-grande" 
-                 title="${p.gamertag}" 
-                 onerror="this.src='/pilotos/R.png'">
-        </div>`;
-}).join('');
-
-        body.innerHTML += `
-            <tr>
-                <td><div class="pos-podio ${posClass}">${numeroDisplay}</div></td>
-                <td style="text-align: center; font-weight:bold; color: #ffcc00;">${c.mundiales}</td> 
-                <td style="text-align: left;">
-                    <span class="color-banda" style="background-color: ${c.color};"></span>
-                    <img src="${c.logo}" class="logo-escuderia"> ${c.nombre}
-                </td>
-                <td style="text-align: center;">${avatars || '-'}</td>
-                <td style="text-align: center;">${c.victorias}</td>
-                <td style="text-align: center;">${c.podios}</td>
-                <td style="text-align: center; font-weight:bold;">${c.puntos} pts</td>
-            </tr>
-        `;
-    });
-}
-
-// 2. Carga única y correcta
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const [resP, resE, resR] = await Promise.all([
-            fetch('/api/lista-de-pilotos'),
-            fetch('/api/escuderias'),
-            fetch('/api/todos-los-resultados')
-        ]);
-
-        const pilotos = await resP.json();
-        const escuderias = await resE.json();
-        const resultados = await resR.json();
-
-        // ELIMINADO EL BUCLE FOREACH QUE SOBREESCRIBÍA LAS VICTORIAS Y PODIOS
-
-        renderizarConstructores(pilotos, escuderias);
-    } catch (error) {
-        console.error("Error al cargar los datos:", error);
-    }
-});
-
-
-
-
-
-
-
-    
-// Función centralizada
-function verificarSesion() {
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-    
-    // Si los botones existen, aplicamos la lógica
-    if (btnLogin && btnLogout) {
-        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
-        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-    } else {
-        // Por si acaso, si no se encuentran, reintentamos en 100ms
-        setTimeout(verificarSesion, 100);
-    }
-}
-
-
-async function enviarContacto() {
-    const nombre = document.getElementById('nombre-contacto').value;
-    const asunto = document.getElementById('asunto-contacto').value;
-    const mensaje = document.getElementById('mensaje-contacto').value;
-
-    if(!nombre || !asunto || !mensaje) {
-        alert("Por favor, rellena todos los campos.");
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/contacto', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, asunto, mensaje })
-        });
-
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-            alert(data.message);
-            document.getElementById('modal-contacto').style.display = 'none';
-            document.getElementById('nombre-contacto').value = '';
-            document.getElementById('asunto-contacto').value = '';
-            document.getElementById('mensaje-contacto').value = '';
-        } else {
-            alert(data.error || "Error al enviar el mensaje.");
-        }
-    } catch (error) {
-        alert("Hubo un error de conexión.");
-    }
-}
-
-    
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
-<script src="/scripts.js"></script>     
+<script src="/scripts.js"></script>
+</body>
+</html>
