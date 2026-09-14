@@ -41,12 +41,13 @@
             background: rgba(18, 18, 24, 0.45);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 162, 255, 0.25); /* Azul de la liga */
-            border-left: 4px solid #ff3333; /* Rojo de competición en la barra lateral */
+            border: 1px solid rgba(0, 162, 255, 0.25);
+            border-left: 4px solid #ff3333;
             border-radius: 12px;
             padding: 20px;
             transition: all 0.3s ease;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
         }
 
         .noticia-item:hover {
@@ -55,14 +56,14 @@
             transform: translateY(-2px);
         }
 
-        /* Títulos de noticias limpios y el icono en el azul de la liga */
         .noticia-item h4 {
             color: #ffffff !important;
             font-size: 1.15em;
+            margin: 0 0 10px 0;
         }
 
         .noticia-item h4 i {
-            color: #00a2ff; /* Azul corporativo */
+            color: #00a2ff;
         }
 
         /* Formulario de administración translúcido */
@@ -80,6 +81,8 @@
         #form-noticia-admin h3 {
             color: #fff;
             font-weight: 700;
+            margin-top: 0;
+            text-align: center;
         }
 
         #form-noticia-admin input, 
@@ -91,6 +94,9 @@
             padding: 12px;
             font-size: 0.95em;
             transition: border-color 0.2s ease;
+            width: 100%;
+            margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
         #form-noticia-admin input:focus, 
@@ -100,7 +106,6 @@
             box-shadow: 0 0 8px rgba(0, 162, 255, 0.25);
         }
 
-        /* Botón de publicar principal con el rojo de la liga */
         #form-noticia-admin button {
             background: linear-gradient(135deg, #cc0000, #ff3333);
             color: white;
@@ -120,7 +125,6 @@
             transform: translateY(-1px);
         }
 
-        /* Botones de Editar (con acento azul) y Borrar (con acento rojo suave) */
         .btn-editar-noticia {
             background: transparent !important;
             color: #00a2ff !important;
@@ -156,6 +160,30 @@
             background: rgba(255, 77, 77, 0.15) !important;
             border-color: #ff4d4d !important;
         }
+
+        /* Estilo para el botón "Ver más" */
+        .contenedor-ver-mas {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        #btn-ver-mas {
+            background: transparent;
+            color: #00a2ff;
+            border: 1px solid rgba(0, 162, 255, 0.4);
+            padding: 10px 25px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #btn-ver-mas:hover {
+            background: rgba(0, 162, 255, 0.15);
+            border-color: #00a2ff;
+            transform: translateY(-1px);
+        }
     </style>
     <script src="/auth.js"></script>
 </head>
@@ -167,33 +195,34 @@
 <div class="titulo-liga">📰 NOTICIAS Y AVISOS 📰</div>
 
 <div id="form-noticia-admin" class="form-noticia" style="display: none;">
-    <h3 style="margin-top: 0; text-align: center;">Publicar Nueva Noticia</h3>
-    <input type="text" id="nueva-noticia-titulo" placeholder="Título" style="width: 100%; margin-bottom: 10px; box-sizing: border-box;">
-    <textarea id="nueva-noticia-cuerpo" placeholder="Cuerpo de la noticia..." rows="4" style="width: 100%; margin-bottom: 10px; box-sizing: border-box;"></textarea>
+    <h3>Publicar Nueva Noticia</h3>
+    <input type="text" id="nueva-noticia-titulo" placeholder="Título">
+    <textarea id="nueva-noticia-cuerpo" placeholder="Cuerpo de la noticia..." rows="4"></textarea>
     <button onclick="publicarNoticia()">Publicar</button>
 </div>
 
 <main class="caja-contenido" id="lista-noticias">
-    </main>
+</main>
 
-    <div id="footer-placeholder"></div>
+<!-- Contenedor para el botón Ver Más -->
+<div class="contenedor-ver-mas" id="contenedor-ver-mas" style="display: none;">
+    <button id="btn-ver-mas" onclick="mostrarTodasLasNoticias()">Ver más noticias antiguas</button>
+</div>
+
+<div id="footer-placeholder"></div>
 
 <script>
-    // 1. Cargar Header, Footer y Modal de forma ordenada
+    let noticiasGlobales = []; // Variable global para guardar las noticias cargadas
+
     document.addEventListener('DOMContentLoaded', () => {
-        
-        // Cargar Header
         fetch('/header.html')
             .then(res => res.text())
             .then(data => {
                 document.getElementById('header-placeholder').innerHTML = data;
-                
-                // Verificación de sesión tras cargar el header
                 if (typeof verificarSesion === 'function') {
                     verificarSesion();
                 }
 
-                // Configuración Banner
                 window.igBannerConfig = {
                     lang: 'es',
                     igr: 'gamer-97d22e',
@@ -206,77 +235,97 @@
             })
             .catch(error => console.error('Error al cargar la cabecera:', error));
 
-        // Cargar Footer
         fetch('/footer.html')
             .then(res => res.text())
             .then(data => document.getElementById('footer-placeholder').innerHTML = data)
             .catch(error => console.error('Error al cargar el footer:', error));
 
-        // Cargar Modal de Login (Para evitar el error de null)
         fetch('/login-modal.html')
             .then(res => res.text())
             .then(data => {
                 document.body.insertAdjacentHTML('beforeend', data);
             });
 
-        // Cargar las noticias
         cargarNoticias();
     });
 
-// 1. Cargar Noticias
 async function cargarNoticias() {
     const contenedor = document.getElementById('lista-noticias');
-    if (!contenedor) return; // Protección por si no existe en esta página
+    const contenedorVerMas = document.getElementById('contenedor-ver-mas');
+    if (!contenedor) return; 
 
     try {
         const respuesta = await fetch('/api/noticias');
-        const noticias = await respuesta.json();
+        noticiasGlobales = await respuesta.json(); // Guardamos todas en memoria
         
-        contenedor.innerHTML = ''; 
-        
-        if (noticias.length === 0) {
+        if (noticiasGlobales.length === 0) {
             contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+            if (contenedorVerMas) contenedorVerMas.style.display = 'none';
             return;
         }
 
-        noticias.forEach(noticia => {
-            const div = document.createElement('div');
-            div.className = 'noticia-item noticia-destacada-amarilla'; 
-            div.style.marginBottom = "20px";
-            
-            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
-                <div style="margin-top: 15px; display: flex; gap: 10px;">
-                    <button class="btn-editar-noticia" data-id="${noticia.id}">Editar</button>
-                    <button class="btn-borrar-noticia" onclick="eliminarNoticia(${noticia.id})">Borrar</button>
-                </div>
-            ` : '';
+        // Renderizamos inicialmente solo las primeras 5
+        renderizarNoticias(5);
 
-            const fechaObj = new Date(noticia.fecha);
-            div.innerHTML = `
-                <h4 style="margin: 0 0 10px 0; color: #ff79c6; font-size: 1.15em;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
-                <p style="margin: 5px 0 15px 0; color: #ccc; font-size: 0.95em; line-height: 1.5;">${noticia.contenido}</p>
-                <small style="color: #888;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
-                ${botonesAdmin}
-            `;
-            contenedor.appendChild(div);
-
-            // Asignamos el evento de editar de forma segura por memoria
-            if (typeof esAdmin === 'function' && esAdmin()) {
-                const btnEditar = div.querySelector('.btn-editar-noticia');
-                if (btnEditar) {
-                    btnEditar.addEventListener('click', () => {
-                        editarNoticia(noticia.id, noticia.titulo, noticia.contenido);
-                    });
-                }
-            }
-        });
     } catch (error) {
         console.error("Error cargando noticias:", error);
         contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
     }
 }
 
-// 2. Publicar Noticia (Versión limpia y segura sin webhooks en el front)
+function renderizarNoticias(limite) {
+    const contenedor = document.getElementById('lista-noticias');
+    const contenedorVerMas = document.getElementById('contenedor-ver-mas');
+    contenedor.innerHTML = ''; 
+
+    // Tomamos solo el número indicado (ej: las primeras 5)
+    const noticiasAMostrar = noticiasGlobales.slice(0, limite);
+
+    noticiasAMostrar.forEach(noticia => {
+        const div = document.createElement('div');
+        div.className = 'noticia-item noticia-destacada-amarilla'; 
+        
+        const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button class="btn-editar-noticia" data-id="${noticia.id}">Editar</button>
+                <button class="btn-borrar-noticia" onclick="eliminarNoticia(${noticia.id})">Borrar</button>
+            </div>
+        ` : '';
+
+        const fechaObj = new Date(noticia.fecha);
+        div.innerHTML = `
+            <h4><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
+            <p style="margin: 5px 0 15px 0; color: #ccc; font-size: 0.95em; line-height: 1.5;">${noticia.contenido}</p>
+            <small style="color: #888;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+            ${botonesAdmin}
+        `;
+        contenedor.appendChild(div);
+
+        if (typeof esAdmin === 'function' && esAdmin()) {
+            const btnEditar = div.querySelector('.btn-editar-noticia');
+            if (btnEditar) {
+                btnEditar.addEventListener('click', () => {
+                    editarNoticia(noticia.id, noticia.titulo, noticia.contenido);
+                });
+            }
+        }
+    });
+
+    // Controlamos la visibilidad del botón "Ver más"
+    if (contenedorVerMas) {
+        if (noticiasGlobales.length > limite) {
+            contenedorVerMas.style.display = 'block';
+        } else {
+            contenedorVerMas.style.display = 'none';
+        }
+    }
+}
+
+// Función que se ejecuta al pulsar "Ver más" para cargar el total
+function mostrarTodasLasNoticias() {
+    renderizarNoticias(noticiasGlobales.length);
+}
+
 async function publicarNoticia() {
     const tituloInput = document.getElementById('nueva-noticia-titulo');
     const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
@@ -303,12 +352,7 @@ async function publicarNoticia() {
             contenidoInput.value = '';
 
             alert("Noticia publicada correctamente y enviada a Discord.");
-            
-            if (typeof cargarNoticias === 'function') {
-                cargarNoticias();
-            } else {
-                location.reload();
-            }
+            cargarNoticias(); // Recarga limpia sin refrescar toda la página
         } else {
             alert(data.error || "Error al publicar la noticia.");
         }
@@ -318,15 +362,13 @@ async function publicarNoticia() {
     }
 }
 
-// 3. Eliminar Noticia
 async function eliminarNoticia(id) {
     if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
         const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
-        if (res.ok) location.reload();
+        if (res.ok) cargarNoticias();
     }
 }
 
-// 4. Editar Noticia
 async function editarNoticia(id, tituloActual, contenidoActual) {
     const nuevoTitulo = prompt("Edita el título:", tituloActual);
     if (nuevoTitulo === null) return;
@@ -342,7 +384,7 @@ async function editarNoticia(id, tituloActual, contenidoActual) {
         });
         
         if (res.ok) {
-            location.reload();
+            cargarNoticias();
         } else {
             alert("Error al actualizar la noticia.");
         }
@@ -352,19 +394,14 @@ async function editarNoticia(id, tituloActual, contenidoActual) {
     }
 }
 
-// Esta función vivirá ahora permanentemente en noticias.html
 async function verificarSesion() {
-    console.log("DEBUG: Ejecutando verificación con el servidor...");
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     const formAdmin = document.getElementById('form-noticia-admin');
     
-    // Forzamos que de entrada esté oculto hasta tener respuesta real del servidor
     if (formAdmin) formAdmin.style.display = 'none';
-
     let adminStatus = false;
     
-    // Consultamos directamente al servidor para validar la sesión real
     try {
         const res = await fetch('/api/auth/sesion');
         const data = await res.json();
@@ -373,26 +410,17 @@ async function verificarSesion() {
             adminStatus = true;
             localStorage.setItem('rol', 'admin');
         } else {
-            localStorage.removeItem('rol'); // Limpiamos si la sesión expiró o no es admin
+            localStorage.removeItem('rol');
         }
     } catch (err) {
-        console.error("DEBUG: Error al contrastar sesión con la base de datos:", err);
+        console.error("DEBUG: Error al contrastar sesión:", err);
     }
     
-    // Gestionar visibilidad según el estado real devuelto por el servidor
     if (btnLogin && btnLogout) {
-        if (adminStatus === true) {
-            btnLogin.style.display = 'none';
-            btnLogout.style.display = 'inline-block';
-            if (formAdmin) formAdmin.style.display = 'block';
-        } else {
-            btnLogin.style.display = 'inline-block';
-            btnLogout.style.display = 'none';
-            if (formAdmin) formAdmin.style.display = 'none';
-        }
+        btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
+        btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        if (formAdmin) formAdmin.style.display = adminStatus ? 'block' : 'none';
     } else {
-        console.warn("DEBUG: Botones del header aún no disponibles, reintentando...");
-        // Pequeño reintento por si el header tarda un poco más en renderizar
         setTimeout(() => {
             const btnLoginRetry = document.getElementById('btn-login');
             const btnLogoutRetry = document.getElementById('btn-logout');
@@ -407,7 +435,6 @@ async function verificarSesion() {
     }
 }
 
-// Esta función también la movemos aquí para que sea 100% accesible
 function seguridadAbrirModal() {
     const modal = document.getElementById('login-modal');
     if (modal) modal.style.display = 'block';
