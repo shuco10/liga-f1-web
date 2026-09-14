@@ -5,122 +5,429 @@
     <link rel="icon" href="/webimagenes/cazadoresdecurvas .png" type="image/png"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio | Cazadores de Curvas</title>
-    <!-- Ruta corregida con / al inicio -->
+    <script src="/auth.js"></script>
     <link rel="stylesheet" href="/estilos-cabecera.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
+        body { 
+            background-color: #121216; 
+            color: #e0e0e6; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+
+        .titulo-liga {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 30px 0 20px 0;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0, 162, 255, 0.3);
+        }
+
+        #lista-noticias { 
+            padding: 20px; 
+            max-width: 800px; 
+            margin: auto; 
+        }
+
+        /* Cajas de noticias translúcidas con el azul corporativo en el borde */
+        .noticia-item {
+            background: rgba(18, 18, 24, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 162, 255, 0.25);
+            border-left: 4px solid #ff3333;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .noticia-item:hover {
+            border-color: rgba(0, 162, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 162, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .noticia-item h4 {
+            color: #ffffff !important;
+            font-size: 1.15em;
+            margin: 0 0 10px 0;
+        }
+
+        .noticia-item h4 i {
+            color: #00a2ff;
+        }
+
+        /* Formulario de administración translúcido (por si se usa en el index) */
+        #form-noticia-admin {
+            background: rgba(18, 18, 24, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 162, 255, 0.3);
+            padding: 25px;
+            margin: 20px auto;
+            max-width: 550px;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        #form-noticia-admin h3 {
+            color: #fff;
+            font-weight: 700;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        #form-noticia-admin input, 
+        #form-noticia-admin textarea {
+            background: rgba(12, 12, 16, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95em;
+            transition: border-color 0.2s ease;
+            width: 100%;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        #form-noticia-admin input:focus, 
+        #form-noticia-admin textarea:focus {
+            outline: none;
+            border-color: #00a2ff;
+            box-shadow: 0 0 8px rgba(0, 162, 255, 0.25);
+        }
+
+        #form-noticia-admin button {
+            background: linear-gradient(135deg, #cc0000, #ff3333);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 51, 51, 0.3);
+        }
+
+        #form-noticia-admin button:hover {
+            background: linear-gradient(135deg, #ff3333, #ff4d4d);
+            box-shadow: 0 6px 16px rgba(255, 51, 51, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-editar-noticia {
+            background: transparent !important;
+            color: #00a2ff !important;
+            border: 1px solid rgba(0, 162, 255, 0.4) !important;
+            padding: 6px 14px !important;
+            cursor: pointer;
+            border-radius: 6px !important;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.2s ease;
+        }
+
+        .btn-editar-noticia:hover {
+            background: rgba(0, 162, 255, 0.15) !important;
+            border-color: #00a2ff !important;
+        }
+
+        .btn-borrar-noticia, 
+        .noticia-item button[onclick^="eliminarNoticia"] {
+            background: transparent !important;
+            color: #ff4d4d !important;
+            border: 1px solid rgba(255, 77, 77, 0.4) !important;
+            padding: 6px 14px !important;
+            cursor: pointer;
+            border-radius: 6px !important;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.2s ease;
+        }
+
+        .btn-borrar-noticia:hover, 
+        .noticia-item button[onclick^="eliminarNoticia"]:hover {
+            background: rgba(255, 77, 77, 0.15) !important;
+            border-color: #ff4d4d !important;
+        }
+
+        /* Estilo para el botón "Ver más" */
+        .contenedor-ver-mas {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        #btn-ver-mas {
+            background: transparent;
+            color: #00a2ff;
+            border: 1px solid rgba(0, 162, 255, 0.4);
+            padding: 10px 25px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #btn-ver-mas:hover {
+            background: rgba(0, 162, 255, 0.15);
+            border-color: #00a2ff;
+            transform: translateY(-1px);
+        }
     </style>
-    <!-- Carga de lógica global -->
-    <script src="/auth.js"></script>
 </head>
 <body>
-    <!-- Contenedores para las piezas dinámicas -->
-    <div id="header-placeholder"></div>
-    <div id="modal-container"></div> 
 
+    <div id="header-placeholder"></div>
+    <div id="modal-container"></div>
+    
 <div class="titulo-liga">✨👋 ¡BIENVENIDOS! 👋✨</div>
+
+<div id="form-noticia-admin" class="form-noticia" style="display: none;">
+    <h3>Publicar Nueva Noticia</h3>
+    <input type="text" id="nueva-noticia-titulo" placeholder="Título">
+    <textarea id="nueva-noticia-cuerpo" placeholder="Cuerpo de la noticia..." rows="4"></textarea>
+    <button onclick="publicarNoticia()">Publicar</button>
+</div>
+
 <main class="caja-contenido" id="lista-noticias">
-    </main>
+</main>
+
+<!-- Contenedor para el botón Ver Más -->
+<div class="contenedor-ver-mas" id="contenedor-ver-mas" style="display: none;">
+    <button id="btn-ver-mas" onclick="mostrarTodasLasNoticias()">Ver más noticias antiguas</button>
+</div>
 
     <div id="footer-placeholder"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Cargar Header (ÚNICO FETCH)
-    fetch('/header.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
-            
-            // Configurar Banner de Instant Gaming
-            window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
-            const script = document.createElement('script');
-            script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
-            script.defer = true;
-            document.body.appendChild(script);
+    let noticiasGlobales = [];
 
-            // Verificación de sesión justo después de inyectar el HTML
-            verificarSesion();
-        })
-        .catch(error => console.error('Error al cargar la cabecera:', error));
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/header.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('header-placeholder').innerHTML = data;
+                
+                if (typeof verificarSesion === 'function') {
+                    verificarSesion();
+                }
 
-    // 2. Cargar Footer
-    fetch('/footer.html')
-        .then(res => res.text())
-        .then(data => document.getElementById('footer-placeholder').innerHTML = data);
+                window.igBannerConfig = { lang: 'es', igr: 'gamer-97d22e', banners: ['my-banner'] };
+                const script = document.createElement('script');
+                script.src = "https://www.instant-gaming.com/api/banner/partner/loader.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            })
+            .catch(error => console.error('Error al cargar la cabecera:', error));
+
+        fetch('/footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-placeholder').innerHTML = data);
         
-    // 3. Cargar el Modal de Login
-    fetch('/login-modal.html')
-        .then(res => res.text())
-        .then(data => document.body.insertAdjacentHTML('beforeend', data));
+        fetch('/login-modal.html')
+            .then(res => res.text())
+            .then(data => document.body.insertAdjacentHTML('beforeend', data));
 
-    // 4. Cargar las noticias (Llamado aquí dentro para asegurar orden)
-    cargarNoticias();
-});
-
-// --- Funciones de soporte fuera del DOMContentLoaded ---
+        cargarNoticias();
+    });
 
 async function cargarNoticias() {
     const contenedor = document.getElementById('lista-noticias');
-    if (!contenedor) return; // Protección por si no existe en esta página
+    const contenedorVerMas = document.getElementById('contenedor-ver-mas');
+    if (!contenedor) return; 
 
     try {
         const respuesta = await fetch('/api/noticias');
-        const noticias = await respuesta.json();
+        noticiasGlobales = await respuesta.json();
         
-        contenedor.innerHTML = ''; 
-        
-        if (noticias.length === 0) {
+        if (noticiasGlobales.length === 0) {
             contenedor.innerHTML = '<p style="color: #666; text-align: center;">No hay avisos pendientes.</p>';
+            if (contenedorVerMas) contenedorVerMas.style.display = 'none';
             return;
         }
 
-        noticias.forEach(noticia => {
-            const div = document.createElement('div');
-            div.className = 'noticia-item noticia-destacada-amarilla'; 
-            div.style.marginBottom = "20px";
-            
-            const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
-                <div style="margin-top: 10px; display: flex; gap: 10px;">
-                    <button onclick="editarNoticia(${noticia.id}, '${noticia.titulo.replace(/'/g, "\\'")}', '${noticia.contenido.replace(/'/g, "\\'")}')" 
-                            style="background:#f39c12; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Editar</button>
-                    <button onclick="eliminarNoticia(${noticia.id})" 
-                            style="background:#ff4444; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Borrar</button>
-                </div>
-            ` : '';
+        renderizarNoticias(5);
 
-            const fechaObj = new Date(noticia.fecha);
-            div.innerHTML = `
-                <h4 style="margin: 0 0 10px 0; color: #ff4444;"><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
-                <p style="margin: 5px 0; color: #ccc; font-size: 0.95em;">${noticia.contenido}</p>
-                <small style="color: #666;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
-                ${botonesAdmin}
-            `;
-            contenedor.appendChild(div);
-        });
     } catch (error) {
         console.error("Error cargando noticias:", error);
         contenedor.innerHTML = '<p style="color: #ff4444; text-align: center;">Error al cargar las noticias.</p>';
     }
 }
 
-function verificarSesion() {
+function renderizarNoticias(limite) {
+    const contenedor = document.getElementById('lista-noticias');
+    const contenedorVerMas = document.getElementById('contenedor-ver-mas');
+    contenedor.innerHTML = ''; 
+
+    const noticiasAMostrar = noticiasGlobales.slice(0, limite);
+
+    noticiasAMostrar.forEach(noticia => {
+        const div = document.createElement('div');
+        div.className = 'noticia-item noticia-destacada-amarilla'; 
+        
+        const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button class="btn-editar-noticia" data-id="${noticia.id}">Editar</button>
+                <button class="btn-borrar-noticia" onclick="eliminarNoticia(${noticia.id})">Borrar</button>
+            </div>
+        ` : '';
+
+        const fechaObj = new Date(noticia.fecha);
+        div.innerHTML = `
+            <h4><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
+            <p style="margin: 5px 0 15px 0; color: #ccc; font-size: 0.95em; line-height: 1.5;">${noticia.contenido}</p>
+            <small style="color: #888;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+            ${botonesAdmin}
+        `;
+        contenedor.appendChild(div);
+
+        if (typeof esAdmin === 'function' && esAdmin()) {
+            const btnEditar = div.querySelector('.btn-editar-noticia');
+            if (btnEditar) {
+                btnEditar.addEventListener('click', () => {
+                    editarNoticia(noticia.id, noticia.titulo, noticia.contenido);
+                });
+            }
+        }
+    });
+
+    if (contenedorVerMas) {
+        if (noticiasGlobales.length > limite) {
+            contenedorVerMas.style.display = 'block';
+        } else {
+            contenedorVerMas.style.display = 'none';
+        }
+    }
+}
+
+function mostrarTodasLasNoticias() {
+    renderizarNoticias(noticiasGlobales.length);
+}
+
+async function publicarNoticia() {
+    const tituloInput = document.getElementById('nueva-noticia-titulo');
+    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
+
+    if (!tituloInput.value || !contenidoInput.value) {
+        alert("Por favor, rellena el título y el contenido.");
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/noticias', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                titulo: tituloInput.value, 
+                contenido: contenidoInput.value 
+            })
+        });
+        
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            tituloInput.value = '';
+            contenidoInput.value = '';
+
+            alert("Noticia publicada correctamente y enviada a Discord.");
+            cargarNoticias();
+        } else {
+            alert(data.error || "Error al publicar la noticia.");
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Error de conexión al publicar.");
+    }
+}
+
+async function eliminarNoticia(id) {
+    if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
+        const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+        if (res.ok) cargarNoticias();
+    }
+}
+
+async function editarNoticia(id, tituloActual, contenidoActual) {
+    const nuevoTitulo = prompt("Edita el título:", tituloActual);
+    if (nuevoTitulo === null) return;
+
+    const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
+    if (nuevoContenido === null) return;
+
+    try {
+        const res = await fetch(`/api/noticias/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
+        });
+        
+        if (res.ok) {
+            cargarNoticias();
+        } else {
+            alert("Error al actualizar la noticia.");
+        }
+    } catch (err) {
+        console.error("Error al editar:", err);
+        alert("Error de conexión al actualizar la noticia.");
+    }
+}
+
+async function verificarSesion() {
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
-    const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
+    const formAdmin = document.getElementById('form-noticia-admin');
+    
+    if (formAdmin) formAdmin.style.display = 'none';
+    let adminStatus = false;
+    
+    try {
+        const res = await fetch('/api/auth/sesion');
+        const data = await res.json();
+        
+        if (data.logueado && data.rol === 'admin') {
+            adminStatus = true;
+            localStorage.setItem('rol', 'admin');
+        } else {
+            localStorage.removeItem('rol');
+        }
+    } catch (err) {
+        console.error("DEBUG: Error al contrastar sesión:", err);
+    }
     
     if (btnLogin && btnLogout) {
         btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
         btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
+        if (formAdmin) formAdmin.style.display = adminStatus ? 'block' : 'none';
     } else {
-        setTimeout(verificarSesion, 100);
+        setTimeout(() => {
+            const btnLoginRetry = document.getElementById('btn-login');
+            const btnLogoutRetry = document.getElementById('btn-logout');
+            if (btnLoginRetry && btnLogoutRetry) {
+                btnLoginRetry.style.display = adminStatus ? 'none' : 'inline-block';
+                btnLogoutRetry.style.display = adminStatus ? 'inline-block' : 'none';
+            }
+            if (formAdmin) {
+                formAdmin.style.display = adminStatus ? 'block' : 'none';
+            }
+        }, 300);
     }
 }
 
-
+function seguridadAbrirModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) modal.style.display = 'block';
+}
 
 async function enviarContacto() {
     const nombre = document.getElementById('nombre-contacto').value;
@@ -154,8 +461,6 @@ async function enviarContacto() {
         alert("Hubo un error de conexión.");
     }
 }
-    
-    
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
