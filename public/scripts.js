@@ -53,14 +53,15 @@ socket.on('usuarios-actualizados', (numUsuarios) => {
     actualizarContadorOnline(numUsuarios);
 });
 
-// 2. Control de Visitas (Aislado y con manejo de errores para que no se quede colgado en "...")
+// 2. Control de Visitas (Aislado y con manejo seguro)
 async function gestionarVisitas() {
     try {
-        await fetch('/api/visitas/registrar', { method: 'POST' });
+        await fetch('/api/visitas/registrar', { method: 'POST' }).catch(() => {});
         const respuesta = await fetch('/api/visitas');
-        if (!respuesta.ok) throw new Error('Error al obtener visitas');
-        const datos = await respuesta.json();
+        const texto = await respuesta.text();
+        if (texto.trim().startsWith('<')) return; // Evitar HTML de error
         
+        const datos = JSON.parse(texto);
         const elHoy = document.getElementById('visitas-hoy') || document.getElementById('visitas-h');
         const elTotal = document.getElementById('visitas-totales') || document.getElementById('visitas-t');
 
@@ -68,10 +69,6 @@ async function gestionarVisitas() {
         if (elTotal) elTotal.innerText = datos.totales ?? datos.total ?? 0;
     } catch (e) {
         console.error("Error gestionando las visitas:", e);
-        const elHoy = document.getElementById('visitas-hoy');
-        const elTotal = document.getElementById('visitas-totales');
-        if (elHoy) elHoy.innerText = "-";
-        if (elTotal) elTotal.innerText = "-";
     }
 }
 
@@ -79,7 +76,9 @@ async function gestionarVisitas() {
 async function verificarSesionPagina() {
     try {
         const res = await fetch('/api/auth/sesion');
-        const data = await res.json();
+        const texto = await res.text();
+        if (texto.trim().startsWith('<')) return;
+        const data = JSON.parse(texto);
         
         const seccionFormularios = document.getElementById('seccion-formularios');
         const panelGestion = document.getElementById('panel-gestion-usuarios');
@@ -130,7 +129,10 @@ document.addEventListener('click', async (e) => {
         e.preventDefault();
         try {
             const logoutRes = await fetch('/api/auth/logout', { method: 'POST' });
-            const logoutData = await logoutRes.json();
+            const texto = await logoutRes.text();
+            if (texto.trim().startsWith('<')) return;
+            const logoutData = JSON.parse(texto);
+            
             if (logoutRes.ok || logoutData.success) {
                 localStorage.removeItem('rol');
                 window.location.reload();
@@ -143,7 +145,7 @@ document.addEventListener('click', async (e) => {
 
 
 /////////////////////////////////////////////////////////////////////////////
-/// TELETIPOS (Formato por bloques secuenciales: Noticias -> Resoluciones -> Pilotos)
+/// TELETIPOS (Con protección estricta contra errores HTML de la API)
 /////////////////////////////////////////////////////////////////////////////
 
 async function iniciarBannerSecuencial() {
@@ -156,15 +158,25 @@ async function iniciarBannerSecuencial() {
     }
 
     try {
+        const fetchSeguro = async (url) => {
+            try {
+                const r = await fetch(url);
+                const txt = await r.text();
+                if (txt.trim().startsWith('<')) return [];
+                return JSON.parse(txt);
+            } catch {
+                return [];
+            }
+        };
+
         const [resNoticias, resResoluciones, resUsuarios] = await Promise.all([
-            fetch('/api/noticias').then(r => r.json()).catch(() => []),
-            fetch('/api/resoluciones').then(r => r.json()).catch(() => []),
-            fetch('/api/usuarios/aprobados').then(r => r.json()).catch(() => [])
+            fetchSeguro('/api/noticias'),
+            fetchSeguro('/api/resoluciones'),
+            fetchSeguro('/api/usuarios/aprobados')
         ]);
 
         let bloquesGlobales = [];
 
-        // 1. NOTICIAS: Filtradas estrictamente al último día con noticias
         if (Array.isArray(resNoticias) && resNoticias.length > 0) {
             resNoticias.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
             const ultimaFechaNoticia = (resNoticias[0].fecha || '').split('T')[0].split(' ')[0];
@@ -182,7 +194,6 @@ async function iniciarBannerSecuencial() {
             }
         }
 
-        // 2. RESOLUCIONES: Filtradas estrictamente al último día con resoluciones
         if (Array.isArray(resResoluciones) && resResoluciones.length > 0) {
             resResoluciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
             const ultimaFechaRes = (resResoluciones[0].fecha || '').split('T')[0].split(' ')[0];
@@ -200,7 +211,6 @@ async function iniciarBannerSecuencial() {
             }
         }
 
-        // 3. PILOTOS: Filtrados estrictamente al último día de registro
         if (Array.isArray(resUsuarios) && resUsuarios.length > 0) {
             resUsuarios.sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en));
             const ultimaFechaUser = (resUsuarios[0].creado_en || '').split('T')[0].split(' ')[0];
@@ -231,8 +241,6 @@ async function iniciarBannerSecuencial() {
             if (timerBloque) clearTimeout(timerBloque);
 
             const bloqueActual = bloquesGlobales[index];
-            
-            // Asigna el título con icono perfectamente integrado en la caja roja
             tituloElemento.innerHTML = bloqueActual.titulo;
 
             const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
@@ -258,8 +266,10 @@ async function iniciarBannerSecuencial() {
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////// 
+
+////////////////////////////////////////////////////////////////////////////////
+/// CARRUSEL DE CLIPS
+////////////////////////////////////////////////////////////////////////////////
 
 let currentIndex = 0;
 let clipsData = []; 
@@ -269,16 +279,16 @@ let isTransitioning = false;
 async function cargarCarruselClips() {
     try {
         const response = await fetch('/api/videos');
-        if (!response.ok) throw new Error('Error en la red');
+        const text = await response.text();
+        if (text.trim().startsWith('<')) throw new Error('HTML recibido');
         
-        const datos = await response.json();
-        
+        const datos = JSON.parse(text);
         if (Array.isArray(datos) && datos.length > 0) {
             clipsData = datos;
-            clipsCarrusel = clipsData.slice(0, 5); // Solo los 5 más nuevos para el carrusel
+            clipsCarrusel = clipsData.slice(0, 5);
         }
     } catch (error) {
-        console.warn('No se pudo conectar a /api/videos, usando respaldo:', error);
+        console.warn('Usando clips de respaldo:', error);
         clipsData = [
             { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip1&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "¡Bienvenido a Cazadores de Curvas!" },
             { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip2&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "Momento épico en pista" }
@@ -315,14 +325,12 @@ function renderCarousel() {
 
         const item = document.createElement('div');
         item.className = `carousel-clip-item ${absoluteIndex === currentIndex ? 'active' : ''}`;
-        
         item.innerHTML = `
             <div style="position: relative;">
                 ${iframeAdaptado}
             </div>
             <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
         `;
-        
         container.appendChild(item);
     });
 
@@ -393,7 +401,7 @@ function actualizarPosicionCarrusel(animar = true) {
     }
 }
 
-// Control global de eventos (Flechas del carrusel + Apertura/Cierre de la Modal)
+// Control global de clics (Flechas del carrusel + Modal)
 document.addEventListener('click', (e) => {
     const nextBtn = e.target.closest('#nextClip');
     const prevBtn = e.target.closest('#prevClip');
@@ -401,21 +409,18 @@ document.addEventListener('click', (e) => {
     const closeModalBtn = e.target.closest('#closeAllClipsModal');
     const modalOverlay = document.getElementById('allClipsModal');
 
-    // 1. Abrir Modal
     if (openModalBtn) {
         e.preventDefault();
         if (modalOverlay) modalOverlay.style.display = 'flex';
         return;
     }
 
-    // 2. Cerrar Modal (por botón 'X' o clic fuera de la caja)
     if (closeModalBtn || (modalOverlay && e.target === modalOverlay)) {
         e.preventDefault();
         if (modalOverlay) modalOverlay.style.display = 'none';
         return;
     }
 
-    // 3. Control de flechas del carrusel
     if (!nextBtn && !prevBtn) return;
     
     e.preventDefault();
@@ -445,53 +450,31 @@ document.addEventListener('click', (e) => {
         }
         isTransitioning = false;
     }, 400);
-}); // <-- ¡Esta llave cerraba el addEventListener y faltaba!
+});
 
-// Configura aquí la fecha de la próxima carrera (Año, Mes [0-11], Día, Hora, Minuto)
-   <!-- Widget de Próxima Carrera con Cuenta Atrás (Automático desde Base de Datos) -->
-<div class="widget-carrera">
-    <h3><i class="fa-solid fa-flag-checkered"></i> Próxima cita en pista</h3>
-    <div class="nombre-gp" id="nombre-gp">Cargando próxima carrera...</div>
-    <div class="contador-grid" id="contador-grid" style="display: none;">
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="dias">00</span>
-            <span class="tiempo-etiqueta">Días</span>
-        </div>
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="horas">00</span>
-            <span class="tiempo-etiqueta">Horas</span>
-        </div>
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="minutos">00</span>
-            <span class="tiempo-etiqueta">Min</span>
-        </div>
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="segundos">00</span>
-            <span class="tiempo-etiqueta">Seg</span>
-        </div>
-    </div>
-</div>
+
+////////////////////////////////////////////////////////////////////////////////
+/// CUENTA ATRÁS DE CIRCUITOS (Aislada y con comprobación de JSON)
+////////////////////////////////////////////////////////////////////////////////
 
 async function inicializarCuentaAtrasCircuitos() {
     try {
-        // Asegúrate de que esta URL sea la correcta de vuestra API (ej: '/api/circuitos' o '/circuitos')
         const response = await fetch('/api/circuitos');
         const text = await response.text();
         
-        // Comprobar si la respuesta es JSON válido antes de parsearla
+        if (text.trim().startsWith('<')) {
+            console.warn("La API de circuitos devolvió una página HTML en lugar de datos JSON.");
+            return;
+        }
+        
         let circuitos;
         try {
             circuitos = JSON.parse(text);
         } catch (e) {
-            console.error("La API de circuitos no devolvió un JSON válido:", text.substring(0, 100));
-            document.getElementById('nombre-gp').innerText = "Error al cargar circuitos";
             return;
         }
         
-        if (!Array.isArray(circuitos) || circuitos.length === 0) {
-            document.getElementById('nombre-gp').innerText = "No hay circuitos programados";
-            return;
-        }
+        if (!Array.isArray(circuitos) || circuitos.length === 0) return;
 
         const mesesMap = {
             'ENE': 0, 'FEB': 1, 'MAR': 2, 'ABR': 3, 'MAY': 4, 'JUN': 5,
@@ -514,10 +497,8 @@ async function inicializarCuentaAtrasCircuitos() {
 
             if (isNaN(dia) || mes === undefined) return;
 
-            // Calcular timestamp de la carrera (asumimos a las 20:00 hora local)
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
             
-            // Si la fecha ya pasó este año, probamos con el año siguiente
             if (fechaC < ahora) {
                 fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
@@ -532,13 +513,13 @@ async function inicializarCuentaAtrasCircuitos() {
             }
         });
 
-        if (!proximaCarrera) {
-            document.getElementById('nombre-gp').innerText = "Fin del calendario de carreras";
-            return;
-        }
+        if (!proximaCarrera) return;
 
-        document.getElementById('nombre-gp').innerText = `Gran Premio de ${proximaCarrera.nombre}`;
-        document.getElementById('contador-grid').style.display = 'flex';
+        const elGp = document.getElementById('nombre-gp');
+        const elGrid = document.getElementById('contador-grid');
+        
+        if (elGp) elGp.innerText = `Gran Premio de ${proximaCarrera.nombre}`;
+        if (elGrid) elGrid.style.display = 'flex';
 
         function actualizarReloj() {
             const ahoraLoc = new Date().getTime();
@@ -552,8 +533,8 @@ async function inicializarCuentaAtrasCircuitos() {
             if (!elemDias) return;
 
             if (diferenciaLoc < 0) {
-                document.getElementById('nombre-gp').innerText = `¡GP de ${proximaCarrera.nombre} en marcha!`;
-                document.getElementById('contador-grid').style.display = 'none';
+                if (elGp) elGp.innerText = `¡GP de ${proximaCarrera.nombre} en marcha!`;
+                if (elGrid) elGrid.style.display = 'none';
                 return;
             }
 
@@ -572,30 +553,18 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("Error crítico al inicializar la cuenta atrás:", e);
-        document.getElementById('nombre-gp').innerText = "Error de conexión";
+        console.error("Error en cuenta atrás:", e);
     }
 }
 
-// Ejecutar cuando cargue el DOM de la cabecera
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarCuentaAtrasCircuitos);
-} else {
-    inicializarCuentaAtrasCircuitos();
-}
 
-
-
-/////////////////////////////////////////////////
-// Inicialización general al cargar el DOM (Respetando tus funciones obligatorias)
+////////////////////////////////////////////////////////////////////////////////
+// INICIALIZACIÓN GENERAL AL CARGAR EL DOM
+////////////////////////////////////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', () => {
     verificarSesionPagina();
     gestionarVisitas();
     iniciarBannerSecuencial();
-    cargarCarruselClips(); // <-- Aquí arrancamos el carrusel y el modal de forma segura
+    cargarCarruselClips();
+    inicializarCuentaAtrasCircuitos();
 });
-
-
-
-
-
