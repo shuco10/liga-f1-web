@@ -463,40 +463,12 @@ async function inicializarCuentaAtrasCircuitos() {
     if (!elGp || !elGrid) return;
 
     try {
-        // Hacemos las peticiones por separado y de forma segura para que una caída no bloquee la otra
-        let listaCircuitos = [];
-        let listaEventos = [];
-
-        try {
-            const resC = await fetch('/api/circuitos');
-            const dataC = await resC.json();
-            if (Array.isArray(dataC)) {
-                listaCircuitos = dataC.map(c => ({
-                    nombre: `Gran Premio de ${c.nombre}`,
-                    fecha: c.fecha_carrera
-                }));
-            }
-        } catch (err) {
-            console.warn("No se pudieron cargar los circuitos:", err);
-        }
-
-        try {
-            const resE = await fetch('/api/eventos-especiales');
-            const dataE = await resE.json();
-            if (Array.isArray(dataE)) {
-                listaEventos = dataE.map(e => ({
-                    nombre: e.nombre,
-                    fecha: e.fecha_evento
-                }));
-            }
-        } catch (err) {
-            console.warn("No se pudieron cargar los eventos especiales (o la tabla aún no tiene datos):", err);
-        }
-
-        const eventosTotales = [...listaCircuitos, ...listaEventos];
-
-        if (eventosTotales.length === 0) {
-            elGp.innerText = "No hay eventos programados";
+        console.log("Cargando circuitos para cuenta atrás...");
+        const response = await fetch('/api/circuitos');
+        const circuitos = await response.json();
+        
+        if (!Array.isArray(circuitos) || circuitos.length === 0) {
+            elGp.innerText = "Sin carreras programadas";
             return;
         }
 
@@ -516,12 +488,12 @@ async function inicializarCuentaAtrasCircuitos() {
         };
 
         const ahora = new Date().getTime();
-        let proximaCita = null;
+        let proximaCarrera = null;
         let menorDiferencia = Infinity;
         let anioActual = new Date().getFullYear();
 
-        eventosTotales.forEach(item => {
-            const fechaStr = item.fecha;
+        circuitos.forEach(c => {
+            const fechaStr = c.fecha_carrera;
             if (!fechaStr) return;
 
             const partes = fechaStr.trim().toUpperCase().split(/\s+/);
@@ -542,24 +514,24 @@ async function inicializarCuentaAtrasCircuitos() {
             const diferencia = fechaC - ahora;
             if (diferencia > 0 && diferencia < menorDiferencia) {
                 menorDiferencia = diferencia;
-                proximaCita = {
-                    nombreCompleto: item.nombre,
+                proximaCarrera = {
+                    nombre: c.nombre,
                     tiempoObjetivo: fechaC
                 };
             }
         });
 
-        if (!proximaCita) {
-            elGp.innerText = "No hay próximas citas";
+        if (!proximaCarrera) {
+            elGp.innerText = "No hay carreras próximas";
             return;
         }
 
-        elGp.innerText = proximaCita.nombreCompleto;
+        elGp.innerText = `Gran Premio de ${proximaCarrera.nombre}`;
         elGrid.style.display = 'flex';
 
         function actualizarReloj() {
             const ahoraLoc = new Date().getTime();
-            const diferenciaLoc = proximaCita.tiempoObjetivo - ahoraLoc;
+            const diferenciaLoc = proximaCarrera.tiempoObjetivo - ahoraLoc;
 
             const elemDias = document.getElementById('dias');
             const elemHoras = document.getElementById('horas');
@@ -569,7 +541,7 @@ async function inicializarCuentaAtrasCircuitos() {
             if (!elemDias) return;
 
             if (diferenciaLoc < 0) {
-                elGp.innerText = `¡${proximaCita.nombreCompleto} en marcha!`;
+                elGp.innerText = `¡GP de ${proximaCarrera.nombre} en marcha!`;
                 elGrid.style.display = 'none';
                 return;
             }
@@ -589,8 +561,8 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("Error crítico en cuenta atrás:", e);
-        elGp.innerText = "Error al cargar la cuenta atrás";
+        console.error("Error en cuenta atrás:", e);
+        elGp.innerText = "Error cargando cuenta atrás";
     }
 }
 
