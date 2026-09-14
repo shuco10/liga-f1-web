@@ -476,14 +476,12 @@ async function inicializarCuentaAtrasCircuitos() {
 
         const listaCircuitos = Array.isArray(circuitos) ? circuitos.map(c => ({
             nombre: `Gran Premio de ${c.nombre}`,
-            fecha: c.fecha_carrera,
-            ronda: c.r_round
+            fecha: c.fecha_carrera
         })) : [];
 
         const listaEventos = Array.isArray(eventos) ? eventos.map(e => ({
             nombre: e.nombre,
-            fecha: e.fecha_evento,
-            ronda: 999
+            fecha: e.fecha_evento
         })) : [];
 
         const eventosTotales = [...listaCircuitos, ...listaEventos];
@@ -519,10 +517,8 @@ async function inicializarCuentaAtrasCircuitos() {
 
             if (isNaN(dia) || mes === undefined) return;
 
-            // Crear fecha para el año actual a las 20:00
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
 
-            // Si la fecha ya pasó este año, programarla para el año siguiente
             if (fechaC < timestampActual) {
                 fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
@@ -542,6 +538,7 @@ async function inicializarCuentaAtrasCircuitos() {
             return;
         }
 
+        console.log("🎯 Evento seleccionado para la cuenta atrás:", proximaCita.nombreCompleto);
         elGp.innerText = proximaCita.nombreCompleto;
         elGrid.style.display = 'flex';
 
