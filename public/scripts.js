@@ -497,39 +497,35 @@ async function inicializarCuentaAtrasCircuitos() {
             'SEP': 8, 'OCT': 9, 'NOV': 10, 'DIC': 11, 'DEC': 11
         };
 
-        const ahora = new Date().getTime();
+        const ahora = new Date();
+        const anioActual = ahora.getFullYear();
+        const timestampActual = ahora.getTime();
+        
         let proximaCita = null;
         let menorDiferencia = Infinity;
-        let anioActual = new Date().getFullYear();
 
         eventosTotales.forEach(item => {
             const fechaStr = item.fecha;
             if (!fechaStr) return;
 
-            let fechaC = null;
+            const partes = fechaStr.trim().toUpperCase().split(/\s+/);
+            if (partes.length < 2) return;
 
-            // Si la fecha viene en formato ISO o YYYY-MM-DD
-            if (fechaStr.includes('-') || fechaStr.includes('T')) {
-                fechaC = new Date(fechaStr).getTime();
-            } else {
-                // Formato antiguo tipo "15 JUN"
-                const partes = fechaStr.trim().toUpperCase().split(/\s+/);
-                if (partes.length >= 2) {
-                    const dia = parseInt(partes[0], 10);
-                    const mesStr = partes[1].substring(0, 3);
-                    const mes = mesesMap[mesStr];
-                    if (!isNaN(dia) && mes !== undefined) {
-                        fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
-                        if (fechaC < ahora) {
-                            fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
-                        }
-                    }
-                }
+            const dia = parseInt(partes[0], 10);
+            const mesStr = partes[1].substring(0, 3);
+            const mes = mesesMap[mesStr];
+
+            if (isNaN(dia) || mes === undefined) return;
+
+            // Construir la fecha para el año actual
+            let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
+
+            // Si la fecha ya pasó este año, programarla para el año siguiente
+            if (fechaC < timestampActual) {
+                fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
             }
 
-            if (!fechaC || isNaN(fechaC)) return;
-
-            const diferencia = fechaC - ahora;
+            const diferencia = fechaC - timestampActual;
             if (diferencia > 0 && diferencia < menorDiferencia) {
                 menorDiferencia = diferencia;
                 proximaCita = {
