@@ -463,40 +463,39 @@ async function inicializarCuentaAtrasCircuitos() {
     if (!elGp || !elGrid) return;
 
     try {
-        // Consultamos las dos APIs de forma independiente y segura
-        let listaCircuitos = [];
-        let listaEventos = [];
+        console.log("1. Iniciando carga de cuenta atrás...");
+        
+        // Hacemos el fetch de circuitos
+        const resC = await fetch('/api/circuitos');
+        const circuitos = await resC.json();
+        console.log("2. Circuitos obtenidos:", circuitos);
 
-        try {
-            const resC = await fetch('/api/circuitos');
-            const dataC = await resC.json();
-            if (Array.isArray(dataC)) {
-                listaCircuitos = dataC.map(c => ({
-                    nombre: `Gran Premio de ${c.nombre}`,
-                    fecha: c.fecha_carrera
-                }));
-            }
-        } catch (err) {
-            console.warn("No se pudieron cargar los circuitos:", err);
-        }
-
+        // Hacemos el fetch de eventos especiales con protección por si la tabla da problemas
+        let eventos = [];
         try {
             const resE = await fetch('/api/eventos-especiales');
-            const dataE = await resE.json();
-            if (Array.isArray(dataE)) {
-                listaEventos = dataE.map(e => ({
-                    nombre: e.nombre, // Los eventos especiales muestran su nombre directamente (ej. "Test de Pretemporada")
-                    fecha: e.fecha_evento
-                }));
-            }
+            eventos = await resE.json();
+            console.log("3. Eventos especiales obtenidos:", eventos);
         } catch (err) {
-            console.warn("No se pudieron cargar los eventos especiales:", err);
+            console.warn("No se pudieron cargar eventos especiales, continuando solo con circuitos:", err);
         }
 
+        // Unificamos ambos arrays de forma segura
+        const listaCircuitos = Array.isArray(circuitos) ? circuitos.map(c => ({
+            nombre: `Gran Premio de ${c.nombre}`,
+            fecha: c.fecha_carrera
+        })) : [];
+
+        const listaEventos = Array.isArray(eventos) ? eventos.map(e => ({
+            nombre: e.nombre,
+            fecha: e.fecha_evento
+        })) : [];
+
         const eventosTotales = [...listaCircuitos, ...listaEventos];
+        console.log("4. Total de eventos combinados:", eventosTotales.length);
 
         if (eventosTotales.length === 0) {
-            elGp.innerText = "No hay eventos programados";
+            elGp.innerText = "Sin eventos programados";
             return;
         }
 
@@ -554,6 +553,7 @@ async function inicializarCuentaAtrasCircuitos() {
             return;
         }
 
+        console.log("5. Próxima cita seleccionada:", proximaCita);
         elGp.innerText = proximaCita.nombreCompleto;
         elGrid.style.display = 'flex';
 
@@ -589,7 +589,7 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("Error crítico en cuenta atrás unificada:", e);
+        console.error("❌ Error crítico en cuenta atrás:", e);
         elGp.innerText = "Error al cargar la cuenta atrás";
     }
 }
