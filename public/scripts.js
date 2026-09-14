@@ -463,22 +463,35 @@ async function inicializarCuentaAtrasCircuitos() {
     if (!elGp || !elGrid) return;
 
     try {
-        // Consultamos ambas APIs de forma independiente
-        const [resCircuitos, resEventos] = await Promise.all([
-            fetch('/api/circuitos').then(r => r.json()).catch(() => []),
-            fetch('/api/eventos-especiales').then(r => r.json()).catch(() => [])
-        ]);
+        // Hacemos las peticiones por separado y de forma segura para que una caída no bloquee la otra
+        let listaCircuitos = [];
+        let listaEventos = [];
 
-        // Adaptamos los circuitos y los eventos a un formato común
-        const listaCircuitos = Array.isArray(resCircuitos) ? resCircuitos.map(c => ({
-            nombre: `Gran Premio de ${c.nombre}`,
-            fecha: c.fecha_carrera
-        })) : [];
+        try {
+            const resC = await fetch('/api/circuitos');
+            const dataC = await resC.json();
+            if (Array.isArray(dataC)) {
+                listaCircuitos = dataC.map(c => ({
+                    nombre: `Gran Premio de ${c.nombre}`,
+                    fecha: c.fecha_carrera
+                }));
+            }
+        } catch (err) {
+            console.warn("No se pudieron cargar los circuitos:", err);
+        }
 
-        const listaEventos = Array.isArray(resEventos) ? resEventos.map(e => ({
-            nombre: e.nombre,
-            fecha: e.fecha_evento
-        })) : [];
+        try {
+            const resE = await fetch('/api/eventos-especiales');
+            const dataE = await resE.json();
+            if (Array.isArray(dataE)) {
+                listaEventos = dataE.map(e => ({
+                    nombre: e.nombre,
+                    fecha: e.fecha_evento
+                }));
+            }
+        } catch (err) {
+            console.warn("No se pudieron cargar los eventos especiales (o la tabla aún no tiene datos):", err);
+        }
 
         const eventosTotales = [...listaCircuitos, ...listaEventos];
 
@@ -576,7 +589,8 @@ async function inicializarCuentaAtrasCircuitos() {
         setInterval(actualizarReloj, 1000);
 
     } catch (e) {
-        console.error("Error al cargar la cuenta atrás combinada:", e);
+        console.error("Error crítico en cuenta atrás:", e);
+        elGp.innerText = "Error al cargar la cuenta atrás";
     }
 }
 
