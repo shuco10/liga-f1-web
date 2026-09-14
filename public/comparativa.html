@@ -58,12 +58,13 @@
             margin-bottom: 30px;
         }
 
-        /* Tarjeta principal de comparativa unificada */
+        /* Tarjeta principal de comparativa con estilo unificado */
         .comparativa-card {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: 12px;
-            color: var(--text-main);
+            background: var(--bg-card) !important;
+            padding: 25px !important;
+            border-radius: 12px !important;
+            color: var(--text-main) !important;
+            margin-top: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             position: relative;
@@ -83,43 +84,43 @@
         }
 
         .comparativa-card h2 {
-            color: var(--text-main);
+            color: var(--text-main) !important;
             font-size: 1.35rem;
-            margin-bottom: 20px;
+            margin-bottom: 20px !important;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 1px;
             text-shadow: 0 0 10px rgba(225, 6, 0, 0.3);
         }
 
-        /* Selectores de filtros */
+        /* Selectores de filtros con diseño limpio y moderno */
         .comparativa-card select {
-            padding: 12px;
-            background: var(--bg-select);
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
+            padding: 12px !important;
+            background: var(--bg-select) !important;
+            color: var(--text-main) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 8px !important;
             font-size: 0.9rem;
             outline: none;
             transition: all 0.3s ease;
         }
 
         .comparativa-card select:focus {
-            border-color: var(--accent-blue);
+            border-color: var(--accent-blue) !important;
             box-shadow: 0 0 10px rgba(0, 162, 255, 0.3);
         }
 
-        /* Botón de comparar */
+        /* Botón de comparar con estética de neón rojo */
         .comparativa-card button[onclick="ejecutarComparativa()"] {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #e10600, #b30500);
-            color: white;
-            border: none;
-            font-weight: 700;
+            width: 100% !important;
+            padding: 14px !important;
+            background: linear-gradient(135deg, #e10600, #b30500) !important;
+            color: white !important;
+            border: none !important;
+            font-weight: 700 !important;
             letter-spacing: 1px;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 8px !important;
+            cursor: pointer !important;
             text-transform: uppercase;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4);
@@ -151,13 +152,11 @@
             text-transform: uppercase;
         }
 
-        /* Tarjetas de resultados limpias con fondo oscuro unificado */
         .item-resultado {
-            background: #171e2c !important;
-            border-radius: 10px;
-            margin-bottom: 8px;
+            background: #171e2c;
+            border-radius: 8px;
+            margin-bottom: 12px;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            overflow: hidden;
             transition: all 0.3s ease;
         }
 
@@ -165,13 +164,11 @@
             box-shadow: 0 0 15px rgba(0, 162, 255, 0.15);
         }
 
-        /* Forzamos a que el header interno respete el diseño limpio y no pinte bloques chillones */
         .header-tarjeta {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background: #171e2c !important; 
         }
 
         .info-izq {
@@ -196,14 +193,10 @@
         }
 
         .caja-valor {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 800;
             color: #fff;
-            background: rgba(0, 162, 255, 0.15);
-            padding: 6px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 162, 255, 0.3);
-            text-shadow: 0 0 8px rgba(0, 162, 255, 0.4);
+            text-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
         }
 
         .contenedor-vs {
