@@ -448,42 +448,121 @@ document.addEventListener('click', (e) => {
 }); // <-- ¡Esta llave cerraba el addEventListener y faltaba!
 
 // Configura aquí la fecha de la próxima carrera (Año, Mes [0-11], Día, Hora, Minuto)
-    const fechaProximaCarrera = new Date(2026, 8, 20, 22, 30, 0).getTime();
+   <!-- Widget de Próxima Carrera con Cuenta Atrás (Automático desde Base de Datos) -->
+<div class="widget-carrera">
+    <h3><i class="fa-solid fa-flag-checkered"></i> Próxima cita en pista</h3>
+    <div class="nombre-gp" id="nombre-gp">Cargando próxima carrera...</div>
+    <div class="contador-grid" id="contador-grid" style="display: none;">
+        <div class="tiempo-bloque">
+            <span class="tiempo-numero" id="dias">00</span>
+            <span class="tiempo-etiqueta">Días</span>
+        </div>
+        <div class="tiempo-bloque">
+            <span class="tiempo-numero" id="horas">00</span>
+            <span class="tiempo-etiqueta">Horas</span>
+        </div>
+        <div class="tiempo-bloque">
+            <span class="tiempo-numero" id="minutos">00</span>
+            <span class="tiempo-etiqueta">Min</span>
+        </div>
+        <div class="tiempo-bloque">
+            <span class="tiempo-numero" id="segundos">00</span>
+            <span class="tiempo-etiqueta">Seg</span>
+        </div>
+    </div>
+</div>
 
-    function actualizarCuentaAtrasHeader() {
+<script>
+async function inicializarCuentaAtrasCircuitos() {
+    try {
+        // Petición a tu API de circuitos existente
+        const response = await fetch('/api/circuitos'); 
+        const circuitos = await response.json();
+        
+        if (!circuitos || circuitos.length === 0) return;
+
+        const mesesMap = {
+            'ENE': 0, 'FEB': 1, 'MAR': 2, 'ABR': 3, 'MAY': 4, 'JUN': 5,
+            'JUL': 6, 'AGO': 7, 'SEP': 8, 'OCT': 9, 'NOV': 10, 'DIC': 11
+        };
+
         const ahora = new Date().getTime();
-        const diferencia = fechaProximaCarrera - ahora;
+        let proximaCarrera = null;
+        let menorDiferencia = Infinity;
 
-        const elemDias = document.getElementById('dias');
-        const elemHoras = document.getElementById('horas');
-        const elemMinutos = document.getElementById('minutos');
-        const elemSegundos = document.getElementById('segundos');
+        // Buscar el circuito cuya fecha sea la más próxima en el futuro
+        circuitos.forEach(c => {
+            if (!c.fecha_carrera) return;
+            const partes = c.fecha_carrera.trim().toUpperCase().split(' ');
+            if (partes.length < 2) return;
 
-        if (!elemDias) return;
+            const dia = parseInt(partes[0], 10);
+            const mesStr = partes[1].substring(0, 3);
+            const mes = mesesMap[mesStr];
 
-        if (diferencia < 0) {
-            document.getElementById('nombre-gp').innerText = "¡El Gran Premio está en marcha!";
-            elemDias.innerText = "00";
-            elemHoras.innerText = "00";
-            elemMinutos.innerText = "00";
-            elemSegundos.innerText = "00";
-            return;
+            if (isNaN(dia) || mes === undefined) return;
+
+            // Determinar el año (si el mes ya pasó este año, se asume el año siguiente)
+            let anioActual = new Date().getFullYear();
+            let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime(); // Hora estimada de carrera por defecto (20:00)
+            
+            if (fechaC < ahora) {
+                fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
+            }
+
+            const diferencia = fechaC - ahora;
+            if (diferencia > 0 && diferencia < menorDiferencia) {
+                menorDiferencia = diferencia;
+                proximaCarrera = {
+                    nombre: c.nombre,
+                    tiempoObjetivo: fechaC
+                };
+            }
+        });
+
+        if (!proximaCarrera) return;
+
+        document.getElementById('nombre-gp').innerText = `Gran Premio de ${proximaCarrera.nombre}`;
+        document.getElementById('contador-grid').style.display = 'flex';
+
+        function actualizarReloj() {
+            const ahoraLoc = new Date().getTime();
+            const diferenciaLoc = proximaCarrera.tiempoObjetivo - ahoraLoc;
+
+            const elemDias = document.getElementById('dias');
+            const elemHoras = document.getElementById('horas');
+            const elemMinutos = document.getElementById('minutos');
+            const elemSegundos = document.getElementById('segundos');
+
+            if (!elemDias) return;
+
+            if (diferenciaLoc < 0) {
+                document.getElementById('nombre-gp').innerText = `¡GP de ${proximaCarrera.nombre} en marcha!`;
+                document.getElementById('contador-grid').style.display = 'none';
+                return;
+            }
+
+            const dias = Math.floor(diferenciaLoc / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferenciaLoc % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferenciaLoc % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferenciaLoc % (1000 * 60)) / 1000);
+
+            elemDias.innerText = String(dias).padStart(2, '0');
+            elemHoras.innerText = String(horas).padStart(2, '0');
+            elemMinutos.innerText = String(minutos).padStart(2, '0');
+            elemSegundos.innerText = String(segundos).padStart(2, '0');
         }
 
-        const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-        const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+        actualizarReloj();
+        setInterval(actualizarReloj, 1000);
 
-        elemDias.innerText = String(dias).padStart(2, '0');
-        elemHoras.innerText = String(horas).padStart(2, '0');
-        elemMinutos.innerText = String(minutos).padStart(2, '0');
-        elemSegundos.innerText = String(segundos).padStart(2, '0');
+    } catch (e) {
+        console.error("Error al cargar la próxima carrera desde circuitos:", e);
     }
+}
 
-    // Arrancar el contador inmediatamente y refrescar cada segundo
-    actualizarCuentaAtrasHeader();
-    setInterval(actualizarCuentaAtrasHeader, 1000);
+inicializarCuentaAtrasCircuitos();
+</script>
 
 
 
