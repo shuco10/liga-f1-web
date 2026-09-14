@@ -13,9 +13,12 @@
     <style>
         :root {
             --bg-main: #0b0f17;
-            --bg-card: rgba(18, 22, 31, 0.95);
-            --border-card: rgba(225, 6, 0, 0.4);
+            --bg-row: #131823;
+            --bg-row-alt: #171e2c;
+            --border-neon-red: rgba(225, 6, 0, 0.6);
+            --border-neon-blue: rgba(0, 162, 255, 0.4);
             --accent-red: #e10600;
+            --accent-blue: #00a2ff;
             --text-main: #ffffff;
             --text-muted: #94a3b8;
         }
@@ -31,12 +34,13 @@
 
         .titulo-liga {
             text-align: center;
-            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+            font-size: clamp(1.4rem, 3vw, 2rem);
             font-weight: 800;
             letter-spacing: 1.5px;
-            margin: 25px 15px 20px;
+            margin: 30px 15px 25px;
             color: var(--text-main);
             text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(225, 6, 0, 0.4);
         }
 
         .contenedor-sanciones-exclusivo {
@@ -45,155 +49,179 @@
             padding: 0 15px;
         }
 
-        /* Estilo de tarjeta idéntico al de los sponsors / bloques de la web */
-        .seccion {
-            background: var(--bg-card);
-            border: 1px solid var(--border-card);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            position: relative;
-        }
-
-        .seccion::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent-red);
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-        }
-
         .section-title {
-            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            font-size: clamp(1.1rem, 2vw, 1.35rem);
             font-weight: 700;
-            color: var(--accent-red);
-            margin: 0 0 20px 0;
+            color: var(--text-main);
+            margin: 40px 0 15px 0;
             text-transform: uppercase;
             letter-spacing: 1px;
             display: flex;
             align-items: center;
             gap: 10px;
+            border-left: 4px solid var(--accent-red);
+            padding-left: 12px;
+            text-shadow: 0 0 10px rgba(225, 6, 0, 0.3);
         }
 
-        /* Contenedor responsivo para tablas */
+        /* Contenedor responsivo limpio sin bordes exteriores extraños */
         .table-responsive-wrapper {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: transparent;
         }
 
         .pilotos-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 6px; /* Separa visualmente las filas dándoles aspecto de tarjeta flotante */
             text-align: center;
             font-size: 0.9rem;
             white-space: nowrap;
+            background-color: transparent;
+            padding: 0 2px;
         }
 
         .pilotos-table th {
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: #0f141f;
             color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.75rem;
-            letter-spacing: 0.8px;
-            padding: 12px 10px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+            letter-spacing: 1px;
+            padding: 14px 10px;
+            border-bottom: 2px solid var(--accent-red);
+        }
+
+        .pilotos-table tbody tr {
+            background-color: var(--bg-row);
+            transition: all 0.25s ease;
+        }
+
+        .pilotos-table tbody tr:hover {
+            background-color: var(--bg-row-alt);
+            transform: scale(1.002);
+            box-shadow: 0 0 15px rgba(0, 162, 255, 0.15);
         }
 
         .pilotos-table td {
             padding: 12px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             vertical-align: middle;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        .pilotos-table tbody tr {
-            transition: background-color 0.2s ease;
+        /* Detalle lateral rojo neón en cada tarjeta de piloto */
+        .pilotos-table tbody tr td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            border-left: 3px solid var(--border-neon-red);
         }
-
-        .pilotos-table tbody tr:hover {
-            background-color: rgba(225, 6, 0, 0.08);
+        .pilotos-table tbody tr td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
 
         /* Anchuras y alineaciones de columnas */
         .col-pos { width: 50px; font-weight: bold; }
-        .col-piloto { text-align: left !important; min-width: 200px; }
+        .col-piloto { text-align: left !important; min-width: 210px; }
         .col-plataforma { width: 90px; }
         .col-escuderia { text-align: left !important; min-width: 190px; }
         .col-vics, .col-podios, .col-poles, .col-dnfs { width: 60px; color: var(--text-muted); }
-        .col-puntos { width: 90px; font-weight: bold; color: #fff; }
+        .col-puntos { width: 90px; font-weight: bold; color: #fff; text-shadow: 0 0 8px rgba(0, 162, 255, 0.4); }
 
-        /* Posiciones / Podios */
+        /* Posiciones / Podios con brillo neón */
         .pos-podio {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.85rem;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.88rem;
         }
-        .pos-1 { background: linear-gradient(135deg, #ffd700, #cca100); color: #000; box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3); }
-        .pos-2 { background: linear-gradient(135deg, #e0e0e0, #adadad); color: #000; box-shadow: 0 2px 8px rgba(224, 224, 224, 0.3); }
-        .pos-3 { background: linear-gradient(135deg, #cd7f32, #9a5d21); color: #fff; box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3); }
+        .pos-1 { background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; box-shadow: 0 0 12px rgba(255, 215, 0, 0.5); }
+        .pos-2 { background: linear-gradient(135deg, #e0e0e0, #94a3b8); color: #000; box-shadow: 0 0 10px rgba(224, 224, 224, 0.4); }
+        .pos-3 { background: linear-gradient(135deg, #cd7f32, #8b4513); color: #fff; box-shadow: 0 0 10px rgba(205, 127, 50, 0.4); }
 
         /* Avatares y Piloto */
         .contenedor-avatar-grande {
             position: relative;
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             flex-shrink: 0;
         }
 
         .avatar-grande {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--accent-blue);
             background-color: #1a1a1a;
+            box-shadow: 0 0 8px rgba(0, 162, 255, 0.3);
         }
 
         .contenedor-estrellas {
             position: absolute;
-            top: -8px;
+            top: -9px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.55rem;
             white-space: nowrap;
             z-index: 2;
-            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.9));
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.9));
         }
 
         .numero-piloto {
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text-muted);
-            font-size: 0.72rem;
+            background: rgba(0, 162, 255, 0.12);
+            color: #38bdf8;
+            font-size: 0.75rem;
             font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 2px 7px;
+            border-radius: 5px;
             flex-shrink: 0;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 162, 255, 0.3);
         }
 
-        /* Plataformas Badges */
+        /* --- ETIQUETAS DE PLATAFORMA (REDESIGN NEÓN ROJO/AZUL) --- */
         .plataforma {
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
-            letter-spacing: 0.5px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.8px;
             display: inline-block;
+            text-transform: uppercase;
         }
-        .plataforma.PC { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .plataforma.PS5, .plataforma.PLAYSTATION { background-color: rgba(14, 116, 144, 0.15); color: #22d3ee; border: 1px solid rgba(14, 116, 144, 0.3); }
-        .plataforma.XBOX { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        
+        /* PC: Estilo Neón Azul eléctrico vibrante */
+        .plataforma.PC { 
+            background: linear-gradient(135deg, rgba(0, 162, 255, 0.25), rgba(0, 80, 200, 0.35)); 
+            color: #38bdf8; 
+            border: 1px solid var(--accent-blue); 
+            box-shadow: 0 0 10px rgba(0, 162, 255, 0.35); 
+        }
+
+        /* PS5 / PlayStation: Estilo Neón Cian/Azulado profundo */
+        .plataforma.PS5, .plataforma.PLAYSTATION { 
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(6, 95, 170, 0.35)); 
+            color: #22d3ee; 
+            border: 1px solid #0284c7; 
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.35); 
+        }
+
+        /* Xbox: Estilo Neón Rojo de competición para contrastar con la liga */
+        .plataforma.XBOX { 
+            background: linear-gradient(135deg, rgba(225, 6, 0, 0.25), rgba(150, 4, 0, 0.35)); 
+            color: #ff4d4d; 
+            border: 1px solid var(--accent-red); 
+            box-shadow: 0 0 10px rgba(225, 6, 0, 0.35); 
+        }
 
         .nombre-escuderia {
             font-size: 0.88rem;
@@ -206,13 +234,6 @@
         @media (max-width: 768px) {
             .contenedor-sanciones-exclusivo {
                 padding: 0 10px;
-            }
-            .seccion {
-                padding: 16px 12px;
-                border-radius: 8px;
-            }
-            .seccion::before {
-                width: 3px;
             }
             .pilotos-table {
                 font-size: 0.82rem;
@@ -230,47 +251,48 @@
     <div class="titulo-liga">🏆 CLASIFICACION DE PILOTOS 🏆</div>
 
 <main class="contenedor-sanciones-exclusivo">
-    <div id="mundial-pilotos" class="seccion">
+    <div id="mundial-pilotos">
         
-<h2 class="section-title"><i class="fa-solid fa-flag-checkered"></i> Pilotos Titulares</h2>
-<div class="table-responsive-wrapper">
-<table class="table-standings-fix pilotos-table">
-    <thead>
-        <tr>
-            <th class="col-pos">Pos</th>
-            <th class="col-piloto">Piloto</th>
-            <th class="col-plataforma">Plataforma</th>                
-            <th class="col-escuderia">Escudería</th>
-            <th class="col-vics">Vic.</th>
-            <th class="col-podios">Podios</th>
-            <th class="col-poles">Poles</th>
-            <th class="col-dnfs">DNF</th>
-            <th class="col-puntos">Puntos</th>
-        </tr>
-    </thead>
-    <tbody id="tabla-titulares"></tbody>
-</table>
-</div>
+        <h2 class="section-title"><i class="fa-solid fa-flag-checkered"></i> Pilotos Titulares</h2>
+        <div class="table-responsive-wrapper">
+            <table class="table-standings-fix pilotos-table">
+                <thead>
+                    <tr>
+                        <th class="col-pos">Pos</th>
+                        <th class="col-piloto">Piloto</th>
+                        <th class="col-plataforma">Plataforma</th>                
+                        <th class="col-escuderia">Escudería</th>
+                        <th class="col-vics">Vic.</th>
+                        <th class="col-podios">Podios</th>
+                        <th class="col-poles">Poles</th>
+                        <th class="col-dnfs">DNF</th>
+                        <th class="col-puntos">Puntos</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-titulares"></tbody>
+            </table>
+        </div>
 
-<h2 class="section-title" style="margin-top: 35px;"><i class="fa-solid fa-helmet-safety"></i> Pilotos Reservas</h2>
-<div class="table-responsive-wrapper">
-<table class="table-standings-fix pilotos-table">
-    <thead>
-        <tr>
-            <th class="col-pos">Pos</th>
-            <th class="col-piloto">Piloto</th>
-            <th class="col-plataforma">Plataforma</th>
-            <th class="col-escuderia">Escudería</th>
-            <th class="col-vics">Vic.</th>
-            <th class="col-podios">Podios</th>
-            <th class="col-poles">Poles</th>
-            <th class="col-dnfs">DNF</th>
-            <th class="col-puntos">Puntos</th>
-        </tr>
-    </thead>
-    <tbody id="tabla-reservas"></tbody>
-</table>
-</div>
+        <h2 class="section-title" style="margin-top: 45px;"><i class="fa-solid fa-helmet-safety"></i> Pilotos Reservas</h2>
+        <div class="table-responsive-wrapper">
+            <table class="table-standings-fix pilotos-table">
+                <thead>
+                    <tr>
+                        <th class="col-pos">Pos</th>
+                        <th class="col-piloto">Piloto</th>
+                        <th class="col-plataforma">Plataforma</th>
+                        <th class="col-escuderia">Escudería</th>
+                        <th class="col-vics">Vic.</th>
+                        <th class="col-podios">Podios</th>
+                        <th class="col-poles">Poles</th>
+                        <th class="col-dnfs">DNF</th>
+                        <th class="col-puntos">Puntos</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-reservas"></tbody>
+            </table>
+        </div>
+
     </div>
 </main>
 
@@ -375,7 +397,7 @@ function renderizarTabla(id, data, esReserva) {
         const logoHtml = logoUrl ? `<img src="${logoUrl}" style="width: 22px; height: 22px; object-fit: contain; margin-right: 6px; vertical-align: middle;">` : '';
         
         const escuderiaCol = esReserva 
-            ? '<span style="color: #CCFF00; font-weight: bold; font-size: 0.82rem;">[ RESERVA ]</span>' 
+            ? '<span style="color: #38bdf8; font-weight: bold; font-size: 0.82rem; text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);">[ RESERVA ]</span>' 
             : `<div style="display: flex; align-items: center; gap: 6px;">
                 ${logoHtml}
                 <span class="nombre-escuderia">${NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Sin equipo'}</span>
