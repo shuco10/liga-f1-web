@@ -599,6 +599,7 @@ async function inicializarCuentaAtrasCircuitos() {
 // INICIALIZACIÓN GENERAL AL CARGAR EL DOM
 ////////////////////////////////////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("🚀 DOM completamente cargado y ejecutándose");
     verificarSesionPagina();
     gestionarVisitas();
     iniciarBannerSecuencial();
