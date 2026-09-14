@@ -460,16 +460,12 @@ async function inicializarCuentaAtrasCircuitos() {
     const elGp = document.getElementById('nombre-gp');
     const elGrid = document.getElementById('contador-grid');
 
-    if (!elGp || !elGrid) {
-        console.warn("⚠️ No se encontraron los elementos HTML 'nombre-gp' o 'contador-grid'");
-        return;
-    }
+    // Si no estamos en la página que tiene el contador, salimos limpiamente sin error
+    if (!elGp || !elGrid) return;
 
     try {
-        console.log("🔍 Consultando /api/circuitos...");
         const resC = await fetch('/api/circuitos');
         const circuitos = await resC.json();
-        console.log("✅ Circuitos recibidos:", circuitos);
 
         let eventos = [];
         try {
@@ -516,19 +512,13 @@ async function inicializarCuentaAtrasCircuitos() {
             if (!fechaStr) return;
 
             const partes = fechaStr.trim().toUpperCase().split(/\s+/);
-            if (partes.length < 2) {
-                console.warn(`⚠️ Formato de fecha extrañó en "${item.nombre}": "${fechaStr}"`);
-                return;
-            }
+            if (partes.length < 2) return;
 
             const dia = parseInt(partes[0], 10);
             const mesStr = partes[1].substring(0, 3);
             const mes = mesesMap[mesStr];
 
-            if (isNaN(dia) || mes === undefined) {
-                console.warn(`⚠️ No se pudo mapear el mes/día para: "${fechaStr}"`);
-                return;
-            }
+            if (isNaN(dia) || mes === undefined) return;
 
             let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
 
@@ -547,12 +537,10 @@ async function inicializarCuentaAtrasCircuitos() {
         });
 
         if (!proximaCita) {
-            console.warn("⚠️ Ningún evento superó la validación de fechas.");
             elGp.innerText = "No hay próximas citas";
             return;
         }
 
-        console.log("🏁 Próxima cita seleccionada:", proximaCita);
         elGp.innerText = proximaCita.nombreCompleto;
         elGrid.style.display = 'flex';
 
