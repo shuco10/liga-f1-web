@@ -522,10 +522,10 @@ async function inicializarCuentaAtrasCircuitos() {
 
             if (isNaN(dia) || mes === undefined) return;
 
-            let fechaC = new Date(anioActual, mes, dia, 20, 0, 0).getTime();
+            let fechaC = new Date(anioActual, mes, dia, 22, 30, 0).getTime();
 
             if (fechaC < timestampActual) {
-                fechaC = new Date(anioActual + 1, mes, dia, 20, 0, 0).getTime();
+                fechaC = new Date(anioActual + 1, mes, dia, 22, 30, 0).getTime();
             }
 
             const diferencia = fechaC - timestampActual;
