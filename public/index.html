@@ -66,101 +66,6 @@
             color: #00a2ff;
         }
 
-        /* Formulario de administración translúcido (por si se usa en el index) */
-        #form-noticia-admin {
-            background: rgba(18, 18, 24, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 162, 255, 0.3);
-            padding: 25px;
-            margin: 20px auto;
-            max-width: 550px;
-            border-radius: 14px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        #form-noticia-admin h3 {
-            color: #fff;
-            font-weight: 700;
-            margin-top: 0;
-            text-align: center;
-        }
-
-        #form-noticia-admin input, 
-        #form-noticia-admin textarea {
-            background: rgba(12, 12, 16, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 0.95em;
-            transition: border-color 0.2s ease;
-            width: 100%;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-
-        #form-noticia-admin input:focus, 
-        #form-noticia-admin textarea:focus {
-            outline: none;
-            border-color: #00a2ff;
-            box-shadow: 0 0 8px rgba(0, 162, 255, 0.25);
-        }
-
-        #form-noticia-admin button {
-            background: linear-gradient(135deg, #cc0000, #ff3333);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(255, 51, 51, 0.3);
-        }
-
-        #form-noticia-admin button:hover {
-            background: linear-gradient(135deg, #ff3333, #ff4d4d);
-            box-shadow: 0 6px 16px rgba(255, 51, 51, 0.5);
-            transform: translateY(-1px);
-        }
-
-        .btn-editar-noticia {
-            background: transparent !important;
-            color: #00a2ff !important;
-            border: 1px solid rgba(0, 162, 255, 0.4) !important;
-            padding: 6px 14px !important;
-            cursor: pointer;
-            border-radius: 6px !important;
-            font-weight: 600;
-            font-size: 0.85em;
-            transition: all 0.2s ease;
-        }
-
-        .btn-editar-noticia:hover {
-            background: rgba(0, 162, 255, 0.15) !important;
-            border-color: #00a2ff !important;
-        }
-
-        .btn-borrar-noticia, 
-        .noticia-item button[onclick^="eliminarNoticia"] {
-            background: transparent !important;
-            color: #ff4d4d !important;
-            border: 1px solid rgba(255, 77, 77, 0.4) !important;
-            padding: 6px 14px !important;
-            cursor: pointer;
-            border-radius: 6px !important;
-            font-weight: 600;
-            font-size: 0.85em;
-            transition: all 0.2s ease;
-        }
-
-        .btn-borrar-noticia:hover, 
-        .noticia-item button[onclick^="eliminarNoticia"]:hover {
-            background: rgba(255, 77, 77, 0.15) !important;
-            border-color: #ff4d4d !important;
-        }
-
         /* Estilo para el botón "Ver más" */
         .contenedor-ver-mas {
             text-align: center;
@@ -192,13 +97,6 @@
     <div id="modal-container"></div>
     
 <div class="titulo-liga">✨👋 ¡BIENVENIDOS! 👋✨</div>
-
-<div id="form-noticia-admin" class="form-noticia" style="display: none;">
-    <h3>Publicar Nueva Noticia</h3>
-    <input type="text" id="nueva-noticia-titulo" placeholder="Título">
-    <textarea id="nueva-noticia-cuerpo" placeholder="Cuerpo de la noticia..." rows="4"></textarea>
-    <button onclick="publicarNoticia()">Publicar</button>
-</div>
 
 <main class="caja-contenido" id="lista-noticias">
 </main>
@@ -276,30 +174,13 @@ function renderizarNoticias(limite) {
         const div = document.createElement('div');
         div.className = 'noticia-item noticia-destacada-amarilla'; 
         
-        const botonesAdmin = (typeof esAdmin === 'function' && esAdmin()) ? `
-            <div style="margin-top: 15px; display: flex; gap: 10px;">
-                <button class="btn-editar-noticia" data-id="${noticia.id}">Editar</button>
-                <button class="btn-borrar-noticia" onclick="eliminarNoticia(${noticia.id})">Borrar</button>
-            </div>
-        ` : '';
-
         const fechaObj = new Date(noticia.fecha);
         div.innerHTML = `
             <h4><i class="fa-solid fa-circle-info"></i> ${noticia.titulo}</h4>
             <p style="margin: 5px 0 15px 0; color: #ccc; font-size: 0.95em; line-height: 1.5;">${noticia.contenido}</p>
             <small style="color: #888;"><i class="fa-regular fa-clock"></i> ${fechaObj.toLocaleDateString()} - ${fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
-            ${botonesAdmin}
         `;
         contenedor.appendChild(div);
-
-        if (typeof esAdmin === 'function' && esAdmin()) {
-            const btnEditar = div.querySelector('.btn-editar-noticia');
-            if (btnEditar) {
-                btnEditar.addEventListener('click', () => {
-                    editarNoticia(noticia.id, noticia.titulo, noticia.contenido);
-                });
-            }
-        }
     });
 
     if (contenedorVerMas) {
@@ -315,88 +196,15 @@ function mostrarTodasLasNoticias() {
     renderizarNoticias(noticiasGlobales.length);
 }
 
-async function publicarNoticia() {
-    const tituloInput = document.getElementById('nueva-noticia-titulo');
-    const contenidoInput = document.getElementById('nueva-noticia-cuerpo');
-
-    if (!tituloInput.value || !contenidoInput.value) {
-        alert("Por favor, rellena el título y el contenido.");
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/noticias', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                titulo: tituloInput.value, 
-                contenido: contenidoInput.value 
-            })
-        });
-        
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-            tituloInput.value = '';
-            contenidoInput.value = '';
-
-            alert("Noticia publicada correctamente y enviada a Discord.");
-            cargarNoticias();
-        } else {
-            alert(data.error || "Error al publicar la noticia.");
-        }
-    } catch (err) {
-        console.error("Error:", err);
-        alert("Error de conexión al publicar.");
-    }
-}
-
-async function eliminarNoticia(id) {
-    if (confirm("¿Estás seguro de que quieres borrar este anuncio?")) {
-        const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
-        if (res.ok) cargarNoticias();
-    }
-}
-
-async function editarNoticia(id, tituloActual, contenidoActual) {
-    const nuevoTitulo = prompt("Edita el título:", tituloActual);
-    if (nuevoTitulo === null) return;
-
-    const nuevoContenido = prompt("Edita el contenido:", contenidoActual);
-    if (nuevoContenido === null) return;
-
-    try {
-        const res = await fetch(`/api/noticias/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ titulo: nuevoTitulo, contenido: nuevoContenido })
-        });
-        
-        if (res.ok) {
-            cargarNoticias();
-        } else {
-            alert("Error al actualizar la noticia.");
-        }
-    } catch (err) {
-        console.error("Error al editar:", err);
-        alert("Error de conexión al actualizar la noticia.");
-    }
-}
-
 async function verificarSesion() {
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
-    const formAdmin = document.getElementById('form-noticia-admin');
-    
-    if (formAdmin) formAdmin.style.display = 'none';
-    let adminStatus = false;
     
     try {
         const res = await fetch('/api/auth/sesion');
         const data = await res.json();
         
         if (data.logueado && data.rol === 'admin') {
-            adminStatus = true;
             localStorage.setItem('rol', 'admin');
         } else {
             localStorage.removeItem('rol');
@@ -406,19 +214,17 @@ async function verificarSesion() {
     }
     
     if (btnLogin && btnLogout) {
+        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
         btnLogin.style.display = adminStatus ? 'none' : 'inline-block';
         btnLogout.style.display = adminStatus ? 'inline-block' : 'none';
-        if (formAdmin) formAdmin.style.display = adminStatus ? 'block' : 'none';
     } else {
         setTimeout(() => {
             const btnLoginRetry = document.getElementById('btn-login');
             const btnLogoutRetry = document.getElementById('btn-logout');
             if (btnLoginRetry && btnLogoutRetry) {
+                const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
                 btnLoginRetry.style.display = adminStatus ? 'none' : 'inline-block';
                 btnLogoutRetry.style.display = adminStatus ? 'inline-block' : 'none';
-            }
-            if (formAdmin) {
-                formAdmin.style.display = adminStatus ? 'block' : 'none';
             }
         }, 300);
     }
