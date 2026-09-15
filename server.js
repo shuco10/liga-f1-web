@@ -1229,6 +1229,8 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
                 continue; 
             }
 
+            let posicionFinal = p.classificationPosition === -1 ? 900 + (p.position || 0) : p.posicion;
+
             await client.query(`
                 INSERT INTO tiempos_entrenamientos 
                 (id_gp, id_entrenamiento, id, posicion, mejor_vuelta, s1_ms, s2_ms, s3_ms, compuesto_neumatico, vueltas_totales, updated_at)
@@ -1247,7 +1249,7 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
                 id_gp,
                 id_entrenamiento,
                 idPiloto,
-                p.posicion,
+                posicionFinal,
                 p.mejor_vuelta,
                 p.s1_ms,
                 p.s2_ms,
