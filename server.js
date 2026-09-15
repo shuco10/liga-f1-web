@@ -1229,7 +1229,8 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
                 continue; 
             }
 
-            let posicionFinal = p.classificationPosition === -1 ? 900 + (p.position || 0) : p.posicion;
+            // CORREGIDO: Usamos p.position en lugar de p.posicion para el cálculo y respaldo
+            let posicionFinal = p.classificationPosition === -1 ? 900 + (p.position || 0) : (p.position || 0);
 
             await client.query(`
                 INSERT INTO tiempos_entrenamientos 
@@ -1270,7 +1271,7 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
     }
 });
 //////////////////////////////////////////////////////////////////////////
-//////////  OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
+//////////   OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 app.get('/api/entrenamientos/:id_gp', async (req, res) => {
