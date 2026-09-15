@@ -1277,7 +1277,7 @@ app.get('/api/entrenamientos/:id_gp', async (req, res) => {
     try {
         const { id_gp } = req.params;
         // Recogemos la sesión de la query string (?sesion=1 o ?sesion=2). Si no viene nada, por defecto pedimos la 1 (Libres 1).
-        const sesion = req.query.sesion || '1'; 
+        const sesion = req.query.sesion || '1';  
 
         const resultado = await pool.query(`
             SELECT 
@@ -1289,7 +1289,8 @@ app.get('/api/entrenamientos/:id_gp', async (req, res) => {
                 te.s2_ms,
                 te.s3_ms,
                 te.compuesto_neumatico,
-                te.vueltas_totales
+                te.vueltas_totales,
+                CASE WHEN te.posicion >= 900 THEN -1 ELSE 0 END AS classification_position
             FROM tiempos_entrenamientos te
             JOIN pilotos p ON te.id = p.id
             LEFT JOIN escuderias e ON p.escuderia_id = e.id
