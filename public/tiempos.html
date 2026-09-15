@@ -1034,8 +1034,7 @@ async function cargarTiemposPantalla() {
             const badgeMorado = (texto) => `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-family: monospace;">${texto}</span>`;
             const badgeDnf = `<span style="background-color: #7f1d1d; color: #fca5a5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">DNF / DSQ</span>`;
 
-           let filasHtml = datos.map((row, index) => {
-                // AQUÍ: Vamos a ver qué traen exactamente los datos de Jmf_rabbit en la consola
+            let filasHtml = datos.map((row, index) => {
                 if (row.gamertag === 'Jmf_rabbit') {
                     console.log("DATOS DE Jmf_rabbit:", row);
                     console.log("classification_position:", row.classification_position);
@@ -1085,7 +1084,6 @@ async function cargarTiemposPantalla() {
                 `;
             }).join('');
 
-            // Fila inferior con la Vuelta Ideal Teórica
             filasHtml += `
                 <tr style="background: rgba(147, 51, 234, 0.15); border-top: 2px solid rgba(147, 51, 234, 0.4); font-weight: bold;">
                     <td colspan="3" style="padding: 12px 10px; text-align: right; color: #c084fc; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Vuelta Ideal Teórica (Optimal Lap):</td>
@@ -1097,7 +1095,6 @@ async function cargarTiemposPantalla() {
             tbodyTiempos.innerHTML = filasHtml;
 
         } else {
-            // 6 Columnas de Carrera
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 12px 8px; text-align: center; width: 8%;">Pos</th>
