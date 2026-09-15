@@ -1688,8 +1688,22 @@ app.post('/api/contacto', async (req, res) => {
             return res.status(403).json({ error: 'Tu cuenta aún no está activa para enviar mensajes.' });
         }
 
-        // 4. URL del webhook protegida en el servidor
-        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1547509219941421107/FdLCnt4ckUiJxWDP-Chmho3Y2Z1DND2GBb-kS4yF3ANQbTv5cPBY6_ejOdnIq7R4rxfU';
+       // 4. Endpoint de Contacto - MODIFICADO CON DISCORD DESDE BBDD
+app.post('/api/contacto', async (req, res) => {
+    try {
+        const { nombre, asunto, mensaje } = req.body;
+
+        // --- OBTENER WEBHOOK DE CONTACTO DESDE LA BBDD ---
+        const resultadoWebhook = await pool.query(
+            'SELECT url_webhook FROM discord_webhooks WHERE nombre_webhook = $1', 
+            ['contacto']
+        );
+        
+        const DISCORD_WEBHOOK_URL = resultadoWebhook.rows.length > 0 ? resultadoWebhook.rows[0].url_webhook : null;
+
+        if (!DISCORD_WEBHOOK_URL) {
+            return res.status(500).json({ error: 'La webhook de contacto no está configurada en el sistema.' });
+        }
 
         const payload = {
             content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
