@@ -1035,7 +1035,7 @@ async function cargarTiemposPantalla() {
             const badgeDnf = `<span style="background-color: #7f1d1d; color: #fca5a5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">DNF / DSQ</span>`;
 
             let filasHtml = datos.map((row, index) => {
-                const esInvalido = row.classificationPosition === -1 || row.mejor_vuelta === 'DNF' || row.mejor_vuelta === 'DSQ';
+                const esInvalido = row.classification_position === -1 || row.mejor_vuelta === 'DNF' || row.mejor_vuelta === 'DSQ';
                 const claseFila = esInvalido ? 'fila-penalizada' : '';
 
                 const vMs = aMilisegundos(row.mejor_vuelta);
