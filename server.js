@@ -446,22 +446,38 @@ app.post('/api/noticias', async (req, res) => {
         // 2. Guardar la noticia en Neon (respetando tu estructura actual)
         await pool.query("INSERT INTO noticias (titulo, contenido) VALUES ($1, $2)", [titulo, contenido]);
 
-        // 3. URL del webhook de noticias protegida en el servidor
-        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517917019813449829/bngxTpKb_bo1EARKD_tNv1uztT95BCQQFqIVH6Wb-8veI8PxGNuiSnYf-SLcAApD61vn';
+// 3. Obtener la URL del webhook de noticias desde la base de datos de forma protegida
+        const resultadoWebhook = await pool.query(
+            'SELECT url_webhook FROM discord_webhooks WHERE nombre_webhook = $1', 
+            ['noticias']
+        );
+        
+        const DISCORD_WEBHOOK_URL = resultadoWebhook.rows.length > 0 ? resultadoWebhook.rows[0].url_webhook : null;
         const webUrl = "https://cazadores-de-curvas.onrender.com/";
 
-        const payload = {
-            content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
-            embeds: [{
-                title: titulo,
-                description: `${contenido}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
-                color: 16711680,
-                author: {
-                    name: "**- Administración -**"
-                },
-                timestamp: new Date().toISOString()
-            }]
-        };
+        if (DISCORD_WEBHOOK_URL) {
+            const payload = {
+                content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
+                embeds: [{
+                    title: titulo,
+                    description: `${contenido}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
+                    color: 16711680,
+                    author: {
+                        name: "**- Administración -**"
+                    },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            // Enviamos la petición al webhook de forma segura desde el backend
+            fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(webhookErr => {
+                console.error("Error al enviar la notificación de noticia a Discord:", webhookErr);
+            });
+        }
 
         // 4. Enviar la notificación a Discord desde el servidor de forma oculta
         const discordRes = await fetch(DISCORD_WEBHOOK_URL, {
