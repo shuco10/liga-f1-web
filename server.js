@@ -443,10 +443,10 @@ app.post('/api/noticias', async (req, res) => {
             return res.status(400).json({ error: 'El título y el contenido son obligatorios.' });
         }
 
-        // 2. Guardar la noticia en Neon (respetando tu estructura actual)
+        // 2. Guardar la noticia en Neon
         await pool.query("INSERT INTO noticias (titulo, contenido) VALUES ($1, $2)", [titulo, contenido]);
 
-// 3. Obtener la URL del webhook de noticias desde la base de datos de forma protegida
+        // 3. Obtener la URL del webhook de noticias desde la base de datos
         const resultadoWebhook = await pool.query(
             'SELECT url_webhook FROM discord_webhooks WHERE nombre_webhook = $1', 
             ['noticias']
@@ -455,6 +455,7 @@ app.post('/api/noticias', async (req, res) => {
         const DISCORD_WEBHOOK_URL = resultadoWebhook.rows.length > 0 ? resultadoWebhook.rows[0].url_webhook : null;
         const webUrl = "https://cazadores-de-curvas.onrender.com/";
 
+        // 4. Enviar la notificación a Discord de forma limpia y segura (una sola vez)
         if (DISCORD_WEBHOOK_URL) {
             const payload = {
                 content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
@@ -469,31 +470,27 @@ app.post('/api/noticias', async (req, res) => {
                 }]
             };
 
-            // Enviamos la petición al webhook de forma segura desde el backend
-            fetch(DISCORD_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).catch(webhookErr => {
-                console.error("Error al enviar la notificación de noticia a Discord:", webhookErr);
-            });
+            try {
+                const discordRes = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!discordRes.ok) {
+                    console.error('Error al enviar la notificación a Discord desde el servidor:', await discordRes.text());
+                }
+            } catch (discordErr) {
+                console.error("Excepción al conectar con el webhook de Discord:", discordErr);
+            }
+        } else {
+            console.warn("Aviso: No se encontró el webhook 'noticias' en la base de datos, la noticia se guardó solo en la web.");
         }
 
-        // 4. Enviar la notificación a Discord desde el servidor de forma oculta
-        const discordRes = await fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!discordRes.ok) {
-            console.error('Error al enviar la notificación a Discord desde el servidor.');
-        }
-
-        res.json({ success: true, message: 'Noticia publicada correctamente.' });
+        return res.json({ success: true, message: 'Noticia publicada correctamente.' });
     } catch (err) {
         console.error("Error al publicar la noticia:", err);
-        res.status(500).json({ error: "Error al publicar la noticia" });
+        return res.status(500).json({ error: "Error al publicar la noticia" });
     }
 });
 
