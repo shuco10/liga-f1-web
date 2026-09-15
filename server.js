@@ -1295,9 +1295,7 @@ app.get('/api/entrenamientos/:id_gp', async (req, res) => {
             JOIN pilotos p ON te.id = p.id
             LEFT JOIN escuderias e ON p.escuderia_id = e.id
             WHERE te.id_gp = $1 AND te.id_entrenamiento = $2
-            ORDER BY 
-                CASE WHEN te.mejor_vuelta = 'DNF' OR te.mejor_vuelta = 'DSQ' OR te.posicion >= 900 THEN 1 ELSE 0 END ASC,
-                CASE WHEN te.mejor_vuelta = 'DNF' OR te.mejor_vuelta = 'DSQ' THEN '99:99.999' ELSE te.mejor_vuelta END ASC;
+            ORDER BY te.posicion ASC;
         `, [id_gp, sesion]);
 
         res.json(resultado.rows);
@@ -1306,7 +1304,6 @@ app.get('/api/entrenamientos/:id_gp', async (req, res) => {
         res.status(500).json({ error: "Error al cargar los tiempos de entrenamientos." });
     }
 });
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////  JOIN DE LOS TIEMPOS //////////////////////////////////////////
