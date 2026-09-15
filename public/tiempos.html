@@ -95,6 +95,17 @@
         border-color: #9333ea;
         box-shadow: 0 0 15px rgba(147, 51, 234, 0.4);
     }
+    
+    .fila-penalizada {
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    transition: all 0.2s ease-in-out;
+}
+.fila-penalizada:hover {
+    border-color: rgba(239, 68, 68, 1) !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+    background-color: rgba(239, 68, 68, 0.05) !important;
+}
+    
 </style>
     
     <script src="/auth.js"></script>
@@ -1021,15 +1032,26 @@ async function cargarTiemposPantalla() {
             const textoVueltaIdeal = formatMsToLap(vueltaIdealMs);
 
             const badgeMorado = (texto) => `<span style="background-color: #9333ea; color: white; padding: 3px 6px; border-radius: 4px; font-weight: bold; font-family: monospace;">${texto}</span>`;
+            const badgeDnf = `<span style="background-color: #7f1d1d; color: #fca5a5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">DNF / DSQ</span>`;
 
             let filasHtml = datos.map((row, index) => {
+                const esInvalido = row.classificationPosition === -1 || row.mejor_vuelta === 'DNF' || row.mejor_vuelta === 'DSQ';
+                const claseFila = esInvalido ? 'fila-penalizada' : '';
+
                 const vMs = aMilisegundos(row.mejor_vuelta);
                 
                 const s1Val = row.s1_ms;
                 const s2Val = row.s2_ms;
                 const s3Val = row.s3_ms;
 
-                const htmlVuelta = (vMs !== null && vMs === minVuelta) ? badgeMorado(row.mejor_vuelta) : `<span style="color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</span>`;
+                let htmlVuelta = '';
+                if (esInvalido) {
+                    htmlVuelta = badgeDnf;
+                } else if (vMs !== null && vMs === minVuelta) {
+                    htmlVuelta = badgeMorado(row.mejor_vuelta);
+                } else {
+                    htmlVuelta = `<span style="color: #4ade80; font-weight: bold; font-family: monospace;">${row.mejor_vuelta || '-'}</span>`;
+                }
                 
                 const textoS1 = msASegundos(s1Val);
                 const textoS2 = msASegundos(s2Val);
@@ -1042,7 +1064,7 @@ async function cargarTiemposPantalla() {
                 const nombreEscuderia = row.escuderia || '';
 
                 return `
-                    <tr style="border-bottom: 1px solid #333;">
+                    <tr class="${claseFila}" style="border-bottom: 1px solid #333; ${esInvalido ? 'border: 1px solid rgba(239, 68, 68, 0.4); transition: all 0.2s ease-in-out;' : ''}" onmouseover="this.style.borderColor='rgba(239, 68, 68, 1)'; this.style.boxShadow='0 0 10px rgba(239, 68, 68, 0.3)';" onmouseout="this.style.borderColor='rgba(239, 68, 68, 0.4)'; this.style.boxShadow='none';">
                         <td style="padding: 12px 6px; text-align: center;">${index + 1}</td>
                         <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
                         <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
@@ -1134,7 +1156,7 @@ async function cargarTiemposPantalla() {
                 const nombreEscuderia = row.escuderia || '';
 
                 return `
-                    <tr style="border-bottom: 1px solid #333;">
+                    <tr style="border-bottom: 1px solid #333; ${esDnfTotal ? 'border: 1px solid rgba(239, 68, 68, 0.4); transition: all 0.2s ease-in-out;' : ''}" ${esDnfTotal ? 'onmouseover="this.style.borderColor=\'rgba(239, 68, 68, 1)\'; this.style.boxShadow=\'0 0 10px rgba(239, 68, 68, 0.3)\';" onmouseout="this.style.borderColor=\'rgba(239, 68, 68, 0.4)\'; this.style.boxShadow=\'none\';"' : ''}>
                         <td style="padding: 12px 8px; text-align: center;">${index + 1}</td>
                         <td style="padding: 12px 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag}</td>
                         <td style="padding: 12px 8px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
@@ -1150,7 +1172,6 @@ async function cargarTiemposPantalla() {
         tbodyTiempos.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 20px; color: #ef4444;">Error al cargar los datos en pantalla.</td></tr>`;
     }
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////////   
