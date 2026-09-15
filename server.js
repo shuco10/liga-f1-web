@@ -1687,82 +1687,8 @@ app.post('/api/contacto', async (req, res) => {
         if (usuario.activo !== true) {
             return res.status(403).json({ error: 'Tu cuenta aún no está activa para enviar mensajes.' });
         }
-
-       // 4. Endpoint de Contacto - MODIFICADO CON DISCORD DESDE BBDD
-app.post('/api/contacto', async (req, res) => {
-    try {
-        const { nombre, asunto, mensaje } = req.body;
-
-        // --- OBTENER WEBHOOK DE CONTACTO DESDE LA BBDD ---
-        const resultadoWebhook = await pool.query(
-            'SELECT url_webhook FROM discord_webhooks WHERE nombre_webhook = $1', 
-            ['contacto']
-        );
-        
-        const DISCORD_WEBHOOK_URL = resultadoWebhook.rows.length > 0 ? resultadoWebhook.rows[0].url_webhook : null;
-
-        if (!DISCORD_WEBHOOK_URL) {
-            return res.status(500).json({ error: 'La webhook de contacto no está configurada en el sistema.' });
-        }
-
-        const payload = {
-            content: "📢 @admin 📢 **¡Nuevo contacto desde la web!** 📢",
-            embeds: [{
-                title: "📩 Nuevo mensaje de contacto",
-                color: 3447003,
-                fields: [
-                    { name: "Nombre", value: nombre, inline: true },
-                    { name: "Asunto", value: asunto, inline: true },
-                    { name: "Mensaje", value: mensaje }
-                ],
-                timestamp: new Date().toISOString()
-            }]
-        };
-
-        // 5. Enviar la notificación a Discord de forma interna
-        const discordRes = await fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!discordRes.ok) {
-            return res.status(500).json({ error: 'Error al comunicar con Discord.' });
-        }
-
-        res.json({ success: true, message: '¡Mensaje enviado correctamente!' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
 });
-
-// Obtener todos los vídeos de Twitch ordenados del más reciente al más antiguo
-app.get('/api/videos', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM videos_twitch ORDER BY fecha DESC');
-        res.json(result.rows);
-    } catch (err) {
-        console.error("Error al obtener los vídeos de Twitch:", err);
-        res.status(500).json({ error: "Error interno del servidor" });
-    }
-});
-
-// Guardar un nuevo clip de Twitch (Protegido para admins o desde el panel)
-app.post('/api/videos', async (req, res) => {
-    const { embed_codigo, titulo } = req.body;
-    try {
-        const result = await pool.query(
-            'INSERT INTO videos_twitch (embed_codigo, titulo) VALUES ($1, $2) RETURNING *',
-            [embed_codigo, titulo]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error("Error al guardar el vídeo de Twitch:", err);
-        res.status(500).json({ error: "Error al guardar el vídeo" });
-    }
-});
-
-// Obtener todos los clips guardados
+     // Obtener todos los clips guardados
 app.get('/api/videos', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM videos_twitch ORDER BY id DESC');
