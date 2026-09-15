@@ -1229,8 +1229,7 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
                 continue; 
             }
 
-            // CORREGIDO: Usamos p.position en lugar de p.posicion para el cálculo y respaldo
-            let posicionFinal = p.classificationPosition === -1 ? 900 + (p.position || 0) : (p.position || 0);
+            let posicionFinal = p.classificationPosition === -1 ? 900 + (p.position || 0) : p.posicion;
 
             await client.query(`
                 INSERT INTO tiempos_entrenamientos 
@@ -1271,6 +1270,39 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
     }
 });
 //////////////////////////////////////////////////////////////////////////
+//////////   OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+app.get('/api/entrenamientos/:id_gp', async (req, res) => {
+    try {
+        const { id_gp } = req.params;
+        // Recogemos la sesión de la query string (?sesion=1 o ?sesion=2). Si no viene nada, por defecto pedimos la 1 (Libres 1).
+        const sesion = req.query.sesion || '1';  
+
+        const resultado = await pool.query(`
+            SELECT 
+                te.posicion,
+                p.gamertag,
+                e.nombre AS escuderia,
+                te.mejor_vuelta,
+                te.s1_ms,
+                te.s2_ms,
+                te.s3_ms,
+                te.compuesto_neumatico,
+                te.vueltas_totales
+            FROM tiempos_entrenamientos te
+            JOIN pilotos p ON te.id = p.id
+            LEFT JOIN escuderias e ON p.escuderia_id = e.id
+            WHERE te.id_gp = $1 AND te.id_entrenamiento = $2
+            ORDER BY te.posicion ASC;
+        `, [id_gp, sesion]);
+
+        res.json(resultado.rows);
+    } catch (error) {
+        console.error("Error al obtener los entrenamientos:", error);
+        res.status(500).json({ error: "Error al cargar los tiempos de entrenamientos." });
+    }
+});//////////////////////////////////////////////////////////////////////////
 //////////   OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
