@@ -1414,7 +1414,7 @@ app.get('/api/auth/sesion', (req, res) => {
     }
 });
 
-// 2. Registro de Usuario (POST /api/auth/registro) - MODIFICADO CON DISCORD
+// 2. Registro de Usuario (POST /api/auth/registro) - MODIFICADO CON DISCORD DESDE BBDD
 app.post('/api/auth/registro', async (req, res) => {
     try {
         const { username, email, password, preguntaSeguridad, respuestaSeguridad } = req.body;
@@ -1438,28 +1438,34 @@ app.post('/api/auth/registro', async (req, res) => {
         
         await pool.query(query, [username, email, hashedPassword, preguntaSeguridad, hashedRespuesta]);
         
-        // --- AQUÍ AÑADIMOS EL AVISO DE DISCORD ---
-        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517947890415440045/mSZebdMcmNQpvmE1CafNS2BLLW1j74bOrYQXE8dGt43tN4rylqDvpNCr4KZ68DRDAK9x'; // Reemplázala por tu URL real
+        // --- OBTENER WEBHOOK DE USUARIOS NUEVOS DESDE LA BBDD ---
+        const resultadoWebhook = await pool.query(
+            'SELECT url_webhook FROM discord_webhooks WHERE nombre_webhook = $1', 
+            ['usuarios_nuevos']
+        );
         
-        const mensajeDiscord = {
-            content: `🚨 **Nuevo registro pendiente de aprobación**\n👤 **Piloto:** ${username}\n📧 **Email:** ${email}\n*Entra al panel de administración para revisarlo y activarlo.*`
-        };
+        const DISCORD_WEBHOOK_URL = resultadoWebhook.rows.length > 0 ? resultadoWebhook.rows[0].url_webhook : null;
+        
+        if (DISCORD_WEBHOOK_URL) {
+            const mensajeDiscord = {
+                content: `🚨 **Nuevo registro pendiente de aprobación**\n👤 **Piloto:** ${username}\n📧 **Email:** ${email}\n*Entra al panel de administración para revisarlo y activarlo.*`
+            };
 
-        fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(mensajeDiscord)
-        }).catch(webhookErr => {
-            console.error("Error al enviar la notificación a Discord:", webhookErr);
-        });
-        // ------------------------------------------
+            fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mensajeDiscord)
+            }).catch(webhookErr => {
+                console.error("Error al enviar la notificación a Discord:", webhookErr);
+            });
+        }
+        // --------------------------------------------------------
 
         res.json({ success: true, message: 'Usuario registrado con éxito. Pendiente de aprobación.' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
-
 // ==========================================
 // LOGIN CON BCRYPT (POST /api/auth/login)
 // ==========================================
