@@ -455,13 +455,18 @@ app.post('/api/noticias', async (req, res) => {
         const DISCORD_WEBHOOK_URL = resultadoWebhook.rows.length > 0 ? resultadoWebhook.rows[0].url_webhook : null;
         const webUrl = "https://cazadores-de-curvas.onrender.com/";
 
-        // 4. Enviar la notificación a Discord de forma limpia y segura (una sola vez)
+// 4. Enviar la notificación a Discord de forma limpia y segura (una sola vez)
         if (DISCORD_WEBHOOK_URL) {
+            // Cortamos el contenido a unos 180 caracteres para mostrar solo un par de líneas
+            const contenidoCorto = contenido.length > 180 
+                ? contenido.substring(0, 180) + '...' 
+                : contenido;
+
             const payload = {
                 content: "📢 @everyone 📢 **¡Nueva noticia en Cazadores de Curvas!** 📢",
                 embeds: [{
                     title: titulo,
-                    description: `${contenido}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
+                    description: `${contenidoCorto}\n\n👉 [Haz clic aquí para ver la noticia completa](${webUrl})`,
                     color: 16711680,
                     author: {
                         name: "**- Administración -**"
