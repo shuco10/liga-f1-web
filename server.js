@@ -1230,14 +1230,18 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
             }
 
             let posicionFinal = p.classificationPosition === -1 ? 900 + (p.position || 0) : p.posicion;
+            
+            // Capturamos el classificationPosition del JSON (por defecto null si no viene)
+            let classificationPositionVal = p.classificationPosition !== undefined ? p.classificationPosition : null;
 
             await client.query(`
                 INSERT INTO tiempos_entrenamientos 
-                (id_gp, id_entrenamiento, id, posicion, mejor_vuelta, s1_ms, s2_ms, s3_ms, compuesto_neumatico, vueltas_totales, updated_at)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+                (id_gp, id_entrenamiento, id, posicion, classification_position, mejor_vuelta, s1_ms, s2_ms, s3_ms, compuesto_neumatico, vueltas_totales, updated_at)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
                 ON CONFLICT (id_gp, id_entrenamiento, id) 
                 DO UPDATE SET 
                     posicion = EXCLUDED.posicion,
+                    classification_position = EXCLUDED.classification_position,
                     mejor_vuelta = EXCLUDED.mejor_vuelta,
                     s1_ms = EXCLUDED.s1_ms,
                     s2_ms = EXCLUDED.s2_ms,
@@ -1250,6 +1254,7 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
                 id_entrenamiento,
                 idPiloto,
                 posicionFinal,
+                classificationPositionVal,
                 p.mejor_vuelta,
                 p.s1_ms,
                 p.s2_ms,
@@ -1270,7 +1275,7 @@ app.post('/api/importar-entrenamientos', async (req, res) => {
     }
 });
 //////////////////////////////////////////////////////////////////////////
-//////////   OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
+//////////    OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 app.get('/api/entrenamientos/:id_gp', async (req, res) => {
@@ -1282,6 +1287,7 @@ app.get('/api/entrenamientos/:id_gp', async (req, res) => {
         const resultado = await pool.query(`
             SELECT 
                 te.posicion,
+                te.classification_position,
                 p.gamertag,
                 e.nombre AS escuderia,
                 te.mejor_vuelta,
@@ -1302,7 +1308,9 @@ app.get('/api/entrenamientos/:id_gp', async (req, res) => {
         console.error("Error al obtener los entrenamientos:", error);
         res.status(500).json({ error: "Error al cargar los tiempos de entrenamientos." });
     }
-});//////////////////////////////////////////////////////////////////////////
+});
+
+//////////////////////////////////////////////////////////////////////////
 //////////   OBTENER TIEMPOS DE LOS ENTRENAMIENTOS ////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
