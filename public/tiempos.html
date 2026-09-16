@@ -937,7 +937,6 @@ async function cargarTiemposPantalla() {
         return `<div style="text-align: center;"><img src="banderas/${archivoImg}" alt="${nombreEscuderia}" title="${nombreEscuderia}" style="width: 56px; height: 32px; object-fit: contain; display: inline-block;"></div>`;
     };
 
-    // 1. PRIMERO declaramos el objeto de los neumáticos:
     const archivosNeumaticos = {
         "soft": "blando.png",
         "blando": "blando.png",
@@ -1035,16 +1034,14 @@ async function cargarTiemposPantalla() {
             const badgeDnf = `<span style="background-color: #7f1d1d; color: #fca5a5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">DNF / DSQ</span>`;
 
             let filasHtml = datos.map((row, index) => {
-                if (row.gamertag === 'Jmf_rabbit') {
-                    console.log("DATOS DE Jmf_rabbit:", row);
-                    console.log("classification_position:", row.classification_position);
-                    console.log("mejor_vuelta:", row.mejor_vuelta);
-                }
-                
-                const esInvalido = row.classification_position === -1 || row.mejor_vuelta === 'DNF' || row.mejor_vuelta === 'DSQ';
-                const claseFila = esInvalido ? 'fila-penalizada' : '';
-
                 const vMs = aMilisegundos(row.mejor_vuelta);
+                
+                // AQUÍ ESTÁ EL CAMBIO CLAVE: Leemos directamente el campo que nos trae la BD y la API
+                const esInvalido = (row.classification_position !== null && row.classification_position < 1) || 
+                                   row.mejor_vuelta === 'DNF' || 
+                                   row.mejor_vuelta === 'DSQ';
+
+                const claseFila = esInvalido ? 'fila-penalizada' : '';
                 
                 const s1Val = row.s1_ms;
                 const s2Val = row.s2_ms;
@@ -1070,7 +1067,7 @@ async function cargarTiemposPantalla() {
                 const nombreEscuderia = row.escuderia || '';
 
                 return `
-                    <tr class="${claseFila}" style="border-bottom: 1px solid #333; ${esInvalido ? 'border: 1px solid rgba(239, 68, 68, 0.4); transition: all 0.2s ease-in-out;' : ''}" onmouseover="this.style.borderColor='rgba(239, 68, 68, 1)'; this.style.boxShadow='0 0 10px rgba(239, 68, 68, 0.3)';" onmouseout="this.style.borderColor='rgba(239, 68, 68, 0.4)'; this.style.boxShadow='none';">
+                    <tr class="${claseFila}" style="border-bottom: 1px solid #333; ${esInvalido ? 'border: 2px solid #ef4444 !important; background-color: rgba(239, 68, 68, 0.08);' : ''}">
                         <td style="padding: 12px 6px; text-align: center;">${index + 1}</td>
                         <td style="padding: 12px 6px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag || 'Piloto'}</td>
                         <td style="padding: 12px 6px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
@@ -1095,6 +1092,7 @@ async function cargarTiemposPantalla() {
             tbodyTiempos.innerHTML = filasHtml;
 
         } else {
+            // Lógica de Carrera (se mantiene igual por si gestionas los DNF por texto total)
             tablaHead.innerHTML = `
                 <tr style="background-color: #ef4444; color: white;">
                     <th style="padding: 12px 8px; text-align: center; width: 8%;">Pos</th>
@@ -1160,7 +1158,7 @@ async function cargarTiemposPantalla() {
                 const nombreEscuderia = row.escuderia || '';
 
                 return `
-                    <tr style="border-bottom: 1px solid #333; ${esDnfTotal ? 'border: 1px solid rgba(239, 68, 68, 0.4); transition: all 0.2s ease-in-out;' : ''}" ${esDnfTotal ? 'onmouseover="this.style.borderColor=\'rgba(239, 68, 68, 1)\'; this.style.boxShadow=\'0 0 10px rgba(239, 68, 68, 0.3)\';" onmouseout="this.style.borderColor=\'rgba(239, 68, 68, 0.4)\'; this.style.boxShadow=\'none\';"' : ''}>
+                    <tr style="border-bottom: 1px solid #333; ${esDnfTotal ? 'border: 2px solid #ef4444 !important; background-color: rgba(239, 68, 68, 0.08);' : ''}">
                         <td style="padding: 12px 8px; text-align: center;">${index + 1}</td>
                         <td style="padding: 12px 8px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${row.gamertag}</td>
                         <td style="padding: 12px 8px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${renderEscuderiaImg(nombreEscuderia)}</td>
