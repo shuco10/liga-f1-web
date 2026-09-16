@@ -647,6 +647,9 @@ function procesarJsonRLT(jsonData) {
             const escuderia = d.team?.fullName || d.team?.name || '-';
             const compVR = d.fastestLapTyreCompound || '-';
             const vueltasTotales = d.lapsCompleted || 0;
+            
+            // AQUÍ CAPTURAMOS EL VALOR DE ABANDONO DEL JSON (-1 si DNF)
+            const classificationPosition = d.classificationPosition !== undefined ? d.classificationPosition : null;
 
             const lapsList = d.laps || d.lapTimes || d.lapList || [];
             
@@ -681,7 +684,8 @@ function procesarJsonRLT(jsonData) {
                 mejorS2Ms: mejorS2PilotoMs !== Infinity ? mejorS2PilotoMs : null,
                 mejorS3Ms: mejorS3PilotoMs !== Infinity ? mejorS3PilotoMs : null,
                 compVR,
-                vueltasTotales
+                vueltasTotales,
+                classificationPosition // <-- Lo incluimos aquí para que el payload lo envíe al backend
             };
         });
 
@@ -692,32 +696,41 @@ function procesarJsonRLT(jsonData) {
             if (d.mejorS3Ms !== null && d.mejorS3Ms < mejorS3Global) mejorS3Global = d.mejorS3Ms;
         });
 
-// --- PASO 3: Renderizado aplicando los estilos morados correctamente ---
+        // --- PASO 3: Renderizado aplicando los estilos morados y marcando DNF si procede ---
         processedDrivers.forEach(d => {
-            const esVueltaRecordGlobal = (d.mejorVueltaSec && Math.abs(d.mejorVueltaSec - mejorVueltaGlobal) < 0.001);
-            const esS1Record = (d.mejorS1Ms !== null && d.mejorS1Ms === mejorS1Global);
-            const esS2Record = (d.mejorS2Ms !== null && d.mejorS2Ms === mejorS2Global);
-            const esS3Record = (d.mejorS3Ms !== null && d.mejorS3Ms === mejorS3Global);
+            const esDnf = d.classificationPosition !== null && d.classificationPosition < 1;
+            const esVueltaRecordGlobal = !esDnf && (d.mejorVueltaSec && Math.abs(d.mejorVueltaSec - mejorVueltaGlobal) < 0.001);
+            const esS1Record = !esDnf && (d.mejorS1Ms !== null && d.mejorS1Ms === mejorS1Global);
+            const esS2Record = !esDnf && (d.mejorS2Ms !== null && d.mejorS2Ms === mejorS2Global);
+            const esS3Record = !esDnf && (d.mejorS3Ms !== null && d.mejorS3Ms === mejorS3Global);
 
             const estiloBadgeMorado = 'padding: 3px 6px; background-color: rgba(147, 51, 234, 0.35); border: 1px solid #a855f7; border-radius: 4px; color: #e9d5ff; font-weight: bold; font-family: monospace; display: inline-block;';
+            const estiloBadgeDnf = 'padding: 3px 8px; background-color: #7f1d1d; color: #fca5a5; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block;';
             const estiloNormal = 'padding: 8px; font-family: monospace; color: #fff; white-space: nowrap;';
             const estiloNormalSector = 'padding: 8px; font-family: monospace; color: #ccc; text-align: center;';
 
-            const estiloVR = esVueltaRecordGlobal ? estiloBadgeMorado : estiloNormal;
+            const estiloVR = esDnf ? estiloBadgeDnf : (esVueltaRecordGlobal ? estiloBadgeMorado : estiloNormal);
+            const textoVR = esDnf ? 'DNF' : d.mejorVueltaStr;
+
             const estiloS1 = esS1Record ? estiloBadgeMorado : estiloNormalSector;
             const estiloS2 = esS2Record ? estiloBadgeMorado : estiloNormalSector;
             const estiloS3 = esS3Record ? estiloBadgeMorado : estiloNormalSector;
 
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #333';
+            if (esDnf) {
+                tr.style.border = '2px solid #ef4444';
+                tr.style.backgroundColor = 'rgba(239, 68, 68, 0.08)';
+            }
+
             tr.innerHTML = `
                 <td style="padding: 8px; text-align: center; font-family: monospace;">${d.pos}</td>
                 <td style="padding: 8px; font-weight: 500; white-space: nowrap;">${d.nombrePiloto}</td>
                 <td style="padding: 8px; color: #cbd5e1; white-space: nowrap;">${d.escuderia}</td>
-                <td style="white-space: nowrap; padding: 6px 8px;"><span style="${estiloVR}">${d.mejorVueltaStr}</span></td>
-                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS1}">${d.mejorS1Ms !== null ? formatMsToSeconds(d.mejorS1Ms) : '-'}</span></td>
-                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS2}">${d.mejorS2Ms !== null ? formatMsToSeconds(d.mejorS2Ms) : '-'}</span></td>
-                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS3}">${d.mejorS3Ms !== null ? formatMsToSeconds(d.mejorS3Ms) : '-'}</span></td>
+                <td style="white-space: nowrap; padding: 6px 8px;"><span style="${estiloVR}">${textoVR}</span></td>
+                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS1}">${!esDnf && d.mejorS1Ms !== null ? formatMsToSeconds(d.mejorS1Ms) : '-'}</span></td>
+                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS2}">${!esDnf && d.mejorS2Ms !== null ? formatMsToSeconds(d.mejorS2Ms) : '-'}</span></td>
+                <td style="text-align: center; padding: 6px 8px;"><span style="${estiloS3}">${!esDnf && d.mejorS3Ms !== null ? formatMsToSeconds(d.mejorS3Ms) : '-'}</span></td>
                 <td style="padding: 8px; font-size: 13px; white-space: nowrap;">${d.compVR}</td>
                 <td style="padding: 8px; text-align: center; font-family: monospace; white-space: nowrap;">${d.vueltasTotales}</td>
             `;
