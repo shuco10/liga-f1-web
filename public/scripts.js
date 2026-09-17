@@ -276,21 +276,21 @@ let clipsData = [];
 let clipsCarrusel = []; 
 let isTransitioning = false;
 
-// Función auxiliar para forzar reproducción automática y silencio en los iframes de Twitch
+// 👇 PON LA FUNCIÓN AQUÍ MISMO 👇
 function inyectarAutoplay(iframeCodigo) {
-    let iframeAdaptado = iframeCodigo;
-    
-    // Si ya tiene parámetros, asegurarnos de meter autoplay y muted
-    if (iframeAdaptado.includes('src="')) {
-        // Si la URL ya incluye "?", añadimos con "&", si no, con "?"
-        if (iframeAdaptado.includes('?')) {
-            iframeAdaptado = iframeAdaptado.replace('src="', 'src="&autoplay=true&muted=true&');
-        } else {
-            iframeAdaptado = iframeAdaptado.replace('src="', 'src="?autoplay=true&muted=true&');
-        }
+    if (iframeCodigo.includes('src="')) {
+        return iframeCodigo.replace(/src="([^"]+)"/, (match, url) => {
+            let nuevaUrl = url;
+            const separador = nuevaUrl.includes('?') ? '&' : '?';
+            if (!nuevaUrl.includes('autoplay=true')) {
+                nuevaUrl += `${separador}autoplay=true&muted=true`;
+            }
+            return `src="${nuevaUrl}"`;
+        });
     }
-    return iframeAdaptado;
+    return iframeCodigo;
 }
+// 👆 --------------------------------- 👆
 
 async function cargarCarruselClips() {
     try {
