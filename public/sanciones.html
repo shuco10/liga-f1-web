@@ -424,15 +424,18 @@ async function resetearSanciones() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const observer = setInterval(() => {
-        const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
-        const zonaReset = document.getElementById('zona-reset');
-        
-        if (zonaReset) {
-            zonaReset.style.display = adminStatus ? 'block' : 'none';
-            clearInterval(observer);
-        }
-    }, 500);
+    // Verificamos si el usuario es administrador de forma directa
+    const esAdminUser = (typeof esAdmin === 'function' && esAdmin()) || (localStorage.getItem('rol') === 'admin');
+    
+    const zonaReset = document.getElementById('zona-reset');
+    const btnReset = document.getElementById('btn-reset-sanciones');
+
+    if (esAdminUser) {
+        if (zonaReset) zonaReset.style.display = 'block';
+        if (btnReset) btnReset.style.display = 'inline-flex'; // o 'block'
+    } else {
+        if (zonaReset) zonaReset.style.display = 'none';
+    }
 });
 </script>
 <script src="/socket.io/socket.io.js"></script>
