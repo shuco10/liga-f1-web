@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <style>
+   <style>
         /* ==========================================
            ESTILOS GENERALES Y LAVADO DE CARA
            ========================================== */
@@ -90,13 +90,13 @@
         }
 
         /* ==========================================
-           CONTENEDOR Y TABLA DE SANCIONES
+           CONTENEDOR Y TABLA DE SANCIONES (CON VIDA Y COLOR)
            ========================================== */
         .table-wrapper {
-            background: #1a1a1a;
+            background: #161922; /* Fondo oscuro con un sutil matiz azulado */
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #2a2a2a;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 102, 255, 0.2); /* Sutil borde azul corporativo */
             overflow-x: auto;
         }
 
@@ -108,29 +108,37 @@
         }
 
         .table-standings-fix th {
-            background: #222222;
-            color: #aaa;
+            /* Degradado corporativo azul y oscuro para la cabecera */
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #38bdf8; /* Azul claro brillante para los títulos */
             font-size: 0.85rem;
             font-weight: 700;
             letter-spacing: 1px;
             padding: 16px 20px;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid #0066ff; /* Línea de acento azul en la cabecera */
             text-transform: uppercase;
         }
 
         .table-standings-fix td { 
             padding: 14px 20px; 
-            border-bottom: 1px solid #252525; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04); 
             vertical-align: middle; 
             font-size: 0.95rem;
         }
 
         .table-standings-fix tbody tr {
-            transition: background-color 0.15s ease;
+            transition: all 0.2s ease;
         }
 
+        /* Efecto cebra para diferenciar filas y darles vida */
+        .table-standings-fix tbody tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.015);
+        }
+
+        /* Al pasar el ratón: iluminación sutil combinando el rojo de la liga */
         .table-standings-fix tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.02);
+            background-color: rgba(225, 6, 0, 0.04);
+            box-shadow: inset 3px 0 0 #e10600; /* Banda roja lateral al hacer hover */
         }
 
         .table-standings-fix tbody tr:last-child td {
@@ -152,7 +160,7 @@
 
         .numero-piloto {
             font-weight: 800;
-            color: #777;
+            color: #38bdf8; /* Dorsal en tono azulado para darle chispa */
             font-size: 0.9rem;
             min-width: 25px;
             display: inline-block;
