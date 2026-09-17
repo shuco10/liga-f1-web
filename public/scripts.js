@@ -276,10 +276,19 @@ let clipsData = [];
 let clipsCarrusel = []; 
 let isTransitioning = false;
 
-// 👇 PON LA FUNCIÓN AQUÍ MISMO 👇
 function inyectarAutoplay(iframeCodigo) {
-    if (iframeCodigo.includes('src="')) {
-        return iframeCodigo.replace(/src="([^"]+)"/, (match, url) => {
+    let codigoModificado = iframeCodigo;
+    
+    // 1. Añadir el permiso de autoplay al iframe si no lo tiene
+    if (codigoModificado.includes('<iframe')) {
+        if (!codigoModificado.includes('allow="autoplay"')) {
+            codigoModificado = codigoModificado.replace('<iframe', '<iframe allow="autoplay"');
+        }
+    }
+    
+    // 2. Inyectar autoplay=true y muted=true en la URL del src
+    if (codigoModificado.includes('src="')) {
+        codigoModificado = codigoModificado.replace(/src="([^"]+)"/, (match, url) => {
             let nuevaUrl = url;
             const separador = nuevaUrl.includes('?') ? '&' : '?';
             if (!nuevaUrl.includes('autoplay=true')) {
@@ -288,9 +297,9 @@ function inyectarAutoplay(iframeCodigo) {
             return `src="${nuevaUrl}"`;
         });
     }
-    return iframeCodigo;
+    
+    return codigoModificado;
 }
-// 👆 --------------------------------- 👆
 
 async function cargarCarruselClips() {
     try {
