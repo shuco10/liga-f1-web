@@ -10,16 +10,198 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        body { background-color: #1a1a1a; color: white; margin: 0; padding: 0; font-family: sans-serif; }
-        .titulo-liga { text-align: center; font-size: 24px; margin: 20px 0; font-weight: bold; }
-        
-        /* Estilos tabla sanciones */
-        .tabla-sanciones { width: 90%; margin: 20px auto; border-collapse: collapse; background: #222; border-radius: 8px; overflow: hidden; }
-        .tabla-sanciones th, .tabla-sanciones td { padding: 15px; border-bottom: 1px solid #333; text-align: center; }
-        .avatar-piloto { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #e10600; vertical-align: middle; margin-right: 10px; }
-        .logo-escuderia { width: 30px; height: 30px; vertical-align: middle; margin-right: 8px; }
-        .contenedor-barra { width: 100px; background: #333; height: 10px; border-radius: 5px; margin: 5px auto; overflow: hidden; }
-        .barra-progreso { height: 100%; border-radius: 5px; transition: width 0.3s; }
+        /* ==========================================
+           ESTILOS GENERALES Y LAVADO DE CARA
+           ========================================== */
+        body { 
+            background-color: #121212; 
+            color: #e0e0e0; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        }
+
+        .titulo-liga { 
+            text-align: center; 
+            font-size: 28px; 
+            margin: 30px 0 10px 0; 
+            font-weight: 800; 
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .contenedor-sanciones-exclusivo {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 25px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* ==========================================
+           ZONA DE PELIGRO (ADMIN)
+           ========================================== */
+        #zona-reset {
+            background: linear-gradient(145deg, #1a1a1a, #151515);
+            border: 1px solid rgba(225, 6, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #zona-reset h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        #btn-reset-sanciones {
+            background: linear-gradient(135deg, #e10600, #b30500);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(225, 6, 0, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px auto 0 auto;
+        }
+
+        #btn-reset-sanciones:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(225, 6, 0, 0.6);
+            background: linear-gradient(135deg, #ff0700, #c80600);
+        }
+
+        /* ==========================================
+           CONTENEDOR Y TABLA DE SANCIONES
+           ========================================== */
+        .table-wrapper {
+            background: #1a1a1a;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #2a2a2a;
+            overflow-x: auto;
+        }
+
+        .table-standings-fix { 
+            width: 100%; 
+            border-collapse: collapse; 
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .table-standings-fix th {
+            background: #222222;
+            color: #aaa;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 16px 20px;
+            border-bottom: 2px solid #333;
+            text-transform: uppercase;
+        }
+
+        .table-standings-fix td { 
+            padding: 14px 20px; 
+            border-bottom: 1px solid #252525; 
+            vertical-align: middle; 
+            font-size: 0.95rem;
+        }
+
+        .table-standings-fix tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .table-standings-fix tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .table-standings-fix tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ==========================================
+           ELEMENTOS DE LA TABLA (Avatares, Escuderías)
+           ========================================== */
+        .piloto-avatar { 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 2px solid #e10600; 
+            background-color: #2a2a2a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .numero-piloto {
+            font-weight: 800;
+            color: #777;
+            font-size: 0.9rem;
+            min-width: 25px;
+            display: inline-block;
+        }
+
+        .logo-escuderia { 
+            width: 26px; 
+            height: 26px; 
+            object-fit: contain;
+            vertical-align: middle; 
+            margin-right: 8px; 
+        }
+
+        .badge-reserva {
+            background: rgba(255, 255, 255, 0.08);
+            color: #aaa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* ==========================================
+           BARRAS DE PROGRESO Y ESTADOS DE LICENCIA
+           ========================================== */
+        .contenedor-barra { 
+            width: 120px; 
+            background: #2a2a2a; 
+            height: 8px; 
+            border-radius: 4px; 
+            margin-top: 6px; 
+            overflow: hidden; 
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .barra-progreso { 
+            height: 100%; 
+            border-radius: 4px; 
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        /* Adaptabilidad en móviles */
+        @media (max-width: 768px) {
+            .titulo-liga { font-size: 22px; }
+            .table-standings-fix th, .table-standings-fix td { padding: 12px 10px; font-size: 0.85rem; }
+            .contenedor-barra { width: 80px; }
+            .piloto-avatar { width: 34px; height: 34px; }
+        }
     </style>
 <script src="/auth.js"></script>
 
@@ -34,10 +216,10 @@
     <h2 class="section-title">Puntos de los Pilotos y Sanciones</h2>
 
     
-        <div id="zona-reset" class="admin-only" style="text-align: center; display: none; padding: 20px; background: #1a1a1a; border-radius: 8px; margin: 20px;">
-            <h3 style="color: #ff4444;">Zona de Peligro</h3>
+        <div id="zona-reset" class="admin-only" style="display: none;">
+            <h3 style="color: #ff4444;"><i class="fa-solid fa-triangle-exclamation"></i> Zona de Peligro</h3>
             <button id="btn-reset-sanciones" 
-            style="display:none; background: #e10600; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 10px auto; display: block;"
+            style="display:none;"
             onclick="resetearSanciones()">
             ⚠️ RESETEAR TODAS LAS SANCIONES Y AVISOS ⚠️
             </button>
@@ -82,12 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Cargar Footer y Modal
     fetch('/footer.html').then(res => res.text()).then(data => document.getElementById('footer-placeholder').innerHTML = data);
     fetch('/login-modal.html').then(res => res.text()).then(data => document.body.insertAdjacentHTML('beforeend', data));
-
-    // 3. Renderizar sanciones al cargar
-  //  renderizarSanciones();
 });
 
-// 1. Diccionarios de referencia (Igual que en pilotos.html)
+// 1. Diccionarios de referencia
     const NOMBRES_ESCUDERIAS = {
         1: 'Red Bull Racing', 2: 'Ferrari', 3: 'Mercedes-AMG', 4: 'McLaren',
         5: 'Aston Martin', 6: 'Alpine', 7: 'Williams', 8: 'Visa Cash App RB',
@@ -102,10 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.addEventListener('DOMContentLoaded', async () => {
-        // Carga de componentes y datos
         await Promise.all([fetch('/header.html'), fetch('/footer.html'), fetch('/login-modal.html')]);
         
-        // Cargar datos de pilotos desde tu API
         const res = await fetch('/api/lista-de-pilotos');
         const listaPilotos = await res.json();
         
@@ -120,52 +297,45 @@ function renderizarSanciones(pilotos) {
     body.innerHTML = "";
 
     pilotos.forEach(p => {
-        // CÁLCULOS
         const totalAvisos = Number(p.total_avisos) || 0; 
         const puntosSancionManuales = Number(p.puntos_sancion) || 0;
 
-        // 1. Penalizaciones automáticas (3 avisos = 1 punto)
         const numPenalizaciones = Math.floor(totalAvisos / 3);
-
-        // 2. Sumamos todo lo que hay que restar (Manuales + Avisos)
         const totalRestar = puntosSancionManuales + numPenalizaciones;
-
-        // 3. Cálculo único de licencia
         const licenciaActual = Math.max(0, 12 - totalRestar);
         
         const porcentaje = (licenciaActual / 12) * 100;
-        // FIN DE CÁLCULOS
 
-        // ESTILOS
-        let color = "#2ecc71";
-        if (licenciaActual <= 2) color = "#e74c3c";
-        else if (licenciaActual <= 4) color = "#f1c40f";
+        // Escala de colores dinámica según la licencia
+        let color = "#2ecc71"; // Verde (5-12)
+        if (licenciaActual <= 2) color = "#e74c3c"; // Rojo (0-2)
+        else if (licenciaActual <= 4) color = "#f1c40f"; // Amarillo (3-4)
         
         const estado = licenciaActual <= 0 ? "SUSP." : "OK";
 
-        // DATOS EQUIPO
         const esReserva = p.es_reserva;
         const nombreEquipo = esReserva ? '<span class="badge-reserva">[ RESERVA ]</span>' : (NOMBRES_ESCUDERIAS[p.escuderia_id] || 'Desconocido');
         const logoEquipo = esReserva ? '' : `<img src="${LOGOS_ESCUDERIAS[p.escuderia_id] || ''}" class="logo-escuderia" onerror="this.style.display='none'">`;
         const nombreArchivo = p.foto_url ? p.foto_url.split('/').pop() : 'R.png';
         const rutaAvatar = `/pilotos/${nombreArchivo}`;
 
-        // RENDERIZADO
         body.innerHTML += `
             <tr>
                 <td style="text-align: left; padding-left: 20px;">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <img src="${rutaAvatar}" class="piloto-avatar" onerror="this.src='/pilotos/R.png'"> 
                         <span class="numero-piloto">${p.numero_piloto || '00'}</span>
-                        <strong style="font-size: 1.1em;">${p.gamertag}</strong>
+                        <strong style="font-size: 1.05em; color: #fff;">${p.gamertag}</strong>
                     </div>
                 </td>
-                <td>${logoEquipo} ${nombreEquipo}</td>
-                <td>${totalAvisos}</td> 
-                <td style="font-weight:bold; color: #ff3333;">${totalRestar}</td> 
-                <td style="font-weight:bold; color:${color}">${estado}</td>
+                <td><div style="display: flex; align-items: center;">${logoEquipo} <span style="font-weight: 500;">${nombreEquipo}</span></div></td>
+                <td style="font-weight: 600; text-align: center;">${totalAvisos}</td> 
+                <td style="font-weight:bold; color: #ff4444; text-align: center;">${totalRestar}</td> 
+                <td style="font-weight:bold; color:${color}; text-align: center;">${estado}</td>
                 <td>
-                    <span style="color:${color}">${licenciaActual} / 12</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-weight: 600; font-size: 0.9rem; color:${color}">${licenciaActual} / 12</span>
+                    </div>
                     <div class="contenedor-barra">
                         <div class="barra-progreso" style="width:${porcentaje}%; background:${color}"></div>
                     </div>
@@ -184,10 +354,8 @@ async function verificarSesion() {
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     
-    // 1. Comprobación local inicial (método tradicional / llave)
     let adminStatus = (typeof esAdmin === 'function') ? esAdmin() : (localStorage.getItem('rol') === 'admin');
     
-    // 2. Si localmente no consta, consultamos la base de datos vía API del servidor
     if (!adminStatus) {
         try {
             const res = await fetch('/api/auth/sesion');
@@ -195,7 +363,7 @@ async function verificarSesion() {
             
             if (data.logueado && data.rol === 'admin') {
                 adminStatus = true;
-                localStorage.setItem('rol', 'admin'); // Sincronizamos para agilizar
+                localStorage.setItem('rol', 'admin');
             }
         } catch (err) {
             console.error("Error al contrastar sesión con la base de datos en sanciones:", err);
@@ -243,37 +411,29 @@ async function enviarContacto() {
     }
 }
 
-
-    // Función para el botón
 async function resetearSanciones() {
     if (!confirm("¿ESTÁS SEGURO? Esto borrará todos los avisos y reseteará la superlicencia a 12 de todos los pilotos.")) return;
 
     const res = await fetch('/api/reset-sanciones-totales', { method: 'POST' });
     if (res.ok) {
         alert("Sanciones reseteadas con éxito.");
-        location.reload(); // Recargamos para ver los cambios
+        location.reload();
     } else {
         alert("Error al resetear.");
     }
 }
 
-// Añadimos esta pequeña "escucha" que se sincroniza con tu lógica actual
 document.addEventListener("DOMContentLoaded", function() {
     const observer = setInterval(() => {
-        // Buscamos tu función esAdmin()
         const adminStatus = (typeof esAdmin === 'function') ? esAdmin() : false;
         const zonaReset = document.getElementById('zona-reset');
         
         if (zonaReset) {
             zonaReset.style.display = adminStatus ? 'block' : 'none';
-            // Una vez detectado y aplicado, podemos parar el intervalo
             clearInterval(observer);
         }
-    }, 500); // Revisa cada medio segundo hasta que el elemento exista
+    }, 500);
 });
-
-
-    
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/iniciar-sesion.js"></script>
