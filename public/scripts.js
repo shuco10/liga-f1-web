@@ -276,6 +276,22 @@ let clipsData = [];
 let clipsCarrusel = []; 
 let isTransitioning = false;
 
+// Función auxiliar para forzar reproducción automática y silencio en los iframes de Twitch
+function inyectarAutoplay(iframeCodigo) {
+    let iframeAdaptado = iframeCodigo;
+    
+    // Si ya tiene parámetros, asegurarnos de meter autoplay y muted
+    if (iframeAdaptado.includes('src="')) {
+        // Si la URL ya incluye "?", añadimos con "&", si no, con "?"
+        if (iframeAdaptado.includes('?')) {
+            iframeAdaptado = iframeAdaptado.replace('src="', 'src="&autoplay=true&muted=true&');
+        } else {
+            iframeAdaptado = iframeAdaptado.replace('src="', 'src="?autoplay=true&muted=true&');
+        }
+    }
+    return iframeAdaptado;
+}
+
 async function cargarCarruselClips() {
     try {
         const response = await fetch('/api/videos');
@@ -317,11 +333,16 @@ function renderCarousel() {
 
     extendedClips.forEach((clip, absoluteIndex) => {
         let iframeAdaptado = clip.embed_codigo;
+        
+        // Ajustar el dominio parent
         if (iframeAdaptado.includes('parent=')) {
             iframeAdaptado = iframeAdaptado.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
         } else if (iframeAdaptado.includes('src=')) {
             iframeAdaptado = iframeAdaptado.replace('src="', `src="&parent=${dominioActual}&`);
         }
+
+        // Aplicar parámetros de autoplay y mute por defecto
+        iframeAdaptado = inyectarAutoplay(iframeAdaptado);
 
         const item = document.createElement('div');
         item.className = `carousel-clip-item ${absoluteIndex === currentIndex ? 'active' : ''}`;
@@ -346,11 +367,16 @@ function poblarModalClips() {
 
     clipsData.forEach((clip) => {
         let iframeAdaptado = clip.embed_codigo;
+        
+        // Ajustar el dominio parent
         if (iframeAdaptado.includes('parent=')) {
             iframeAdaptado = iframeAdaptado.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
         } else if (iframeAdaptado.includes('src=')) {
             iframeAdaptado = iframeAdaptado.replace('src="', `src="&parent=${dominioActual}&`);
         }
+
+        // Aplicar parámetros de autoplay y mute por defecto
+        iframeAdaptado = inyectarAutoplay(iframeAdaptado);
 
         const tarjeta = document.createElement('div');
         tarjeta.className = 'modal-clip-card';
