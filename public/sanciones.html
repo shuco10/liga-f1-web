@@ -89,14 +89,14 @@
             background: linear-gradient(135deg, #ff0700, #c80600);
         }
 
-        /* ==========================================
+ /* ==========================================
            CONTENEDOR Y TABLA DE SANCIONES (CON VIDA Y COLOR)
            ========================================== */
         .table-wrapper {
-            background: #161922; /* Fondo oscuro con un sutil matiz azulado */
+            background: #161922; 
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 102, 255, 0.2); /* Sutil borde azul corporativo */
+            border: 1px solid rgba(0, 102, 255, 0.2); 
             overflow-x: auto;
         }
 
@@ -108,14 +108,13 @@
         }
 
         .table-standings-fix th {
-            /* Degradado corporativo azul y oscuro para la cabecera */
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #38bdf8; /* Azul claro brillante para los títulos */
+            color: #38bdf8; 
             font-size: 0.85rem;
             font-weight: 700;
             letter-spacing: 1px;
             padding: 16px 20px;
-            border-bottom: 2px solid #0066ff; /* Línea de acento azul en la cabecera */
+            border-bottom: 2px solid #0066ff; 
             text-transform: uppercase;
         }
 
@@ -124,26 +123,31 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.04); 
             vertical-align: middle; 
             font-size: 0.95rem;
+            transition: padding-left 0.2s ease; /* Suaviza el movimiento del texto */
         }
 
         .table-standings-fix tbody tr {
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease !important;
         }
 
-       .table-standings-fix tbody tr {
-            transition: background-color 0.2s ease, border-left-color 0.2s ease !important;
-            border-left: 4px solid transparent; /* Espacio reservado a la izquierda */
-        }
-
-        /* Efecto cebra para diferenciar filas y darles vida */
+        /* Efecto cebra para diferenciar filas */
         .table-standings-fix tbody tr:nth-child(even) {
             background-color: rgba(255, 255, 255, 0.015) !important;
         }
 
-        /* Al pasar el ratón: fondo suave y franja roja corporativa bien acoplada */
+        /* Al pasar el ratón: fondo suave en la fila */
         .table-standings-fix tbody tr:hover {
             background-color: rgba(225, 6, 0, 0.06) !important;
-            border-left: 4px solid #e10600 !important; /* Barra roja limpia sin desbordes */
+        }
+
+        /* Franja roja limpia aplicada en la primera celda de la fila al hacer hover */
+        .table-standings-fix tbody tr:hover td:first-child {
+            border-left: 4px solid #e10600 !important;
+            padding-left: 16px !important;
+        }
+
+        .table-standings-fix tbody tr:last-child td {
+            border-bottom: none;
         }
 
         /* ==========================================
