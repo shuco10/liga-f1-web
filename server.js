@@ -571,6 +571,7 @@ app.get('/api/resoluciones', async (req, res) => {
         const { rows } = await pool.query("SELECT * FROM resoluciones ORDER BY fecha DESC");
         res.json(rows);
     } catch (err) {
+        console.error("Error al cargar resoluciones:", err);
         res.status(500).json({ error: "Error al cargar resoluciones" });
     }
 });
@@ -579,11 +580,12 @@ app.post('/api/resoluciones', async (req, res) => {
     const { reclamante, reclamado, articulo, explicacion, sancion } = req.body;
     try {
         await pool.query(
-            "INSERT INTO resoluciones (reclamante, reclamado, articulo, explicacion, sancion) VALUES ($1, $2, $3, $4, $5)",
+            "INSERT INTO resoluciones (reclamante, reclamado, articulo, explicacion, sancion, fecha) VALUES ($1, $2, $3, $4, $5, NOW())",
             [reclamante, reclamado, articulo, explicacion, sancion]
         );
         res.json({ success: true });
     } catch (err) {
+        console.error("Error al guardar resolución:", err);
         res.status(500).json({ error: "Error al guardar resolución" });
     }
 });
@@ -593,6 +595,7 @@ app.delete('/api/resoluciones/:id', async (req, res) => {
         await pool.query("DELETE FROM resoluciones WHERE id = $1", [req.params.id]);
         res.json({ success: true });
     } catch (err) {
+        console.error("Error al eliminar resolución:", err);
         res.status(500).json({ error: "Error al eliminar resolución" });
     }
 });
