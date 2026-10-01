@@ -1,59 +1,9 @@
-const socket = io();
-
 // Si esta página no tiene esta función, evitamos que rompa el script global
 if (typeof cargarListaUsuarios !== 'function') {
     window.cargarListaUsuarios = function() {};
 }
 
-// 1. Socket.io: Actualizar los usuarios online en tiempo real y pintar la lista
-function actualizarContadorOnline(datos) {
-    const spanNum = document.getElementById('num-usuarios');
-    const spanBola = document.getElementById('bola-estado');
-    
-    const total = Array.isArray(datos) ? datos.length : Number(datos);
-    
-    if (spanNum) spanNum.innerText = total;
-    
-    if (spanBola && spanNum) {
-        if (total > 0) {
-            spanBola.style.color = '#4ade80';
-            spanNum.style.color = '#4ade80';
-        } else {
-            spanBola.style.color = '#ef4444';
-            spanNum.style.color = '#ef4444';
-        }
-    }
-}
-
-socket.on('actualizar-conectados', (listaConectados) => {
-    const contadorSpan = document.getElementById('num-usuarios') || document.getElementById('contador-online');
-    if (contadorSpan) {
-        contadorSpan.innerText = listaConectados.length;
-    }
-
-    const contenedorLista = document.getElementById('lista-conectados-rt');
-    if (!contenedorLista) return;
-
-    contenedorLista.innerHTML = '';
-
-    if (listaConectados.length === 0) {
-        contenedorLista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay usuarios activos ahora mismo.</li>';
-        return;
-    }
-
-    listaConectados.forEach(user => {
-        const li = document.createElement('li');
-        li.style.cssText = 'padding: 6px 10px; margin: 4px 0; background: rgba(15, 23, 42, 0.6); border-radius: 5px; display: flex; justify-content: space-between;';
-        li.innerHTML = `<span><i class="fa-solid fa-circle" style="color: #10b981; font-size: 0.7em; margin-right: 8px;"></i> ${user}</span> <span style="font-size: 0.8em; color: #94a3b8;">Conectado</span>`;
-        contenedorLista.appendChild(li);
-    });
-});
-
-socket.on('usuarios-actualizados', (numUsuarios) => {
-    actualizarContadorOnline(numUsuarios);
-});
-
-// 2. Control de Visitas (Aislado y con manejo seguro)
+// 1. Control de Visitas (Aislado y con manejo seguro)
 async function gestionarVisitas() {
     try {
         await fetch('/api/visitas/registrar', { method: 'POST' }).catch(() => {});
@@ -72,7 +22,7 @@ async function gestionarVisitas() {
     }
 }
 
-// 3. Verificación de Sesión
+// 2. Verificación de Sesión
 async function verificarSesionPagina() {
     try {
         const res = await fetch('/api/auth/sesion');
@@ -114,7 +64,7 @@ async function verificarSesionPagina() {
     }
 }
 
-// 4. GESTIÓN GLOBAL DE CLICS (Login / Logout)
+// 3. GESTIÓN GLOBAL DE CLICS (Login / Logout)
 document.addEventListener('click', async (e) => {
     if (e.target && e.target.id === 'btnAbrirLogin') {
         e.preventDefault();
@@ -189,13 +139,13 @@ async function iniciarBannerSecuencial() {
             if (noticiasUltimoDia.length > 0) {
                 bloquesGlobales.push({
                     titulo: "📰 NOTICIAS",
-                    items: noticiasUltimoDia.map(n => `<b>${n.titulo}</b>`)
+                    items: noticiasUltimoDia.map(n => `**${n.titulo}**`)
                 });
             }
         }
 
         if (Array.isArray(resResoluciones) && resResoluciones.length > 0) {
-            resResoluciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            resResoluciones.sort((a, b) => new Date(b.fecha) - new Date(b.fecha));
             const ultimaFechaRes = (resResoluciones[0].fecha || '').split('T')[0].split(' ')[0];
             
             const resolucionesUltimoDia = resResoluciones.filter(r => {
@@ -206,7 +156,7 @@ async function iniciarBannerSecuencial() {
             if (resolucionesUltimoDia.length > 0) {
                 bloquesGlobales.push({
                     titulo: "⚖️ RESOLUCIONES",
-                    items: resolucionesUltimoDia.map(r => `Sanción a <b>${r.reclamado}</b> (${r.sancion})`)
+                    items: resolucionesUltimoDia.map(r => `Sanción a **${r.reclamado}** (${r.sancion})`)
                 });
             }
         }
@@ -223,7 +173,7 @@ async function iniciarBannerSecuencial() {
             if (usuariosUltimoDia.length > 0) {
                 bloquesGlobales.push({
                     titulo: "🏁 NUEVOS PILOTOS",
-                    items: usuariosUltimoDia.map(u => `¡Bienvenido a la parrilla, <b>${u.username}</b>!`)
+                    items: usuariosUltimoDia.map(u => `¡Bienvenido a la parrilla, **${u.username}**!`)
                 });
             }
         }
@@ -243,7 +193,7 @@ async function iniciarBannerSecuencial() {
             const bloqueActual = bloquesGlobales[index];
             tituloElemento.innerHTML = bloqueActual.titulo;
 
-            const textoBloque = bloqueActual.items.join(' &nbsp;&bull;&nbsp; ') + ' &nbsp;&bull;&nbsp; ';
+            const textoBloque = bloqueActual.items.join('  •  ') + '  •  ';
             contenidoElemento.innerHTML = textoBloque;
 
             const longitudAprox = textoBloque.length * 8; 
@@ -268,227 +218,6 @@ async function iniciarBannerSecuencial() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// CARRUSEL DE CLIPS
-////////////////////////////////////////////////////////////////////////////////
-
-let currentIndex = 0;
-let clipsData = []; 
-let clipsCarrusel = []; 
-let isTransitioning = false;
-
-function inyectarAutoplay(iframeCodigo) {
-    let codigoModificado = iframeCodigo;
-    
-    // 1. Añadir el permiso de autoplay al iframe si no lo tiene
-    if (codigoModificado.includes('<iframe')) {
-        if (!codigoModificado.includes('allow="autoplay"')) {
-            codigoModificado = codigoModificado.replace('<iframe', '<iframe allow="autoplay"');
-        }
-    }
-    
-    // 2. Inyectar autoplay=true y muted=true en la URL del src
-    if (codigoModificado.includes('src="')) {
-        codigoModificado = codigoModificado.replace(/src="([^"]+)"/, (match, url) => {
-            let nuevaUrl = url;
-            const separador = nuevaUrl.includes('?') ? '&' : '?';
-            if (!nuevaUrl.includes('autoplay=true')) {
-                nuevaUrl += `${separador}autoplay=true&muted=true`;
-            }
-            return `src="${nuevaUrl}"`;
-        });
-    }
-    
-    return codigoModificado;
-}
-
-async function cargarCarruselClips() {
-    try {
-        const response = await fetch('/api/videos');
-        const text = await response.text();
-        if (text.trim().startsWith('<')) throw new Error('HTML recibido');
-        
-        const datos = JSON.parse(text);
-        if (Array.isArray(datos) && datos.length > 0) {
-            clipsData = datos;
-            clipsCarrusel = clipsData.slice(0, 5);
-        }
-    } catch (error) {
-        console.warn('Usando clips de respaldo:', error);
-        clipsData = [
-            { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip1&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "¡Bienvenido a Cazadores de Curvas!" },
-            { embed_codigo: '<iframe src="https://clips.twitch.tv/embed?clip=DefaultClip2&parent=localhost" frameborder="0" allowfullscreen="true" height="300" width="400"></iframe>', titulo: "Momento épico en pista" }
-        ];
-        clipsCarrusel = clipsData;
-    }
-    
-    renderCarousel();
-    poblarModalClips();
-}
-
-function renderCarousel() {
-    const container = document.getElementById('twitchCarousel');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    const dominioActual = window.location.hostname;
-
-    if (clipsCarrusel.length === 0) {
-        container.innerHTML = '<div class="carousel-loading" style="color: #94a3b8; font-size: 12px;">No hay clips guardados todavía.</div>';
-        return;
-    }
-
-    const extendedClips = [...clipsCarrusel, ...clipsCarrusel, ...clipsCarrusel];
-    currentIndex = clipsCarrusel.length;
-
-    extendedClips.forEach((clip, absoluteIndex) => {
-        let iframeAdaptado = clip.embed_codigo;
-        
-        // Ajustar el dominio parent
-        if (iframeAdaptado.includes('parent=')) {
-            iframeAdaptado = iframeAdaptado.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
-        } else if (iframeAdaptado.includes('src=')) {
-            iframeAdaptado = iframeAdaptado.replace('src="', `src="&parent=${dominioActual}&`);
-        }
-
-        // Aplicar parámetros de autoplay y mute por defecto
-        iframeAdaptado = inyectarAutoplay(iframeAdaptado);
-
-        const item = document.createElement('div');
-        item.className = `carousel-clip-item ${absoluteIndex === currentIndex ? 'active' : ''}`;
-        item.innerHTML = `
-            <div style="position: relative;">
-                ${iframeAdaptado}
-            </div>
-            <div class="carousel-clip-title" title="${clip.titulo}">${clip.titulo}</div>
-        `;
-        container.appendChild(item);
-    });
-
-    actualizarPosicionCarrusel(false);
-}
-
-function poblarModalClips() {
-    const modalGrid = document.getElementById('modalClipsGrid');
-    if (!modalGrid) return;
-
-    modalGrid.innerHTML = '';
-    const dominioActual = window.location.hostname;
-
-    clipsData.forEach((clip) => {
-        let iframeAdaptado = clip.embed_codigo;
-        
-        // Ajustar el dominio parent
-        if (iframeAdaptado.includes('parent=')) {
-            iframeAdaptado = iframeAdaptado.replace(/parent=([^&"']+)/g, 'parent=' + dominioActual);
-        } else if (iframeAdaptado.includes('src=')) {
-            iframeAdaptado = iframeAdaptado.replace('src="', `src="&parent=${dominioActual}&`);
-        }
-
-        // Aplicar parámetros de autoplay y mute por defecto
-        iframeAdaptado = inyectarAutoplay(iframeAdaptado);
-
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'modal-clip-card';
-        tarjeta.innerHTML = `
-            <div style="position: relative;">
-                ${iframeAdaptado}
-            </div>
-            <span title="${clip.titulo}">${clip.titulo}</span>
-        `;
-        modalGrid.appendChild(tarjeta);
-    });
-}
-
-function actualizarPosicionCarrusel(animar = true) {
-    const container = document.getElementById('twitchCarousel');
-    if (!container || clipsCarrusel.length === 0) return;
-
-    if (!animar) {
-        container.style.transition = 'none';
-    } else {
-        container.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-    }
-
-    const items = container.children;
-
-    for (let i = 0; i < items.length; i++) {
-        if (i === currentIndex) {
-            items[i].classList.add('active');
-            items[i].style.transform = 'scale(1.05)';
-            items[i].style.opacity = '1';
-            items[i].style.zIndex = '2';
-        } else {
-            items[i].classList.remove('active');
-            items[i].style.transform = 'scale(0.85)';
-            items[i].style.opacity = '0.4';
-            items[i].style.zIndex = '1';
-        }
-    }
-
-    const activeItem = items[currentIndex];
-    if (activeItem) {
-        const containerWidth = container.parentElement.offsetWidth;
-        const itemLeft = activeItem.offsetLeft;
-        const itemWidth = activeItem.offsetWidth;
-        const scrollTarget = itemLeft - (containerWidth / 2) + (itemWidth / 2);
-        
-        container.style.transform = `translateX(${-scrollTarget}px)`;
-    }
-}
-
-// Control global de clics (Flechas del carrusel + Modal)
-document.addEventListener('click', (e) => {
-    const nextBtn = e.target.closest('#nextClip');
-    const prevBtn = e.target.closest('#prevClip');
-    const openModalBtn = e.target.closest('#openAllClipsModal');
-    const closeModalBtn = e.target.closest('#closeAllClipsModal');
-    const modalOverlay = document.getElementById('allClipsModal');
-
-    if (openModalBtn) {
-        e.preventDefault();
-        if (modalOverlay) modalOverlay.style.display = 'flex';
-        return;
-    }
-
-    if (closeModalBtn || (modalOverlay && e.target === modalOverlay)) {
-        e.preventDefault();
-        if (modalOverlay) modalOverlay.style.display = 'none';
-        return;
-    }
-
-    if (!nextBtn && !prevBtn) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (clipsCarrusel.length === 0 || isTransitioning) return;
-    
-    isTransitioning = true;
-
-    if (nextBtn) {
-        currentIndex++;
-    } else if (prevBtn) {
-        currentIndex--;
-    }
-
-    actualizarPosicionCarrusel(true);
-
-    const totalClips = clipsCarrusel.length;
-
-    setTimeout(() => {
-        if (currentIndex < totalClips) {
-            currentIndex += totalClips;
-            actualizarPosicionCarrusel(false);
-        } else if (currentIndex >= totalClips * 2) {
-            currentIndex -= totalClips;
-            actualizarPosicionCarrusel(false);
-        }
-        isTransitioning = false;
-    }, 400);
-});
-
-
-////////////////////////////////////////////////////////////////////////////////
 /// CUENTA ATRÁS DE CIRCUITOS (Adaptada a la estructura exacta de Neon DB)
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -497,7 +226,6 @@ async function inicializarCuentaAtrasCircuitos() {
     const elGrid = document.getElementById('contador-grid');
 
     if (!elGp || !elGrid) {
-        // Si aún no se han pintado en el DOM, reintentamos en medio segundo
         setTimeout(inicializarCuentaAtrasCircuitos, 500);
         return;
     }
@@ -627,6 +355,5 @@ document.addEventListener('DOMContentLoaded', () => {
     verificarSesionPagina();
     gestionarVisitas();
     iniciarBannerSecuencial();
-    cargarCarruselClips();
     inicializarCuentaAtrasCircuitos();
 });
