@@ -60,9 +60,8 @@
             <i class="fa-brands fa-twitch"></i> CANAL DE RETRANSMISIÓN OFICIAL <i class="fa-brands fa-twitch"></i>
         </h4>
     </div>
-    
-   
 </div>
+
 <!-- MODAL DE CONTACTO -->
 <div id="modal-contacto" style="display:none; position:fixed; top:15%; left:50%; transform:translateX(-50%); background:#1a1a1a; padding:30px; border:2px solid #ff4444; z-index:1000; color:white; border-radius:10px; width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
     <h3 style="margin-top: 0;">Formulario de Contacto</h3>
@@ -84,30 +83,29 @@
         <img src="/webimagenes/krv.png" class="logo-patrocinador logo-krv">
     </div>
     
-    <!-- Widget de Próxima Carrera con Cuenta Atrás (Automático desde Base de Datos) -->
-<div class="widget-carrera">
-    <h3><i class="fa-solid fa-flag-checkered"></i> Próxima cita en pista</h3>
-    <div class="nombre-gp" id="nombre-gp">Cargando próxima carrera...</div>
-    <div class="contador-grid" id="contador-grid" style="display: none;">
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="dias">00</span>
-            <span class="tiempo-etiqueta">Días</span>
-        </div>
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="horas">00</span>
-            <span class="tiempo-etiqueta">Horas</span>
-        </div>
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="minutos">00</span>
-            <span class="tiempo-etiqueta">Min</span>
-        </div>
-        <div class="tiempo-bloque">
-            <span class="tiempo-numero" id="segundos">00</span>
-            <span class="tiempo-etiqueta">Seg</span>
+    <!-- Widget de Próxima Carrera con Cuenta Atrás -->
+    <div class="widget-carrera">
+        <h3><i class="fa-solid fa-flag-checkered"></i> Próxima cita en pista</h3>
+        <div class="nombre-gp" id="nombre-gp">Cargando próxima carrera...</div>
+        <div class="contador-grid" id="contador-grid" style="display: none;">
+            <div class="tiempo-bloque">
+                <span class="tiempo-numero" id="dias">00</span>
+                <span class="tiempo-etiqueta">Días</span>
+            </div>
+            <div class="tiempo-bloque">
+                <span class="tiempo-numero" id="horas">00</span>
+                <span class="tiempo-etiqueta">Horas</span>
+            </div>
+            <div class="tiempo-bloque">
+                <span class="tiempo-numero" id="minutos">00</span>
+                <span class="tiempo-etiqueta">Min</span>
+            </div>
+            <div class="tiempo-bloque">
+                <span class="tiempo-numero" id="segundos">00</span>
+                <span class="tiempo-etiqueta">Seg</span>
+            </div>
         </div>
     </div>
-</div>
-    
 </div>
 
 <!-- BANNER -->
@@ -115,14 +113,9 @@
     <div class="my-banner"></div>
 </div>
 
-
-
-<!-- Carga automática de scripts compatibles con inyección dinámica -->
+<!-- SCRIPTS -->
 <script src="/iniciar-sesion.js"></script>
-<script src="/socket.io/socket.io.js"></script>
 <script src="/scripts.js?v=2" defer></script>
-
-
 
 <!-- BOTONES DEL MENU SUPERIOR -->
 <nav class="nav-bar-cazadores">
@@ -139,73 +132,18 @@
         <a href="/draft.html" class="boton-accion"><i class="fa-solid fa-dice"></i> DRAFT TEMP. 4</a>
     </div>
 
-<div class="nav-actions-group">
-    <!-- Botón de Iniciar Sesión (mantiene su ID y lógica original) -->
-    <button id="btnAbrirLogin" class="boton-accion nav-icon-only" style="display: none;" title="Iniciar Sesión">
-        <i class="fa-solid fa-user"></i>
-    </button>
-    
-    <!-- Botón de Cerrar Sesión (mantiene su ID y lógica original) -->
-    <button id="btn-logout" class="boton-accion nav-icon-only" style="display: none;" title="Cerrar Sesión">
-        <i class="fa-solid fa-door-open"></i>
-    </button>
-
-    <!-- Botón de Oficinas -->
-    <a href="/info.html" class="boton-accion nav-icon-only" title="Oficinas">
-        <i class="fa-solid fa-building"></i>
-    </a>
-
-    <!-- Botón de Contacto -->
-    <button class="boton-accion nav-icon-only" onclick="document.getElementById('modal-contacto').style.display='block'" title="Contacto">
-        <i class="fa-solid fa-envelope"></i>
-    </button>
-</div>
+    <div class="nav-actions-group">
+        <button id="btnAbrirLogin" class="boton-accion nav-icon-only" style="display: none;" title="Iniciar Sesión">
+            <i class="fa-solid fa-user"></i>
+        </button>
+        <button id="btn-logout" class="boton-accion nav-icon-only" style="display: none;" title="Cerrar Sesión">
+            <i class="fa-solid fa-door-open"></i>
+        </button>
+        <a href="/info.html" class="boton-accion nav-icon-only" title="Oficinas">
+            <i class="fa-solid fa-building"></i>
+        </a>
+        <button class="boton-accion nav-icon-only" onclick="document.getElementById('modal-contacto').style.display='block'" title="Contacto">
+            <i class="fa-solid fa-envelope"></i>
+        </button>
+    </div>
 </nav>
-
-<!-- Sección del Carrusel de Clips -->
-<div class="twitch-carousel-section">
-    <button class="carousel-btn prev-btn" id="prevClip">&#10094;</button>
-    
-    <div class="twitch-carousel-wrapper">
-        <div class="twitch-carousel-container" id="twitchCarousel">
-            <div class="carousel-loading">Cargando clips de la comunidad...</div>
-        </div>
-    </div>
-
-    <button class="carousel-btn next-btn" id="nextClip">&#10095;</button>
-</div>
-
-<!-- Botón para ver todos con el margen correcto -->
-<div class="twitch-all-clips-btn-container">
-    <button id="openAllClipsModal" class="btn-ver-todos">
-        🎬 Ver todos los clips
-    </button>
-</div>
-
-<!-- Modal de "Ver todos" con Grid y Miniaturas -->
-<div id="allClipsModal" class="twitch-modal-overlay" style="display: none;">
-    <div class="twitch-modal-content">
-        
-        <!-- Cabecera del Modal -->
-        <div class="twitch-modal-header">
-            <h3>Todos los clips de la comunidad</h3>
-            <button id="closeAllClipsModal" class="twitch-modal-close">&times;</button>
-        </div>
-        
-        <!-- Contenedor con Scroll para la parrilla de vídeos -->
-        <div id="modalClipsGrid" class="twitch-modal-grid">
-            <!-- Aquí se inyectarán dinámicamente todos los clips con su previsualización -->
-        </div>
-        
-    </div>
-</div>
-<!-- Aquí se inyectarán dinámicamente todos los clips con su previsualización 
-<div class="ticker-container">
-    <div class="ticker-select-label" id="ticker-titulo">🏁 CARGANDO</div>
-    <div class="ticker-wrap">
-        <div class="ticker-move" id="ticker-content">
-            Cargando actualidad...
-        </div>
-    </div>
-</div>
--->
